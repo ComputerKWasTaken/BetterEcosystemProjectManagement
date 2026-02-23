@@ -7,7 +7,6 @@
 ## 🚀 Roadmap / Future Plans
 
 ### Most Likely Happening
-- **Advanced Guide** - Convert each guide in the Guides segment into two parts: Core, and Advanced. The Core knowledge provides the most important information, while the Advanced section goes into more detail and edge cases, knowledge that might be useful but not essential.
 - **Jump To Arrows** - Add arrows to the jump-to page organization element to make it easier to go through each segment
 
 ### Considering
