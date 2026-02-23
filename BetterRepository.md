@@ -7,7 +7,7 @@
 ## 🚀 Roadmap / Future Plans
 
 ### Most Likely Happening
-- **Jump To Arrows** - Add arrows to the jump-to page organization element to make it easier to go through each segment
+-
 
 ### Considering
 
