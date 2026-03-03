@@ -63,15 +63,19 @@ The `state.memory` object contains three special properties that affect context 
 
 **Type**: string
 
-**Behavior**: When set, the message is shown to the player (typically as an alert or notification)
+**Behavior**: When set, the message is shown to the player as a toast notification during gameplay. This is the recommended way for scripts to communicate feedback to the player without injecting text into the story output.
+
+> **Now implemented on Phoenix** (March 2nd, 2026 update): `state.message` toasts now appear during gameplay when scenarios use scripting. Previously, setting `state.message` had no visible effect on the Phoenix client.
 
 **Common Uses**:
-- Confirming command execution
-- Displaying stats or status
-- Error messages
-- Game feedback
+- Confirming command execution (e.g., `:time`, `:advance`)
+- Displaying stats or status updates
+- Error messages and validation feedback
+- Game feedback that shouldn't be part of the story text
 
-**Clearing**: Set to empty string or delete to clear
+**Best Practice**: Prefer `state.message` over injecting feedback text into the story output. Toast messages keep the story text clean while still communicating with the player.
+
+**Clearing**: Set to empty string or `delete state.message` to clear
 
 ## Custom Properties
 
