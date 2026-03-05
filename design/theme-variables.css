@@ -1,0 +1,210 @@
+/* ============================================
+   BetterEcosystem — Unified Design Tokens
+   ============================================
+   Single source of truth for all visual properties
+   shared across BetterDungeon, BetterRepository,
+   and future ecosystem projects.
+
+   Prefix: --bd-  (BetterDungeon / BetterDesign)
+
+   Usage:
+     • BetterDungeon  — @import or inline copy
+     • BetterRepository — @import in main.css
+     • Tailwind — mirror values in tailwind.config.js
+   ============================================ */
+
+:root {
+  /* =============================================
+     1. COLORS — BACKGROUNDS
+     Dark-first palette, ordered lightest → darkest.
+     ============================================= */
+  --bd-bg-primary:    #0d0d0f;   /* Deepest page background          */
+  --bd-bg-secondary:  #16161a;   /* Cards, panels, sidebar            */
+  --bd-bg-tertiary:   #1e1e24;   /* Nested cards, hover states        */
+  --bd-bg-elevated:   #252530;   /* Inputs, raised elements           */
+  --bd-bg-overlay:    rgba(0, 0, 0, 0.85); /* Modal / sheet backdrop  */
+
+  /* =============================================
+     2. COLORS — TEXT
+     ============================================= */
+  --bd-text-primary:   #e8e8ec;  /* Main body text                    */
+  --bd-text-secondary: #a0a0a8;  /* Supporting / label text           */
+  --bd-text-muted:     #6b6b75;  /* Disabled, hints, placeholders     */
+  --bd-text-inverse:   #0d0d0f;  /* Text on colored backgrounds       */
+
+  /* =============================================
+     3. COLORS — BRAND / ACCENT
+     Orange is the ecosystem signature color.
+     ============================================= */
+  --bd-accent-primary:   #ff9500;                 /* Main brand orange     */
+  --bd-accent-secondary: #e07800;                 /* Darker orange         */
+  --bd-accent-light:     #ffb84d;                 /* Lighter orange hover  */
+  --bd-accent-glow:      rgba(255, 149, 0, 0.12); /* Subtle ambient glow  */
+  --bd-accent-muted:     rgba(255, 149, 0, 0.15); /* Tinted backgrounds   */
+
+  /* =============================================
+     4. COLORS — STATUS
+     Semantic colors for feedback states.
+     ============================================= */
+  --bd-success:        #22c55e;
+  --bd-success-bg:     rgba(34, 197, 94, 0.15);
+  --bd-success-border: rgba(34, 197, 94, 0.3);
+
+  --bd-error:          #ef4444;
+  --bd-error-bg:       rgba(239, 68, 68, 0.15);
+  --bd-error-border:   rgba(239, 68, 68, 0.3);
+
+  --bd-warning:        #f59e0b;
+  --bd-warning-bg:     rgba(245, 158, 11, 0.15);
+  --bd-warning-border: rgba(245, 158, 11, 0.3);
+
+  --bd-info:           #3b82f6;
+  --bd-info-bg:        rgba(59, 130, 246, 0.15);
+  --bd-info-border:    rgba(59, 130, 246, 0.3);
+
+  /* =============================================
+     5. COLORS — CATEGORY / PALETTE
+     Used for tags, badges, icons, and section accents.
+     ============================================= */
+  --bd-blue:    #3b82f6;
+  --bd-purple:  #a855f7;
+  --bd-green:   #22c55e;
+  --bd-amber:   #fbbf24;
+  --bd-cyan:    #06b6d4;
+  --bd-orange:  #f97316;
+  --bd-pink:    #ec4899;
+  --bd-emerald: #10b981;
+  --bd-red:     #ef4444;
+  --bd-teal:    #14b8a6;
+  --bd-indigo:  #6366f1;
+  --bd-rose:    #f43f5e;
+  --bd-slate:   #94a3b8;
+  --bd-gray:    #6b7280;
+
+  /* =============================================
+     6. COLORS — BORDERS
+     White-alpha borders for dark backgrounds.
+     ============================================= */
+  --bd-border-subtle:  rgba(255, 255, 255, 0.06);  /* Faintest dividers      */
+  --bd-border-default: rgba(255, 255, 255, 0.10);  /* Standard card borders  */
+  --bd-border-strong:  rgba(255, 255, 255, 0.15);  /* Hovered / emphasized   */
+  --bd-border-accent:  rgba(255, 149, 0, 0.25);    /* Brand-tinted borders   */
+  --bd-border-focus:   var(--bd-accent-primary);    /* Focus rings            */
+
+  /* =============================================
+     7. COLORS — INTERACTIVE SURFACE
+     Tag / chip / badge tinting.
+     ============================================= */
+  --bd-tag-bg: rgba(255, 255, 255, 0.08);
+
+  /* =============================================
+     8. TYPOGRAPHY
+     ============================================= */
+  --bd-font-family-primary: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --bd-font-family-mono:    'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+
+  /* Font sizes — fixed px scale for cross-context consistency */
+  --bd-font-size-xs:  10px;
+  --bd-font-size-sm:  11px;
+  --bd-font-size-base: 12px;
+  --bd-font-size-md:  13px;
+  --bd-font-size-lg:  14px;
+  --bd-font-size-xl:  16px;
+  --bd-font-size-2xl: 18px;
+  --bd-font-size-3xl: 22px;
+
+  /* Font weights */
+  --bd-font-weight-normal:   400;
+  --bd-font-weight-medium:   500;
+  --bd-font-weight-semibold: 600;
+  --bd-font-weight-bold:     700;
+
+  /* Line heights */
+  --bd-line-height-tight:   1.4;
+  --bd-line-height-normal:  1.5;
+  --bd-line-height-relaxed: 1.6;
+
+  /* =============================================
+     9. SPACING
+     4px base, consistent across projects.
+     ============================================= */
+  --bd-space-1:  4px;
+  --bd-space-2:  8px;
+  --bd-space-3:  12px;
+  --bd-space-4:  16px;
+  --bd-space-5:  20px;
+  --bd-space-6:  24px;
+  --bd-space-8:  32px;
+  --bd-space-10: 40px;
+  --bd-space-12: 48px;
+
+  /* =============================================
+     10. BORDER RADIUS
+     ============================================= */
+  --bd-radius-sm:   4px;
+  --bd-radius-md:   6px;
+  --bd-radius-lg:   8px;
+  --bd-radius-xl:   10px;
+  --bd-radius-2xl:  12px;
+  --bd-radius-3xl:  16px;
+  --bd-radius-full: 9999px;
+
+  /* =============================================
+     11. SHADOWS
+     ============================================= */
+  --bd-shadow-sm:       0 1px 2px rgba(0, 0, 0, 0.2);
+  --bd-shadow-md:       0 2px 8px rgba(0, 0, 0, 0.3);
+  --bd-shadow-lg:       0 4px 16px rgba(0, 0, 0, 0.4);
+  --bd-shadow-xl:       0 8px 32px rgba(0, 0, 0, 0.5);
+  --bd-shadow-glow:     0 0 20px rgba(255, 149, 0, 0.12);
+  --bd-shadow-glow-lg:  0 0 30px rgba(255, 149, 0, 0.20);
+
+  /* =============================================
+     12. TRANSITIONS
+     ============================================= */
+  --bd-transition-fast:   0.15s ease;
+  --bd-transition-normal: 0.2s ease;
+  --bd-transition-slow:   0.3s ease;
+
+  /* =============================================
+     13. Z-INDEX SCALE
+     Shared layer hierarchy across all contexts.
+     ============================================= */
+  --bd-z-base:            0;
+  --bd-z-elevated:        1;
+  --bd-z-sticky:          100;
+  --bd-z-fixed:           200;
+  --bd-z-dropdown:        1000;
+  --bd-z-modal-backdrop:  9000;
+  --bd-z-modal:           10000;
+  --bd-z-toast:           99999;
+  --bd-z-loading:         999999;
+
+  /* =============================================
+     14. COMPONENT TOKENS
+     Derived tokens for common component patterns.
+     ============================================= */
+
+  /* Buttons */
+  --bd-btn-primary-bg:      linear-gradient(135deg, var(--bd-accent-primary) 0%, var(--bd-accent-secondary) 100%);
+  --bd-btn-primary-hover:   linear-gradient(135deg, var(--bd-accent-light) 0%, var(--bd-accent-primary) 100%);
+  --bd-btn-secondary-bg:    rgba(255, 255, 255, 0.08);
+  --bd-btn-secondary-hover: rgba(255, 255, 255, 0.12);
+
+  /* Inputs */
+  --bd-input-bg:           var(--bd-bg-elevated);
+  --bd-input-border:       var(--bd-border-default);
+  --bd-input-focus-border: var(--bd-border-focus);
+  --bd-input-focus-ring:   0 0 0 3px var(--bd-accent-glow);
+
+  /* Cards */
+  --bd-card-bg:        var(--bd-bg-secondary);
+  --bd-card-border:    var(--bd-border-subtle);
+  --bd-card-hover-bg:  var(--bd-bg-tertiary);
+  --bd-card-hover-border: var(--bd-border-default);
+  --bd-card-radius:    var(--bd-radius-xl);
+
+  /* Loading */
+  --bd-loading-bg:      linear-gradient(180deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 28, 0.98) 100%);
+  --bd-loading-spinner: var(--bd-accent-primary);
+}
