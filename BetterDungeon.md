@@ -39,6 +39,31 @@
 
 ## 🐛 Bugs & Issues
 
+### v1.1.1 Notes
+- In order to keep BetterDungeon bug free to allow for the further development of new features, I have gone through every single feature in BetterDungeon to compile all of the current bugs I've found.
+- The goal is to get rid of them all to ensure v1.1.1 is bug free and ready to be published to the Chrome Store and the Firefox Store
+- This will be the last update before v1.2.0, which will focus on new features and improvements
+
+### Feature Testing Checklist
+
+#### Core Features
+- [ ] **Model Selection** - 
+- [ ] **Custom Prompts** - 
+- [ ] **Story Cards** - 
+- [ ] **Theme Switching** - 
+- [ ] **Settings Panel** - 
+
+#### UI/UX Features
+- [ ] **Adventure Page Layout** - 
+- [ ] **Scenario Browser** - 
+- [ ] **Navigation** - 
+- [ ] **Tooltips/Help Text** - 
+
+#### Integration Features
+- [ ] **API Connections** - 
+- [ ] **Data Persistence** - 
+- [ ] **Import/Export** - 
+
 ### Critical
 <!-- App-breaking, immediate fix required -->
 
