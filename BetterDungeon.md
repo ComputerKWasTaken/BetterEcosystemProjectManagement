@@ -28,7 +28,7 @@
 
 ### High Priority
 <!-- Important, do soon -->
-- Create another folder inside of Project Management/Docs specifically for documenting and providing an example of the AI Dungeon DOM for future reference.
+- ~~Create another folder inside of Project Management/Docs specifically for documenting and providing an example of the AI Dungeon DOM for future reference.~~ ✅ Done (13-DOM/ — Adventure page fully documented)
 
 ### Medium Priority
 <!-- Standard priority -->

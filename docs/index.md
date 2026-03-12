@@ -134,6 +134,20 @@ Complete GraphQL schema from introspection, split by type category.
 - `interfaces/` - 7 interface types (Commentable, ContentDocument, MutationResponse, etc.)
 - `unions/` - 1 union type (NarrationEvent)
 
+### 13-DOM/
+Native AI Dungeon DOM reference, captured without extensions for accurate baseline documentation.
+
+- [DOM Reference Index](13-DOM/index.md) - Overview, methodology, and technology stack
+- [Adventure Page Overview](13-DOM/adventure-page-overview.md) - Full page hierarchy and layout layers
+- [Navigation Bar](13-DOM/adventure-page-navigation.md) - Top toolbar: menu, title, model switcher, undo/redo, settings
+- [Story Output](13-DOM/adventure-page-story.md) - The `#gameplay-output` area: story sections, action blocks, streaming
+- [Command Bar](13-DOM/adventure-page-commands.md) - Bottom command buttons: Take a Turn, Continue, Retry, Erase
+- [Text Input Area](13-DOM/adventure-page-input.md) - The `#game-text-input` textarea and submit button
+- [Input Modes](13-DOM/adventure-page-input-modes.md) - Do / Say / Story / See mode selection menu
+- [Settings Panel](13-DOM/adventure-page-settings.md) - Right sidebar: Adventure/Gameplay tabs, Plot, Story Cards, Themes, Text Style
+- [Background & Ambience](13-DOM/adventure-page-background.md) - Background image layers, gradients, saturate filters
+- [CSS Architecture](13-DOM/css-architecture.md) - Atomic class naming, theme system, font families, design tokens
+
 ### reference/
 Quick lookup and cheatsheets.
 
