@@ -27,6 +27,7 @@
 ### Medium Priority
 <!-- Standard priority -->
 - Include more standard scripts in the collection
+- Copy the instructions from other popular scenario creators to get high quality instructions
 
 ### Low Priority
 <!-- Nice to have -->
