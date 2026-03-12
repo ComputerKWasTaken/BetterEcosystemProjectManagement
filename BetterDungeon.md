@@ -29,6 +29,7 @@
 ### High Priority
 <!-- Important, do soon -->
 - ~~Create another folder inside of Project Management/Docs specifically for documenting and providing an example of the AI Dungeon DOM for future reference.~~ ✅ Done (13-DOM/ — Adventure page fully documented)
+- ~~Revamp ai-dungeon-service.js to centralize selectors, fix navigation bugs, and add helper methods for features~~ ✅ Done (v2 — centralized SEL/MODES constants, element getters, input mode helpers, theme/sprite detection, generic tab navigation, waitFor utilities)
 
 ### Medium Priority
 <!-- Standard priority -->
@@ -45,7 +46,9 @@
 - The goal is to get rid of them all to ensure v1.1.1 is bug free and ready to be published to the Chrome Store and the Firefox Store
 - This will be the last update before v1.2.0, which will focus on new features and improvements
 
-### Feature Testing Checklist
+### Feature Functionality Checklist
+
+This is a checklist of all of the features inside of BetterDungeon. All of my features have been retested with the latest revamp to the ai-dungeon-service.js file. Features without a checkmark have issues that need working on.
 
 #### Input Modes Features
 - [x] **Command Mode** - Works perfectly, no issues there. Only thing that should be changed is the emergency timeout feature (where if no interaction occurs, it resets the mode back to Story mode. This is an unnecessary safeguard that breaks the continuity illusion)
@@ -91,6 +94,7 @@ This is great for us, because it means that the issues we need to solve are simp
 <!-- Small issues, low impact -->
 - Markdown Formatting Issues
     - The automatic formatting instructions feature requires fixes. It tries to navigate to the Adventure tab but fails (same issue affects the Story Card scanner). The root cause is likely in ai-dungeon-service.js, since the same navigation failure occurs there. Oddly, opening the Settings panel works fine, so the problem is specific to Adventure tab navigation. This is probably due to recent AI Dungeon back-end updates that broke element references. (Story Card scanner has the same underlying issue)
+    - **Update**: `ai-dungeon-service.js` revamp addresses this — `isSettingsPanelOpen()` was checking for a `"General"` tab that doesn't exist (the actual tab is `"Gameplay"`). Also added `[aria-label="Close settings"]` as a faster/more reliable panel detection method, a generic `selectTab()` with DOM re-find after click, and broadened `isTabSelected()` class checks. Navigation flows now use a shared `_navigateToSettingsTab()` helper. **Needs live testing.**
 
 ### Trivial
 <!-- Cosmetic or negligible -->
