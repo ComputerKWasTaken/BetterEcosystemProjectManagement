@@ -33,6 +33,7 @@ The primary page where players interact with scenarios. This is the most importa
 - [Input Modes](adventure-page-input-modes.md) — Do / Say / Story / See mode selection menu
 - [Model Switcher](adventure-page-model-switcher.md) — AI model selection dialog (Better Dynamic target)
 - [Settings Panel](adventure-page-settings.md) — Right sidebar: Adventure/Gameplay tabs, Plot, Story Cards, Themes, Text Style
+- [Custom Themes & Sprites](adventure-page-themes.md) — Sprite-based theme system, 9-slice rendering, text styles
 - [Background & Ambience](adventure-page-background.md) — Background image layers, gradients, saturate filters
 - [CSS Architecture](css-architecture.md) — Atomic class naming, theme system, font families, design tokens
 

@@ -50,6 +50,12 @@ Global utility classes from React Native Web's stylesheet system. These are **re
 | `r-{hash}` | `r-105ug2t` | `pointer-events: auto !important` (active state swap) |
 | `r-{hash}` | `r-12vffkv` | `pointer-events: none !important` (children get auto) |
 | `r-{hash}` | `r-2eszeu` | `scrollbar-width: none` (hidden scrollbar) |
+| `r-{hash}` | `r-x3cy2q` | `background-size: 100% 100%` (sprite fill) |
+| `r-{hash}` | `r-vvn4in` | `background-position: center` |
+| `r-{hash}` | `r-u6sd8q` | `background-repeat: no-repeat` |
+| `r-{hash}` | `r-17bb2tj` | `animation-duration: 0.75s` |
+| `r-{hash}` | `r-1mlwlqe` | `flex-basis: auto` (sprite container) |
+| `r-{hash}` | `r-1wyyakw` | `z-index: -1` (behind content) |
 
 ### Tamagui Token Classes (`_` prefix)
 
@@ -268,6 +274,7 @@ Color references in class names follow this pattern:
 | `blackA2` | Subtle dark background (text style container) |
 | `blackA3` | Focus background for settings textareas |
 | `blackA5` | Border color on accordion tops |
+| `blackA6` | Theme card separators, accordion bottom borders |
 | `blackA7` | Separator border in section tabs |
 | `blackA8` | `var(--blackA8)` — translucent black |
 | `blackA9` | Dark text on primary backgrounds (e.g., "Current" badge) |
@@ -281,8 +288,9 @@ AI Dungeon defines several font contexts via classes:
 | Class | Usage | Description |
 |-------|-------|-------------|
 | `font_body` | Default | Standard UI text — inherits system font stack |
-| `font_heading` | Story sections | Outer wrapper for story text sections |
+| `font_heading` | Story sections, Print style | Outer wrapper for story text sections; serif-ish typeface |
 | `font_gameplaySans` | Story text, actions, input | The actual gameplay text — sans-serif |
+| `font_mono` | Hacker text style | Monospace typeface for the “Hacker” text style option |
 | `font_icons` | Icon glyphs | Custom icon font with `w_` prefixed glyph names |
 
 ### font_body
@@ -292,6 +300,9 @@ font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Ari
 
 ### font_gameplaySans
 Used for all visible story text, action text, and the input textarea. The specific font-family is set via `_ff-f-family` which references a design token.
+
+### font_mono
+Used when the "Hacker" text style is selected in Settings → Gameplay → Text Style. Renders story text in a monospace typeface. See [Custom Themes & Sprites](adventure-page-themes.md) for the text style selector DOM.
 
 ### font_icons — Glyph Reference
 

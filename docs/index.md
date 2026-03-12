@@ -146,6 +146,7 @@ Native AI Dungeon DOM reference, captured without extensions for accurate baseli
 - [Input Modes](13-DOM/adventure-page-input-modes.md) - Do / Say / Story / See mode selection menu
 - [Model Switcher](13-DOM/adventure-page-model-switcher.md) - AI model selection dialog (Better Dynamic target)
 - [Settings Panel](13-DOM/adventure-page-settings.md) - Right sidebar: Adventure/Gameplay tabs, Plot, Story Cards, Themes, Text Style
+- [Custom Themes & Sprites](13-DOM/adventure-page-themes.md) - Sprite-based theme system, 9-slice rendering, text styles
 - [Background & Ambience](13-DOM/adventure-page-background.md) - Background image layers, gradients, saturate filters
 - [CSS Architecture](13-DOM/css-architecture.md) - Atomic class naming, theme system, font families, design tokens
 
