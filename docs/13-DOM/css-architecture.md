@@ -47,6 +47,7 @@ Global utility classes from React Native Web's stylesheet system. These are **re
 | `r-{hash}` | `r-orgf3d` | `opacity: 0` |
 | `r-{hash}` | `r-6dt33c` | `opacity: 1` |
 | `r-{hash}` | `r-633pao` | `pointer-events: none !important` (children override) |
+| `r-{hash}` | `r-105ug2t` | `pointer-events: auto !important` (active state swap) |
 | `r-{hash}` | `r-12vffkv` | `pointer-events: none !important` (children get auto) |
 | `r-{hash}` | `r-2eszeu` | `scrollbar-width: none` (hidden scrollbar) |
 
@@ -71,7 +72,9 @@ _{property}-{value}
 | `_zi-1` | z-index | `1` |
 | `_o-1` | opacity | `1` |
 | `_o-0` | opacity | `0` |
+| `_o-0--15` | opacity | `0.15` |
 | `_o-0--2` | opacity | `0.2` |
+| `_o-0--3` | opacity | `0.3` |
 | `_o-0--5` | opacity | `0.5` |
 | `_o-0--9` | opacity | `0.9` |
 | `_fg-1` | flex-grow | `1` |
@@ -210,7 +213,9 @@ These classes identify the type of component rather than a specific style:
 | `t_coreA1` | Sub-theme | Secondary/muted elements (undo, redo, settings buttons) |
 | `t_gameplayPrimary` | Sub-theme | Primary gameplay accent (Take a Turn button) |
 | `t_gameplaySecondary` | Sub-theme | Secondary gameplay (Continue, Retry, Erase buttons) |
-| `t_primary` | Sub-theme | Primary accent color (Submit button) |
+| `t_primary` | Sub-theme | Primary accent color (Submit button, confirm selection) |
+| `t_coreA0` | Sub-theme | Near-transparent elements (settings buttons, mode bar) |
+| `t_core9` | Sub-theme | Bright/active section tabs |
 | `t_sub_theme` | Marker | Indicates a sub-theme wrapper |
 | `is_Theme` | Marker | Theme boundary element |
 
@@ -250,14 +255,22 @@ Color references in class names follow this pattern:
 | `coreA1` | Subtle background/border (input drawer, submit btn) |
 | `coreA2` | Light border color (story text borders, action borders) |
 | `coreA3` | Hover border color |
-| `coreA8` | Muted text color (action text, icons) |
+| `coreA4` | Stronger border color (model card icon borders) |
+| `coreA7` | Subtle link text (model comparison guide) |
+| `coreA8` | Muted text color (action text, icons, headings) |
+| `coreA9` | Bright secondary text (badge text, context info) |
 | `color` | Inherits from theme `--color` |
 | `background` | Inherits from theme `--background` |
 | `borderColor` | Inherits from theme `--borderColor` |
 | `primary` | Accent/primary color |
 | `transparent` | `rgba(0,0,0,0)` |
 | `red` | Error / validation color |
+| `blackA2` | Subtle dark background (text style container) |
+| `blackA3` | Focus background for settings textareas |
+| `blackA5` | Border color on accordion tops |
+| `blackA7` | Separator border in section tabs |
 | `blackA8` | `var(--blackA8)` — translucent black |
+| `blackA9` | Dark text on primary backgrounds (e.g., "Current" badge) |
 
 ---
 
@@ -294,7 +307,23 @@ The icon font uses glyph names that are rendered as text content of `<span>` ele
 | `w_wand` | Magic wand | Continue button |
 | `w_retry` | Circular arrow | Retry button |
 | `w_backspace` | Backspace key | Erase button |
-| `w_comment` | Speech bubble | Action icon, Submit button |
+| `w_comment` | Speech bubble | Action icon, Say mode submit |
+| `w_run` | Running figure | Do mode submit, Do mode button |
+| `w_paper_plane` | Paper plane | Story mode submit, Story mode button |
+| `w_image` | Image/picture | See mode submit, See mode button |
+| `w_arrow_left` | Left arrow | Back button in input mode menu |
+| `w_chevron_left` | Left chevron | Mode bar left arrow |
+| `w_chevron_right` | Right chevron | Mode bar right arrow, accordion indicators |
+| `w_chevron_down` | Down chevron | Scenario selector dropdown |
+| `w_close` | X / close | Close text input, close settings |
+| `w_scroll` | Scroll/document | Adventure tab in settings |
+| `w_controller` | Game controller | Gameplay tab in settings |
+| `w_details` | Details/info | Plot section tab |
+| `w_assets` | Assets/cards | Story Cards section tab |
+| `w_list` | List | Details section tab |
+| `w_trash` | Trash can | Delete card button in settings |
+| `w_arrow_right` | Right arrow | Scroll right button in pill tabs |
+| `w_outbound` | External link | Model Comparison Guide link |
 
 ---
 
@@ -357,3 +386,7 @@ Full-width parent
 - [Story Output](adventure-page-story.md)
 - [Command Bar](adventure-page-commands.md)
 - [Text Input Area](adventure-page-input.md)
+- [Input Modes](adventure-page-input-modes.md)
+- [Model Switcher](adventure-page-model-switcher.md)
+- [Settings Panel](adventure-page-settings.md)
+- [Background & Ambience](adventure-page-background.md)

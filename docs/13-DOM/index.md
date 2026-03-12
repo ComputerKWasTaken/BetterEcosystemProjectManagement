@@ -31,6 +31,7 @@ The primary page where players interact with scenarios. This is the most importa
 - [Command Bar](adventure-page-commands.md) — Bottom command buttons: Take a Turn, Continue, Retry, Erase
 - [Text Input Area](adventure-page-input.md) — The `#game-text-input` textarea and submit button
 - [Input Modes](adventure-page-input-modes.md) — Do / Say / Story / See mode selection menu
+- [Model Switcher](adventure-page-model-switcher.md) — AI model selection dialog (Better Dynamic target)
 - [Settings Panel](adventure-page-settings.md) — Right sidebar: Adventure/Gameplay tabs, Plot, Story Cards, Themes, Text Style
 - [Background & Ambience](adventure-page-background.md) — Background image layers, gradients, saturate filters
 - [CSS Architecture](css-architecture.md) — Atomic class naming, theme system, font families, design tokens
@@ -48,7 +49,7 @@ This ensures the DOM reflects AI Dungeon's native, unmodified structure.
 ## Important Notes
 
 - AI Dungeon uses **React Native Web / Tamagui**, so most elements are `div` or `span` with atomic utility classes rather than semantic HTML. Rely on `aria-label`, `role`, and `id` attributes for stable targeting.
-- **IDs are scarce but valuable**: `#gameplay-output`, `#game-text-input`, `#game-blur-button`, `#gameplay-saturate`, `#action-icon`, `#action-text`, `#transition-opacity` are the main ones.
+- **IDs are scarce but valuable**: `#gameplay-output`, `#game-text-input`, `#game-blur-button`, `#gameplay-saturate`, `#action-icon`, `#action-text`, `#transition-opacity`, `#model-switcher-title` are the main ones.
 - **`#game-blur-button` is reused** across multiple buttons (Game Menu, Undo, Redo, Settings). Do not rely on it as a unique selector — use `aria-label` to disambiguate.
 - Class names are **auto-generated and volatile** (e.g., `_bg-0hover-backgroundH3423444`). Prefer `aria-label`, `role`, and structural position for selectors.
 - The `__NEXT_DATA__` script tag contains route metadata including `contentType`, `shortId`, and `title` — useful for detecting which page the user is on.

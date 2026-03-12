@@ -215,4 +215,6 @@ function getImageVariant(url, variant) {
 - [Adventure Page Overview](adventure-page-overview.md)
 - [Navigation Bar](adventure-page-navigation.md)
 - [Text Input Area](adventure-page-input.md)
+- [Input Modes](adventure-page-input-modes.md)
+- [Settings Panel](adventure-page-settings.md)
 - [CSS Architecture](css-architecture.md)

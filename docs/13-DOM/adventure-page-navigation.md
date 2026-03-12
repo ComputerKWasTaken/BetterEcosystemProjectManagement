@@ -148,7 +148,7 @@ Shows the currently selected AI model and opens a model selection dialog.
 | **Overflow** | `visible` (unlike other buttons which clip) |
 | **Dialog** | `aria-haspopup="dialog"`, `data-state="closed"` |
 
-**BetterDungeon note**: The model name is in the `alt` attribute of the `<img>` (e.g., `"DeepSeek"`). The image URL follows the pattern `.../model-images/icons/[ModelName]32.svg`.
+**BetterDungeon note**: The model name is in the `alt` attribute of the `<img>` (e.g., `"DeepSeek"`). The image URL follows the pattern `.../model-images/icons/[ModelName]32.svg`. See [Model Switcher](adventure-page-model-switcher.md) for the full dialog DOM reference.
 
 ---
 
@@ -287,5 +287,7 @@ const modelName = modelImg?.alt; // e.g., "DeepSeek"
 ## See Also
 
 - [Adventure Page Overview](adventure-page-overview.md)
+- [Model Switcher](adventure-page-model-switcher.md)
+- [Settings Panel](adventure-page-settings.md)
 - [Command Bar](adventure-page-commands.md)
 - [CSS Architecture](css-architecture.md)

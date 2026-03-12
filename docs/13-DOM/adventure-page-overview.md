@@ -80,7 +80,7 @@ The Adventure page uses absolute/fixed positioning to create distinct visual lay
 | Background | 0 | Ambience image + gradient overlay | Visual backdrop behind all content |
 | Story Area | 0 | `.game-text-mask` | Scrollable story text with masking |
 | Navigation | 2 | Navigation toolbar | Top bar floats above story |
-| Text Input | 0 | Input drawer | Slides up from bottom when active |
+| Text Input | 0 → 3 | Input drawer | `z-index: 0` when closed, `3` when open |
 | Toast | 100000 | Notification viewport | Toasts/alerts on top of everything |
 | Portals | 101–25101 | Theme portal spans | Dialogs, modals, dropdowns |
 
@@ -137,6 +137,7 @@ The main content area has specific sizing constraints:
 | `transition-opacity` | Story text spans | **NOT UNIQUE** | Every story section span uses this |
 | `action-icon` | Action block icon | Per action block | Icon span inside action divs |
 | `action-text` | Action block text | Per action block | Text span inside action divs |
+| `model-switcher-title` | Model switcher heading | Unique | `"STORY MODELS"` heading inside the model dialog |
 | `story-edit-textarea` | Story edit textarea | Conditional | Only present when editing story text |
 
 ---
@@ -165,6 +166,20 @@ Since many IDs are reused, `aria-label` is the most reliable way to target speci
 | `"Command: erase"` | `role="button"` | Erase button |
 | `"Action input"` | `textarea` | Text input for player actions |
 | `"Submit action"` | `role="button"` | Submit/send button |
+| `"Close 'Input Mode' menu"` | `role="button"` | Back button in expanded mode menu |
+| `"Set to 'Do' mode"` | `role="button"` | Do mode button |
+| `"Set to 'Say' mode"` | `role="button"` | Say mode button |
+| `"Set to 'Story' mode"` | `role="button"` | Story mode button |
+| `"Set to 'See' mode"` | `role="button"` | See mode button |
+| `"Close text input"` | `role="button"` | Close button on collapsed mode bar |
+| `"Change input mode"` | `role="button"` | Mode-switch trigger on collapsed bar |
+| `"Close settings"` | `role="button"` | Close button on settings panel |
+| `"Section Tabs"` | `role="tablist"` | Pill tab bar in settings (Plot/Story Cards/Details) |
+| `"Accessibility"` | `role="button"` | Accordion toggle in settings |
+| `"Behavior"` | `role="button"` | Accordion toggle in settings |
+| `"Available AI models"` | `role="list"` | Model list inside model switcher dialog |
+| `"Confirm selection: {Model}"` | `role="button"` | Confirm button in model switcher |
+| `"Show more AI models"` | `role="button"` | Expand toggle in model switcher |
 | `"Notifications (F8)"` | `role="region"` | Toast notification area |
 
 ---
@@ -175,5 +190,8 @@ Since many IDs are reused, `aria-label` is the most reliable way to target speci
 - [Story Output](adventure-page-story.md)
 - [Command Bar](adventure-page-commands.md)
 - [Text Input Area](adventure-page-input.md)
+- [Input Modes](adventure-page-input-modes.md)
+- [Model Switcher](adventure-page-model-switcher.md)
+- [Settings Panel](adventure-page-settings.md)
 - [Background & Ambience](adventure-page-background.md)
 - [CSS Architecture](css-architecture.md)

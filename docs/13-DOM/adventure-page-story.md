@@ -378,4 +378,5 @@ const scrollView = document.querySelector('.game-text-mask .is_ScrollView');
 - [Adventure Page Overview](adventure-page-overview.md)
 - [Command Bar](adventure-page-commands.md)
 - [Text Input Area](adventure-page-input.md)
+- [Input Modes](adventure-page-input-modes.md)
 - [CSS Architecture](css-architecture.md)

@@ -144,6 +144,7 @@ Native AI Dungeon DOM reference, captured without extensions for accurate baseli
 - [Command Bar](13-DOM/adventure-page-commands.md) - Bottom command buttons: Take a Turn, Continue, Retry, Erase
 - [Text Input Area](13-DOM/adventure-page-input.md) - The `#game-text-input` textarea and submit button
 - [Input Modes](13-DOM/adventure-page-input-modes.md) - Do / Say / Story / See mode selection menu
+- [Model Switcher](13-DOM/adventure-page-model-switcher.md) - AI model selection dialog (Better Dynamic target)
 - [Settings Panel](13-DOM/adventure-page-settings.md) - Right sidebar: Adventure/Gameplay tabs, Plot, Story Cards, Themes, Text Style
 - [Background & Ambience](13-DOM/adventure-page-background.md) - Background image layers, gradients, saturate filters
 - [CSS Architecture](13-DOM/css-architecture.md) - Atomic class naming, theme system, font families, design tokens

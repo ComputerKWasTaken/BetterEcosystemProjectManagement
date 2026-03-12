@@ -359,5 +359,6 @@ const isCommandBarVisible = commandBar?.closest('[aria-hidden]')?.getAttribute('
 
 - [Adventure Page Overview](adventure-page-overview.md)
 - [Text Input Area](adventure-page-input.md)
+- [Input Modes](adventure-page-input-modes.md)
 - [Story Output](adventure-page-story.md)
 - [CSS Architecture](css-architecture.md)
