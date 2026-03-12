@@ -1,6 +1,6 @@
-# Adventure Page — Input Modes (Do / Say / Story / See)
+# Adventure Page — Input Modes (Do / Say / Story / See + Try / Command)
 
-> Detailed DOM reference for the input mode selection system — the floating toolbar that lets players switch between Do, Say, Story, and See action types.
+> Detailed DOM reference for the input mode selection system — the floating toolbar that lets players switch between Do, Say, Story, and See action types. Also documents BetterDungeon's injected Try and Command modes.
 
 ## Overview
 
@@ -8,6 +8,8 @@ When the input drawer is open, two overlapping toolbars control the current inpu
 
 1. **Collapsed Mode Bar** (`id="28"`) — Shows the current mode with a close button and a mode-switch button. Visible by default when input is open.
 2. **Expanded Input Mode Menu** (`id="30"`) — Full list of all four modes plus a back button. Shown when the user clicks the mode-switch button.
+
+> **Note**: BetterDungeon injects two additional modes — **Try** and **Command** — into the expanded menu. See [BetterDungeon Custom Buttons](#betterdungeon-custom-buttons-try--command) below.
 
 Both are positioned absolutely at `top: -24px; left: 32px` inside the input drawer's inner container, floating above the textarea.
 
@@ -64,12 +66,11 @@ The full mode picker that appears when the user wants to change their input mode
 
 ## Expanded Menu Buttons
 
-The menu contains 5 buttons in a horizontal row:
+The menu contains 5 native buttons in a horizontal row (6–7 with BetterDungeon):
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  [← Back]  [🏃 Do]  [💬 Say]  [✈️ Story]  [🖼️ See]    │
-└─────────────────────────────────────────────────────────┘
+Native:        [← Back]  [🏃 Do]  [💬 Say]  [✈️ Story]  [🖼️ See]
+BetterDungeon: [← Back]  [🏃 Do]  [🎮 Try]  [💬 Say]  [✈️ Story]  [🖼️ See]  [🤖 Command]
 ```
 
 ### 1. Back / Close Button
@@ -336,12 +337,14 @@ Shows the current mode name with chevron arrows, acts as a trigger to open the e
 
 ## Input Mode Reference Table
 
-| Mode | Icon | Label | Placeholder | Submit Icon | Selector |
-|------|------|-------|-------------|-------------|----------|
-| **Do** | `w_run` | Do | `"What do you do?"` | `w_run` | `[aria-label="Set to 'Do' mode"]` |
-| **Say** | `w_comment` | Say | `"What do you say?"` | `w_comment` | `[aria-label="Set to 'Say' mode"]` |
-| **Story** | `w_paper_plane` | Story | *(varies)* | `w_paper_plane` | `[aria-label="Set to 'Story' mode"]` |
-| **See** | `w_image` | See | *(varies)* | `w_image` | `[aria-label="Set to 'See' mode"]` |
+| Mode | Icon | Label | Placeholder | Submit Icon | Selector | Source |
+|------|------|-------|-------------|-------------|----------|--------|
+| **Do** | `w_run` | Do | `"What do you do?"` | `w_run` | `[aria-label="Set to 'Do' mode"]` | Native |
+| **Try** | `w_controller` | Try | *(uses Do placeholder)* | `w_run` | `[aria-label="Set to 'Try' mode"]` | BetterDungeon |
+| **Say** | `w_comment` | Say | `"What do you say?"` | `w_comment` | `[aria-label="Set to 'Say' mode"]` | Native |
+| **Story** | `w_paper_plane` | Story | *(varies)* | `w_paper_plane` | `[aria-label="Set to 'Story' mode"]` | Native |
+| **See** | `w_image` | See | *(varies)* | `w_image` | `[aria-label="Set to 'See' mode"]` | Native |
+| **Command** | `w_ai` | Command | *(uses Story placeholder)* | `w_paper_plane` | `[aria-label="Set to 'Command' mode"]` | BetterDungeon |
 
 ---
 
@@ -370,6 +373,161 @@ Input drawer opens (e.g., "Take a Turn" clicked)
 
 ---
 
+## Sprite-Themed Button Structure
+
+When a **sprite-based custom theme** is active (e.g., S'mores, Cyber), each button's DOM structure changes significantly from the Dynamic (default) theme.
+
+### Dynamic Theme (Default) — No Sprites
+
+```html
+<div aria-label="Set to 'Do' mode" role="button"
+     class="is_Button is_View ... _h-48px _pr-18px _pl-18px
+            _ox-hidden _oy-hidden _bg-background
+            _btw-1px _brw-1px _bbw-1px _blw-1px">
+  <div class="is_View ... _ai-center _jc-center _zi-1">
+    <span class="font_icons ...">w_run</span>
+  </div>
+  <span class="font_body ...">Do</span>
+</div>
+```
+
+Key classes: `_ox-hidden _oy-hidden`, `_bg-background`, border widths `1px` on all sides.
+
+### Sprite Theme — With Sprite Wrapper
+
+```html
+<div aria-label="Set to 'Do' mode" role="button"
+     class="is_Button is_View ... _h-48px _pr-18px _pl-18px
+            _ox-visible _oy-visible
+            _bg-rgba000038295333
+            _brw-0px _btw-0px _bbw-0px _blw-0px">
+
+  <!-- Sprite wrapper — position:absolute overlay containing the sprite viewport -->
+  <div class="css-g5y9jx"
+       style="position: absolute; height: 100%; width: 100%;
+              flex-direction: row; z-index: 1; pointer-events: none;
+              justify-content: space-between;">
+
+    <!-- Sprite viewport — clips the visible portion of the sprite sheet -->
+    <div class="_ox-hidden _oy-hidden _w-80px _h-48px _pos-relative">
+
+      <!-- Positioner — full sprite sheet, offset to show the correct region -->
+      <div style="width: 1440px; height: 600px; left: -296px; top: 0px;">
+        <div style="background-image: url('...theme-sprite.png');"
+             class="r-1niwhzg r-vvn4in r-u6sd8q ..."></div>
+        <img alt="" class="css-9pa8cd" src="...theme-sprite.png">
+      </div>
+    </div>
+  </div>
+
+  <!-- Text content (same as Dynamic, sits above sprite via z-index) -->
+  <div class="is_View ... _ai-center _jc-center _zi-1">
+    <span class="font_icons ...">w_run</span>
+  </div>
+  <span class="font_body ...">Do</span>
+</div>
+```
+
+Key differences from Dynamic:
+
+| Property | Dynamic | Sprite |
+|----------|---------|--------|
+| **Overflow** | `_ox-hidden _oy-hidden` | `_ox-visible _oy-visible` |
+| **Background** | `_bg-background` (theme token) | `_bg-rgba000038295333` (semi-transparent black) |
+| **Border width** | `1px` all sides | `0px` all sides |
+| **Sprite wrapper** | Not present | `div[style*="position: absolute"]` with viewports |
+
+### End-Cap vs Middle Button Sprites
+
+Buttons at the **end** of the row (Close, See/Command) use a **3-part sprite** (left cap + stretchable center + right cap), while **middle** buttons (Do, Say, Story) use a **single viewport**:
+
+```
+Middle button:   [ ═══════ single viewport ═══════ ]
+End-cap button:  [ left-cap ][ ═══ center ═══ ][ right-cap ]
+                    16px         flexible          16px
+```
+
+The end-cap viewports are fixed at `16px` wide; the center stretches to fill the remaining width.
+
+---
+
+## Sprite Hover Displacement
+
+Native buttons handle hover states by **shifting the sprite positioner horizontally** to reveal a hover-state region of the sprite sheet. This is done via inline `style.left` changes, not CSS classes.
+
+### Displacement Formula
+
+```
+hoverLeft = restLeft - (positionerWidth × 17/90)
+```
+
+Where:
+- **`restLeft`** — the positioner's `left` value at rest (non-hover)
+- **`positionerWidth`** — the positioner's `width` (full sprite sheet width at current scale)
+- **`17/90 ≈ 0.1889`** — a fixed fraction mapping to the horizontal gap between non-hover and hover regions in every AI Dungeon sprite sheet
+
+### Example
+
+For a Do button with positioner `width: 1440px` and `left: -296px`:
+
+```
+displacement = 1440 × 17/90 = 272px
+hoverLeft    = -296 - 272   = -568px
+```
+
+On `mouseenter`, the positioner's `left` shifts from `-296px` to `-568px`.  
+On `mouseleave`, it returns to `-296px`.
+
+### Multi-Viewport Hover (End-Cap Buttons)
+
+For 3-part end-cap buttons, **each viewport's positioner** is independently displaced by `17/90` of its own width:
+
+```javascript
+for (const viewport of viewports) {
+  const positioner = viewport.firstElementChild;
+  const posWidth = parseFloat(positioner.style.width);
+  const restLeft = parseFloat(positioner.style.left);
+  const hoverLeft = restLeft - (posWidth * 17 / 90);
+  // Apply hoverLeft on mouseenter, restLeft on mouseleave
+}
+```
+
+---
+
+## BetterDungeon Custom Buttons (Try & Command)
+
+BetterDungeon injects **Try** (between Do and Say) and **Command** (after See, at the end) by cloning native buttons and modifying their labels/icons.
+
+### Injection Strategy
+
+| Button | Cloned From | Position | Sprite Source |
+|--------|------------|----------|---------------|
+| **Try** | Do button | After Do, before Say | Do button's single viewport |
+| **Command** | Story button | After See (last) | See button's 3-part end-cap |
+
+When Command is injected, **See** is converted from an end-cap button to a **middle button** (its 3-part sprite is replaced with a single-viewport clone from Story).
+
+### Sprite Theming Process
+
+1. **Clone** the native reference button via `cloneNode(true)`
+2. **Check** if the clone's sprite viewport has non-zero width (sprites may not be populated yet due to async React rendering)
+3. If empty, **re-clone** sprite content from the reference button's sprite wrapper
+4. **Scale** the viewport and positioner proportionally to match the custom button's rendered width
+5. **Wire up hover** displacement using the `17/90` formula
+6. Mark the button with `data-bd-sprite-hover` to prevent duplicate event listeners
+
+### Reactive Theme Detection
+
+BetterDungeon tracks the current theme state (`_lastSpriteState`) and force re-injects custom buttons when a theme switch is detected (sprite ↔ dynamic). This ensures:
+- Stale sprite content is removed when switching to Dynamic theme
+- Fresh sprite content is cloned when switching to a sprite theme
+- See's end-cap/middle conversion is re-applied correctly
+- Dynamic-theme color styling (`bd-mode-button-colored`) is cleaned up on sprite themes
+
+The menu container receives a `data-bd-sprite-menu` attribute when sprites are active, which triggers a CSS rule to make its background transparent (eliminating visible gray gaps between sprite-covered buttons).
+
+---
+
 ## Reliable Selectors for BetterDungeon
 
 ```javascript
@@ -377,11 +535,15 @@ Input drawer opens (e.g., "Take a Turn" clicked)
 const modeMenu = document.querySelector('[aria-label="Close \'Input Mode\' menu"]')?.parentElement;
 const isModeMenuOpen = modeMenu && getComputedStyle(modeMenu).opacity !== '0';
 
-// Individual mode buttons
+// Individual mode buttons (native)
 const doBtn    = document.querySelector('[aria-label="Set to \'Do\' mode"]');
 const sayBtn   = document.querySelector('[aria-label="Set to \'Say\' mode"]');
 const storyBtn = document.querySelector('[aria-label="Set to \'Story\' mode"]');
 const seeBtn   = document.querySelector('[aria-label="Set to \'See\' mode"]');
+
+// BetterDungeon custom buttons
+const tryBtn     = document.querySelector('[aria-label="Set to \'Try\' mode"]');
+const commandBtn = document.querySelector('[aria-label="Set to \'Command\' mode"]');
 
 // Collapsed mode bar buttons
 const closeInputBtn  = document.querySelector('[aria-label="Close text input"]');
@@ -397,6 +559,17 @@ function getCurrentMode() {
 function switchToMode(mode) {
   const btn = document.querySelector(`[aria-label="Set to '${mode}' mode"]`);
   btn?.click();
+}
+
+// Detect whether a sprite-based theme is active
+function isSpriteThemeActive() {
+  const doBtn = document.querySelector('[aria-label="Set to \'Do\' mode"]');
+  if (!doBtn) return false;
+  const wrapper = doBtn.querySelector('div[style*="position: absolute"]');
+  if (!wrapper) return false;
+  const viewport = wrapper.querySelector('div[class*="_ox-hidden"]');
+  if (!viewport) return false;
+  return parseFloat(window.getComputedStyle(viewport).width) > 0;
 }
 ```
 

@@ -457,7 +457,59 @@ BetterDungeon's custom UI elements (like the Try mode button) must respect the s
 - **Edge pieces are fixed 24px on the short axis** — only stretch along the long axis
 - **Center fills remaining space** — this is the only freely scalable region
 - **Button caps are fixed 16px wide** — left and right caps must not be stretched
-- **Fractional pixel offsets** (e.g., `-7.43077px`) are used for sub-pixel alignment — rounding these can cause visible gaps (this is likely the root cause of the sprite gap issues noted in the bug tracker)
+- **Fractional pixel offsets** (e.g., `-7.43077px`) are used for sub-pixel alignment — rounding these can cause visible gaps
+
+### Button Sprite Hover Displacement
+
+AI Dungeon's sprite-themed buttons reveal hover states by **shifting the sprite positioner horizontally**. This is an inline `style.left` change on the positioner `div`, not a CSS class toggle.
+
+**Displacement formula:**
+
+```
+hoverLeft = restLeft - (positionerWidth × 17/90)
+```
+
+The fraction **`17/90 ≈ 0.1889`** is constant across all themes and button widths — it maps to the fixed horizontal gap between non-hover and hover sprite regions in every AI Dungeon sprite sheet.
+
+For multi-viewport buttons (3-part end-cap), each viewport's positioner is displaced independently by `17/90` of its own width.
+
+> See [Input Modes — Sprite Hover Displacement](adventure-page-input-modes.md#sprite-hover-displacement) for detailed examples and code.
+
+### Reactive Theme Detection
+
+BetterDungeon detects the active theme type (sprite vs Dynamic) by inspecting a native button's DOM:
+
+```javascript
+// Returns true if a sprite-based theme is active
+function isSpriteThemeActive() {
+  const nativeBtn = document.querySelector('[aria-label="Set to \'Do\' mode"]');
+  if (!nativeBtn) return false;
+  const wrapper = nativeBtn.querySelector('div[style*="position: absolute"]');
+  if (!wrapper) return false;
+  const viewport = wrapper.querySelector('div[class*="_ox-hidden"]');
+  if (!viewport) return false;
+  return parseFloat(window.getComputedStyle(viewport).width) > 0;
+}
+```
+
+When a theme switch is detected (sprite ↔ dynamic), BetterDungeon:
+1. **Force-removes** stale custom buttons (Try, Command) from the DOM
+2. **Re-clones** them from the newly-themed native buttons on the next observer tick
+3. **Re-applies** sprite scaling, hover displacement, and See's end-cap → middle conversion
+4. **Toggles** `data-bd-sprite-menu` on the menu container (drives transparent background CSS)
+5. **Cleans up** dynamic-theme color styling (`bd-mode-button-colored`) when switching to sprites
+
+### Menu Container Background
+
+The input mode menu container (`background-color: rgb(47, 53, 57)`) can show gray gaps between sprite-covered buttons. BetterDungeon adds a `data-bd-sprite-menu` attribute when sprites are active, which triggers:
+
+```css
+[data-bd-sprite-menu] {
+  background-color: transparent !important;
+}
+```
+
+This makes the gaps invisible for a seamless sprite appearance.
 
 ### Detecting the Active Theme
 
