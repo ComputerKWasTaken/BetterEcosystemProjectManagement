@@ -27,7 +27,6 @@
 
 ### High Priority
 <!-- Important, do soon -->
-- Fix the Story Card scanner to prevent it from incorrectly associating triggers with the wrong story cards (it incorrectly associates one trigger from a specific story card with multiple differing story cards, even if that isn't the case)
 
 ### Medium Priority
 <!-- Standard priority -->
