@@ -1,71 +1,81 @@
-/* ============================================
+/* ================================================================
    BetterEcosystem — Unified Design Tokens
-   ============================================
-   Single source of truth for all visual properties
-   shared across BetterDungeon, BetterRepository,
-   and future ecosystem projects.
+   ================================================================
+   Single source of truth for every visual property shared across
+   BetterDungeon (PC), BetterDungeon-Mobile, BetterRepository,
+   and all future ecosystem projects.
 
-   Prefix: --bd-  (BetterDungeon / BetterDesign)
+   Prefix  : --bd-  (BetterDesign)
+   Grid    : 4 px base
+   Palette : Dark-first, orange brand accent
 
-   Usage:
-     • BetterDungeon  — @import or inline copy
-     • BetterRepository — @import in main.css
-     • Tailwind — mirror values in tailwind.config.js
-   ============================================ */
+   Consumption:
+     BetterDungeon / Mobile  — inline copy (CSP-safe)
+     BetterRepository        — @import in main.css + mirror in
+                                tailwind.config.js
+   ================================================================ */
 
 :root {
-  /* =============================================
+
+  /* =============================================================
      1. COLORS — BACKGROUNDS
-     Dark-first palette, ordered lightest → darkest.
-     ============================================= */
-  --bd-bg-primary:    #0d0d0f;   /* Deepest page background          */
-  --bd-bg-secondary:  #16161a;   /* Cards, panels, sidebar            */
-  --bd-bg-tertiary:   #1e1e24;   /* Nested cards, hover states        */
-  --bd-bg-elevated:   #252530;   /* Inputs, raised elements           */
-  --bd-bg-overlay:    rgba(0, 0, 0, 0.85); /* Modal / sheet backdrop  */
+     Dark-first surface hierarchy, deepest to lightest.
+     ============================================================= */
+  --bd-bg-primary:    #0d0d0f;                    /* Page / canvas              */
+  --bd-bg-secondary:  #16161a;                    /* Cards, panels, sidebar     */
+  --bd-bg-tertiary:   #1e1e24;                    /* Nested cards, hover fills  */
+  --bd-bg-elevated:   #252530;                    /* Inputs, raised surfaces    */
+  --bd-bg-active:     #2c2c36;                    /* Pressed / active states    */
+  --bd-bg-overlay:    rgba(0, 0, 0, 0.85);        /* Modal / sheet backdrop     */
 
-  /* =============================================
+  /* =============================================================
      2. COLORS — TEXT
-     ============================================= */
-  --bd-text-primary:   #e8e8ec;  /* Main body text                    */
-  --bd-text-secondary: #a0a0a8;  /* Supporting / label text           */
-  --bd-text-muted:     #6b6b75;  /* Disabled, hints, placeholders     */
-  --bd-text-inverse:   #0d0d0f;  /* Text on colored backgrounds       */
+     ============================================================= */
+  --bd-text-primary:   #e8e8ec;                   /* Body copy                  */
+  --bd-text-secondary: #a0a0a8;                   /* Labels, supporting copy    */
+  --bd-text-muted:     #6b6b75;                   /* Hints, placeholders        */
+  --bd-text-inverse:   #0d0d0f;                   /* On colored backgrounds     */
+  --bd-text-on-accent: #ffffff;                   /* On accent fills            */
 
-  /* =============================================
+  /* =============================================================
      3. COLORS — BRAND / ACCENT
      Orange is the ecosystem signature color.
-     ============================================= */
-  --bd-accent-primary:   #ff9500;                 /* Main brand orange     */
-  --bd-accent-secondary: #e07800;                 /* Darker orange         */
-  --bd-accent-light:     #ffb84d;                 /* Lighter orange hover  */
-  --bd-accent-glow:      rgba(255, 149, 0, 0.12); /* Subtle ambient glow  */
-  --bd-accent-muted:     rgba(255, 149, 0, 0.15); /* Tinted backgrounds   */
+     ============================================================= */
+  --bd-accent-primary:   #ff9500;                 /* Primary brand orange       */
+  --bd-accent-secondary: #e07800;                 /* Darker orange (gradients)  */
+  --bd-accent-light:     #ffb84d;                 /* Hover / highlight state    */
+  --bd-accent-glow:      rgba(255, 149, 0, 0.12); /* Ambient glow              */
+  --bd-accent-muted:     rgba(255, 149, 0, 0.15); /* Tinted backgrounds        */
+  --bd-accent-strong:    rgba(255, 149, 0, 0.25); /* Hover tint / emphasis     */
 
-  /* =============================================
+  /* =============================================================
      4. COLORS — STATUS
-     Semantic colors for feedback states.
-     ============================================= */
-  --bd-success:        #22c55e;
-  --bd-success-bg:     rgba(34, 197, 94, 0.15);
-  --bd-success-border: rgba(34, 197, 94, 0.3);
+     Semantic feedback. Each state has color, bg, and border.
+     ============================================================= */
+  --bd-success:          #22c55e;
+  --bd-success-light:    #4ade80;
+  --bd-success-bg:       rgba(34, 197, 94, 0.15);
+  --bd-success-border:   rgba(34, 197, 94, 0.3);
 
-  --bd-error:          #ef4444;
-  --bd-error-bg:       rgba(239, 68, 68, 0.15);
-  --bd-error-border:   rgba(239, 68, 68, 0.3);
+  --bd-error:            #ef4444;
+  --bd-error-light:      #f87171;
+  --bd-error-bg:         rgba(239, 68, 68, 0.15);
+  --bd-error-border:     rgba(239, 68, 68, 0.3);
 
-  --bd-warning:        #f59e0b;
-  --bd-warning-bg:     rgba(245, 158, 11, 0.15);
-  --bd-warning-border: rgba(245, 158, 11, 0.3);
+  --bd-warning:          #f59e0b;
+  --bd-warning-light:    #fbbf24;
+  --bd-warning-bg:       rgba(245, 158, 11, 0.15);
+  --bd-warning-border:   rgba(245, 158, 11, 0.3);
 
-  --bd-info:           #3b82f6;
-  --bd-info-bg:        rgba(59, 130, 246, 0.15);
-  --bd-info-border:    rgba(59, 130, 246, 0.3);
+  --bd-info:             #3b82f6;
+  --bd-info-light:       #60a5fa;
+  --bd-info-bg:          rgba(59, 130, 246, 0.15);
+  --bd-info-border:      rgba(59, 130, 246, 0.3);
 
-  /* =============================================
-     5. COLORS — CATEGORY / PALETTE
-     Used for tags, badges, icons, and section accents.
-     ============================================= */
+  /* =============================================================
+     5. COLORS — CATEGORY PALETTE
+     Tags, badges, icons, decorative accents.
+     ============================================================= */
   --bd-blue:    #3b82f6;
   --bd-purple:  #a855f7;
   --bd-green:   #22c55e;
@@ -81,37 +91,47 @@
   --bd-slate:   #94a3b8;
   --bd-gray:    #6b7280;
 
-  /* =============================================
+  /* Light variants for hover / gradient endpoints */
+  --bd-blue-light:    #60a5fa;
+  --bd-purple-light:  #c084fc;
+  --bd-green-light:   #4ade80;
+  --bd-amber-light:   #fcd34d;
+  --bd-cyan-light:    #22d3ee;
+  --bd-orange-light:  #fb923c;
+
+  /* =============================================================
      6. COLORS — BORDERS
-     White-alpha borders for dark backgrounds.
-     ============================================= */
-  --bd-border-subtle:  rgba(255, 255, 255, 0.06);  /* Faintest dividers      */
-  --bd-border-default: rgba(255, 255, 255, 0.10);  /* Standard card borders  */
-  --bd-border-strong:  rgba(255, 255, 255, 0.15);  /* Hovered / emphasized   */
-  --bd-border-accent:  rgba(255, 149, 0, 0.25);    /* Brand-tinted borders   */
-  --bd-border-focus:   var(--bd-accent-primary);    /* Focus rings            */
+     White-alpha for dark backgrounds.
+     ============================================================= */
+  --bd-border-subtle:  rgba(255, 255, 255, 0.06); /* Faintest dividers         */
+  --bd-border-default: rgba(255, 255, 255, 0.10); /* Standard card borders     */
+  --bd-border-strong:  rgba(255, 255, 255, 0.15); /* Hover / emphasis          */
+  --bd-border-accent:  rgba(255, 149, 0, 0.25);   /* Brand-tinted borders      */
+  --bd-border-focus:   var(--bd-accent-primary);   /* Focus rings               */
 
-  /* =============================================
-     7. COLORS — INTERACTIVE SURFACE
-     Tag / chip / badge tinting.
-     ============================================= */
-  --bd-tag-bg: rgba(255, 255, 255, 0.08);
+  /* =============================================================
+     7. COLORS — INTERACTIVE SURFACES
+     ============================================================= */
+  --bd-tag-bg:         rgba(255, 255, 255, 0.08);  /* Chips, badges            */
+  --bd-tag-hover-bg:   rgba(255, 255, 255, 0.12);  /* Chip hover              */
 
-  /* =============================================
+  /* =============================================================
      8. TYPOGRAPHY
-     ============================================= */
-  --bd-font-family-primary: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --bd-font-family-mono:    'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+     ============================================================= */
+  --bd-font-family-primary: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont,
+                            'Segoe UI', Roboto, sans-serif;
+  --bd-font-family-mono:    'Roboto Mono', 'Consolas', 'Monaco',
+                            'Courier New', monospace;
 
-  /* Font sizes — fixed px scale for cross-context consistency */
-  --bd-font-size-xs:  10px;
-  --bd-font-size-sm:  11px;
+  /* Font sizes — fixed px for cross-context consistency */
+  --bd-font-size-xs:   10px;
+  --bd-font-size-sm:   11px;
   --bd-font-size-base: 12px;
-  --bd-font-size-md:  13px;
-  --bd-font-size-lg:  14px;
-  --bd-font-size-xl:  16px;
-  --bd-font-size-2xl: 18px;
-  --bd-font-size-3xl: 22px;
+  --bd-font-size-md:   13px;
+  --bd-font-size-lg:   14px;
+  --bd-font-size-xl:   16px;
+  --bd-font-size-2xl:  18px;
+  --bd-font-size-3xl:  22px;
 
   /* Font weights */
   --bd-font-weight-normal:   400;
@@ -120,14 +140,19 @@
   --bd-font-weight-bold:     700;
 
   /* Line heights */
-  --bd-line-height-tight:   1.4;
-  --bd-line-height-normal:  1.5;
-  --bd-line-height-relaxed: 1.6;
+  --bd-line-height-tight:    1.4;
+  --bd-line-height-normal:   1.5;
+  --bd-line-height-relaxed:  1.6;
 
-  /* =============================================
-     9. SPACING
-     4px base, consistent across projects.
-     ============================================= */
+  /* Letter spacing */
+  --bd-tracking-tight:  -0.3px;
+  --bd-tracking-normal:  0;
+  --bd-tracking-wide:    0.5px;
+
+  /* =============================================================
+     9. SPACING — 4 px base grid
+     ============================================================= */
+  --bd-space-0:  0;
   --bd-space-1:  4px;
   --bd-space-2:  8px;
   --bd-space-3:  12px;
@@ -137,10 +162,11 @@
   --bd-space-8:  32px;
   --bd-space-10: 40px;
   --bd-space-12: 48px;
+  --bd-space-16: 64px;
 
-  /* =============================================
+  /* =============================================================
      10. BORDER RADIUS
-     ============================================= */
+     ============================================================= */
   --bd-radius-sm:   4px;
   --bd-radius-md:   6px;
   --bd-radius-lg:   8px;
@@ -149,27 +175,30 @@
   --bd-radius-3xl:  16px;
   --bd-radius-full: 9999px;
 
-  /* =============================================
-     11. SHADOWS
-     ============================================= */
+  /* =============================================================
+     11. SHADOWS & ELEVATION
+     ============================================================= */
   --bd-shadow-sm:       0 1px 2px rgba(0, 0, 0, 0.2);
   --bd-shadow-md:       0 2px 8px rgba(0, 0, 0, 0.3);
   --bd-shadow-lg:       0 4px 16px rgba(0, 0, 0, 0.4);
   --bd-shadow-xl:       0 8px 32px rgba(0, 0, 0, 0.5);
+  --bd-shadow-2xl:      0 24px 80px rgba(0, 0, 0, 0.6);
   --bd-shadow-glow:     0 0 20px rgba(255, 149, 0, 0.12);
   --bd-shadow-glow-lg:  0 0 30px rgba(255, 149, 0, 0.20);
+  --bd-shadow-glow-xl:  0 4px 12px rgba(255, 149, 0, 0.30);
 
-  /* =============================================
-     12. TRANSITIONS
-     ============================================= */
+  /* =============================================================
+     12. TRANSITIONS & MOTION
+     ============================================================= */
   --bd-transition-fast:   0.15s ease;
   --bd-transition-normal: 0.2s ease;
   --bd-transition-slow:   0.3s ease;
 
-  /* =============================================
+  --bd-ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* =============================================================
      13. Z-INDEX SCALE
-     Shared layer hierarchy across all contexts.
-     ============================================= */
+     ============================================================= */
   --bd-z-base:            0;
   --bd-z-elevated:        1;
   --bd-z-sticky:          100;
@@ -177,34 +206,230 @@
   --bd-z-dropdown:        1000;
   --bd-z-modal-backdrop:  9000;
   --bd-z-modal:           10000;
+  --bd-z-tutorial:        30000;
   --bd-z-toast:           99999;
   --bd-z-loading:         999999;
 
-  /* =============================================
-     14. COMPONENT TOKENS
-     Derived tokens for common component patterns.
-     ============================================= */
+  /* =============================================================
+     14. COMPONENT — BUTTONS
+     ============================================================= */
+  --bd-btn-primary-bg:       linear-gradient(135deg,
+                              var(--bd-accent-primary) 0%,
+                              var(--bd-accent-secondary) 100%);
+  --bd-btn-primary-hover:    linear-gradient(135deg,
+                              var(--bd-accent-light) 0%,
+                              var(--bd-accent-primary) 100%);
+  --bd-btn-primary-shadow:   var(--bd-shadow-glow-xl);
+  --bd-btn-secondary-bg:     rgba(255, 255, 255, 0.08);
+  --bd-btn-secondary-hover:  rgba(255, 255, 255, 0.12);
+  --bd-btn-danger-bg:        var(--bd-error-bg);
+  --bd-btn-danger-border:    var(--bd-error-border);
 
-  /* Buttons */
-  --bd-btn-primary-bg:      linear-gradient(135deg, var(--bd-accent-primary) 0%, var(--bd-accent-secondary) 100%);
-  --bd-btn-primary-hover:   linear-gradient(135deg, var(--bd-accent-light) 0%, var(--bd-accent-primary) 100%);
-  --bd-btn-secondary-bg:    rgba(255, 255, 255, 0.08);
-  --bd-btn-secondary-hover: rgba(255, 255, 255, 0.12);
+  /* =============================================================
+     15. COMPONENT — INPUTS
+     ============================================================= */
+  --bd-input-bg:             var(--bd-bg-elevated);
+  --bd-input-border:         var(--bd-border-default);
+  --bd-input-focus-border:   var(--bd-border-focus);
+  --bd-input-focus-ring:     0 0 0 3px var(--bd-accent-glow);
 
-  /* Inputs */
-  --bd-input-bg:           var(--bd-bg-elevated);
-  --bd-input-border:       var(--bd-border-default);
-  --bd-input-focus-border: var(--bd-border-focus);
-  --bd-input-focus-ring:   0 0 0 3px var(--bd-accent-glow);
+  /* =============================================================
+     16. COMPONENT — CARDS
+     ============================================================= */
+  --bd-card-bg:              var(--bd-bg-secondary);
+  --bd-card-border:          var(--bd-border-subtle);
+  --bd-card-hover-bg:        var(--bd-bg-tertiary);
+  --bd-card-hover-border:    var(--bd-border-default);
+  --bd-card-radius:          var(--bd-radius-xl);
 
-  /* Cards */
-  --bd-card-bg:        var(--bd-bg-secondary);
-  --bd-card-border:    var(--bd-border-subtle);
-  --bd-card-hover-bg:  var(--bd-bg-tertiary);
-  --bd-card-hover-border: var(--bd-border-default);
-  --bd-card-radius:    var(--bd-radius-xl);
+  /* =============================================================
+     17. COMPONENT — TOASTS
+     ============================================================= */
+  --bd-toast-success-bg:   linear-gradient(135deg,
+                            rgba(74, 222, 128, 0.95) 0%,
+                            rgba(34, 197, 94, 0.95) 100%);
+  --bd-toast-error-bg:     linear-gradient(135deg,
+                            rgba(248, 113, 113, 0.95) 0%,
+                            rgba(239, 68, 68, 0.95) 100%);
+  --bd-toast-info-bg:      linear-gradient(135deg,
+                            rgba(59, 130, 246, 0.95) 0%,
+                            rgba(37, 99, 235, 0.95) 100%);
 
-  /* Loading */
-  --bd-loading-bg:      linear-gradient(180deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 28, 0.98) 100%);
-  --bd-loading-spinner: var(--bd-accent-primary);
+  /* =============================================================
+     18. COMPONENT — LOADING
+     ============================================================= */
+  --bd-loading-bg:         linear-gradient(180deg,
+                            rgba(30, 30, 40, 0.95) 0%,
+                            rgba(20, 20, 28, 0.98) 100%);
+  --bd-loading-spinner:    var(--bd-accent-primary);
+  --bd-loading-overlay-bg: rgba(10, 10, 15, 0.9);
+
+  /* =============================================================
+     19. COMPONENT — SCROLLBAR
+     ============================================================= */
+  --bd-scrollbar-width:    8px;
+  --bd-scrollbar-track:    var(--bd-bg-secondary);
+  --bd-scrollbar-thumb:    var(--bd-bg-elevated);
+  --bd-scrollbar-hover:    var(--bd-border-strong);
+
+  /* =============================================================
+     20. GRADIENTS — REUSABLE PATTERNS
+     ============================================================= */
+  --bd-gradient-brand:     linear-gradient(135deg,
+                            var(--bd-accent-primary) 0%,
+                            var(--bd-accent-secondary) 100%);
+  --bd-gradient-brand-hover: linear-gradient(135deg,
+                            var(--bd-accent-light) 0%,
+                            var(--bd-accent-primary) 100%);
+  --bd-gradient-accent-bar: linear-gradient(to right,
+                            var(--bd-accent-primary),
+                            var(--bd-purple),
+                            var(--bd-cyan));
+  --bd-gradient-shimmer:   linear-gradient(90deg,
+                            var(--bd-accent-primary) 0%,
+                            var(--bd-accent-light) 50%,
+                            var(--bd-accent-primary) 100%);
+
+  /* =============================================================
+     21. EXTENSION — POPUP SHORT ALIASES
+     Maps --bd- tokens to the short names used in popup.css
+     across BetterDungeon (PC) and BetterDungeon-Mobile.
+     ============================================================= */
+  --bg-base:           var(--bd-bg-primary);
+  --bg-surface:        var(--bd-bg-secondary);
+  --bg-elevated:       var(--bd-bg-tertiary);
+  --bg-hover:          var(--bd-bg-elevated);
+  --bg-active:         var(--bd-bg-active);
+
+  --text-primary:      var(--bd-text-primary);
+  --text-secondary:    var(--bd-text-secondary);
+  --text-muted:        var(--bd-text-muted);
+  --text-inverse:      var(--bd-text-inverse);
+
+  --accent:            var(--bd-accent-primary);
+  --accent-hover:      var(--bd-accent-light);
+  --accent-muted:      var(--bd-accent-muted);
+  --accent-glow:       var(--bd-accent-strong);
+
+  --success:           var(--bd-success);
+  --success-muted:     var(--bd-success-bg);
+  --error:             var(--bd-error);
+  --error-muted:       var(--bd-error-bg);
+  --warning:           var(--bd-warning);
+  --warning-muted:     var(--bd-warning-bg);
+  --info:              var(--bd-info);
+  --info-bg:           var(--bd-info-bg);
+
+  --border:            var(--bd-border-default);
+  --border-hover:      var(--bd-border-strong);
+  --border-accent:     var(--bd-border-accent);
+
+  --font-sans:         var(--bd-font-family-primary);
+  --font-mono:         var(--bd-font-family-mono);
+
+  --radius-sm:         var(--bd-radius-sm);
+  --radius-md:         var(--bd-radius-md);
+  --radius-lg:         var(--bd-radius-xl);
+  --radius-xl:         var(--bd-radius-2xl);
+  --radius-full:       var(--bd-radius-full);
+
+  --shadow-sm:         var(--bd-shadow-sm);
+  --shadow-md:         var(--bd-shadow-md);
+  --shadow-lg:         var(--bd-shadow-lg);
+
+  --transition-fast:   var(--bd-transition-fast);
+  --transition-normal: var(--bd-transition-normal);
+  --transition-slow:   var(--bd-transition-slow);
+
+  --z-dropdown:        var(--bd-z-dropdown);
+  --z-modal:           var(--bd-z-modal);
+  --z-toast:           var(--bd-z-toast);
+  --z-tutorial:        var(--bd-z-tutorial);
+
+  /* =============================================================
+     22. EXTENSION — POPUP SECTION ICON COLORS
+     Semantic colors for sidebar/section icons in popup UI.
+     ============================================================= */
+  --bd-section-input-modes: var(--bd-blue);
+  --bd-section-tools:       var(--bd-cyan);
+  --bd-section-formatting:  var(--bd-purple);
+  --bd-section-automations: var(--bd-amber);
+
+  --bd-icon-hotkeys:      var(--bd-amber);
+  --bd-icon-palette:      var(--bd-pink);
+  --bd-icon-notes:        var(--bd-green);
+  --bd-icon-markdown:     var(--bd-purple);
+  --bd-icon-trigger:      var(--bd-amber);
+  --bd-icon-analytics:    var(--bd-cyan);
+  --bd-icon-modal-dock:   var(--bd-blue);
+  --bd-icon-scripts:      var(--bd-emerald);
+  --bd-icon-auto-scripts: var(--bd-orange);
+
+  /* =============================================================
+     23. EXTENSION — INPUT MODE COLORS
+     Game-specific color coding for AI Dungeon input modes.
+     Each mode gets base, light, glow, and RGB-triplet tokens.
+     ============================================================= */
+  --bd-mode-do:            var(--bd-blue);
+  --bd-mode-do-light:      var(--bd-blue-light);
+  --bd-mode-do-glow:       rgba(59, 130, 246, 0.15);
+  --bd-mode-do-rgb:        59, 130, 246;
+
+  --bd-mode-try:           var(--bd-purple);
+  --bd-mode-try-light:     var(--bd-purple-light);
+  --bd-mode-try-glow:      rgba(168, 85, 247, 0.15);
+  --bd-mode-try-rgb:       168, 85, 247;
+
+  --bd-mode-say:           var(--bd-green);
+  --bd-mode-say-light:     var(--bd-green-light);
+  --bd-mode-say-glow:      rgba(34, 197, 94, 0.15);
+  --bd-mode-say-rgb:       34, 197, 94;
+
+  --bd-mode-story:         var(--bd-amber);
+  --bd-mode-story-light:   var(--bd-amber-light);
+  --bd-mode-story-glow:    rgba(251, 191, 36, 0.15);
+  --bd-mode-story-rgb:     251, 191, 36;
+
+  --bd-mode-see:           var(--bd-cyan);
+  --bd-mode-see-light:     var(--bd-cyan-light);
+  --bd-mode-see-glow:      rgba(6, 182, 212, 0.15);
+  --bd-mode-see-rgb:       6, 182, 212;
+
+  --bd-mode-command:       var(--bd-orange);
+  --bd-mode-command-light: var(--bd-orange-light);
+  --bd-mode-command-glow:  rgba(249, 115, 22, 0.15);
+  --bd-mode-command-rgb:   249, 115, 22;
+
+  /* =============================================================
+     24. EXTENSION — STORY CARD TRIGGER HIGHLIGHTS
+     Visual marking for keyword matches in adventure text.
+     ============================================================= */
+  --bd-trigger-bg:                  rgba(251, 191, 36, 0.25);
+  --bd-trigger-color:               #ffd54f;
+  --bd-trigger-border:              rgba(251, 191, 36, 0.6);
+
+  --bd-suggested-trigger-bg:        rgba(6, 182, 212, 0.2);
+  --bd-suggested-trigger-color:     var(--bd-cyan-light);
+  --bd-suggested-trigger-border:    rgba(6, 182, 212, 0.5);
+
+  /* =============================================================
+     25. CONTENT — MARKDOWN & CODE
+     Inline styling for rendered markdown inside game text.
+     ============================================================= */
+  --bd-code-inline-bg:       var(--bd-tag-bg);
+  --bd-code-inline-border:   var(--bd-border-default);
+  --bd-code-inline-color:    #e8b4b4;
+  --bd-code-block-bg:        rgba(0, 0, 0, 0.3);
+  --bd-code-block-color:     #d4d4d4;
+
+  --bd-link-color:           var(--bd-blue-light);
+  --bd-link-hover-color:     #a8cbff;
+
+  --bd-highlight-bg:         var(--bd-accent-muted);
+
+  /* =============================================================
+     26. THIRD-PARTY BRAND COLORS
+     External services referenced across the ecosystem.
+     ============================================================= */
+  --bd-discord:  #5865F2;
 }
