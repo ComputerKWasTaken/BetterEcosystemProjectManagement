@@ -10,6 +10,7 @@
 -
 
 ### Considering
+-
 
 ### Long-Term Ideas
 - **Voyage Resources:** When Voyage comes out of Early Access, we can build onto our current system to add information and resources relevant to Voyage, such as world building resources, tooling, and more.
@@ -26,8 +27,6 @@
 
 ### Medium Priority
 <!-- Standard priority -->
-- Include more standard scripts in the collection
-- Copy the instructions from other popular scenario creators to get high quality instructions
 
 ### Low Priority
 <!-- Nice to have -->
