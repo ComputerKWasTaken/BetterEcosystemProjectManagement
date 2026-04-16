@@ -73,7 +73,9 @@ Each status has four tokens: color, light, background, and border.
 
 ### 1.5 Category Palette
 
-Used for tags, badges, section icons, and decorative accents. Each has a base and a light variant.
+Used for tags, badges, section icons, and decorative accents.
+
+**Colors with base + light pairs** (use light variants for hover states, gradient endpoints, and emphasis):
 
 | Token | Value | Light variant | Value |
 |-------|-------|---------------|-------|
@@ -83,10 +85,19 @@ Used for tags, badges, section icons, and decorative accents. Each has a base an
 | `--bd-amber` | `#fbbf24` | `--bd-amber-light` | `#fcd34d` |
 | `--bd-cyan` | `#06b6d4` | `--bd-cyan-light` | `#22d3ee` |
 | `--bd-orange` | `#f97316` | `--bd-orange-light` | `#fb923c` |
-| `--bd-pink` | `#ec4899` | `--bd-emerald` | `#10b981` |
-| `--bd-red` | `#ef4444` | `--bd-teal` | `#14b8a6` |
-| `--bd-indigo` | `#6366f1` | `--bd-rose` | `#f43f5e` |
-| `--bd-slate` | `#94a3b8` | `--bd-gray` | `#6b7280` |
+
+**Standalone colors** (no light variant):
+
+| Token | Value |
+|-------|-------|
+| `--bd-pink` | `#ec4899` |
+| `--bd-emerald` | `#10b981` |
+| `--bd-red` | `#ef4444` |
+| `--bd-teal` | `#14b8a6` |
+| `--bd-indigo` | `#6366f1` |
+| `--bd-rose` | `#f43f5e` |
+| `--bd-slate` | `#94a3b8` |
+| `--bd-gray` | `#6b7280` |
 
 ### 1.6 Borders
 

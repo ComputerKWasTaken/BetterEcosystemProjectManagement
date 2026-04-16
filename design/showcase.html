@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BetterEcosystem Design System Showcase</title>
+  <link rel="stylesheet" href="theme-variables.css">
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bd-bg-primary);
+      color: var(--bd-text-primary);
+      font-family: var(--bd-font-family-primary);
+      font-size: var(--bd-font-size-lg);
+      line-height: var(--bd-line-height-normal);
+      padding: var(--bd-space-8) var(--bd-space-6);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── Scrollbar ────────────────────────────────────────────── */
+    ::-webkit-scrollbar        { width: var(--bd-scrollbar-width); }
+    ::-webkit-scrollbar-track  { background: var(--bd-scrollbar-track); }
+    ::-webkit-scrollbar-thumb  { background: var(--bd-scrollbar-thumb); border-radius: var(--bd-radius-sm); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--bd-scrollbar-hover); }
+
+    /* ── Section Layout ───────────────────────────────────────── */
+    .showcase-section {
+      margin-bottom: var(--bd-space-12);
+    }
+
+    .showcase-section h2 {
+      font-size: var(--bd-font-size-2xl);
+      font-weight: var(--bd-font-weight-bold);
+      color: var(--bd-text-primary);
+      margin-bottom: var(--bd-space-6);
+      padding-bottom: var(--bd-space-3);
+      border-bottom: 1px solid var(--bd-border-subtle);
+    }
+
+    .showcase-section h2 .section-number {
+      color: var(--bd-accent-primary);
+      margin-right: var(--bd-space-2);
+    }
+
+    .showcase-section h3 {
+      font-size: var(--bd-font-size-xl);
+      font-weight: var(--bd-font-weight-semibold);
+      color: var(--bd-text-secondary);
+      margin: var(--bd-space-6) 0 var(--bd-space-4);
+    }
+
+    .showcase-section p {
+      color: var(--bd-text-secondary);
+      margin-bottom: var(--bd-space-4);
+      font-size: var(--bd-font-size-base);
+    }
+
+    /* ── Hero ─────────────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: var(--bd-space-16) 0 var(--bd-space-12);
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+      font-weight: var(--bd-font-weight-bold);
+      letter-spacing: var(--bd-tracking-tight);
+      background: var(--bd-gradient-brand);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--bd-space-4);
+    }
+
+    .hero p {
+      font-size: var(--bd-font-size-xl);
+      color: var(--bd-text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .accent-bar {
+      height: 2px;
+      background: var(--bd-gradient-accent-bar);
+      margin: var(--bd-space-8) auto 0;
+      max-width: 300px;
+      border-radius: var(--bd-radius-full);
+    }
+
+    /* ── Grid Helpers ─────────────────────────────────────────── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--bd-space-4); }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--bd-space-4); }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--bd-space-4); }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--bd-space-3); }
+    .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--bd-space-3); }
+    .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--bd-space-3); }
+    .flex-row { display: flex; flex-wrap: wrap; gap: var(--bd-space-3); align-items: center; }
+    .flex-col { display: flex; flex-direction: column; gap: var(--bd-space-3); }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3, .grid-4, .grid-5, .grid-6, .grid-7 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* ── Color Swatch ─────────────────────────────────────────── */
+    .swatch {
+      border-radius: var(--bd-radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--bd-border-subtle);
+    }
+
+    .swatch-color {
+      height: 64px;
+      position: relative;
+    }
+
+    .swatch-label {
+      padding: var(--bd-space-2) var(--bd-space-3);
+      background: var(--bd-bg-secondary);
+      font-size: var(--bd-font-size-xs);
+      font-family: var(--bd-font-family-mono);
+    }
+
+    .swatch-label .name {
+      display: block;
+      color: var(--bd-text-primary);
+      margin-bottom: 2px;
+    }
+
+    .swatch-label .value {
+      color: var(--bd-text-muted);
+    }
+
+    /* ── Card ─────────────────────────────────────────────────── */
+    .card {
+      background: var(--bd-card-bg);
+      border: 1px solid var(--bd-card-border);
+      border-radius: var(--bd-card-radius);
+      padding: var(--bd-space-5);
+      transition: var(--bd-transition-normal);
+    }
+
+    .card:hover {
+      background: var(--bd-card-hover-bg);
+      border-color: var(--bd-card-hover-border);
+    }
+
+    .card-title {
+      font-size: var(--bd-font-size-md);
+      font-weight: var(--bd-font-weight-semibold);
+      margin-bottom: var(--bd-space-2);
+    }
+
+    .card-desc {
+      font-size: var(--bd-font-size-base);
+      color: var(--bd-text-secondary);
+      line-height: var(--bd-line-height-relaxed);
+    }
+
+    /* ── Button ───────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--bd-space-2);
+      padding: var(--bd-space-2) var(--bd-space-5);
+      border-radius: var(--bd-radius-md);
+      font-size: var(--bd-font-size-base);
+      font-weight: var(--bd-font-weight-semibold);
+      font-family: var(--bd-font-family-primary);
+      cursor: pointer;
+      border: none;
+      transition: var(--bd-transition-fast);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--bd-btn-primary-bg);
+      color: var(--bd-text-on-accent);
+      box-shadow: var(--bd-shadow-sm);
+    }
+
+    .btn-primary:hover {
+      background: var(--bd-btn-primary-hover);
+      box-shadow: var(--bd-btn-primary-shadow);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bd-btn-secondary-bg);
+      color: var(--bd-text-primary);
+      border: 1px solid var(--bd-border-default);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bd-btn-secondary-hover);
+      border-color: var(--bd-border-strong);
+    }
+
+    .btn-danger {
+      background: var(--bd-btn-danger-bg);
+      color: var(--bd-error);
+      border: 1px solid var(--bd-btn-danger-border);
+    }
+
+    .btn-danger:hover {
+      background: var(--bd-error);
+      color: var(--bd-text-on-accent);
+    }
+
+    .btn-sm {
+      padding: var(--bd-space-1) var(--bd-space-3);
+      font-size: var(--bd-font-size-xs);
+    }
+
+    .btn-lg {
+      padding: var(--bd-space-3) var(--bd-space-8);
+      font-size: var(--bd-font-size-lg);
+      border-radius: var(--bd-radius-lg);
+    }
+
+    /* ── Input ────────────────────────────────────────────────── */
+    .input {
+      width: 100%;
+      padding: var(--bd-space-2) var(--bd-space-3);
+      background: var(--bd-input-bg);
+      border: 1px solid var(--bd-input-border);
+      border-radius: var(--bd-radius-md);
+      color: var(--bd-text-primary);
+      font-family: var(--bd-font-family-primary);
+      font-size: var(--bd-font-size-base);
+      outline: none;
+      transition: var(--bd-transition-fast);
+    }
+
+    .input:focus {
+      border-color: var(--bd-input-focus-border);
+      box-shadow: var(--bd-input-focus-ring);
+    }
+
+    .input::placeholder {
+      color: var(--bd-text-muted);
+    }
+
+    textarea.input {
+      min-height: 80px;
+      resize: vertical;
+      line-height: var(--bd-line-height-relaxed);
+    }
+
+    /* ── Toggle ───────────────────────────────────────────────── */
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      appearance: none;
+      background: var(--bd-bg-active);
+      border-radius: var(--bd-radius-full);
+      cursor: pointer;
+      transition: var(--bd-transition-fast);
+      border: none;
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--bd-text-muted);
+      transition: var(--bd-transition-fast);
+    }
+
+    .toggle:checked {
+      background: var(--bd-accent-primary);
+    }
+
+    .toggle:checked::after {
+      background: var(--bd-text-on-accent);
+      transform: translateX(18px);
+    }
+
+    /* ── Badge / Tag ──────────────────────────────────────────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--bd-space-1);
+      padding: 2px var(--bd-space-2);
+      border-radius: var(--bd-radius-full);
+      font-size: var(--bd-font-size-xs);
+      font-weight: var(--bd-font-weight-semibold);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--bd-space-1);
+      padding: var(--bd-space-1) var(--bd-space-3);
+      border-radius: var(--bd-radius-sm);
+      font-size: var(--bd-font-size-sm);
+      font-weight: var(--bd-font-weight-medium);
+      background: var(--bd-tag-bg);
+      color: var(--bd-text-secondary);
+      transition: var(--bd-transition-fast);
+      cursor: default;
+    }
+
+    .tag:hover {
+      background: var(--bd-tag-hover-bg);
+      color: var(--bd-text-primary);
+    }
+
+    /* ── Toast ────────────────────────────────────────────────── */
+    .toast {
+      padding: var(--bd-space-3) var(--bd-space-5);
+      border-radius: var(--bd-radius-lg);
+      color: var(--bd-text-on-accent);
+      font-size: var(--bd-font-size-base);
+      font-weight: var(--bd-font-weight-medium);
+      box-shadow: var(--bd-shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--bd-space-3);
+    }
+
+    .toast-success { background: var(--bd-toast-success-bg); }
+    .toast-error   { background: var(--bd-toast-error-bg); }
+    .toast-info    { background: var(--bd-toast-info-bg); }
+
+    /* ── Status Alert ─────────────────────────────────────────── */
+    .alert {
+      padding: var(--bd-space-3) var(--bd-space-4);
+      border-radius: var(--bd-radius-md);
+      font-size: var(--bd-font-size-base);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--bd-space-3);
+      border: 1px solid;
+    }
+
+    .alert-success { background: var(--bd-success-bg); border-color: var(--bd-success-border); color: var(--bd-success); }
+    .alert-error   { background: var(--bd-error-bg); border-color: var(--bd-error-border); color: var(--bd-error); }
+    .alert-warning { background: var(--bd-warning-bg); border-color: var(--bd-warning-border); color: var(--bd-warning); }
+    .alert-info    { background: var(--bd-info-bg); border-color: var(--bd-info-border); color: var(--bd-info); }
+
+    /* ── Code ─────────────────────────────────────────────────── */
+    code {
+      font-family: var(--bd-font-family-mono);
+      font-size: var(--bd-font-size-sm);
+      background: var(--bd-code-inline-bg);
+      border: 1px solid var(--bd-code-inline-border);
+      border-radius: var(--bd-radius-sm);
+      padding: 1px var(--bd-space-1);
+      color: var(--bd-code-inline-color);
+    }
+
+    pre {
+      background: var(--bd-code-block-bg);
+      border-radius: var(--bd-radius-lg);
+      padding: var(--bd-space-4);
+      overflow-x: auto;
+      border: 1px solid var(--bd-border-subtle);
+    }
+
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--bd-code-block-color);
+      font-size: var(--bd-font-size-base);
+      line-height: var(--bd-line-height-relaxed);
+    }
+
+    /* ── Link ─────────────────────────────────────────────────── */
+    a {
+      color: var(--bd-link-color);
+      text-decoration: none;
+      transition: var(--bd-transition-fast);
+    }
+
+    a:hover {
+      color: var(--bd-link-hover-color);
+      text-decoration: underline;
+    }
+
+    /* ── Highlight ────────────────────────────────────────────── */
+    mark {
+      background: var(--bd-highlight-bg);
+      color: var(--bd-text-primary);
+      padding: 1px var(--bd-space-1);
+      border-radius: var(--bd-radius-sm);
+    }
+
+    /* ── Separator ────────────────────────────────────────────── */
+    hr {
+      border: none;
+      height: 1px;
+      background: var(--bd-border-subtle);
+      margin: var(--bd-space-8) 0;
+    }
+
+    /* ── Section Header Label ─────────────────────────────────── */
+    .section-header {
+      font-size: var(--bd-font-size-sm);
+      font-weight: var(--bd-font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: var(--bd-tracking-wide);
+      color: var(--bd-text-secondary);
+      margin-bottom: var(--bd-space-3);
+    }
+
+    /* ── Elevation Demo ───────────────────────────────────────── */
+    .elevation-box {
+      width: 100%;
+      height: 80px;
+      background: var(--bd-bg-secondary);
+      border-radius: var(--bd-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--bd-font-size-xs);
+      font-family: var(--bd-font-family-mono);
+      color: var(--bd-text-muted);
+    }
+
+    /* ── Radius Demo ──────────────────────────────────────────── */
+    .radius-box {
+      width: 60px;
+      height: 60px;
+      background: var(--bd-accent-muted);
+      border: 1px solid var(--bd-accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-family: var(--bd-font-family-mono);
+      color: var(--bd-accent-primary);
+    }
+
+    /* ── Spacing Demo ─────────────────────────────────────────── */
+    .space-bar {
+      height: 24px;
+      background: var(--bd-accent-muted);
+      border-left: 2px solid var(--bd-accent-primary);
+      display: flex;
+      align-items: center;
+      padding-left: var(--bd-space-2);
+      font-size: var(--bd-font-size-xs);
+      font-family: var(--bd-font-family-mono);
+      color: var(--bd-text-muted);
+      border-radius: 0 var(--bd-radius-sm) var(--bd-radius-sm) 0;
+    }
+
+    /* ── Typography Demo ──────────────────────────────────────── */
+    .type-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--bd-space-4);
+      padding: var(--bd-space-2) 0;
+      border-bottom: 1px solid var(--bd-border-subtle);
+    }
+
+    .type-label {
+      width: 140px;
+      flex-shrink: 0;
+      font-size: var(--bd-font-size-xs);
+      font-family: var(--bd-font-family-mono);
+      color: var(--bd-text-muted);
+    }
+
+    /* ── Gradient Demo ────────────────────────────────────────── */
+    .gradient-bar {
+      height: 48px;
+      border-radius: var(--bd-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--bd-font-size-xs);
+      font-family: var(--bd-font-family-mono);
+      color: var(--bd-text-on-accent);
+    }
+
+    /* ── Modal Preview ────────────────────────────────────────── */
+    .modal-preview {
+      position: relative;
+      background: var(--bd-bg-overlay);
+      border-radius: var(--bd-radius-xl);
+      padding: var(--bd-space-8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-box {
+      background: var(--bd-bg-secondary);
+      border: 1px solid var(--bd-border-default);
+      border-radius: var(--bd-radius-xl);
+      padding: var(--bd-space-6);
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--bd-shadow-xl);
+    }
+
+    .modal-box h4 {
+      font-size: var(--bd-font-size-xl);
+      font-weight: var(--bd-font-weight-semibold);
+      margin-bottom: var(--bd-space-2);
+    }
+
+    .modal-box p {
+      color: var(--bd-text-secondary);
+      font-size: var(--bd-font-size-base);
+      margin-bottom: var(--bd-space-5);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: var(--bd-space-3);
+      justify-content: flex-end;
+    }
+
+    /* ── Widget Preview ───────────────────────────────────────── */
+    .widget-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--bd-space-3);
+      padding: var(--bd-space-2) var(--bd-space-4);
+      background: var(--bd-bg-secondary);
+      border: 1px solid var(--bd-border-subtle);
+      border-radius: var(--bd-radius-lg);
+    }
+
+    .widget-stat {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--bd-space-2);
+      padding: var(--bd-space-1) var(--bd-space-3);
+      background: var(--bd-bg-tertiary);
+      border: 1px solid var(--bd-border-strong);
+      border-radius: var(--bd-radius-sm);
+      font-size: var(--bd-font-size-sm);
+    }
+
+    .widget-stat .label {
+      color: var(--bd-text-muted);
+    }
+
+    .widget-stat .value {
+      font-weight: var(--bd-font-weight-semibold);
+    }
+
+    .widget-progress {
+      flex: 1;
+      height: 10px;
+      background: var(--bd-bg-elevated);
+      border-radius: var(--bd-radius-full);
+      overflow: hidden;
+    }
+
+    .widget-progress-fill {
+      height: 100%;
+      border-radius: var(--bd-radius-full);
+      transition: var(--bd-transition-normal);
+    }
+
+    /* ── Input Mode Demo ──────────────────────────────────────── */
+    .mode-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--bd-space-2);
+      padding: var(--bd-space-2) var(--bd-space-4);
+      border-radius: var(--bd-radius-md);
+      font-size: var(--bd-font-size-sm);
+      font-weight: var(--bd-font-weight-semibold);
+      border: 1px solid;
+      cursor: default;
+    }
+
+    /* ── Loading Shimmer ──────────────────────────────────────── */
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .shimmer {
+      height: 12px;
+      border-radius: var(--bd-radius-full);
+      background: var(--bd-gradient-shimmer);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite linear;
+    }
+
+    /* ── Trigger Highlight Demo ───────────────────────────────── */
+    .trigger-word {
+      padding: 1px var(--bd-space-1);
+      border-radius: var(--bd-radius-sm);
+      font-weight: var(--bd-font-weight-medium);
+    }
+
+    .trigger-active {
+      background: var(--bd-trigger-bg);
+      color: var(--bd-trigger-color);
+      border-bottom: 1px solid var(--bd-trigger-border);
+    }
+
+    .trigger-suggested {
+      background: var(--bd-suggested-trigger-bg);
+      color: var(--bd-suggested-trigger-color);
+      border-bottom: 1px dashed var(--bd-suggested-trigger-border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════════════════════════
+       HERO
+       ════════════════════════════════════════════════════════════ -->
+  <div class="hero">
+    <h1>BetterEcosystem Design System</h1>
+    <p>A comprehensive showcase of every design token, component, and pattern defined in the canonical <code>theme-variables.css</code></p>
+    <div class="accent-bar"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       1. BACKGROUND COLORS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">01</span> Background Colors</h2>
+    <p>Dark-first surface hierarchy from deepest to lightest, plus overlay.</p>
+    <div class="grid-6">
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-bg-primary);"></div><div class="swatch-label"><span class="name">--bd-bg-primary</span><span class="value">#0d0d0f</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-bg-secondary);"></div><div class="swatch-label"><span class="name">--bd-bg-secondary</span><span class="value">#16161a</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-bg-tertiary);"></div><div class="swatch-label"><span class="name">--bd-bg-tertiary</span><span class="value">#1e1e24</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-bg-elevated);"></div><div class="swatch-label"><span class="name">--bd-bg-elevated</span><span class="value">#252530</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-bg-active);"></div><div class="swatch-label"><span class="name">--bd-bg-active</span><span class="value">#2c2c36</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-bg-overlay);"></div><div class="swatch-label"><span class="name">--bd-bg-overlay</span><span class="value">rgba(0,0,0,0.85)</span></div></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       2. TEXT COLORS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">02</span> Text Colors</h2>
+    <div class="flex-col">
+      <div style="padding: var(--bd-space-3); background: var(--bd-bg-secondary); border-radius: var(--bd-radius-md);">
+        <span style="color: var(--bd-text-primary);">Primary text — body copy, headings</span>
+        <span style="font-family: var(--bd-font-family-mono); font-size: var(--bd-font-size-xs); color: var(--bd-text-muted); margin-left: var(--bd-space-3);">#e8e8ec</span>
+      </div>
+      <div style="padding: var(--bd-space-3); background: var(--bd-bg-secondary); border-radius: var(--bd-radius-md);">
+        <span style="color: var(--bd-text-secondary);">Secondary text — labels, supporting copy</span>
+        <span style="font-family: var(--bd-font-family-mono); font-size: var(--bd-font-size-xs); color: var(--bd-text-muted); margin-left: var(--bd-space-3);">#a0a0a8</span>
+      </div>
+      <div style="padding: var(--bd-space-3); background: var(--bd-bg-secondary); border-radius: var(--bd-radius-md);">
+        <span style="color: var(--bd-text-muted);">Muted text — hints, placeholders, disabled</span>
+        <span style="font-family: var(--bd-font-family-mono); font-size: var(--bd-font-size-xs); color: var(--bd-text-muted); margin-left: var(--bd-space-3);">#6b6b75</span>
+      </div>
+      <div style="padding: var(--bd-space-3); background: var(--bd-accent-primary); border-radius: var(--bd-radius-md);">
+        <span style="color: var(--bd-text-on-accent);">On-accent text — white on colored fills</span>
+        <span style="font-family: var(--bd-font-family-mono); font-size: var(--bd-font-size-xs); color: rgba(255,255,255,0.7); margin-left: var(--bd-space-3);">#ffffff</span>
+      </div>
+      <div style="padding: var(--bd-space-3); background: var(--bd-text-primary); border-radius: var(--bd-radius-md);">
+        <span style="color: var(--bd-text-inverse);">Inverse text — on light backgrounds</span>
+        <span style="font-family: var(--bd-font-family-mono); font-size: var(--bd-font-size-xs); color: rgba(0,0,0,0.5); margin-left: var(--bd-space-3);">#0d0d0f</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       3. BRAND / ACCENT
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">03</span> Brand / Accent</h2>
+    <p>Orange is the ecosystem signature color.</p>
+    <div class="grid-6">
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-accent-primary);"></div><div class="swatch-label"><span class="name">--bd-accent-primary</span><span class="value">#ff9500</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-accent-secondary);"></div><div class="swatch-label"><span class="name">--bd-accent-secondary</span><span class="value">#e07800</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-accent-light);"></div><div class="swatch-label"><span class="name">--bd-accent-light</span><span class="value">#ffb84d</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-accent-glow);"></div><div class="swatch-label"><span class="name">--bd-accent-glow</span><span class="value">rgba(…,0.12)</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-accent-muted);"></div><div class="swatch-label"><span class="name">--bd-accent-muted</span><span class="value">rgba(…,0.15)</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-accent-strong);"></div><div class="swatch-label"><span class="name">--bd-accent-strong</span><span class="value">rgba(…,0.25)</span></div></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       4. STATUS COLORS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">04</span> Status Colors</h2>
+    <p>Each status has four tokens: color, light, background, and border.</p>
+    <div class="grid-4">
+      <div>
+        <div class="section-header">Success</div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--bd-success);"></div><div class="swatch-label"><span class="name">--bd-success</span><span class="value">#22c55e</span></div></div>
+        <div class="swatch" style="margin-top: var(--bd-space-2);"><div class="swatch-color" style="background: var(--bd-success-light);"></div><div class="swatch-label"><span class="name">--bd-success-light</span><span class="value">#4ade80</span></div></div>
+      </div>
+      <div>
+        <div class="section-header">Error</div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--bd-error);"></div><div class="swatch-label"><span class="name">--bd-error</span><span class="value">#ef4444</span></div></div>
+        <div class="swatch" style="margin-top: var(--bd-space-2);"><div class="swatch-color" style="background: var(--bd-error-light);"></div><div class="swatch-label"><span class="name">--bd-error-light</span><span class="value">#f87171</span></div></div>
+      </div>
+      <div>
+        <div class="section-header">Warning</div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--bd-warning);"></div><div class="swatch-label"><span class="name">--bd-warning</span><span class="value">#f59e0b</span></div></div>
+        <div class="swatch" style="margin-top: var(--bd-space-2);"><div class="swatch-color" style="background: var(--bd-warning-light);"></div><div class="swatch-label"><span class="name">--bd-warning-light</span><span class="value">#fbbf24</span></div></div>
+      </div>
+      <div>
+        <div class="section-header">Info</div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--bd-info);"></div><div class="swatch-label"><span class="name">--bd-info</span><span class="value">#3b82f6</span></div></div>
+        <div class="swatch" style="margin-top: var(--bd-space-2);"><div class="swatch-color" style="background: var(--bd-info-light);"></div><div class="swatch-label"><span class="name">--bd-info-light</span><span class="value">#60a5fa</span></div></div>
+      </div>
+    </div>
+
+    <h3>Status Alerts</h3>
+    <div class="flex-col">
+      <div class="alert alert-success">Success — Changes saved successfully.</div>
+      <div class="alert alert-error">Error — Something went wrong. Please try again.</div>
+      <div class="alert alert-warning">Warning — This action cannot be undone.</div>
+      <div class="alert alert-info">Info — A new version is available for download.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       5. CATEGORY PALETTE
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">05</span> Category Palette</h2>
+
+    <h3>Colors with Light Variants</h3>
+    <div class="grid-6">
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-blue);"></div><div class="swatch-label"><span class="name">--bd-blue</span><span class="value">#3b82f6</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-purple);"></div><div class="swatch-label"><span class="name">--bd-purple</span><span class="value">#a855f7</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-green);"></div><div class="swatch-label"><span class="name">--bd-green</span><span class="value">#22c55e</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-amber);"></div><div class="swatch-label"><span class="name">--bd-amber</span><span class="value">#fbbf24</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-cyan);"></div><div class="swatch-label"><span class="name">--bd-cyan</span><span class="value">#06b6d4</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-orange);"></div><div class="swatch-label"><span class="name">--bd-orange</span><span class="value">#f97316</span></div></div>
+    </div>
+    <div class="grid-6" style="margin-top: var(--bd-space-2);">
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-blue-light);"></div><div class="swatch-label"><span class="name">--bd-blue-light</span><span class="value">#60a5fa</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-purple-light);"></div><div class="swatch-label"><span class="name">--bd-purple-light</span><span class="value">#c084fc</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-green-light);"></div><div class="swatch-label"><span class="name">--bd-green-light</span><span class="value">#4ade80</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-amber-light);"></div><div class="swatch-label"><span class="name">--bd-amber-light</span><span class="value">#fcd34d</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-cyan-light);"></div><div class="swatch-label"><span class="name">--bd-cyan-light</span><span class="value">#22d3ee</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-orange-light);"></div><div class="swatch-label"><span class="name">--bd-orange-light</span><span class="value">#fb923c</span></div></div>
+    </div>
+
+    <h3>Standalone Colors</h3>
+    <div class="grid-4" style="grid-template-columns: repeat(8, 1fr);">
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-pink);"></div><div class="swatch-label"><span class="name">pink</span><span class="value">#ec4899</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-emerald);"></div><div class="swatch-label"><span class="name">emerald</span><span class="value">#10b981</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-red);"></div><div class="swatch-label"><span class="name">red</span><span class="value">#ef4444</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-teal);"></div><div class="swatch-label"><span class="name">teal</span><span class="value">#14b8a6</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-indigo);"></div><div class="swatch-label"><span class="name">indigo</span><span class="value">#6366f1</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-rose);"></div><div class="swatch-label"><span class="name">rose</span><span class="value">#f43f5e</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-slate);"></div><div class="swatch-label"><span class="name">slate</span><span class="value">#94a3b8</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-gray);"></div><div class="swatch-label"><span class="name">gray</span><span class="value">#6b7280</span></div></div>
+    </div>
+
+    <h3>Third-Party Brand</h3>
+    <div style="max-width: 200px;">
+      <div class="swatch"><div class="swatch-color" style="background: var(--bd-discord);"></div><div class="swatch-label"><span class="name">--bd-discord</span><span class="value">#5865F2</span></div></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       6. BORDERS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">06</span> Borders</h2>
+    <div class="grid-5">
+      <div style="padding: var(--bd-space-4); border: 1px solid var(--bd-border-subtle); border-radius: var(--bd-radius-md); text-align: center;">
+        <div style="font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">subtle</div>
+      </div>
+      <div style="padding: var(--bd-space-4); border: 1px solid var(--bd-border-default); border-radius: var(--bd-radius-md); text-align: center;">
+        <div style="font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">default</div>
+      </div>
+      <div style="padding: var(--bd-space-4); border: 1px solid var(--bd-border-strong); border-radius: var(--bd-radius-md); text-align: center;">
+        <div style="font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">strong</div>
+      </div>
+      <div style="padding: var(--bd-space-4); border: 1px solid var(--bd-border-accent); border-radius: var(--bd-radius-md); text-align: center;">
+        <div style="font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">accent</div>
+      </div>
+      <div style="padding: var(--bd-space-4); border: 2px solid var(--bd-border-focus); border-radius: var(--bd-radius-md); text-align: center; box-shadow: var(--bd-input-focus-ring);">
+        <div style="font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">focus</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       7. TYPOGRAPHY
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">07</span> Typography</h2>
+
+    <h3>Font Scale</h3>
+    <div class="flex-col">
+      <div class="type-row"><span class="type-label">3xl — 22px</span><span style="font-size: var(--bd-font-size-3xl); font-weight: var(--bd-font-weight-bold); letter-spacing: var(--bd-tracking-tight);">Hero Heading</span></div>
+      <div class="type-row"><span class="type-label">2xl — 18px</span><span style="font-size: var(--bd-font-size-2xl); font-weight: var(--bd-font-weight-semibold);">Page Subheading</span></div>
+      <div class="type-row"><span class="type-label">xl — 16px</span><span style="font-size: var(--bd-font-size-xl); font-weight: var(--bd-font-weight-semibold);">Section Heading</span></div>
+      <div class="type-row"><span class="type-label">lg — 14px</span><span style="font-size: var(--bd-font-size-lg); font-weight: var(--bd-font-weight-medium);">Button Label / Section Text</span></div>
+      <div class="type-row"><span class="type-label">md — 13px</span><span style="font-size: var(--bd-font-size-md);">Card Title / Description</span></div>
+      <div class="type-row"><span class="type-label">base — 12px</span><span style="font-size: var(--bd-font-size-base);">Default body text, form labels</span></div>
+      <div class="type-row"><span class="type-label">sm — 11px</span><span style="font-size: var(--bd-font-size-sm); color: var(--bd-text-secondary);">Hints, small labels</span></div>
+      <div class="type-row"><span class="type-label">xs — 10px</span><span style="font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">Badges, footnotes</span></div>
+    </div>
+
+    <h3>Font Families</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">IBM Plex Sans</div>
+        <div class="card-desc" style="font-family: var(--bd-font-family-primary);">
+          The quick brown fox jumps over the lazy dog. 0123456789
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Roboto Mono</div>
+        <div class="card-desc" style="font-family: var(--bd-font-family-mono);">
+          const x = 42; // monospace
+        </div>
+      </div>
+    </div>
+
+    <h3>Section Header Pattern</h3>
+    <div style="padding: var(--bd-space-4); background: var(--bd-bg-secondary); border-radius: var(--bd-radius-lg);">
+      <div class="section-header">Section Header</div>
+      <p style="font-size: var(--bd-font-size-base);">This is the standard section header style used across all projects. Uppercase, semibold, wide tracking, secondary color.</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       8. SPACING
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">08</span> Spacing (4px Grid)</h2>
+    <div class="flex-col" style="max-width: 500px;">
+      <div class="space-bar" style="width: 4px; min-width: fit-content;">space-1: 4px</div>
+      <div class="space-bar" style="width: 32px; min-width: fit-content;">space-2: 8px</div>
+      <div class="space-bar" style="width: 48px; min-width: fit-content;">space-3: 12px</div>
+      <div class="space-bar" style="width: 64px; min-width: fit-content;">space-4: 16px</div>
+      <div class="space-bar" style="width: 80px; min-width: fit-content;">space-5: 20px</div>
+      <div class="space-bar" style="width: 96px; min-width: fit-content;">space-6: 24px</div>
+      <div class="space-bar" style="width: 128px; min-width: fit-content;">space-8: 32px</div>
+      <div class="space-bar" style="width: 160px; min-width: fit-content;">space-10: 40px</div>
+      <div class="space-bar" style="width: 192px; min-width: fit-content;">space-12: 48px</div>
+      <div class="space-bar" style="width: 256px; min-width: fit-content;">space-16: 64px</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       9. BORDER RADIUS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">09</span> Border Radius</h2>
+    <div class="flex-row">
+      <div class="radius-box" style="border-radius: var(--bd-radius-sm);">sm 4px</div>
+      <div class="radius-box" style="border-radius: var(--bd-radius-md);">md 6px</div>
+      <div class="radius-box" style="border-radius: var(--bd-radius-lg);">lg 8px</div>
+      <div class="radius-box" style="border-radius: var(--bd-radius-xl);">xl 10px</div>
+      <div class="radius-box" style="border-radius: var(--bd-radius-2xl);">2xl 12px</div>
+      <div class="radius-box" style="border-radius: var(--bd-radius-3xl);">3xl 16px</div>
+      <div class="radius-box" style="border-radius: var(--bd-radius-full);">full</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       10. SHADOWS & ELEVATION
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">10</span> Shadows & Elevation</h2>
+    <div class="grid-4">
+      <div class="elevation-box" style="box-shadow: var(--bd-shadow-sm);">shadow-sm</div>
+      <div class="elevation-box" style="box-shadow: var(--bd-shadow-md);">shadow-md</div>
+      <div class="elevation-box" style="box-shadow: var(--bd-shadow-lg);">shadow-lg</div>
+      <div class="elevation-box" style="box-shadow: var(--bd-shadow-xl);">shadow-xl</div>
+    </div>
+    <div class="grid-3" style="margin-top: var(--bd-space-4);">
+      <div class="elevation-box" style="box-shadow: var(--bd-shadow-glow);">shadow-glow</div>
+      <div class="elevation-box" style="box-shadow: var(--bd-shadow-glow-lg);">shadow-glow-lg</div>
+      <div class="elevation-box" style="box-shadow: var(--bd-shadow-glow-xl);">shadow-glow-xl</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       11. GRADIENTS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">11</span> Gradients</h2>
+    <div class="flex-col">
+      <div class="gradient-bar" style="background: var(--bd-gradient-brand);">--bd-gradient-brand</div>
+      <div class="gradient-bar" style="background: var(--bd-gradient-brand-hover);">--bd-gradient-brand-hover</div>
+      <div class="gradient-bar" style="background: var(--bd-gradient-accent-bar); height: 8px;"></div>
+      <div style="text-align: center; font-size: var(--bd-font-size-xs); color: var(--bd-text-muted); margin-top: -8px;">--bd-gradient-accent-bar</div>
+      <div>
+        <div style="font-size: var(--bd-font-size-xs); color: var(--bd-text-muted); margin-bottom: var(--bd-space-2);">--bd-gradient-shimmer (animated)</div>
+        <div class="shimmer" style="max-width: 300px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       12. BUTTONS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">12</span> Buttons</h2>
+    <h3>Variants</h3>
+    <div class="flex-row">
+      <button class="btn btn-primary">Primary Action</button>
+      <button class="btn btn-secondary">Secondary</button>
+      <button class="btn btn-danger">Delete</button>
+    </div>
+    <h3>Sizes</h3>
+    <div class="flex-row">
+      <button class="btn btn-primary btn-sm">Small</button>
+      <button class="btn btn-primary">Default</button>
+      <button class="btn btn-primary btn-lg">Large</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       13. INPUTS & FORMS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">13</span> Inputs & Forms</h2>
+    <div class="grid-2">
+      <div class="flex-col">
+        <div>
+          <label style="font-size: var(--bd-font-size-sm); color: var(--bd-text-secondary); display: block; margin-bottom: var(--bd-space-1);">Text Input</label>
+          <input class="input" type="text" placeholder="Enter text...">
+        </div>
+        <div>
+          <label style="font-size: var(--bd-font-size-sm); color: var(--bd-text-secondary); display: block; margin-bottom: var(--bd-space-1);">Textarea</label>
+          <textarea class="input" placeholder="Write something..."></textarea>
+        </div>
+      </div>
+      <div class="flex-col">
+        <div>
+          <label style="font-size: var(--bd-font-size-sm); color: var(--bd-text-secondary); display: block; margin-bottom: var(--bd-space-1);">Search</label>
+          <input class="input" type="search" placeholder="Search resources...">
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--bd-space-3);">
+          <label style="font-size: var(--bd-font-size-sm); color: var(--bd-text-secondary);">Toggle</label>
+          <input type="checkbox" class="toggle">
+          <input type="checkbox" class="toggle" checked>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       14. CARDS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">14</span> Cards</h2>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title" style="color: var(--bd-blue);">AI Instructions</div>
+        <div class="card-desc">Logic-based rules for controlling AI style and tone during gameplay.</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color: var(--bd-purple);">Story Cards</div>
+        <div class="card-desc">Structured character, location, and faction templates for world-building.</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color: var(--bd-green);">Scripts</div>
+        <div class="card-desc">JavaScript game mechanics and automation for advanced scenario creators.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       15. BADGES & TAGS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">15</span> Badges & Tags</h2>
+
+    <h3>Status Badges</h3>
+    <div class="flex-row">
+      <span class="badge" style="background: var(--bd-success-bg); color: var(--bd-success); border: 1px solid var(--bd-success-border);">Active</span>
+      <span class="badge" style="background: var(--bd-error-bg); color: var(--bd-error); border: 1px solid var(--bd-error-border);">Deprecated</span>
+      <span class="badge" style="background: var(--bd-warning-bg); color: var(--bd-warning); border: 1px solid var(--bd-warning-border);">Beta</span>
+      <span class="badge" style="background: var(--bd-info-bg); color: var(--bd-info); border: 1px solid var(--bd-info-border);">New</span>
+    </div>
+
+    <h3>Category Tags</h3>
+    <div class="flex-row">
+      <span class="tag" style="background: rgba(59,130,246,0.12); color: var(--bd-blue);">Instructions</span>
+      <span class="tag" style="background: rgba(168,85,247,0.12); color: var(--bd-purple);">Story Cards</span>
+      <span class="tag" style="background: rgba(34,197,94,0.12); color: var(--bd-green);">Scripts</span>
+      <span class="tag" style="background: rgba(251,191,36,0.12); color: var(--bd-amber);">Automation</span>
+      <span class="tag" style="background: rgba(6,182,212,0.12); color: var(--bd-cyan);">Tools</span>
+      <span class="tag" style="background: rgba(249,115,22,0.12); color: var(--bd-orange);">Extension</span>
+    </div>
+
+    <h3>Interactive Tags (hover me)</h3>
+    <div class="flex-row">
+      <span class="tag">Default</span>
+      <span class="tag">Hover</span>
+      <span class="tag">Interactive</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       16. TOASTS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">16</span> Toasts</h2>
+    <div class="flex-col" style="max-width: 400px;">
+      <div class="toast toast-success">Settings saved successfully</div>
+      <div class="toast toast-error">Failed to load resources</div>
+      <div class="toast toast-info">Update available: v2.0</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       17. CODE & CONTENT
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">17</span> Code & Content</h2>
+
+    <h3>Inline Code</h3>
+    <p>Use the <code>bdWidget()</code> function to create widgets. Pass a <code>type</code> parameter like <code>'bar'</code> or <code>'stat'</code>.</p>
+
+    <h3>Code Block</h3>
+    <pre><code>// BetterScripts widget example
+const modifier = (text) => {
+  let widgets = '';
+  widgets += bdWidget('hp-bar', {
+    type: 'bar',
+    label: 'HP',
+    value: state.game.hp,
+    max: 100,
+    color: 'var(--bd-success)',
+    align: 'left'
+  });
+  return { text: text + widgets };
+};</code></pre>
+
+    <h3>Links & Highlights</h3>
+    <p>Visit the <a href="#">BetterRepository</a> for curated resources. Use <mark>highlighted text</mark> for emphasis in documentation.</p>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       18. MODAL
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">18</span> Modal Dialog</h2>
+    <div class="modal-preview">
+      <div class="modal-box">
+        <h4>Delete Preset?</h4>
+        <p>This will permanently remove "Fantasy RPG" and all its configured settings.</p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary">Cancel</button>
+          <button class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       19. BETTERSCRIPTS WIDGET BAR
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">19</span> BetterScripts Widget Bar</h2>
+    <p>Preview of how game widgets render using design tokens.</p>
+    <div class="widget-bar">
+      <!-- Stat widget -->
+      <div class="widget-stat">
+        <span class="label">LVL</span>
+        <span class="value" style="color: var(--bd-purple);">12</span>
+      </div>
+      <!-- Bar widget -->
+      <div style="display: flex; align-items: center; gap: var(--bd-space-2); flex: 1;">
+        <span style="font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">HP</span>
+        <div class="widget-progress">
+          <div class="widget-progress-fill" style="width: 75%; background: var(--bd-success);"></div>
+        </div>
+        <span style="font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">75/100</span>
+      </div>
+      <!-- Badge widget -->
+      <span class="badge" style="background: rgba(168,85,247,0.15); color: var(--bd-purple);">Poisoned</span>
+      <!-- Counter widget -->
+      <div class="widget-stat">
+        <span>&#x1F4B0;</span>
+        <span class="value" style="color: var(--bd-amber);">1,250</span>
+        <span style="color: var(--bd-success); font-size: var(--bd-font-size-xs);">+50</span>
+      </div>
+    </div>
+
+    <h3>Progress Bars (all status colors)</h3>
+    <div class="flex-col" style="max-width: 400px;">
+      <div style="display: flex; align-items: center; gap: var(--bd-space-3);">
+        <span style="width: 50px; font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">Health</span>
+        <div class="widget-progress" style="flex: 1;"><div class="widget-progress-fill" style="width: 85%; background: var(--bd-success);"></div></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: var(--bd-space-3);">
+        <span style="width: 50px; font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">Mana</span>
+        <div class="widget-progress" style="flex: 1;"><div class="widget-progress-fill" style="width: 40%; background: var(--bd-blue);"></div></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: var(--bd-space-3);">
+        <span style="width: 50px; font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">XP</span>
+        <div class="widget-progress" style="flex: 1;"><div class="widget-progress-fill" style="width: 60%; background: var(--bd-cyan);"></div></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: var(--bd-space-3);">
+        <span style="width: 50px; font-size: var(--bd-font-size-xs); color: var(--bd-text-muted);">Danger</span>
+        <div class="widget-progress" style="flex: 1;"><div class="widget-progress-fill" style="width: 90%; background: var(--bd-error);"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       20. INPUT MODES
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">20</span> Input Modes</h2>
+    <p>AI Dungeon input modes, each with its own color identity.</p>
+    <div class="flex-row">
+      <div class="mode-chip" style="color: var(--bd-mode-do); border-color: var(--bd-mode-do); background: var(--bd-mode-do-glow);">Do</div>
+      <div class="mode-chip" style="color: var(--bd-mode-try); border-color: var(--bd-mode-try); background: var(--bd-mode-try-glow);">Try</div>
+      <div class="mode-chip" style="color: var(--bd-mode-say); border-color: var(--bd-mode-say); background: var(--bd-mode-say-glow);">Say</div>
+      <div class="mode-chip" style="color: var(--bd-mode-story); border-color: var(--bd-mode-story); background: var(--bd-mode-story-glow);">Story</div>
+      <div class="mode-chip" style="color: var(--bd-mode-see); border-color: var(--bd-mode-see); background: var(--bd-mode-see-glow);">See</div>
+      <div class="mode-chip" style="color: var(--bd-mode-command); border-color: var(--bd-mode-command); background: var(--bd-mode-command-glow);">Command</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       21. TRIGGER HIGHLIGHTS
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">21</span> Trigger Highlights</h2>
+    <p>Story card keyword detection in narrative text.</p>
+    <div class="card" style="line-height: var(--bd-line-height-relaxed);">
+      The <span class="trigger-word trigger-active">ancient dragon</span> descended upon the village,
+      its scales shimmering in the moonlight. The <span class="trigger-word trigger-suggested">village elder</span>
+      called upon the <span class="trigger-word trigger-active">hero of legend</span> to face the creature.
+      Only the <span class="trigger-word trigger-suggested">enchanted sword</span> could pierce its armor.
+    </div>
+    <div class="flex-row" style="margin-top: var(--bd-space-3);">
+      <span class="trigger-word trigger-active" style="font-size: var(--bd-font-size-sm);">Active trigger</span>
+      <span class="trigger-word trigger-suggested" style="font-size: var(--bd-font-size-sm);">Suggested trigger</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       22. LOADING & SHIMMER
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">22</span> Loading States</h2>
+    <div class="grid-2">
+      <div style="background: var(--bd-loading-bg); border-radius: var(--bd-radius-xl); padding: var(--bd-space-8); text-align: center;">
+        <div style="width: 40px; height: 40px; border: 3px solid var(--bd-bg-active); border-top-color: var(--bd-loading-spinner); border-radius: 50%; margin: 0 auto var(--bd-space-4); animation: spin 1s linear infinite;"></div>
+        <div style="font-size: var(--bd-font-size-sm); color: var(--bd-text-muted);">Loading resources...</div>
+      </div>
+      <div style="background: var(--bd-bg-secondary); border-radius: var(--bd-radius-xl); padding: var(--bd-space-6);">
+        <div class="section-header">Skeleton Loading</div>
+        <div class="flex-col" style="gap: var(--bd-space-2);">
+          <div class="shimmer" style="width: 70%;"></div>
+          <div class="shimmer" style="width: 100%;"></div>
+          <div class="shimmer" style="width: 85%;"></div>
+          <div class="shimmer" style="width: 45%; margin-top: var(--bd-space-2);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+
+  <!-- ════════════════════════════════════════════════════════════
+       23. SCROLLBAR
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">23</span> Scrollbar</h2>
+    <div style="max-height: 120px; overflow-y: auto; background: var(--bd-bg-secondary); border-radius: var(--bd-radius-lg); padding: var(--bd-space-4); border: 1px solid var(--bd-border-subtle);">
+      <p style="margin-bottom: var(--bd-space-3);">Scroll this container to see the custom scrollbar styling.</p>
+      <p style="margin-bottom: var(--bd-space-3); color: var(--bd-text-secondary);">The scrollbar uses <code>--bd-scrollbar-width</code> (8px), with track colored <code>--bd-scrollbar-track</code> and thumb colored <code>--bd-scrollbar-thumb</code>.</p>
+      <p style="margin-bottom: var(--bd-space-3); color: var(--bd-text-secondary);">On hover, the thumb transitions to <code>--bd-scrollbar-hover</code>.</p>
+      <p style="margin-bottom: var(--bd-space-3); color: var(--bd-text-secondary);">This ensures consistent scrollbar appearance across all ecosystem projects.</p>
+      <p style="margin-bottom: var(--bd-space-3); color: var(--bd-text-secondary);">Additional filler text to ensure scrolling is possible in this demo container.</p>
+      <p style="color: var(--bd-text-muted);">End of scrollable content.</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       24. Z-INDEX SCALE
+       ════════════════════════════════════════════════════════════ -->
+  <div class="showcase-section">
+    <h2><span class="section-number">24</span> Z-Index Scale</h2>
+    <div style="display: flex; align-items: flex-end; gap: var(--bd-space-2); height: 200px;">
+      <div style="flex: 1; height: 10%; background: var(--bd-bg-tertiary); border-radius: var(--bd-radius-sm) var(--bd-radius-sm) 0 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--bd-font-family-mono); color: var(--bd-text-muted);">base 0</div>
+      <div style="flex: 1; height: 15%; background: var(--bd-bg-elevated); border-radius: var(--bd-radius-sm) var(--bd-radius-sm) 0 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--bd-font-family-mono); color: var(--bd-text-muted);">elev 1</div>
+      <div style="flex: 1; height: 25%; background: var(--bd-blue); border-radius: var(--bd-radius-sm) var(--bd-radius-sm) 0 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--bd-font-family-mono); color: var(--bd-text-on-accent);">sticky 100</div>
+      <div style="flex: 1; height: 32%; background: var(--bd-purple); border-radius: var(--bd-radius-sm) var(--bd-radius-sm) 0 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--bd-font-family-mono); color: var(--bd-text-on-accent);">fixed 200</div>
+      <div style="flex: 1; height: 45%; background: var(--bd-cyan); border-radius: var(--bd-radius-sm) var(--bd-radius-sm) 0 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--bd-font-family-mono); color: var(--bd-text-on-accent);">drop 1k</div>
+      <div style="flex: 1; height: 58%; background: var(--bd-amber); border-radius: var(--bd-radius-sm) var(--bd-radius-sm) 0 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--bd-font-family-mono); color: var(--bd-text-inverse);">modal-bg 9k</div>
+      <div style="flex: 1; height: 70%; background: var(--bd-orange); border-radius: var(--bd-radius-sm) var(--bd-radius-sm) 0 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--bd-font-family-mono); color: var(--bd-text-on-accent);">modal 10k</div>
+      <div style="flex: 1; height: 78%; background: var(--bd-green); border-radius: var(--bd-radius-sm) var(--bd-radius-sm) 0 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--bd-font-family-mono); color: var(--bd-text-on-accent);">tut 30k</div>
+      <div style="flex: 1; height: 88%; background: var(--bd-error); border-radius: var(--bd-radius-sm) var(--bd-radius-sm) 0 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--bd-font-family-mono); color: var(--bd-text-on-accent);">toast 100k</div>
+      <div style="flex: 1; height: 100%; background: var(--bd-accent-primary); border-radius: var(--bd-radius-sm) var(--bd-radius-sm) 0 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: var(--bd-font-family-mono); color: var(--bd-text-on-accent);">load 1M</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       FOOTER
+       ════════════════════════════════════════════════════════════ -->
+  <hr>
+  <div style="text-align: center; padding: var(--bd-space-8) 0; color: var(--bd-text-muted); font-size: var(--bd-font-size-sm);">
+    <p>BetterEcosystem Design System &mdash; Canonical source: <code>design/theme-variables.css</code></p>
+    <p style="margin-top: var(--bd-space-2);">This showcase uses only <code>var(--bd-*)</code> tokens. Zero hardcoded hex values.</p>
+  </div>
+
+</body>
+</html>
