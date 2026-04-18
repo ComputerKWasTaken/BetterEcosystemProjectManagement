@@ -1,5 +1,7 @@
 # 01 — Architecture
 
+> This document describes the MVP (Frontier Lite) architecture. Two-way comms (ops, responses, acks) are a post-MVP extension — noted where relevant but not designed here.
+
 ## Three layers, one direction of dependency
 
 ```
@@ -8,71 +10,55 @@ Frontier Core   ─────────────────────�
 Transport       ─────────────────────────────────────────►  depends on nothing BD-specific
 ```
 
-- **Transport** has no knowledge of envelopes, modules, or heartbeats. It exposes two channels: story cards ("a card changed" / "write a card") and invisible text ("these chars appeared in adventure output" / "encode these chars into output we're emitting").
-- **Core** has no knowledge of specific modules' semantics. It knows about envelopes, routing, dedup, transport selection, and module lifecycle.
-- **Modules** are built on top of Core. They register handlers, publish state, and optionally declare a default transport. They don't care how bytes move — Core routes for them.
+- **Transport** has no knowledge of modules or module semantics. It exposes one channel: story cards ("a card changed") plus a dumb write helper for the heartbeat.
+- **Core** has no knowledge of specific modules' semantics. It knows about card prefixes, the current action id, and module lifecycle.
+- **Modules** are built on top of Core. They subscribe to state-card changes and render / react. They don't care how cards move.
 
 ## Component responsibilities
 
 ### Transport layer
 
-#### Story-card channel
-
 **`services/frontier/ws-interceptor.js`** — page-world script
-- Injected at `document_start` with `world: "MAIN"` (Chrome MV3) or via `<script>` tag fallback (older Firefox).
-- Shims `window.WebSocket` to observe every frame.
-- Identifies frames carrying `adventureStoryCardsUpdate` in the GraphQL subscription response.
-- Also forwards AI-Dungeon output text frames (for text-transport decoding). Exact subscription/event names TBD during Phase 1 instrumentation; anything carrying the current turn's output text is in scope.
-- Forwards normalized payloads to the content script via `window.postMessage({ source: 'BD_FRONTIER_WS', kind: 'cards' | 'output', payload: ... })`.
+- Injected at `document_start` with `world: "MAIN"` (Chrome MV3) or via `<script>` tag fallback on platforms where MAIN world isn't available (older Firefox, Android WebView — Phase 0 confirms which).
+- Shims `window.WebSocket` to observe every GraphQL subscription frame.
+- Identifies two payload shapes:
+  - `adventureStoryCardsUpdate` — card list updates.
+  - Action-window updates (exact subscription name TBD during Phase 0 instrumentation) — carries the ordered action list with ids. This is how Core knows which action id is the current tail.
+- Forwards normalized payloads to the content script via `window.postMessage({ source: 'BD_FRONTIER_WS', kind: 'cards' | 'actions', payload: ... })`.
 - Exposes nothing to page JS beyond the shim itself.
+- Idempotent: re-invoking it does nothing if already installed.
 
 **`services/frontier/card-stream.js`** — content-script-side service
-- Listens for `BD_FRONTIER_WS` postMessages of kind `cards`.
-- Maintains an authoritative `Map<cardId, card>` of the current adventure's Story Cards.
-- Computes diffs between consecutive WS pushes: `{ added, updated, removed }`.
+- Listens for `BD_FRONTIER_WS` postMessages of kind `cards` AND kind `actions`.
+- Maintains two pieces of state:
+  - `Map<cardId, card>` of the current adventure's Story Cards.
+  - Current action-window array; exposes `getCurrentActionId()` → the tail id (or `null` if unknown).
+- Computes diffs between consecutive card pushes: `{ added, updated, removed }`.
 - Emits events consumed by `core.js`:
   - `frontier:cards:full` — full snapshot (on first load + adventure change)
   - `frontier:cards:diff` — diff from previous snapshot
-- Exposes the card state synchronously for Core and any future consumers (scanner migration).
-- Provides `writeCard(title, value, fields)` — wraps the GraphQL write path. Used by Core for heartbeat and inbound responses.
+  - `frontier:actions:change` — current action id changed (tail moved, either forward or backward)
+- Provides `writeCard(title, value, fields)` — wraps the GraphQL write path. In MVP, only Core uses this, only for the heartbeat card.
 - Helper: `isFrontierCard(card)` for UI-filtering consumers.
 
-#### Invisible-text channel
-
-**`services/frontier/text-codec.js`** — encoder/decoder ported from Robyn's `invisible-unicode-decoder`
-- Pure, module-agnostic. No BD or AI-Dungeon dependencies.
-- Exports:
-  - `encode(obj) → string` — encodes a JSON-serializable object as an invisible-Unicode frame (frame markers + encoded payload).
-  - `decode(text) → { frames: unknown[], cleanText: string }` — extracts all Frontier frames from an arbitrary text blob, returns the decoded frames and the text with all Frontier-owned invisible chars removed.
-  - `strip(text) → string` — cheap stripper for use in the Context Modifier; same as `decode(...).cleanText` without the parse.
-- Frame format and character set are whatever Robyn's upstream defines; the port preserves her encoding precisely so frames written by her reference implementations are decoded correctly.
-- Carries a codec-version byte in the frame so future re-ports can stay compatible.
-- Exposed to modules via `FrontierContext.text` helpers; Core uses it directly.
-
-**`services/frontier/text-stream.js`** — content-script-side service
-- Listens for `BD_FRONTIER_WS` postMessages of kind `output` (and a MutationObserver fallback on `#gameplay-output` for robustness).
-- For each new output block, runs `textCodec.decode` to extract Frontier frames.
-- Dedups frames by an embedded `turn` or frame id (the decoder attaches a hash) so re-observations of the same block don't re-fire.
-- Emits `frontier:text:frames` events with the decoded envelope list.
-- Also maintains a per-turn outbound buffer: Core calls `textStream.queue(envelope)` during handler execution (for BD → script text writes, if any module ever needs that), but in MVP Core only *reads* text frames; text-transport writes are purely the script's job.
+> **Note:** there is intentionally no text codec, no text-frame stream, and no MutationObserver on the adventure output. Frontier Lite observes cards and actions only.
 
 ### Core layer
 
-**`services/frontier/core.js`** — `FrontierCore` class
-- Subscribes to `frontier:cards:diff` (card transport) AND `frontier:text:frames` (text transport) events.
-- **Card path:** identifies card families by title prefix:
-  - `frontier:out` → inbound request queue from the script (card transport)
-  - `frontier:state:*` → persistent state published by the script (module-specific semantics)
-  - `frontier:in:*` → response queue we ourselves wrote (used mostly for ack reconciliation)
-  - `frontier:heartbeat` → our own output; we write it, we ignore incoming changes to it
-- **Text path:** every decoded text frame is an envelope. Unified envelope shape with card-transport envelopes; Core routes both identically once parsed.
-- Parses envelopes, dedups by `id` (shared dedup set across transports), routes to module handlers.
-- **Transport selection** for outbound (BD → script): by default, Core writes responses via card transport (`frontier:in:<module>`). Modules can override via `ctx.respond(id, { transport: 'text' })` — though MVP expects almost all BD-side responses to use card transport since text-transport writes require coordinating with the next turn's output, which BD doesn't own.
-- Maintains the heartbeat loop: writes `frontier:heartbeat` on adventure load, on module enable/disable, and on a periodic interval or on every WS turn (whichever is cheaper). Heartbeat payload advertises which transports are enabled globally + per-module.
-- Tracks in-flight multi-turn requests: `Map<reqId, { module, op, startTurn, status, lastEmittedTurn, sourceTransport }>`.
+**`services/frontier/core.js`** — `FrontierCore` class (Lite)
+- Subscribes to `frontier:cards:diff` and `frontier:actions:change` from `card-stream.js`.
+- Identifies card families by title prefix:
+  - `frontier:state:<name>` → persistent state published by a script. Routed to the module that declared `stateNames: ['<name>']`.
+  - `frontier:heartbeat` → Core's own output. Core ignores incoming changes to it (echo suppression by id or by write-receipt correlation).
+  - Everything else under `frontier:*` → ignored with a debug log (reserved for future Full-Frontier use).
+- Tracks the current action id via `card-stream.getCurrentActionId()`. Re-dispatches `onStateChange` to interested modules when the action id changes, so modules can look up a different history entry without the state card having changed.
+- Maintains the heartbeat loop: writes `frontier:heartbeat` on adventure load, on module enable/disable, and at most once per WS push (coalesced). Heartbeat payload advertises enabled modules + protocol version (see [02 — Protocol](./02-protocol.md#frontierheartbeat)).
 - Scoped per adventure: state clears on `detectCurrentAdventure` transition.
-- Exposes `registerModule(id, moduleDef)` API.
-- Handles protocol-version negotiation (reject unknown `v` in envelopes with a structured error).
+- Exposes `registerModule(moduleDef)` API.
+- Handles protocol-version negotiation on incoming state cards (unknown `v` → debug warning, skip dispatch).
+
+**What Core deliberately does NOT do in Lite:**
+- No envelope parsing. No request dedup. No ack/TTL. No in-flight request tracking. No op dispatch. These are all Full-Frontier concerns; they arrive in a later phase alongside `frontier:out` / `frontier:in:*` cards.
 
 **`services/frontier/module-registry.js`**
 - Keeps the set of registered modules and their enabled/disabled state.
@@ -85,11 +71,11 @@ Transport       ─────────────────────�
 A module is an object matching the `FrontierModule` interface documented in [03 — Modules](./03-modules.md). For MVP:
 
 **`modules/scripture/module.js`** — module definition
-- Registers with `FrontierCore`. Declares `defaultTransport: 'text'` for its value envelopes.
-- Subscribes to changes on `frontier:state:scripture` (the widget **manifest** — schema-only, rarely changes: ids, types, labels, colors, zones).
-- Listens for `frontier:text:frames` envelopes targeting `scripture` with `op: 'values'` — these carry the per-turn dynamic data (current HP, current gold, etc.) and are what reverts naturally on undo/retry.
-- Reconciles: manifest change → rebuild widget DOM; values change → update live values in existing widgets. No re-render when only values change.
-- Also accepts card-transport request envelopes via `frontier:out` for on-demand operations (e.g. `op: 'flashWidget'` for animations).
+- Registers with `FrontierCore`. Declares `stateNames: ['scripture']`.
+- Subscribes to changes on `frontier:state:scripture`. The card holds BOTH the manifest (widget schema) AND the history map (`{ [actionId]: values }`).
+- On state change OR on action-id change, recomputes `values = history[currentActionId] ?? fallback(history) ?? manifest-defaults`, then updates widgets in place.
+- On manifest change (new/removed/changed widget definitions), rebuilds widget DOM accordingly. Values come from the history lookup as usual.
+- No ops. No outbound traffic. Pure reader + renderer.
 
 **`modules/scripture/renderer.js`** — widget DOM/CSS
 - All widget element creation (`createStatWidget`, `createBarWidget`, etc.) — 9 types.
@@ -108,36 +94,40 @@ BetterDungeon/
 ├── services/
 │   ├── ai-dungeon-service.js          (existing, unchanged)
 │   ├── loading-screen.js              (existing, unchanged)
-│   ├── story-card-cache.js            (existing; consumed by card-stream in follow-up work)
+│   ├── story-card-cache.js            (existing; card-stream optionally hydrates it, non-breaking)
 │   ├── story-card-scanner.js          (existing; migration deferred)
 │   └── frontier/                      ← NEW
-│       ├── ws-interceptor.js          ← NEW (page-world, document_start)
-│       ├── card-stream.js             ← NEW (content script, card transport)
-│       ├── text-codec.js              ← NEW (port of Robyn's invisible-unicode-decoder)
-│       ├── text-stream.js             ← NEW (content script, text transport)
-│       ├── core.js                    ← NEW
+│       ├── ws-interceptor.js          ← NEW (page-world, document_start; cards + actions)
+│       ├── card-stream.js             ← NEW (content script; diff + action-id tracking)
+│       ├── core.js                    ← NEW (thin router + heartbeat emitter)
 │       └── module-registry.js         ← NEW
 ├── modules/                           ← NEW directory
 │   └── scripture/
-│       ├── module.js                  ← NEW (registers with Core; declares defaultTransport)
-│       ├── renderer.js                ← NEW (migrated from better_scripts_feature.js)
-│       └── validators.js              ← NEW (migrated)
+│       ├── module.js                  ← NEW (registers with Core; reads manifest + history)
+│       ├── renderer.js                ← NEW (widget DOM/CSS; migrated from better_scripts_feature.js)
+│       └── validators.js              ← NEW (widget schema + HTML/CSS sanitization; migrated)
 ├── features/
 │   ├── (better_scripts_feature.js DELETED)
-│   └── (other features unchanged)
+│   └── (other features unchanged; story-card consumers gain a frontier:* filter)
 ├── core/
 │   └── feature-manager.js             (extended to know about Frontier modules)
-├── main.js                            (update message handlers: SET_BETTERSCRIPTS_DEBUG → SET_FRONTIER_DEBUG, add module + text-transport toggle messages)
+├── main.js                            (update message handlers: SET_BETTERSCRIPTS_DEBUG → SET_FRONTIER_DEBUG, add module toggle messages)
 ├── manifest.json                      (add MAIN-world content script entry for ws-interceptor.js; update loaded files list)
-├── popup.html / popup.js              (update toggles: BetterScripts → Frontier + Scripture sub-toggle + global invisible-text toggle)
+├── popup.html / popup.js              (update toggles: BetterScripts → Frontier + per-module sub-toggles)
 └── styles.css                         (no change expected; Scripture reuses existing widget CSS)
 ```
 
 ## Cross-component data flow
 
-### Inbound via card transport (Script → BD)
+### Script publishes state (Script → BD)
+
 ```
-AI Dungeon script writes `frontier:out` card (during onOutput)
+AI Dungeon script, during onOutput:
+  - Reads current action id from history / actionWindow
+  - Computes new values for its module (e.g. Scripture widget values)
+  - Stores values into state.frontier.scriptureHistory[actionId]
+  - Prunes history to historyLimit
+  - Writes `frontier:state:scripture` card with { v, manifest, history }
          │
          ▼
 AI Dungeon backend pushes `adventureStoryCardsUpdate` over WebSocket
@@ -149,70 +139,59 @@ ws-interceptor.js captures frame, postMessage to content script
 card-stream.js diffs against previous snapshot, emits frontier:cards:diff
          │
          ▼
-core.js sees `frontier:out` updated, parses envelopes, dedups by id
+core.js sees `frontier:state:scripture` updated, looks up the module
+registered for stateName 'scripture', dispatches onStateChange(parsed)
          │
          ▼
-For each envelope: looks up module by `module` field, invokes handler
-         │
-         ▼
-Module handler processes request (sync or kicks off async work)
+Scripture module's onStateChange:
+  - parsed.manifest → reconcile widget DOM (create/update/remove widgets)
+  - parsed.history → cached; values looked up per action id
+  - Computes values = history[Core.currentActionId] ?? fallback
+  - Applies values to widgets
 ```
 
-### Inbound via text transport (Script → BD, ephemeral)
-```
-AI Dungeon script encodes envelope(s) via textCodec.encode(...) during onOutput,
-concatenates the invisible-char frame onto the output text it returns
-         │
-         ▼
-AI Dungeon backend emits the combined text to the player's UI and back-channel
-         │
-         ▼
-ws-interceptor.js (or MutationObserver fallback) captures the output block
-         │
-         ▼
-text-stream.js decodes Frontier frames via textCodec.decode(),
-dedups by frame hash, emits frontier:text:frames
-         │
-         ▼
-core.js receives frames (same envelope shape as card path),
-dedups by id against shared set, routes to module handlers
-         │
-         ▼
-Module handler processes. No ack path — if the user undoes the turn,
-the text block (and its frames) vanishes, and Core's dedup set will
-re-accept a new frame if the script re-emits on a replayed turn.
-```
+### Action tail changes (undo / retry / edit)
 
-### Outbound via card transport (BD → Script)
 ```
-Module calls ctx.respond(reqId, payload) or ctx.emit(...)
+User hits Undo in AI Dungeon
          │
          ▼
-Core appends envelope to in-memory `frontier:in:<module>` queue
+AI Dungeon backend updates the action window (drops tail action)
          │
          ▼
-Core batches queued envelopes + issues GraphQL UpdateStoryCard mutation
+ws-interceptor.js captures the action update frame
          │
          ▼
-AI Dungeon backend accepts, broadcasts update
+card-stream.js updates its action list, emits frontier:actions:change
          │
          ▼
-(Eventually) Script reads storyCards array on its next hook run,
-finds the frontier:in:<module> card, dedups consumed envelopes by id,
-processes fresh ones, writes ack ids into its next `frontier:out`
+core.js re-dispatches a synthetic onActionChange(newTailId) to modules
+that declared they care about action-id changes (`tracksActionId: true`)
+         │
+         ▼
+Scripture recomputes values = history[newTailId] and updates widgets
+
+(The state card itself never changed. Only the key BD reads from it did.)
 ```
 
-### Outbound via text transport (BD → Script)
+### Heartbeat (BD → script)
 
-Not used in MVP. BD cannot insert text into the player's adventure history; the only way a BD-originated envelope could reach the script via text is if it were piggy-backed onto something the user types, which is out of scope. MVP uses card transport for all BD-side writes.
-
-### Heartbeat
 ```
 Core writes `frontier:heartbeat` card on:
   - Adventure load
   - Module enable/disable
-  - Every N turns as a liveness refresh (default: every turn)
-Payload: { v: 1, ts: Date.now(), modules: [{ id, version, ops: [...] }] }
+  - Every N turns as a liveness refresh (default: every turn, coalesced)
+
+Payload (simplified for Lite):
+  {
+    v: 1,
+    frontier: { version, protocol: 1 },
+    ts: Date.now(),
+    tailActionId: <currently-known tail id, for script cross-checking>,
+    modules: [
+      { id, version, stateNames: ['scripture'] }
+    ]
+  }
 ```
 
 ## Integration with existing BetterDungeon components
@@ -223,11 +202,10 @@ The Frontier top-level toggle behaves like any other feature: it initializes `se
 ### Popup UI
 Today: a single "BetterScripts" toggle.
 V2: a collapsible "Frontier" section containing:
-- The Frontier master toggle.
-- A global "Enable invisible text transport" toggle (default on). When off, text transport is disabled for every module regardless of per-module preference.
-- A nested list of modules, each with its own module toggle AND (for modules that use text transport) a per-module invisible-text sub-toggle. Hierarchical: global=off disables everything; global=on defers to per-module.
+- The Frontier master toggle (off → Core + all modules inert).
+- A nested list of modules, each with its own toggle. For MVP: just Scripture.
 - A debug toggle for Frontier Core (replaces `SET_BETTERSCRIPTS_DEBUG`).
-- (Future) A "Manage modules…" button for the registry UI.
+- (Future placeholder, not rendered in MVP:) "Manage modules…" button for the registry UI.
 
 ### Story Card Cache
 `services/story-card-cache.js` is currently populated by `story-card-scanner.js` scraping the DOM. In the MVP, we leave the cache's existing pathway untouched and additionally hydrate it from `card-stream.js` when it fires. Full migration to card-stream as the sole source of truth happens in a later phase.

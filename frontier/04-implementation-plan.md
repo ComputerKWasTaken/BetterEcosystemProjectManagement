@@ -19,181 +19,112 @@ Frontier is part of **BetterDungeon V2**, which bundles:
 
 Each phase has an acceptance criterion. A phase is "done" when the criterion is met, verified in a real browser, and committed with a passing build.
 
-### Phase 0 — Pre-work (workspace prep)
+### Phase 0 — Pre-work (workspace prep + action-ID investigation)
 
-- [ ] Create `services/frontier/` and `modules/scripture/` directories with placeholder `.gitkeep` files.
-- [ ] Confirm Chrome `world: "MAIN"` behavior on the lowest-supported version; confirm Firefox fallback path.
-- [ ] Snapshot the current `better_scripts_feature.js` for easy reference during migration.
-- [ ] Clone Robyn's `invisible-unicode-decoder` repo locally; read its test suite and implementation; write a short porting plan identifying:
-  - Frame marker codepoints
-  - Payload encoding scheme (how bytes become invisible chars)
-  - Codec version byte location
-  - Any TypeScript-only language features needing translation (enums, type-only imports, etc.)
+**Why separate:** the entire design rests on the assumption that AI Dungeon action ids are stable across retry/edit/continue. Verify that BEFORE writing any code.
 
-**Acceptance:** directories exist in git; team decision documented on Firefox fallback (either `world: "MAIN"` works on our supported Firefox min, or we'll inject via `<script>` tag); porting plan committed in `services/frontier/PORT_NOTES.md`.
+**Work:**
 
-### Phase 1A — Card transport
+1. Set up a scratch scenario with a minimal Output Modifier that logs `history.map(h => h.id)` on every turn. Also log `info.actionCount`.
+2. Manually walk through a matrix of operations:
+   - Normal forward progression → new ids appended.
+   - **Undo** → does the dropped tail keep its id if redone, or get a new one? (Do undo/redo a few times; note whether ids are preserved.)
+   - **Retry** → does the tail get a new id, or does the old one stay and the text change?
+   - **Continue** → does a new action get a new id, or does the previous tail extend?
+   - **Edit in place** → does the edited action keep its id?
+   - **Refresh the page** → do ids persist in history?
+   - **Multiple adventures loaded in different tabs** → are ids unique per adventure?
+3. Record findings in `services/frontier/PORT_NOTES.md` (or `ACTION_IDS.md` — rename for clarity). Flag any behavior that breaks the Scripture history assumption.
+4. In parallel, instrument the AI Dungeon WebSocket in the browser console to identify which GraphQL subscription carries the action window (`adventureActionsUpdate`? `actionWindowUpdate`? something else?). Log distinct top-level `data.*` keys over a few turns.
+5. Create `services/frontier/` and `modules/scripture/` directories with `.gitkeep`.
+6. Confirm `world: "MAIN"` behavior on:
+   - Chromium (Chrome stable + lowest supported Chromium version per `manifest.json`).
+   - Firefox (stable + strict_min_version).
+   - Android WebView (via the Android APK build once a dev build exists; may need a `<script>` injection fallback).
+7. Snapshot `features/better_scripts_feature.js` (git history preserves this; just note the commit SHA in planning).
+
+**Acceptance:**
+- Directories exist in git.
+- `ACTION_IDS.md` documents empirical behavior for every operation in the matrix; we have a confirmed green light to proceed with action-ID history OR a documented fallback if something is unstable.
+- WS subscription name for the action window identified.
+- Multiplatform `world: "MAIN"` status documented (which platforms work natively, which need the `<script>` fallback).
+
+### Phase 1 — Scripture on action-ID, end-to-end
+
+This is the big one. Delivers a working Scripture widget system using the new Frontier architecture. Smaller sub-steps land as separate commits but all ship together.
 
 **Files:**
 - `services/frontier/ws-interceptor.js` (new)
 - `services/frontier/card-stream.js` (new)
-- `manifest.json` (edit)
-
-**Work:**
-
-1. Write `ws-interceptor.js` as a self-contained IIFE that:
-   - Replaces `window.WebSocket` with a wrapper class that calls the original and observes frames.
-   - Parses each frame as JSON, looks for the `adventureStoryCardsUpdate` subscription payload AND the (TBD name) output-text subscription payload.
-   - Forwards normalized data via `window.postMessage({ source: 'BD_FRONTIER_WS', kind: 'cards' | 'output', payload })`.
-   - Is idempotent: re-executing it does nothing if already installed.
-2. Write `card-stream.js` as a content-script service:
-   - Listens on `window` for `BD_FRONTIER_WS` messages of kind `cards` (validating `event.source === window` and `data.source === 'BD_FRONTIER_WS'`).
-   - Maintains `this.cards = new Map()` keyed by card id.
-   - On each push: compute diff, emit `frontier:cards:full` (on first push / adventure change) and `frontier:cards:diff` events via a simple EventTarget.
-   - Exposes `writeCard(title, value, opts)` — stubbed to log-only for Phase 1A; wired to real GraphQL in Phase 2.
-   - Exposes `isFrontierCard(card)` helper.
-3. Update `manifest.json`:
-   - Add a second entry to `content_scripts` with `"world": "MAIN"`, `"run_at": "document_start"`, `"js": ["services/frontier/ws-interceptor.js"]`, same matches.
-   - Add `services/frontier/card-stream.js` to the existing isolated-world content script list (loaded before `main.js`).
-   - Add `services/frontier/ws-interceptor.js` to `web_accessible_resources` for Firefox fallback.
-
-**Acceptance:** With the extension loaded on `play.aidungeon.com`, the browser console logs a `frontier:cards:diff` event (with realistic card data) after each turn in an adventure.
-
-### Phase 1B — Text transport
-
-**Files:**
-- `services/frontier/text-codec.js` (new, ported from Robyn's `invisible-unicode-decoder`)
-- `services/frontier/text-stream.js` (new)
-- `manifest.json` (edit: add new files)
-
-**Work:**
-
-1. Port Robyn's `invisible-unicode-decoder` to plain JS:
-   - Translate TypeScript sources file-by-file to ES2020 JS. Remove type annotations; preserve logic exactly.
-   - Preserve her test fixtures; port her Jest tests to a minimal in-browser or Node-runnable harness. Rerun all tests to confirm byte-level parity.
-   - Export `encode(obj)`, `decode(text) -> { frames, cleanText }`, `strip(text)`, `CODEC_VERSION`.
-   - Document the port in `services/frontier/PORT_NOTES.md`. Include a pinned upstream commit SHA for future re-porting.
-2. Write `text-stream.js` as a content-script service:
-   - Listens on `window` for `BD_FRONTIER_WS` messages of kind `output`.
-   - As a fallback, installs a MutationObserver on `#gameplay-output` (same target that old BetterScripts used) so text capture works even if the WS interceptor misses an output subscription.
-   - For each captured output block, calls `textCodec.decode`, dedups frames by id+hash, emits `frontier:text:frames` events.
-   - Exposes `textCodec` module-level for Core and modules.
-3. Update `manifest.json` content_scripts list to include `text-codec.js` and `text-stream.js` (both in the isolated world, loaded before `card-stream.js` since Core will depend on both).
-
-**Acceptance:**
-- Running the ported test suite passes byte-identically to Robyn's upstream.
-- Manually-inserted invisible-char frames in AI Dungeon output are captured, decoded, and emitted as `frontier:text:frames` events in the browser console.
-
-### Phase 2 — Core
-
-**Files:**
 - `services/frontier/core.js` (new)
 - `services/frontier/module-registry.js` (new)
-- `services/ai-dungeon-service.js` (edit: add GraphQL mutation helpers for story-card upsert)
-- `card-stream.js` (edit: wire `writeCard` to real GraphQL)
-
-**Work:**
-
-1. Implement GraphQL write path:
-   - In `ai-dungeon-service.js` (or a new `services/frontier/graphql-client.js` if the scope feels better isolated), add `upsertStoryCard({ adventureId, title, value, type, keys, id? })`.
-   - Uses AI Dungeon's own GraphQL endpoint. Extract auth headers from captured WS frames during Phase 1 if needed.
-   - Returns a Promise; retries transient failures with exponential backoff.
-2. Implement `FrontierCore`:
-   - Singleton with `.instance` accessor.
-   - Subscribes to BOTH `frontier:cards:diff` (card transport) and `frontier:text:frames` (text transport).
-   - Parses `frontier:out`, `frontier:state:*`, and `frontier:heartbeat` (read-back of own writes ignored) from the card stream.
-   - Text frames are parsed directly as envelope batches; same dispatch as card envelopes.
-   - Maintains `processedRequestIds: Map<id, ts>` with TTL cleanup. **Shared across transports** so a request id can't double-fire even if the same envelope hits both channels.
-   - Routes request envelopes to registered module handlers (transport-agnostic).
-   - Provides `FrontierContext` instances to handlers, including `ctx.textEnabled`.
-   - Emits heartbeat on adventure load, module enable/disable, and every turn (coalesced — one emit per WS push max). Heartbeat payload includes `transports` block and per-module `defaultTransport` / `textEnabled` fields.
-   - Tracks in-flight CARD-TRANSPORT requests per `requestId` with `{ module, op, startTurn, timeoutTurns, lastProgressTurn }`. Text-transport ephemeral envelopes are not tracked (nothing to track).
-   - Implements `respond(reqId, partial)` and `emit(...)` — both buffer envelopes per-module and trigger a coalesced `upsertStoryCard` call for `frontier:in:<module>`.
-   - Handles ack processing: drops acked responses from in-memory tracking and triggers a prune of the card on next flush.
-   - Implements timeout sweep: once per WS push, scan in-flight card-transport requests and auto-error any that exceeded `timeoutTurns`.
-3. Implement `module-registry.js`:
-   - Registration API: `registerModule(moduleDef)`.
-   - Enable/disable persistence: `chrome.storage.sync` key `frontier_enabled_modules`.
-   - Per-module text-transport enable: `chrome.storage.sync` key `frontier_module_text_enabled` (map of moduleId → bool).
-   - Global text-transport enable: `chrome.storage.sync` key `frontier_text_enabled` (bool, default true).
-   - `setEnabled(id, bool)` → calls `module.onDisable` / `onEnable`, updates heartbeat.
-   - `setTextEnabled(id, bool)` (per-module) and `setGlobalTextEnabled(bool)` → update heartbeat.
-4. Add a stub `_core.echo` op implemented inside Core (no separate module). Mirrors its request payload as a `complete` response. Used for internal testing.
-5. Debug mode: `chrome.storage.sync` key `frontier_debug` (migrated from `betterDungeon_betterScriptsDebug`). Exposed via popup message `SET_FRONTIER_DEBUG`.
-
-**Acceptance:** A manually-crafted `frontier:out` card containing `{ module: '_core', op: 'echo', payload: { hello: 'world' } }` produces a `frontier:in:_core` card with a matching `complete` response within one turn, end-to-end, on the real site. Additionally, a text-encoded envelope inserted into adventure output with `{ module: '_core', op: 'echo' }` is routed to the same handler and (since text envelopes don't have a response card) logs via debug mode.
-
-### Phase 3 — Scripture module
-
-**Files:**
 - `modules/scripture/module.js` (new)
-- `modules/scripture/renderer.js` (new — migrated from `better_scripts_feature.js`)
-- `modules/scripture/validators.js` (new — migrated)
+- `modules/scripture/renderer.js` (new, migrated from `better_scripts_feature.js`)
+- `modules/scripture/validators.js` (new, migrated)
+- `services/ai-dungeon-service.js` (edit: add `upsertStoryCard` helper for heartbeat writes)
 - `features/better_scripts_feature.js` (delete)
-- `main.js` (edit: remove BetterScripts handlers, add Frontier + Scripture wiring)
-- `manifest.json` (edit: remove `features/better_scripts_feature.js`, add `modules/scripture/*` and `services/frontier/*`)
+- `main.js` (edit: remove BetterScripts handlers, bootstrap Frontier + Scripture)
+- `manifest.json` (edit: add MAIN-world content-script entry for ws-interceptor.js; update loaded files list)
 
-**Work:**
+**Work, in implementation order:**
 
-1. Lift widget rendering code from `better_scripts_feature.js`:
-   - All `create*Widget` / `updateWidget` / `destroyWidget` methods → `renderer.js`, exposed as a `WidgetRenderer` class.
-   - Container creation, zone management, density calculation, layout observers → `renderer.js`.
-   - HTML/CSS sanitization → `validators.js`.
-   - Preset colors, allowed tags/attrs/styles, etc. → constants at top of `renderer.js`.
-   - **Split widget state**: the renderer tracks **structure** (from manifest) and **current values** (from text frames) separately. When only values change, update in place without re-rendering.
-2. Write `module.js`:
-   - Implements the `FrontierModule` interface.
-   - Declares `id: 'scripture'`, `defaultTransport: 'text'`, `usesText: true`, `stateNames: ['scripture']`.
-   - `onStateChange('scripture', parsed)` → reconciles widget **structure** against renderer (create/update/destroy widgets; does NOT touch current values).
-   - Text-frame handler for `op: 'values'` → applies the values map to existing widgets (`renderer.setValue(widgetId, value)`).
-   - If the script sends `op: 'values'` via card transport (because text is disabled), module accepts it with a console warning so users notice the fallback.
-   - `ops`: `flashWidget` as a demo of the card-transport request path (fire-and-forget animation).
-   - `onEnable`: instantiate `WidgetRenderer`, hydrate manifest from current `frontier:state:scripture` if present, wait for first text frame for values.
-   - `onDisable`: tear down renderer, remove container.
-   - `onAdventureChange`: clear renderer; re-hydrate manifest.
-3. Update `main.js`:
-   - Delete `handleSetBetterScriptsDebug`, add `handleSetFrontierDebug`.
-   - Add `handleSetFrontierTextEnabled` (global) and `handleSetFrontierModuleTextEnabled` (per-module).
-   - Replace `BetterScripts`-named event wiring with Frontier-named equivalents.
-4. Update `manifest.json` content_scripts list to include (in load order):
-   - `services/frontier/text-codec.js`
-   - `services/frontier/text-stream.js`
-   - `services/frontier/card-stream.js`
-   - `services/frontier/module-registry.js`
-   - `services/frontier/core.js`
-   - `modules/scripture/validators.js`
-   - `modules/scripture/renderer.js`
-   - `modules/scripture/module.js`
-   - `main.js`
+1. **Transport (ws-interceptor + card-stream):**
+   - `ws-interceptor.js`: self-contained IIFE that shims `window.WebSocket`, watches frames for `adventureStoryCardsUpdate` AND the action-window subscription identified in Phase 0. Forwards normalized payloads via `window.postMessage({ source: 'BD_FRONTIER_WS', kind: 'cards' | 'actions', payload })`. Idempotent; multiplatform (native MAIN-world where supported, `<script>` injection fallback elsewhere).
+   - `card-stream.js`: content-script service. Listens on `window` for `BD_FRONTIER_WS` messages, maintains `Map<cardId, card>` + current action window. Emits `frontier:cards:full`, `frontier:cards:diff`, `frontier:actions:change` via an `EventTarget`. Exposes `writeCard(title, value, opts)` wrapping the GraphQL upsert, `getCurrentActionId()`, `isFrontierCard(card)`.
+   - Update `manifest.json` to inject `ws-interceptor.js` in the MAIN world at `document_start` (with `<script>` fallback registered as `web_accessible_resources` for Firefox/WebView).
 
-**Acceptance:** A scenario script that pastes the base Frontier Library + Scripture adapter (as documented in `03-modules.md`) and publishes a manifest via `scriptureSetManifest(...)` + values via `scriptureSetValues(...)` each turn renders widgets identically to how BetterScripts renders them today. Pixel-level parity is the goal. Additionally, hitting undo in AI Dungeon reverts the widget VALUES to what they were the previous turn (previously impossible). Structural changes to the manifest do NOT revert on undo — they persist, by design.
+2. **GraphQL write path:**
+   - In `services/ai-dungeon-service.js` (or a fresh `services/frontier/graphql-client.js` if scope feels separate), add `upsertStoryCard({ adventureId, title, value, type, keys })`. Uses AI Dungeon's own GraphQL endpoint; extracts auth from captured WS frames; retries transient failures with exponential backoff.
+   - Wire `card-stream.js#writeCard` to call it.
 
-### Phase 4 — Feature manager & popup integration
+3. **Core (thin router):**
+   - `services/frontier/core.js`: singleton with `.instance`. Subscribes to `frontier:cards:diff` and `frontier:actions:change`. For each changed `frontier:state:<name>` card, looks up the registered module(s) and dispatches `onStateChange(name, parsed, ctx)`. For `frontier:actions:change`, re-dispatches `onStateChange` (with the cached parsed state) to every module that declared `tracksActionId: true`.
+   - Emits `frontier:heartbeat` card on adventure load, module enable/disable, and coalesced at most once per WS push. Payload matches `02-protocol.md#frontierheartbeat`.
+   - Debug mode: `chrome.storage.sync` key `frontier_debug` (migrated from `betterDungeon_betterScriptsDebug`). Exposed via popup message `SET_FRONTIER_DEBUG`.
+
+4. **Module registry:**
+   - `services/frontier/module-registry.js`: holds registered modules, persists enabled state in `chrome.storage.sync` under `frontier_enabled_modules`. Calls `onEnable` / `onDisable` on toggle. Designed so future third-party / sandboxed loaders plug into the same interface.
+
+5. **Scripture:**
+   - Lift widget DOM/CSS code from `better_scripts_feature.js` into `modules/scripture/renderer.js` as a `WidgetRenderer` class. 9 widget types, zones, density, observers — unchanged behavior.
+   - Lift HTML/CSS sanitization + config validation into `modules/scripture/validators.js`.
+   - Write `modules/scripture/module.js`: declares `id: 'scripture'`, `stateNames: ['scripture']`, `tracksActionId: true`. `onStateChange` reconciles manifest against renderer AND applies values from `parsed.history[ctx.currentActionId]` with fallbacks. `onEnable` / `onDisable` / `onAdventureChange` as documented in [03 — Modules](./03-modules.md#module-lifecycle-for-scripture-reference).
+
+6. **Bootstrap + cleanup:**
+   - Update `main.js` to instantiate Frontier on BD startup and register `ScriptureModule`. Delete `handleSetBetterScriptsDebug` et al; add `handleSetFrontierDebug` and `handleSetFrontierModuleEnabled`.
+   - Delete `features/better_scripts_feature.js`.
+   - Update `manifest.json` content_scripts list to include (in load order): `services/frontier/card-stream.js`, `services/frontier/module-registry.js`, `services/frontier/core.js`, `modules/scripture/validators.js`, `modules/scripture/renderer.js`, `modules/scripture/module.js`, `main.js`. Drop the old `features/better_scripts_feature.js` entry.
+
+**Acceptance:**
+- A scenario that pastes the base Frontier Library + Scripture adapter (from [03 — Modules](./03-modules.md#ai-dungeon-side-library)) and calls `scriptureSet([...])` each turn renders widgets **pixel-identically** to the old BetterScripts. Side-by-side screenshot comparison passes.
+- **Undo/retry correctness:** advance 5 turns, each with different HP/gold values. Press Undo repeatedly. Widgets show the correct HP/gold for each reverted action. Press Retry. Widgets show new values as soon as the new action arrives. Press Continue, Edit. All work.
+- **Refresh test:** reload the page mid-adventure. Widgets rehydrate correctly from the existing `frontier:state:scripture` card + the action window pushed by AI Dungeon.
+- **Availability test:** with Frontier disabled in the popup, `frontierIsAvailable()` returns `false` in the script; widgets do not render; the heartbeat card is absent.
+- **Multiplatform test:** the above passes on Chromium, Gecko, AND Android WebView.
+
+### Phase 2 — Feature manager & popup integration
 
 **Files:**
 - `core/feature-manager.js` (edit)
 - `popup.html` / `popup.js` (edit)
-- `main.js` (edit: new message types for module toggles)
+- `main.js` (edit: message handlers for module toggles)
 
 **Work:**
 
-1. Feature manager: add Frontier as a managed feature. Its `init` boots `FrontierCore`; its `destroy` tears down Core and all modules. Module enable states are persisted independently.
+1. Feature manager: register Frontier as a managed feature. `init` boots Core; `destroy` tears down Core + all modules. Module enable states persist separately (in the module registry) but gate on Frontier being enabled.
 2. Popup: replace the BetterScripts toggle with a Frontier section:
    - Master toggle: Frontier on/off.
-   - **Global "Enable invisible text transport" toggle** (default on). Disables text transport for all modules when off.
-   - Nested: Scripture on/off (default: on). For modules that use text, a sub-toggle controls whether THIS module may use text (AND'd with the global toggle).
+   - Nested: Scripture on/off (default on).
    - Debug toggle: Frontier debug mode.
    - (Future placeholder, not rendered in MVP:) "Manage modules…" button.
 3. Chrome message types:
    - `SET_FRONTIER_DEBUG` (replaces `SET_BETTERSCRIPTS_DEBUG`)
    - `SET_FRONTIER_MODULE_ENABLED` → `{ moduleId, enabled }`
-   - `SET_FRONTIER_TEXT_ENABLED` → `{ enabled }` (global)
-   - `SET_FRONTIER_MODULE_TEXT_ENABLED` → `{ moduleId, enabled }` (per-module)
-   - `GET_FRONTIER_STATE` → returns `{ enabled, globalTextEnabled, modules: [{ id, enabled, textEnabled, version, ... }] }`
+   - `GET_FRONTIER_STATE` → returns `{ enabled, modules: [{ id, enabled, version }] }`
 
-**Acceptance:** The popup's Frontier section correctly reflects and controls all toggles (master, per-module, global text, per-module text). Changes persist across page reloads. Heartbeat payload reflects the current settings on every refresh.
+**Acceptance:** Popup reflects and controls all toggles. Changes persist across reloads. Heartbeat payload reflects the current state on every refresh. Toggling Frontier off immediately tears down widgets; toggling back on rehydrates them.
 
-### Phase 5 — BD UI filtering
+### Phase 3 — BD UI filtering
 
 **Files:**
 - `features/story_card_modal_dock_feature.js` (edit)
@@ -203,41 +134,38 @@ Each phase has an acceptance criterion. A phase is "done" when the criterion is 
 
 **Work:**
 
-1. Each feature gains a filter step that excludes cards where `isFrontierCard(card) === true`.
-2. Centralize the predicate in `card-stream.js` so any future prefix additions are one-file changes.
+1. Each feature gains a filter step that excludes cards where `isFrontierCard(card) === true` (centralized in `card-stream.js`).
+2. The Frontier prefix list lives in one place: `const FRONTIER_RESERVED_PREFIXES = ['frontier:']`.
 
-**Acceptance:** Protocol cards (`frontier:out`, `frontier:in:*`, `frontier:state:*`, `frontier:heartbeat`) do NOT appear in the Story Card Modal Dock, Story Card Analytics, Trigger Highlight list, or Auto-See trigger picker. They DO still appear in AI Dungeon's native Story Card list (out of scope per locked-in decision #7).
+**Acceptance:** Reserved cards (`frontier:state:*`, `frontier:heartbeat`) are hidden from the Story Card Modal Dock, Story Card Analytics, Trigger Highlight list, and Auto-See picker. They remain visible in AI Dungeon's own Story Card list (out of scope per decision #7).
 
-### Phase 6 — Documentation & guide rewrite
+### Phase 4 — Documentation & guide rewrite
 
 **Files:**
 - `BetterRepository/src/components/guides/BetterScriptsGuide.vue` → rename to `FrontierGuide.vue`
-- `BetterRepository/src/components/guides/ScriptureGuide.vue` (new; lifted widget reference from old guide)
+- `BetterRepository/src/components/guides/ScriptureGuide.vue` (new)
 - Router / nav references in `BetterRepository/src/router/*`
 - `Project Management/docs/01-scripting/api/story-cards-api.md` (edit: add Frontier reserved-prefix section)
 
 **Work:**
 
 1. Restructure `FrontierGuide.vue`:
-   - Section 1: Introduction (what is Frontier, the modular vision)
-   - Section 2: The Two Transports (card vs text, when to use each, undo/retry semantics)
-   - Section 3: Availability Detection (heartbeat, the `frontierIsAvailable` pattern, text-transport checks)
-   - Section 4: The Base Library (pasting the snippet, API overview including text helpers + Context Modifier)
-   - Section 5: Protocol Reference (envelopes, card families, text frames, multi-turn)
-   - Section 6: Writing a Module (placeholder for now — link to 03-modules.md)
-   - Section 7: Included Modules → link to Scripture guide
+   - Section 1: Introduction — what is Frontier (Lite), what it's for, what's coming later.
+   - Section 2: Availability detection — heartbeat card, `frontierIsAvailable` pattern, graceful degradation.
+   - Section 3: Publishing state — `frontierWriteState` / `frontierReadState` / `frontierUpdateHistory`, the action-ID history pattern explained.
+   - Section 4: Included modules → link to Scripture guide.
+   - Section 5: Roadmap — what Full Frontier will add.
 2. Create `ScriptureGuide.vue`:
-   - Lift all widget reference material (9 widget types, preview tables).
-   - Document the new `scriptureSetManifest` + `scriptureSetValues` split.
-   - Explicitly explain the undo/retry behavior and why it works (text transport for values).
-   - Drop the original ZW / TagCipher Context Modifier section; replace with the one-line `frontierContextModifier(text)` pattern.
-   - Update all code examples to use the Scripture adapter API.
-3. Update router entries; update nav/TOC components.
-4. Update `story-cards-api.md` with a subsection naming the reserved `frontier:*` prefix and advising scenario authors not to create cards with that prefix manually.
+   - Lift the 9 widget-type reference material (preview tables, config options, HTML/CSS sanitization rules).
+   - Drop ALL ZW / TagCipher / Context Modifier sections. There is no Context Modifier in the new flow.
+   - Update all code examples to use `scriptureSet([...])`.
+   - Explicitly explain the undo/retry behavior: "Your widgets just work when the user undoes/retries, because Scripture maintains a small history keyed by action id. You don't have to do anything special."
+3. Update router / nav.
+4. Update `story-cards-api.md` with the reserved `frontier:*` prefix section.
 
-**Acceptance:** The BetterRepository site renders two new guide pages (Frontier Guide + Scripture Guide) with working TOC navigation, correct code blocks, coverage of both transports, and up-to-date Context Modifier guidance.
+**Acceptance:** BetterRepository site renders both new guides with working TOC. No remaining references to ZW encoding, TagCipher, Context Modifiers, or the old `better_scripts_feature.js` file.
 
-### Phase 7 — Version bump & release prep
+### Phase 5 — Version bump & release prep
 
 **Files:**
 - `manifest.json` (version: `1.2.1` → `2.0.0`)
@@ -245,7 +173,7 @@ Each phase has an acceptance criterion. A phase is "done" when the criterion is 
 - `CONTRIBUTING.md` (if it references BetterScripts) — update
 - Changelog (wherever it's tracked for BD V2)
 
-**Acceptance:** Manifest version bumped; README & contrib docs reference Frontier; changelog entry written.
+**Acceptance:** Manifest version bumped. READMEs and contrib docs reference Frontier. Changelog entry written. Coordinated with BD V2's broader release checklist.
 
 ## Testing strategy
 
@@ -253,31 +181,37 @@ Since BetterDungeon is a browser extension that depends on AI Dungeon's live bac
 
 ### Automated (cheap wins)
 
-- **Envelope dedup logic** — unit test Core's `processedRequestIds` tracker in isolation. Pure function; no DOM.
-- **Diff algorithm** — unit test `card-stream.js`'s diff given fixture inputs.
+- **Card diff algorithm** — unit test `card-stream.js`'s diff given fixture inputs.
+- **Action-window parser** — unit test the tail-id extraction logic given captured WS payloads from Phase 0.
 - **Validators** — Scripture's config validator is pure; unit test it.
 - **`isFrontierCard` helper** — trivial unit test.
+- **History pruning** — unit test `frontierUpdateHistory` reaches the `historyLimit` cap and evicts in insertion order.
 
-### Manual verification checklist per phase
+### Manual verification checklist
 
-Each phase's acceptance criterion above defines the manual test. A regression checklist for all phases together:
+A regression checklist for all phases together. Run after Phase 1, then again after Phase 5 as release sign-off.
 
-- [ ] Load an adventure; confirm heartbeat card appears with correct shape.
-- [ ] Write a `frontier:out` card manually; confirm Core routes it and responds.
-- [ ] Publish `frontier:state:scripture` with widget data; confirm rendering matches the old behavior pixel-by-pixel.
-- [ ] Toggle Scripture off in popup; confirm widgets disappear, heartbeat no longer advertises scripture, subsequent state changes are ignored.
-- [ ] Toggle Frontier master off; confirm no heartbeat, no card writes, Scripture-published state is ignored.
-- [ ] Switch between adventures; confirm widgets reset, heartbeat refreshes for the new adventure.
-- [ ] Protocol cards hidden from BD UI lists (visual check).
-- [ ] Script-side: `frontierIsAvailable()` returns correct boolean under (a) BD enabled, (b) BD disabled, (c) BD just loaded (no heartbeat yet), (d) stale heartbeat (>2 turns old — force by stopping Core temporarily).
-- [ ] Script-side: multi-turn flow with the `_core.echo` op returns a `complete` envelope within one turn; envelope is correctly acked on next turn.
+- [ ] Load an adventure; confirm `frontier:heartbeat` card appears with correct schema.
+- [ ] Publish a `frontier:state:scripture` card manually (via the script Library); confirm widgets render and pixel-match old BetterScripts output.
+- [ ] **Undo correctness:** advance 5 turns with changing HP/gold; press Undo; widget values revert to the previous turn's state. Press Undo again; revert further.
+- [ ] **Retry correctness:** press Retry on the current turn; once the new output lands, widgets show the new turn's values.
+- [ ] **Edit correctness:** edit an earlier turn's action; the edited turn's widget values are preserved (action id didn't change) OR the next turn's write corrects them if behavior differs (document whichever applies from Phase 0 findings).
+- [ ] **Continue correctness:** press Continue; widgets update for the new action.
+- [ ] **Refresh correctness:** reload the page mid-adventure; widgets rehydrate with the correct values for the current action.
+- [ ] Toggle Scripture off in popup; widgets disappear; heartbeat no longer advertises Scripture.
+- [ ] Toggle Frontier master off; no heartbeat written; scripture card changes are ignored.
+- [ ] Switch between adventures in separate tabs; widgets are scoped per adventure.
+- [ ] Reserved cards hidden from BD's own UI lists (Story Card Modal Dock, Analytics, Trigger Highlight, Auto-See).
+- [ ] `frontierIsAvailable()` returns correct boolean under (a) BD enabled, (b) BD disabled, (c) BD just loaded (no heartbeat yet), (d) stale heartbeat (>2 turns old — force by stopping Core temporarily).
+- [ ] **Multiplatform:** the above passes on Chromium, Gecko, and Android WebView.
 
 ### Smoke harness
 
-Optional but recommended: a minimal harness page or test scenario committed to a private BetterDungeon-test repo containing:
+Optional but recommended: a minimal harness scenario committed to a private BetterDungeon-test repo containing:
 
-- The base Library snippet + a diagnostic Output Modifier that calls `_core.echo` every turn and logs the round-trip.
-- A widget-demo scenario that exercises all 9 Scripture widget types.
+- The base Frontier Library + Scripture adapter pasted as-is.
+- An Output Modifier that mutates HP/gold/mana each turn and calls `scriptureSet([...])`.
+- A widget-demo scenario that exercises all 9 Scripture widget types at once.
 
 ## File-by-file change summary
 
@@ -285,15 +219,13 @@ Optional but recommended: a minimal harness page or test scenario committed to a
 
 | Path | Purpose |
 |------|---------|
-| `services/frontier/ws-interceptor.js` | Page-world WebSocket shim (captures cards AND output text) |
-| `services/frontier/card-stream.js` | Content-script story-card stream + GraphQL write helper |
-| `services/frontier/text-codec.js` | Invisible-text encoder/decoder (port of Robyn's invisible-unicode-decoder) |
-| `services/frontier/text-stream.js` | Content-script text-frame extractor with MutationObserver fallback |
-| `services/frontier/core.js` | Frontier Core (routing, dedup, heartbeat, multi-turn state, transport selection) |
-| `services/frontier/module-registry.js` | Module registration + enable/disable persistence (incl. text-transport toggles) |
-| `services/frontier/PORT_NOTES.md` | Dev notes on the text-codec port (upstream commit SHA, diffs from upstream) |
-| `modules/scripture/module.js` | Scripture module definition (dual-transport: manifest card + values text) |
-| `modules/scripture/renderer.js` | Widget DOM/CSS (migrated; split structure vs values) |
+| `services/frontier/ws-interceptor.js` | Page-world WebSocket shim (cards + action-window subscriptions) |
+| `services/frontier/card-stream.js` | Content-script card + action-window stream; dispatches diffs and action-id changes |
+| `services/frontier/core.js` | Frontier Core (Lite): thin router, heartbeat emitter, action-ID tracker |
+| `services/frontier/module-registry.js` | Module registration + enable/disable persistence |
+| `services/frontier/ACTION_IDS.md` | Phase 0 empirical findings on action-id behavior across undo/retry/edit/continue |
+| `modules/scripture/module.js` | Scripture module definition (reads manifest + history card; applies values for current action id) |
+| `modules/scripture/renderer.js` | Widget DOM/CSS (migrated from `better_scripts_feature.js`) |
 | `modules/scripture/validators.js` | Widget config + HTML/CSS sanitization (migrated) |
 | `Project Management/frontier/*` | These planning docs |
 
@@ -323,14 +255,15 @@ Optional but recommended: a minimal harness page or test scenario committed to a
 
 ## Out-of-MVP, tracked for later
 
-1. **Schema compression for text transport** — declare per-widget field types in the manifest card; tightly-pack values in text frames (protobuf-style). Dramatically shrinks text footprint. Requires a schema DSL and codec-version bump to `v: 2`.
-2. **`story-card-scanner.js` migration** — replace DOM scrape with card-stream as source of truth.
-3. **Real GraphQL client robustness** — auth token capture, endpoint discovery, CSRF handling. MVP uses a simple version that works on the current site structure; hardening comes later.
-4. **Real capability modules** — WebFetch, Clock, Geolocation, LocalAI, etc. Each is its own PR.
-5. **Registry UI** — browse + install vetted third-party modules.
-6. **Sandboxed user scripts** — arbitrary JS modules in an iframe/Worker.
-7. **Inter-module calls** — modules invoking other modules via Core.
-8. **Richer popup UI** — per-module debug toggles, request inspector, envelope log viewer.
-9. **Upstream tracking** for Robyn's codec — process for pulling her improvements into our port (tag-based release notifications, re-port runbook).
+1. **Full Frontier (two-way comms)** — adds `frontier:out` / `frontier:in:*` cards, request/response envelopes, ops dispatcher in Core, ack/TTL state machines. Unblocks WebFetch, LocalAI, etc. Largest post-MVP workstream.
+2. **First real capability module** — likely WebFetch. Proves the Full Frontier extension works end-to-end; requires Full Frontier to exist first.
+3. **NPM / TypeScript / bundler migration** (Robyn's pitch) — reorganize BetterDungeon into proper packages with a bundler. Declined for MVP; worth re-opening as its own epic once Frontier is stable.
+4. **`story-card-scanner.js` migration** — replace DOM scrape with card-stream as source of truth. Phase 1 already hydrates the cache non-destructively; full cut-over is the follow-up.
+5. **Real GraphQL client robustness** — auth token capture, endpoint discovery, CSRF handling. MVP uses a simple version that works on the current site structure.
+6. **Registry UI** — browse + install vetted third-party modules. Requires Full Frontier (modules need ops to be meaningful).
+7. **Sandboxed user scripts** — arbitrary JS modules in an iframe/Worker with a constrained Frontier SDK. Security-heavy; long-term.
+8. **Inter-module calls** — modules invoking other modules via Core. Needs Full Frontier's op dispatcher.
+9. **Richer popup UI** — per-module debug toggles, live state viewer, heartbeat inspector.
+10. **Mobile APK parity testing** — automate the Android WebView smoke tests once the APK pipeline is in place.
 
-All of these slot into the existing architecture without refactoring Core or the protocol.
+All of these slot into the existing architecture without refactoring Core (at least, not in ways that break Lite modules).

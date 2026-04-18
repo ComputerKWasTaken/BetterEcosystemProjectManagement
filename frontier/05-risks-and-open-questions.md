@@ -37,11 +37,12 @@ Tracked list of things that could bite us during implementation and unresolved d
 **Risk:** AI Dungeon may silently truncate or reject story card values over a certain length. Unknown exact limit.
 
 **Mitigation:**
-- Empirically measure during Phase 1 by issuing progressively larger `updateStoryCard` mutations and observing what round-trips intact.
+- Empirically measure during Phase 0 / Phase 1 by issuing progressively larger `updateStoryCard` mutations and observing what round-trips intact.
 - Document the measured limit as a constant in `core.js`.
-- Core enforces the limit pre-write; responses that would exceed it spill into `frontier:state:<module>-overflow-N` cards as specified in the protocol.
+- Core warns any time a state card exceeds 80% of the budget. Scripts use the `historyLimit` knob to stay comfortably under.
+- Overflow into supplementary cards is explicitly NOT implemented in MVP; a module that grows past the per-card budget is a design bug to be solved at the module level.
 
-**Status:** Measure during Phase 2.
+**Status:** Measure during Phase 0; wire the warning in Phase 1.
 
 ---
 
@@ -60,16 +61,17 @@ Tracked list of things that could bite us during implementation and unresolved d
 
 ---
 
-### R5 — Extension storage quota for in-flight request tracking
+### R5 — History map size bloat
 
-**Risk:** Core tracks in-flight requests by id; if a script leaks requests (never acks, never times out cleanly), memory grows.
+**Risk:** If a script forgets to prune or sets `historyLimit` too high, the `frontier:state:scripture` card grows until it hits AI Dungeon's per-card size limit. At that point writes fail silently (or get truncated server-side), and widgets stop updating correctly.
 
 **Mitigation:**
-- Cap `processedRequestIds` size at N (default 10,000) with LRU eviction.
-- `timeoutTurns` default of 20 ensures no request lingers indefinitely.
-- Per-adventure scope: all state clears on adventure transition.
+- `frontierUpdateHistory` auto-prunes to `historyLimit` (default 100) on every write.
+- Core logs a warning if any state card exceeds 80% of the known size budget, so authors notice growth early.
+- Scripture exposes `scriptureConfigure({ historyLimit })` for authors who want a different cap.
+- Phase 0 measures the actual size limit; once known, Core can enforce a hard cap before attempting the write.
 
-**Status:** Bake in from Phase 2.
+**Status:** Bake the auto-prune into Phase 1; enforce the hard cap once Phase 0 measurements land.
 
 ---
 
@@ -104,71 +106,57 @@ Tracked list of things that could bite us during implementation and unresolved d
 
 **Mitigation:**
 - Heartbeat is one small mutation per turn, consistent with the user's own interactions. Unlikely to be flagged.
-- If it does become a problem, reduce frequency to "every N turns" or "on-demand only when a new request arrives."
-- Coalesce heartbeat with any in-flight response writes so we don't write the heartbeat separately when we're already writing the `frontier:in:<module>` card.
+- If it does become a problem, reduce frequency to "every N turns" or "only on module registry changes."
+- In Lite, the heartbeat is the ONLY BD-originated write, so there's nothing else to coalesce with.
 
-**Status:** Implement coalesced; revisit if rate-limit warnings appear.
-
----
-
-### R9 — Undo/retry semantics assume adventure-text reversion
-
-**Risk:** The entire dual-transport design rests on "invisible chars embedded in output text revert when the user undoes that turn." Robyn confirmed that story cards do NOT revert, but the text-revert assumption has not been empirically re-verified by us in every edge case:
-- Does `Retry` replace the current turn's text entirely, or append a new variant?
-- Does `Continue` re-emit the prior turn's output (and therefore its invisible frame), or skip straight to a new turn?
-- Does edit-in-place on a past turn modify that turn's text in-place (preserving the frame) or replace it (losing it)?
-
-If any of these break the assumption, Scripture values will drift from narrative state in a way that looks like a bug to the user.
-
-**Mitigation:**
-- Phase 1B acceptance test MUST include a manual matrix of undo / retry / continue / edit operations with a diagnostic scenario that logs which frames BD observes after each operation.
-- Document each confirmed behavior in `PORT_NOTES.md`.
-- If any operation loses/corrupts text frames unexpectedly, fall back to card-transport values for that operation's case and document the caveat.
-
-**Status:** Verify matrix during Phase 1B.
+**Status:** Implement with per-turn default; revisit if rate-limit warnings appear.
 
 ---
 
-### R10 — Context Modifier adoption
+### R9 — Action-ID stability assumption (foundational)
 
-**Risk:** If a scenario author forgets to install the Context Modifier snippet, the AI sees the raw invisible characters in its context window. Impacts: wasted tokens, possible model confusion, possible unsafe behavior if the chars fall into a prompt-injection edge case.
+**Risk:** The entire action-ID history design assumes AI Dungeon action ids are **stable** across the operations scripts and users perform:
+- Do ids survive `Retry` (tail replaced) as distinct new ids, or does the retry reuse the old id?
+- Do ids survive `Edit in place` on a past action?
+- Do ids survive `Continue` (extending the tail)?
+- Do ids survive page reload and adventure re-open?
+- Are ids globally unique, or reused across adventures?
+
+If any answer breaks our assumption, the whole Scripture-on-action-ID design is compromised: widgets may show stale values, lose history entries, or fail to revert correctly.
 
 **Mitigation:**
-- The Frontier Library's base snippet includes a one-line `frontierContextModifier` helper; the Scripture guide's "Getting Started" makes the Context Modifier step PROMINENT (one of three mandatory hooks).
-- Core can heuristically detect the absence: if the script has emitted text frames but those same frames are later present in `info.text` during `onModelContext`, Core SHOULD log a warning to the in-page console. (Detection runs in the extension, not the AI.)
-- (Future) The heartbeat can carry a `contextModifierDetected: boolean` field if we can reliably observe it.
+- **Phase 0 verifies every case empirically** before any code is written. Findings recorded in `services/frontier/ACTION_IDS.md`.
+- If a specific operation breaks the assumption, fall back to `info.actionCount` (the numeric turn counter) instead of the stable id for that case, and document the caveat in the Scripture guide.
+- Core's `tailActionId` field in the heartbeat lets scripts cross-check against their own `history[history.length-1].id` and detect drift at runtime.
 
-**Status:** Implement the Library helper in Phase 1B; implement detection + warning in Phase 2.
+**Status:** Verify in Phase 0 — blocking for all of Phase 1.
 
 ---
 
-### R11 — Codec port divergence from Robyn's upstream
+### R10 — Android WebView compatibility
 
-**Risk:** We're manually porting Robyn's TS `invisible-unicode-decoder` to vendored JS. When she iterates on her upstream (perf, new features, bug fixes, codec version bumps), our port will lag or diverge unless we actively maintain it.
+**Risk:** Frontier is designed for BD V2, which ships on Chromium, Gecko, AND Android WebView. WebView has historically had quirks with MV3, content-script world injection, and WebSocket shimming. If the WS interceptor doesn't install reliably on WebView, Scripture breaks on mobile.
 
 **Mitigation:**
-- `PORT_NOTES.md` pins the exact upstream commit SHA the port is based on.
-- Include Robyn's original test fixtures in our test suite. Any upstream change that breaks test compatibility is flagged immediately.
-- Establish a process with Robyn: tag upstream releases, subscribe to release notifications, schedule re-port passes.
-- Emit `codecVersion` in every heartbeat so scripts using her Library directly (should that ever be a thing) can detect mismatches.
+- Phase 0 includes a multiplatform smoke test across all three platforms.
+- The `<script>`-tag fallback for `world: "MAIN"` injection is the portable path; we use MAIN world only where natively supported.
+- Document any WebView-specific quirks as they're discovered.
+- If WebView turns out to block the WS shim entirely, fall back to a DOM MutationObserver on the card list (slower but functional) and document the degraded mode.
 
-**Status:** Ongoing — baseline port in Phase 1B; maintenance process post-MVP.
+**Status:** Verify in Phase 0. If blocking issues surface, decide whether to gate WebView support on a later BD release.
 
 ---
 
-### R12 — Copy-paste leakage of invisible chars
+### R11 — Gaps in the history map
 
-**Risk:** Users sometimes copy adventure output to share (e.g. post a cool scene on Discord). If the text contains invisible Frontier frames, those chars travel with the paste. While harmless in most targets, they may:
-- Show up as boxes in editors that don't handle ZW chars.
-- Fail to round-trip through systems that normalize Unicode (some DBs, some chat apps).
-- Leak internal widget values that the user intended private.
+**Risk:** Scripts prune aggressively, install mid-adventure, or crash mid-turn. Any of these can result in BD looking up `history[tailId]` for an id that doesn't exist. Widgets would show incorrect (or no) values.
 
 **Mitigation:**
-- Document the behavior in the Frontier Guide ("invisible text is in your story text; if you copy, it copies").
-- Offer users the opt-out via the global text-transport toggle (decision #11).
-- (Future) A context-menu option to "Copy without Frontier metadata" that round-trips through `textCodec.strip` before writing to clipboard.
+- Scripture's `onStateChange` falls back to the most-recent history entry if the tail's entry is missing, then to manifest-declared defaults if history is empty.
+- `frontierUpdateHistory` always writes the current tail's entry BEFORE pruning, so the most recent entry should never be missing in normal operation.
+- Document the fallback behavior in the Scripture guide so users understand why stale-looking values may appear briefly after installing Scripture mid-adventure.
 
-**Status:** Documented in MVP; clipboard integration is a post-MVP enhancement.
+**Status:** Implement the fallback in Phase 1; document in Phase 4.
 
 ---
 
@@ -182,27 +170,34 @@ If any of these break the assumption, Scripture values will drift from narrative
 
 ---
 
-### Q2 — Concurrent writes from multiple modules in one turn
+### Q2 — Is `history[i].id` reliably populated in AI Dungeon's script environment?
 
-If two modules both want to write their `frontier:in:<module>` cards in the same turn, we issue two GraphQL mutations. Are there any server-side atomicity concerns, e.g. one overwriting the other's changes? Probably not since they're different cards, but worth confirming.
+We assume the script can read the current action's stable id from `history[history.length - 1].id`. If that field isn't always present (e.g. first turn of a fresh adventure, or a specific scenario mode like Multiplayer), `frontierUpdateHistory` returns false and nothing is written for that turn.
 
-**Resolution path:** Verify during Phase 2 with a contrived two-module scenario.
-
----
-
-### Q3 — How does the script know the current turn number for its `turn` field?
-
-The protocol says scripts should include `turn: info.actionCount` in their `frontier:out` payload. Confirm `info.actionCount` is always available and monotonically increasing across Input/Context/Output modifiers.
-
-**Resolution path:** Cross-reference `Project Management/docs/01-scripting/api/info-object.md`; test in a scenario during Phase 1.
+**Resolution path:** Phase 0 scratch scenario verifies. If there's a gap, document the fallback (skip history write for that turn; script retries next turn).
 
 ---
 
-### Q4 — Should Scripture ever emit responses or just read state?
+### Q3 — Which WebSocket subscription carries the action window on BD's side?
 
-Current design: Scripture listens for state changes (manifest) and optionally handles ops like `flashWidget`. If Scripture never actually needs `frontier:in:scripture`, that card family never appears for Scripture users, keeping the card list cleaner. Worth confirming whether any planned Scripture op requires a response.
+AI Dungeon pushes card updates via `adventureStoryCardsUpdate`. The action window arrives on a different subscription; exact name TBD from Phase 0 instrumentation. Candidates observed in the user's earlier WS capture: `adventure.actionWindow[]`, possibly `adventureActionsUpdate` or part of a larger `adventureUpdate` payload.
 
-**Resolution path:** Defer until Phase 3 module work; design the `flashWidget` op as fire-and-forget if so.
+**Resolution path:** Phase 0 logs distinct top-level `data.*` keys from every observed frame over a few turns. The subscription that carries action ids will be obvious from the shape.
+
+---
+
+### Q4 — Synthetic `onStateChange` on action-id change: once per module or once per card?
+
+When the tail action id changes, Core re-dispatches `onStateChange` so modules can re-read `history[newTailId]`. Should Core pass the cached parsed state of:
+
+- **Option A:** every state card the module cares about (one call per card), or
+- **Option B:** just one call with the full set of modules' state?
+
+Option A is simpler and symmetric with the card-change path. Option B is slightly more efficient but adds an API distinction.
+
+**Preferred:** Option A. Keep the API uniform; one `onStateChange` per state-card entry in `stateNames`.
+
+**Resolution path:** Implement in Phase 1; document in 03-modules.md.
 
 ---
 
@@ -238,7 +233,7 @@ Options:
 
 ### Q8 — Debug inspector UI
 
-For dev workflow, an in-browser inspector showing live envelopes (BOTH card + text), heartbeat status, and module registration would be invaluable. Where should it live? Options:
+For dev workflow, an in-browser inspector showing live state-card changes, action-id transitions, heartbeat status, and module registration would be invaluable. Where should it live? Options:
 - A DevTools panel (complex).
 - An injected overlay on the adventure page activated by keyboard shortcut.
 - A popup tab.
@@ -247,32 +242,29 @@ For dev workflow, an in-browser inspector showing live envelopes (BOTH card + te
 
 ---
 
-### Q9 — Exact output-text subscription name
+### Q9 — History order reconstruction after page reload
 
-The WS interceptor needs to capture whatever GraphQL subscription carries AI Dungeon's streaming output text. We don't know the subscription name yet; `adventureStoryCardsUpdate` is the card one, but output has a separate channel.
+When BD rehydrates after a reload, it reads the full `frontier:state:scripture` card and sees the `history` object. It doesn't know the insertion order of those keys (JSON key order is unreliable). Does it need to? Only if the script's pruning logic depends on knowing the order — but the script stores `state.frontier._historyOrder[name]` as a backing list, which gets persisted in AI Dungeon's `state` blob, so order is preserved script-side.
 
-**Resolution path:** Phase 1A/1B instrumentation should log all distinct `data.*` top-level keys observed on the WS so we can identify the output subscription by empirical frequency + shape.
+**Question:** Does BD ever need to know the order? Or is it sufficient for BD to just look up `history[tailId]` and never iterate?
 
----
+**Preferred:** BD doesn't need order. Keep it script-side.
 
-### Q10 — Do we emit text frames at the start, middle, or end of output?
-
-Authors have a choice of where in the output text to append the frame. Options:
-- **End (recommended):** simplest; `text + frame` in the Output Modifier.
-- **Start:** frame appears before visible text. Risk: might interact oddly with text trimming by AI Dungeon.
-- **Inline (mid-sentence):** possible but no benefit, adds chance of interfering with word-boundary logic elsewhere.
-
-**Preferred:** End. Document as the canonical pattern; Library's `frontierAppendTextFrame(text)` helper enforces it.
-
-**Resolution path:** Phase 1B manual test confirms end-placement round-trips through AI Dungeon's text pipeline intact. If not, try start-placement as a fallback.
+**Resolution path:** Confirm during Phase 1 implementation.
 
 ---
 
-### Q11 — Text frame placement when the script returns an empty string
+### Q10 — Writing state before the first action exists
 
-Edge case: the script might return an empty `text` from `onOutput` (e.g. suppressing output). Should we still emit the frame? If yes, the frame stands alone as the "turn's output." Will AI Dungeon render that as an empty turn (bad) or suppress it (fine)?
+On a brand-new adventure, turn 1's `onOutput` runs before the first action enters `history` (possibly; needs verification). If `frontierCurrentActionId()` returns null, `frontierUpdateHistory` bails. Widgets would not render until turn 2.
 
-**Resolution path:** Phase 1B: test empty-output-with-frame behavior. If AI Dungeon renders it as an empty turn, the Library should refuse to emit a frame on empty output and log a warning.
+**Options:**
+- Accept the one-turn delay. Document it.
+- Fall back to writing under a sentinel key (e.g. `"a-initial"`) and letting BD rehydrate when the real action id arrives.
+
+**Preferred:** Accept the one-turn delay. Simpler, and turn 1 is cheap to re-render.
+
+**Resolution path:** Phase 0 scratch scenario confirms whether turn 1 has an action id by `onOutput`. If yes, no issue. If no, document.
 
 ---
 
@@ -280,24 +272,24 @@ Edge case: the script might return an empty `text` from `onOutput` (e.g. suppres
 
 | Item | Priority | Rough estimate | Depends on |
 |------|----------|---------------|------------|
-| **Schema compression for text transport** | High | Medium | MVP shipped; Scripture in production |
-| `story-card-scanner.js` migration to card-stream | High | Medium | Phase 1A complete |
-| Codec upstream tracking process (re-port runbook) | High | Small | Phase 1B complete |
-| First real capability module (likely WebFetch) | High | Medium | MVP released |
+| **Full Frontier (two-way comms)** | High | Large | Lite MVP released and stable |
+| First real capability module (likely WebFetch) | High | Medium | Full Frontier complete |
+| NPM / TypeScript / bundler migration | Medium | Large | Own epic; re-evaluate after MVP |
+| `story-card-scanner.js` migration to card-stream | Medium | Medium | Phase 1 complete |
 | GraphQL write path hardening (auth robustness) | Medium | Medium | MVP released; observed failure modes |
-| Registry UI + curated module catalog | Medium | Large | WebFetch shipped (proves there's demand) |
-| Sandboxed user scripts | Low | Very large | Security review |
+| Registry UI + curated module catalog | Medium | Large | Full Frontier + first external module |
+| Sandboxed user scripts | Low | Very large | Security review; Full Frontier |
 | Inter-module calls | Low | Small | At least two real modules exist |
-| Debug inspector UI | Medium | Medium | Phase 2 complete |
-| Clipboard "copy without Frontier metadata" | Low | Small | Quarterly polish |
+| Debug inspector UI | Medium | Medium | Phase 1 complete |
 | Per-module permission prompts | Medium | Medium | Registry exists |
-| Mobile APK parity testing | High | Small–Medium | BD V2 Android builds |
+| Mobile APK parity testing (automated) | High | Small–Medium | BD V2 Android builds |
+| Hard-cap enforcement on state-card size | Medium | Small | Phase 0 measurement complete |
 
 ## Questions for later that need USER input, not implementation
 
-- Do we want Frontier modules to be able to prompt the user for permission before a sensitive action (network fetch, clipboard read)? If so, how should that UI look? (Native browser permission prompts vs in-BD modal vs implicit trust for built-ins only.)
+- Do we want Frontier modules to be able to prompt the user for permission before a sensitive action (network fetch, clipboard read)? If so, how should that UI look? (Native browser permission prompts vs in-BD modal vs implicit trust for built-ins only.) — Relevant once Full Frontier ships.
 - Do we want Frontier modules to be able to render their own UI outside of Scripture's widget bar? (Future Dashboard module that overlays a full sidebar, etc.)
 - Should the BetterRepository host a module catalog even in MVP (just as static documentation), or wait until the install flow exists?
 - Naming: is the umbrella still "BetterScripts" in any user-facing sense, or fully "Frontier"? (Current plan: fully Frontier. Confirm before rewriting guides.)
-- Should the global invisible-text toggle default to on or off? (Current plan: on. Users who care can disable; most won't think about it.)
-- If a collaboration with Robyn on a framework-agnostic bundle of her codec becomes viable (decision #10 option 4), would we switch to that? Current plan manually ports; it would be a net simplification if the upstream offered a pre-bundled release.
+- When is the right time to revisit Robyn's NPM/bundler pitch? (Current plan: declined for MVP, re-open as a separate epic after Frontier stabilizes. User signal needed for prioritization.)
+- Should Full Frontier's two-way comms land as a single big milestone, or be broken into sub-phases (e.g. "ops without acks" → "multi-turn with acks" → "cancellation + timeouts")? — Decide when Full Frontier is queued up, not now.

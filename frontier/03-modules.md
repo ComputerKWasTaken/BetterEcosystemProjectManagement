@@ -9,13 +9,13 @@ A **Frontier module** is a matched pair:
 
 Frontier Core is the only thing that bridges the two. Neither half knows anything about the other's implementation — they share only the protocol envelope shape.
 
-## Module interface (BD side)
+## Module interface (BD side, Lite)
 
 Every BD-side module exports an object conforming to this shape:
 
 ```ts
 interface FrontierModule {
-  /** Unique module id. Must match heartbeat advertisement and envelope routing. */
+  /** Unique module id. Must match heartbeat advertisement. */
   id: string;
 
   /** SemVer version of this module's BD-side handler. */
@@ -28,56 +28,35 @@ interface FrontierModule {
   description?: string;
 
   /**
-   * Ops this module handles. Advertised in heartbeat so scripts know what's available.
-   * Each op gets a handler invoked by Core when a matching request envelope arrives.
+   * The `frontier:state:<name>` card titles this module reads.
+   * When any of these change, Core calls `onStateChange`.
    */
-  ops: Record<string, FrontierOpHandler>;
+  stateNames: string[];
 
   /**
-   * Default transport for envelopes originated by this module's AI-Dungeon-side Library.
-   * The Library uses this when the script doesn't explicitly set `transport` on an envelope.
-   * Defaults to 'card' if omitted.
+   * If true, Core also invokes `onStateChange` (with the cached parsed state)
+   * whenever the current tail action id changes, even if the card itself didn't change.
+   * Scripture sets this to true so widgets re-read `history[tailId]` on undo/retry.
    */
-  defaultTransport?: 'card' | 'text';
+  tracksActionId?: boolean;
 
   /**
-   * If true, this module uses text transport at all. Advertised in heartbeat as `textEnabled`
-   * AND'd with the user's global invisible-text toggle. Scripts can check this to decide
-   * whether to rely on text-transport semantics (undo/retry reverting).
+   * Called when one of this module's state cards changes, or (if `tracksActionId`)
+   * when the tail action id changes. `parsed` is the module's own cached parse
+   * of the state card's `value`; `ctx.currentActionId` tells the module which
+   * history entry to look up.
    */
-  usesText?: boolean;
-
-  /**
-   * Called when the script updates a `frontier:state:<name>` card the module claims.
-   * The module declares which state names it owns via `stateNames`.
-   */
-  stateNames?: string[];
-  onStateChange?: (name: string, parsed: unknown, rawCard: StoryCard) => void;
+  onStateChange(name: string, parsed: unknown, ctx: FrontierContext): void;
 
   /** Lifecycle hooks. */
   onEnable?: (ctx: FrontierContext) => Promise<void> | void;
   onDisable?: (ctx: FrontierContext) => Promise<void> | void;
 
-  /** Optional: called on adventure transitions so modules can reset per-adventure state. */
-  onAdventureChange?: (newAdventureId: string | null) => void;
+  /** Called on adventure transitions so modules can reset per-adventure state. */
+  onAdventureChange?: (newAdventureId: string | null, ctx: FrontierContext) => void;
 }
 
-type FrontierOpHandler = (
-  request: RequestEnvelope,
-  ctx: FrontierContext
-) => void | Promise<void>;
-
 interface FrontierContext {
-  /**
-   * Emit a response envelope for the given request.
-   * Transport defaults to 'card'; text responses are rarely useful for BD-side handlers
-   * but supported for completeness.
-   */
-  respond(reqId: string, partial: Partial<ResponseEnvelope>): void;
-
-  /** Emit a spontaneous push envelope (no replyTo). */
-  emit(partial: Omit<ResponseEnvelope, 'id' | 'module' | 'ts'>): void;
-
   /** Log (respects Frontier's debug toggle). */
   log(msg: string, ...args: unknown[]): void;
 
@@ -87,21 +66,25 @@ interface FrontierContext {
   /** Current adventure id (null if not in an adventure). */
   readonly adventureId: string | null;
 
-  /** Current Frontier turn count from the last WS push. */
-  readonly turn: number;
+  /** The current tail action id from the WS stream, or null if not yet known. */
+  readonly currentActionId: string | null;
 
-  /** True iff text transport is available for this module right now (global + per-module). */
-  readonly textEnabled: boolean;
+  /** AI Dungeon's actionCount for the current tail action. */
+  readonly turn: number;
 }
 ```
 
-## Op handler rules
+**What's NOT here in Lite:**
+- No `ops`, no request dispatch, no `respond` / `emit` helpers. Modules are read-only state consumers.
+- No `defaultTransport` or `usesText`. There's only one transport.
+- When Full Frontier lands, `ops` + `ctx.respond` + `ctx.emit` extend this interface additively; Lite modules continue to work as-is.
 
-- Handlers MUST NOT throw synchronously. Throw-equivalent: `ctx.respond(id, { status: 'error', error: { code: '...', message: '...' } })`.
-- For long-running work, handlers SHOULD emit `status: 'accepted'` immediately, then `status: 'progress'` updates as appropriate, then exactly one terminal envelope.
-- Handlers MUST check `ctx.adventureId` before cross-turn persistence; per-adventure state is the responsibility of the module.
-- Handlers receive ONE invocation per unique request id. Core handles dedup upstream.
-- Handlers SHOULD honor the request's `timeoutTurns` hint by aborting work that exceeds it (Core will emit the timeout error automatically, but the work itself should stop).
+## Handler rules
+
+- `onStateChange` MUST NOT throw synchronously. Catch errors internally, log via `ctx.log`, and no-op if state is malformed.
+- `onStateChange` handlers MAY be called many times per turn (once per card change, plus one extra on action-id change if `tracksActionId`). They MUST be idempotent.
+- Modules MUST check `ctx.adventureId` before touching cross-turn persistence. Per-adventure state is the module's responsibility.
+- `ctx.currentActionId` may be `null` early in load (before the action window arrives). Modules should fall back to the most-recent history entry or to manifest defaults in that case.
 
 ## Module registration
 
@@ -141,75 +124,60 @@ either gracefully degrade or surface a "module X unavailable" notice
 
 ## Module lifecycle for Scripture (reference)
 
-Scripture uses BOTH transports. The card transport carries the **manifest** (widget structure: ids, types, labels, colors, zones — the schema). The text transport carries per-turn **values** (current HP, current gold, etc.), which is what makes the widgets revert correctly on undo/retry.
+Scripture reads a single `frontier:state:scripture` card containing manifest + history. Widget structure comes from the manifest; widget values come from `history[ctx.currentActionId]` with graceful fallbacks. Undo/retry just changes which history key BD reads.
 
 ```
 Declared config:
   id: 'scripture'
-  defaultTransport: 'text'
-  usesText: true
   stateNames: ['scripture']
-  ops: { flashWidget }
+  tracksActionId: true
 
-onEnable:
+onEnable(ctx):
   - Mount the widget container in the DOM if not already present.
-  - Subscribe to frontier:state:scripture via core; hydrate manifest from current card if any.
-  - Subscribe to text frames targeting module 'scripture'; hydrate initial values if any.
+  - If there's already a `frontier:state:scripture` card, synthesize an
+    onStateChange call to hydrate immediately.
   - Install resize/layout observers.
 
-onStateChange('scripture', parsed):
-  - This is the MANIFEST — the widget schema.
-  - Diff parsed.widgets against currently-rendered widgets.
-  - Create new widgets, update changed STRUCTURE (label, type, color, align), destroy removed ones.
-  - Validate each widget config via validators.js; reject invalid entries with a warning.
-  - Values shown remain whatever was last set via text transport.
+onStateChange('scripture', parsed, ctx):
+  // Called when the card changes OR when ctx.currentActionId changes (because tracksActionId=true).
+  - Validate parsed.manifest via validators.js. Drop invalid widgets with a warning.
+  - Reconcile widget DOM against parsed.manifest.widgets:
+      create new widgets, update changed structure, destroy removed ones.
+  - Compute values = parsed.history[ctx.currentActionId]
+                      ?? mostRecentEntry(parsed.history)
+                      ?? {};
+  - For each widget in the manifest, apply values[widget.id] if present;
+    otherwise fall back to manifest-declared defaults or leave blank.
 
-Text-frame handler ({ module: 'scripture', op: 'values', payload: { [widgetId]: value, ... } }):
-  - Update widget live values in place. No DOM rebuild, just value/progress updates.
-  - If a value is for a widget id not in the current manifest, ignore silently
-    (manifest drift, typically a race between the two transports).
-  - If text transport is disabled for Scripture (textEnabled=false in heartbeat),
-    Scripture can optionally accept 'values' via card transport as a fallback,
-    at the cost of the undo/retry bug returning. Document in the guide.
+onAdventureChange(newAdventureId, ctx):
+  - Clear widget cache.
+  - Wait for the next onStateChange (Core will synthesize one if there's a card).
 
-onMessage (ops):
-  - 'flashWidget' → briefly animate the specified widget (card-transport request; fire-and-forget).
-  - (future) 'queryWidgetBounds' → respond with DOMRect of a widget (for script to use in tooltip logic).
-
-onAdventureChange:
-  - Clear the widget cache and value cache.
-  - Re-hydrate manifest from frontier:state:scripture if it exists in the new adventure.
-  - Values wait for the first text frame (or stay blank until then).
-
-onDisable:
+onDisable(ctx):
   - Tear down all widgets.
   - Remove the widget container from the DOM.
   - Disconnect observers.
 ```
 
-**Why the split?** If the user hits undo, the text block for the current turn disappears — along with its embedded value frame. The previous turn's text block (now the current tail) is shown, and its value frame is read instead. Widgets' *values* automatically reflect the narrative state. The *manifest*, meanwhile, stays put: it's structure, not state. New widgets added in turn 10 are still added when the user undoes back to turn 5 — but that's fine, because the manifest is what the script *is publishing*, not what it published historically.
+**Why this works:** the manifest is structural (rarely changes) and should persist across undo (the user undoing a turn shouldn't un-add a widget that was defined turns ago). The history map holds per-turn values; BD picks whichever entry corresponds to the current tail. If the user undoes from turn 10 to turn 5, `ctx.currentActionId` changes, Core re-invokes `onStateChange`, Scripture looks up `history[turn-5-id]`, and widgets show their turn-5 values. No invisible characters required.
 
 ## AI-Dungeon-side Library
 
-Every module ships a short Library snippet the user pastes into their scenario. Frontier Core (BD side) provides a single shared base Library the user pastes once; per-module Libraries are small adapters built on top.
+Every module ships a short Library snippet the user pastes into their scenario. Frontier provides a shared base Library the user pastes once; per-module adapters are small additions on top.
 
-The base Library has three responsibilities:
+The base Library has two responsibilities:
 1. Availability detection (heartbeat reader).
-2. Card-transport queue management (`frontier:out`, `frontier:in:*`, `frontier:state:*`).
-3. Text-transport encoding/decoding (via the `textCodec` helpers that mirror the BD-side codec).
+2. State-card writing (`frontier:state:*`).
+
+That's it. No codec. No Context Modifier. No request queue. No response polling. No acks.
 
 ### Base Frontier Library (pasted once per scenario)
 
 ```js
-// === Frontier Base Library (v1) ===============================================
-state.frontier = state.frontier ?? { counter: 0, inflight: {}, textOutbox: [] };
+// === Frontier Base Library (v1, Lite) ========================================
+state.frontier = state.frontier ?? {};
 
-// --- Utilities --------------------------------------------------------------
-function frontierNewId(prefix) {
-  state.frontier.counter = (state.frontier.counter || 0) + 1;
-  return (prefix || 'req') + '-' + state.frontier.counter;
-}
-
+// --- Heartbeat / availability ----------------------------------------------
 function frontierHeartbeat() {
   const card = storyCards.find(c => c.title === 'frontier:heartbeat');
   if (!card) return null;
@@ -217,7 +185,7 @@ function frontierHeartbeat() {
 }
 
 function frontierIsAvailable(opts = {}) {
-  const { maxStaleTurns = 2, requireModules = [], requireText = false } = opts;
+  const { maxStaleTurns = 2, requireModules = [] } = opts;
   const hb = frontierHeartbeat();
   if (!hb || hb.frontier?.protocol !== 1) return false;
   if (typeof hb.turn === 'number' && info.actionCount - hb.turn > maxStaleTurns) return false;
@@ -225,123 +193,28 @@ function frontierIsAvailable(opts = {}) {
     const avail = new Set((hb.modules || []).map(m => m.id));
     if (!requireModules.every(m => avail.has(m))) return false;
   }
-  if (requireText) {
-    if (!hb.transports?.text?.enabled) return false;
-    if (requireModules.length) {
-      const modMap = new Map((hb.modules || []).map(m => [m.id, m]));
-      if (!requireModules.every(m => modMap.get(m)?.textEnabled)) return false;
-    }
-  }
   return true;
 }
 
-function frontierDefaultTransport(moduleId) {
-  const hb = frontierHeartbeat();
-  if (!hb) return 'card';
-  const m = (hb.modules || []).find(x => x.id === moduleId);
-  return (m && m.defaultTransport) || 'card';
-}
-
-// --- Text codec (ported from Robyn's invisible-unicode-decoder) ------------
-// Exact encoding mirrors services/frontier/text-codec.js on the BD side.
-// Kept terse here; see the Frontier docs for the full algorithm.
-const FRONTIER_TEXT_MARK_START = '<\u200B\u200C\u200D>'; // placeholder; real markers defined by codec port
-const FRONTIER_TEXT_MARK_END   = '<\u200B\u200D\u200C>'; // placeholder
-
-function frontierTextEncode(obj) {
-  // Real implementation is the ported codec. Stub shown for structure only.
-  return FRONTIER_TEXT_MARK_START + _frontierEncodeInternal(JSON.stringify(obj)) + FRONTIER_TEXT_MARK_END;
-}
-function frontierTextDecode(text) {
-  // Returns { frames: unknown[], cleanText: string }.
-  return _frontierDecodeInternal(text);
-}
-function frontierContextModifier(text) {
-  // For use in the Context Modifier hook. Strips all Frontier-owned invisible chars.
-  return frontierTextDecode(text).cleanText;
-}
-
-// --- Card-transport outbound (frontier:out) --------------------------------
-function frontierEnqueue(envelope) {
-  state.frontier.outbox = state.frontier.outbox || [];
-  state.frontier.outbox.push({
-    id: envelope.id || frontierNewId(),
-    module: envelope.module,
-    op: envelope.op,
-    payload: envelope.payload,
-    ts: Date.now(),
-    transport: envelope.transport || frontierDefaultTransport(envelope.module),
-    expectsResponse: envelope.expectsResponse !== false,
-    timeoutTurns: envelope.timeoutTurns || 20,
-    ephemeral: envelope.ephemeral === true,
-  });
-  return state.frontier.outbox[state.frontier.outbox.length - 1].id;
-}
-
-function frontierFlush() {
-  // Splits the outbox by transport, flushes each.
-  const outbox = state.frontier.outbox || [];
-  const cardMessages = outbox.filter(m => m.transport === 'card');
-  const textMessages = outbox.filter(m => m.transport === 'text');
-
-  // Card path: write/overwrite the frontier:out card.
-  const cardEnvelope = {
-    v: 1,
-    turn: info.actionCount,
-    acks: state.frontier.pendingAcks || [],
-    messages: cardMessages,
-  };
-  const json = JSON.stringify(cardEnvelope);
-  const idx = storyCards.findIndex(c => c.title === 'frontier:out');
-  if (idx === -1) {
-    addStoryCard('frontier:out', json, 'Frontier');
-  } else {
-    const c = storyCards[idx];
-    updateStoryCard(idx, c.keys || 'frontier:out', json, c.type || 'Frontier');
+// --- Current action id ------------------------------------------------------
+function frontierCurrentActionId() {
+  // AI Dungeon exposes the action history; the tail is the current turn's action.
+  if (typeof history !== 'undefined' && history.length > 0) {
+    const tail = history[history.length - 1];
+    if (tail && tail.id) return tail.id;
   }
-
-  // Text path: stash the frame for the Output Modifier to append.
-  if (textMessages.length) {
-    state.frontier.textOutbox = (state.frontier.textOutbox || []).concat(textMessages);
-  }
-
-  state.frontier.outbox = [];
-  state.frontier.pendingAcks = [];
+  return null;
 }
 
-function frontierAppendTextFrame(text) {
-  // Call this from Output Modifier to append the pending text-transport frame.
-  const msgs = state.frontier.textOutbox || [];
-  if (!msgs.length) return text;
-  const frame = frontierTextEncode({ v: 1, turn: info.actionCount, messages: msgs });
-  state.frontier.textOutbox = [];
-  return text + frame;
+// --- State card I/O ---------------------------------------------------------
+function frontierReadState(name) {
+  const title = 'frontier:state:' + name;
+  const card = storyCards.find(c => c.title === title);
+  if (!card) return null;
+  try { return JSON.parse(card.entry || card.value || '{}'); } catch { return null; }
 }
 
-// --- Card-transport inbound (frontier:in:*) --------------------------------
-function frontierPoll() {
-  // Returns { [module]: ResponseEnvelope[] } of all fresh responses this turn.
-  const fresh = {};
-  for (const card of storyCards) {
-    if (!/^frontier:in:/.test(card.title)) continue;
-    const moduleId = card.title.slice('frontier:in:'.length);
-    let parsed;
-    try { parsed = JSON.parse(card.entry || card.value || '{}'); } catch { continue; }
-    if (!parsed.messages) continue;
-    const seen = state.frontier.seenResponses = state.frontier.seenResponses || {};
-    const newMessages = parsed.messages.filter(m => !seen[m.id]);
-    newMessages.forEach(m => { seen[m.id] = true; });
-    if (newMessages.length) fresh[moduleId] = newMessages;
-  }
-  // Ack everything we just saw so Core can drop them next turn.
-  state.frontier.pendingAcks = (state.frontier.pendingAcks || []).concat(
-    Object.values(fresh).flat().map(m => m.id)
-  );
-  return fresh;
-}
-
-// --- Persistent state (frontier:state:*) -----------------------------------
-function frontierPublishState(name, obj) {
+function frontierWriteState(name, obj) {
   const title = 'frontier:state:' + name;
   const json = JSON.stringify(obj);
   const idx = storyCards.findIndex(c => c.title === title);
@@ -353,65 +226,69 @@ function frontierPublishState(name, obj) {
   }
 }
 
-// --- Convenience handle-based API ------------------------------------------
-function frontierCall(moduleId, op, payload, opts = {}) {
-  const id = frontierEnqueue({ module: moduleId, op, payload, ...opts });
-  if (opts.expectsResponse !== false) {
-    state.frontier.inflight[id] = { moduleId, op, startTurn: info.actionCount };
-  }
-  return id;
-}
+// --- Action-ID history helper ----------------------------------------------
+// For modules that want the undo/retry-correct behavior without hand-rolling it.
+function frontierUpdateHistory(name, values, opts = {}) {
+  const { historyLimit = 100, manifest } = opts;
+  const actionId = frontierCurrentActionId();
+  if (!actionId) return false; // No current action; can't key the entry.
 
-// --- Ephemeral values (text-transport shortcut) ----------------------------
-function frontierEmitValues(moduleId, values) {
-  // Shortcut for the common case: publish per-turn values over text transport.
-  // Falls back to card transport if text is disabled (with documented undo/retry caveat).
-  const hb = frontierHeartbeat();
-  const mod = hb && (hb.modules || []).find(m => m.id === moduleId);
-  const textOk = hb && hb.transports?.text?.enabled && mod && mod.textEnabled;
-  frontierEnqueue({
-    module: moduleId,
-    op: 'values',
-    payload: values,
-    transport: textOk ? 'text' : 'card',
-    expectsResponse: false,
-    ephemeral: true,
-  });
+  const existing = frontierReadState(name) ?? { v: 1, history: {} };
+  existing.v = 1;
+  existing.history = existing.history || {};
+  existing.history[actionId] = values;
+  if (manifest !== undefined) existing.manifest = manifest;
+  existing.historyLimit = historyLimit;
+
+  // Prune oldest by insertion order. In practice we re-sort by the script's
+  // own action sequence via state.frontier._historyOrder[<name>].
+  const order = (state.frontier._historyOrder = state.frontier._historyOrder || {});
+  const list = (order[name] = order[name] || []);
+  if (!list.includes(actionId)) list.push(actionId);
+  while (list.length > historyLimit) {
+    const drop = list.shift();
+    delete existing.history[drop];
+  }
+
+  frontierWriteState(name, existing);
+  return true;
 }
 ```
+
+That's the whole base Library. About 60 lines. No Context Modifier required.
 
 ### Scripture Library adapter (pasted after the base Library)
 
 ```js
 // === Scripture (Frontier Widget Module) =======================================
-// Scripture has two halves:
-//   - scriptureSetManifest(widgets) — defines the widgets (schema). Persistent in a story card.
-//   - scriptureSetValues(values)    — updates per-turn values. Ephemeral in invisible text,
-//                                     reverts with undo/retry automatically.
+// Usage:
+//   scriptureConfigure({ historyLimit: 100 });   // optional; defaults shown
+//   scriptureSet([
+//     { id: 'hp-bar', type: 'bar', label: 'HP', value: 75, max: 100, color: 'green', align: 'center' },
+//     { id: 'gold',   type: 'stat', label: 'Gold', value: 1250, align: 'right' },
+//   ]);
 
-function scriptureSetManifest(widgets) {
-  if (!frontierIsAvailable({ requireModules: ['scripture'] })) return false;
-  // Manifest omits per-turn values by convention. Strip them if present.
-  const manifest = widgets.map(({ value, progress, ...rest }) => rest);
-  frontierPublishState('scripture', { v: 1, widgets: manifest });
-  return true;
+state.scripture = state.scripture ?? { historyLimit: 100 };
+
+function scriptureConfigure(opts = {}) {
+  if (typeof opts.historyLimit === 'number') state.scripture.historyLimit = opts.historyLimit;
 }
 
-function scriptureSetValues(values) {
-  if (!frontierIsAvailable({ requireModules: ['scripture'] })) return false;
-  // values: { [widgetId]: number | string | { value, progress, ... } }
-  frontierEmitValues('scripture', values);
-  return true;
-}
-
-// Convenience: combined set. Publishes manifest once per change, values every turn.
 function scriptureSet(widgets) {
-  scriptureSetManifest(widgets);
+  if (!frontierIsAvailable({ requireModules: ['scripture'] })) return false;
+
+  // Split: structure goes in manifest, values go in history[currentActionId].
+  const manifest = { widgets: widgets.map(({ value, progress, ...rest }) => rest) };
   const values = {};
   for (const w of widgets) {
     if (w.value !== undefined) values[w.id] = w.value;
+    if (w.progress !== undefined) values[w.id + '__progress'] = w.progress;
   }
-  if (Object.keys(values).length) scriptureSetValues(values);
+
+  return frontierUpdateHistory('scripture', values, {
+    historyLimit: state.scripture.historyLimit,
+    manifest,
+  });
 }
 ```
 
@@ -426,42 +303,28 @@ state.game = state.game ?? { hp: 100, gold: 0 };
 ```
 
 ```js
-// Context Modifier (REQUIRED when any module uses text transport)
-const modifier = (text) => ({ text: frontierContextModifier(text) });
-modifier(text);
-```
-
-```js
 // Output Modifier
 const modifier = (text) => {
-  // 1. Drain any card-transport responses from earlier turns.
-  const responses = frontierPoll();
-
-  // 2. Do game logic.
+  // 1. Do game logic.
   state.game.hp = Math.max(0, state.game.hp - 5);
   state.game.gold += 10;
 
-  // 3. Publish widget manifest (persistent — card transport).
-  //    In practice you'd only call this when the widget SET changes, not every turn.
-  scriptureSetManifest([
-    { id: 'hp-bar', type: 'bar', label: 'HP', max: 100, color: 'green', align: 'center' },
-    { id: 'gold',   type: 'stat', label: 'Gold', align: 'right' },
+  // 2. Publish widget state. Scripture handles action-id history under the hood.
+  scriptureSet([
+    { id: 'hp-bar', type: 'bar',  label: 'HP',   value: state.game.hp,   max: 100, color: 'green', align: 'center' },
+    { id: 'gold',   type: 'stat', label: 'Gold', value: state.game.gold,                            align: 'right' },
   ]);
 
-  // 4. Publish current values (ephemeral — text transport, reverts with undo).
-  scriptureSetValues({
-    'hp-bar': state.game.hp,
-    'gold':   state.game.gold,
-  });
-
-  // 5. Flush card-transport outbox and append the text-transport frame to output.
-  frontierFlush();
-  return { text: frontierAppendTextFrame(text) };
+  return { text };
 };
 modifier(text);
 ```
 
-Three hooks total: Library (setup), Context Modifier (strips invisible chars from AI input), Output Modifier (emits widget state). The Context Modifier is a one-liner. No hand-rolled regex. No boilerplate beyond pasting the Library snippet.
+**Two hooks total.** Library (setup) + Output Modifier (publish state). No Input Modifier, no Context Modifier, no invisible characters in the output text. The entire scenario integration fits in ~15 lines of user code.
+
+### What about undo / retry?
+
+Nothing. The script just writes `history[currentActionId] = values` every turn. If the user undoes, AI Dungeon drops the tail action from `history`; BD's `currentActionId` changes; BD reads `history[newTailId]` from the same unchanged state card and shows those older values. The script doesn't need to know or care.
 
 ## Extensibility roadmap (post-MVP)
 

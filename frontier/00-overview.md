@@ -8,11 +8,10 @@ Frontier is not a feature. It is a **platform** on which features (modules) are 
 
 ## What Frontier replaces
 
-- **BetterScripts** (`features/better_scripts_feature.js`) — the existing widget-only system. Its architecture, protocol, and API are replaced wholesale. No backward compatibility with the old BetterScripts wire format.
-- **TagCipher / ZW Binary encodings** (the old BetterScripts invisible-character format) — replaced by Robyn's redesigned, significantly more efficient `invisible-unicode-decoder` codec, ported into Frontier as the **text transport**.
-- **The hand-rolled Context Modifier boilerplate** that every BetterScripts author had to paste into their scenario — replaced by a trivial one-line call to a Frontier Library helper (`frontierContextModifier(text)`).
-
-**Note:** invisible-text encoding is *not* going away — it's fundamental to Scripture's correctness. The reason is covered under [Two transports](#two-transports) below.
+- **BetterScripts** (`features/better_scripts_feature.js`) — the existing widget-only system. Its architecture, protocol, and API are replaced wholesale. No backward compatibility.
+- **Zero-width-character encoding** (TagCipher / ZW Binary in the old BetterScripts format) — **fully removed**. Frontier carries no invisible characters in adventure text whatsoever.
+- **The hand-rolled Context Modifier boilerplate** — no longer needed. Because nothing Frontier does touches the adventure's visible or model-context text, authors do not need a Context Modifier for Frontier at all.
+- **DOM-scraping widget detection** — replaced by a WebSocket interceptor that reads AI Dungeon's own `adventureStoryCardsUpdate` GraphQL subscription directly.
 
 ## Vision in one example
 
@@ -47,106 +46,122 @@ Frontier's implementation window is gated by BD V2's broader release timing. Bet
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ MODULES (pluggable, one per capability)                     │
-│   Scripture (widgets, built-in)                             │
-│   (future) WebFetch, Clock, Geolocation, LocalAI, ...       │
+│ MODULES (one per capability)                                │
+│   Scripture (widgets, built-in, MVP)                        │
+│   (post-MVP) WebFetch, Clock, LocalAI, ...                  │
 ├─────────────────────────────────────────────────────────────┤
-│ FRONTIER CORE                                               │
-│   Envelope routing, transport selection, request dedup,     │
-│   availability heartbeat, multi-turn state, ack/TTL         │
+│ FRONTIER CORE (Lite)                                        │
+│   Card-family routing, heartbeat emission,                  │
+│   action-ID tracking, module registry, adventure scoping    │
 ├─────────────────────────────────────────────────────────────┤
-│ TRANSPORT (two channels)                                    │
-│   ▸ Story-card channel: WS interceptor (read) + GraphQL     │
-│     mutations (write). Persistent.                          │
-│   ▸ Invisible-text channel: Robyn's ZW codec ported to JS.  │
-│     Ephemeral — reverts with adventure text on undo/retry.  │
+│ TRANSPORT (cards only, read-only in MVP)                    │
+│   WS interceptor → card-stream → diff events                │
+│   GraphQL write path (heartbeat writes only)                │
 └─────────────────────────────────────────────────────────────┘
-                              ↕
+                              ↑
                  AI Dungeon Script Sandbox
               (Library + onInput/onModelContext/onOutput)
+                 writes `frontier:state:*` cards
 ```
 
-- **Transport** is the wire: how bytes move between the script and the extension. Two channels with complementary semantics (see [Two transports](#two-transports)). Agnostic to any module.
-- **Core** is the protocol: envelope shape, transport routing, request/response correlation, heartbeat, multi-turn state.
-- **Modules** are the capabilities: concrete features built on top of Core. Each module is a matched pair — an AI-Dungeon-side Library and a BetterDungeon-side handler. Modules declare a default transport; individual envelopes can override.
+- **Transport** is the wire: the WebSocket interceptor observes AI Dungeon's `adventureStoryCardsUpdate` subscription. BD reads cards for free; BD writes only the heartbeat card via GraphQL.
+- **Core** is a thin router: reads the card stream, identifies `frontier:*` prefixes, dispatches state-change events to the right module. Tracks the current action ID from the WS frames so modules can look up history entries.
+- **Modules** are the capabilities. A Lite module only needs an `onStateChange(name, parsed)` handler and a lifecycle pair (`onEnable` / `onDisable`). No ops, no responses.
 
-## Two transports
+## Action-ID history — how undo/retry works without invisible text
 
-The single most important architectural property of Frontier is that it uses **two different transports** for two different kinds of data:
+Every AI Dungeon action in the `actionWindow` subscription carries a stable `id`. Frontier exploits this so widget state can revert correctly without invisible characters.
 
-| Property | Story-card channel | Invisible-text channel |
-|---|---|---|
-| **Persistence** | Persistent across undo / retry / edit / refresh | Tied to the turn's output; reverts with turn history |
-| **Cost to AI context** | None (story cards aren't in the model context unless the user adds them as triggers) | Zero visible text, but the raw ZW chars ARE in context unless stripped. A one-line Context Modifier helper handles this. |
-| **Writable by** | Script (hooks) + BD (GraphQL, always-on) | Script only (during `onOutput`) |
-| **Natural use** | Schemas, long-lived state, request/response queues, large payloads | Per-turn *values* (current HP, gold count, timers), ephemeral metadata |
-| **Example (Scripture)** | Widget manifest: ids, types, labels, colors, layout — the schema | Per-turn widget values: current HP = 75, current gold = 1250 |
+**The pattern:**
 
-**Why both?** Robyn's empirical test confirmed that story cards do *not* revert on undo/retry, while adventure text does. If widget *values* live in story cards, hitting undo leaves the widgets stuck showing post-undo values while the narrative has rolled back. If values live in invisible text embedded in the turn's output, they naturally revert alongside the text. Schemas (rarely changing) belong in cards; values (per-turn) belong in text. This maps cleanly onto a protobuf-style mental model: the card is the `.proto` definition, the invisible text is the wire-encoded message.
+1. Each turn, the script determines the current action's id (from `history` / `actionWindow` as exposed to the script).
+2. The script stores its module's current values under that id inside a single reserved state card:
+   ```json
+   {
+     "v": 1,
+     "manifest": { "widgets": [ /* schema-only; ids, types, labels */ ] },
+     "history": {
+       "action-id-abc": { "hp-bar": 75, "gold": 1250 },
+       "action-id-def": { "hp-bar": 70, "gold": 1260 }
+     }
+   }
+   ```
+3. The script prunes oldest entries to stay under a configurable cap (default: 100 most-recent entries; see [Size constraints](#constraints-that-drive-the-design)).
+4. BD reads `actionWindow` from the WS stream, knows the current tail action id, looks up `history[tailId]`, and uses those values.
 
-**For MVP**, invisible-text payloads are serialized as plain JSON (no schema compression yet). Schema compression — where the card defines field types and the text carries only tightly-packed values — is a Phase 2 improvement that can dramatically shrink text footprint.
+**Why this works:**
 
-## MVP scope
+- **Undo** → AI Dungeon removes the tail action from `actionWindow` → BD sees a different tail id → looks up the older history entry → widgets show older values. The state card itself didn't change; only which key BD reads from it.
+- **Retry** → AI Dungeon replaces the tail action with a new one (new id) → script's next `onOutput` writes new values under the new id → BD reads the new entry.
+- **Edit / Continue** → same mechanism. BD always looks up whatever the current tail id is.
+- **Refresh / session restore** → everything is in the story card + subscription data, so it all round-trips.
+
+**What about gaps?** If BD sees a tail id for which the script has no history entry (e.g. the author just installed the script mid-adventure, or pruned too aggressively), BD falls back to the most-recent available entry, or to default values from the manifest if no history exists. Documented as a soft-degrade, not an error.
+
+## MVP scope — Frontier Lite
 
 **In scope for the first shippable release:**
 
-- Transport (card channel): WebSocket interceptor (page world) + story-card stream service + GraphQL write path for BD-to-script writes.
-- Transport (text channel): manual port of Robyn's `invisible-unicode-decoder` to `services/frontier/text-codec.js`; encode/decode of per-turn value envelopes; Context Modifier helper in the base Library.
-- Core: module registry, envelope routing across both transports, transport selection (per-module default + per-envelope override), dedup, heartbeat emission, multi-turn state tracking, ack/TTL machinery (card-transport only — text-transport envelopes are naturally GC'd by turn reversion).
-- Scripture module: widget functionality split across both transports — manifest (schema/structure) in card, values (dynamic data) in invisible text. Correct undo/retry behavior from day one.
-- Feature manager integration: Frontier master toggle + per-module toggles. Global invisible-text toggle (default on) + per-module invisible-text toggle. Hierarchical.
-- Popup UI updates.
-- BD UI filtering: hide `frontier:*` story cards from BetterDungeon-rendered views.
-- Guide + docs rewrite.
+- **Transport:** WebSocket interceptor (page world) + `card-stream.js` content-script service. Observes `adventureStoryCardsUpdate` AND `adventureActionsUpdate` (or equivalent; exact name TBD during Phase 0 investigation) to track both cards and the current action id.
+- **Core (Lite):** thin module registry + card-family router + heartbeat emitter + action-ID tracker. No envelope parsing, no request dedup, no ack/TTL machinery, no in-flight request state.
+- **GraphQL write path:** only used by Core to write the `frontier:heartbeat` card. No other BD-originated writes in MVP.
+- **Scripture module:** widget functionality using action-ID history. Single `frontier:state:scripture` card holds manifest + recent history. Undo/retry/edit correctness from day one.
+- **Feature manager integration:** Frontier master toggle + per-module toggles. Simple hierarchy: Frontier off → nothing runs; Frontier on + Scripture off → Scripture specifically disabled.
+- **Popup UI updates:** Frontier section replaces the BetterScripts toggle.
+- **BD UI filtering:** hide `frontier:*` story cards from BetterDungeon-rendered card lists.
+- **Guide + docs rewrite:** BetterRepository's `BetterScriptsGuide.vue` → `FrontierGuide.vue`, plus `ScriptureGuide.vue`. Plain-JSON, plain-cards story — no codec, no invisible chars, no Context Modifier.
+- **Multiplatform smoke test:** verify on Chromium, Gecko, AND Android WebView before shipping.
 
-**Explicitly out of MVP (designed for, not implemented):**
+**Explicitly out of MVP (designed-for but not implemented):**
 
-- **Schema compression** for invisible-text envelopes. MVP text payloads are plain JSON; Phase 2 adds protobuf-style schema definitions in the manifest card with tightly-packed value encoding.
-- No new capability modules (no WebFetch, Clock, Geolocation, etc.). Core's write path works but only the internal heartbeat exercises it; a stub `echo` module exists for internal testing only.
-- No migration of `story-card-scanner.js` (originally locked in for an earlier round — deferred).
-- No module registry or sandboxed user-scripts — APIs shaped so they can slot in later without refactoring.
+- **Two-way communication** (script → BD requests with BD-side responses). This is the whole "unshackle the sandbox" vision — WebFetch, LocalAI, Clock, Geolocation. The module interface is shaped to accommodate it later without refactoring.
+- **Module ops + request/response envelopes.** No `frontier:out`, no `frontier:in:*`, no multi-turn state machines, no acks, no timeouts.
+- **Invisible-text transport.** Dropped entirely. The undo/retry problem is solved by action-ID history instead.
+- **Module registry + sandboxed user scripts.** All modules are first-party built-ins for MVP.
+- **`story-card-scanner.js` migration.** Keep the existing DOM-scanner pathway intact; card-stream can optionally hydrate the cache, but the scanner still runs for now.
+- **NPM / TypeScript / bundler migration** (per decision #10 below).
 
 ## Locked-in decisions
 
-Five rounds of planning questions have produced the following commitments. Re-open only if something material changes.
+Six rounds of planning questions have produced the following commitments. Re-open only if something material changes.
 
 | # | Decision | Rationale |
 |---|----------|-----------|
-| 1 | **No backward compatibility** with the old BetterScripts wire protocol. ZW encoding returns in a new, Robyn-designed form as one of two transports. | Essentially no production scripts depend on the old BetterScripts format. The *technique* (invisible text) is still the best tool for ephemeral per-turn data because of undo/retry semantics. |
-| 2 | **Hybrid card model** — dedicated protocol cards + optional persistent state cards | Matches the asymmetry between request/response traffic and long-lived UI state (Scripture) |
-| 3 | **MVP: Transport + Core + Scripture only** (no scanner migration, no new capability modules) | Smallest safe ship that repackages existing functionality under the new platform |
-| 4 | **File layout: `services/frontier/` + `modules/scripture/`** | Core is infrastructure (services); modules are semantically distinct from BD features (own top-level dir) |
-| 5 | **Modules are built-in for MVP**, registry + sandboxed user scripts deferred | Keeps MVP tractable while ensuring APIs don't paint us into a corner |
-| 6 | **One outbound card + one inbound card per module** | Clean asymmetry matching turn-gated writes vs. always-on reads; matches Robyn's "one card per enabled script" intuition |
-| 7 | **Hide `frontier:*` cards in BetterDungeon UI surfaces only** | Minimal intrusion; don't touch AI Dungeon's native Story Card list |
-| 8 | **Dual-transport MVP** — story cards + invisible text, with plain JSON in the text channel (schema compression deferred to Phase 2) | Correct undo/retry behavior from day one for Scripture; schema compression is a pure optimization that can land later without protocol breakage |
-| 9 | **Per-module default transport + per-envelope override** | Minimizes Library boilerplate (Scripture's Library can pick the right transport automatically) while keeping escape hatches open |
-| 10 | **Manual port** of Robyn's `invisible-unicode-decoder` (TS) to vendored plain JS at `services/frontier/text-codec.js` | Zero build-tooling overhead for BetterDungeon's current pure-JS setup; accept periodic manual re-ports as Robyn iterates upstream |
-| 11 | **Global + per-module hierarchical toggle** for invisible text, surfaced in the popup AND advertised in the heartbeat | Users who dislike invisible chars can opt out entirely; scripts can read the heartbeat to degrade gracefully when text transport is disabled |
+| 1 | **No backward compatibility** with the old BetterScripts wire protocol. ZW encoding fully removed; no invisible characters anywhere in Frontier. | Essentially no production scripts depend on the old format. Action-ID history solves undo/retry without invisible text, so we never need the codec. |
+| 2 | **Cards-only transport.** `frontier:state:<name>` cards (script → BD) + `frontier:heartbeat` (BD → script, one card). | Simplest possible wire. Everything AI-Dungeon-native. No side channels. |
+| 3 | **Frontier Lite is the MVP** — one-way (script → BD) only. No ops, no requests, no responses, no acks. | Smallest shippable Frontier. Unblocks Scripture immediately. Full two-way is Phase 2+ work that adds `frontier:out` / `frontier:in:*` without changing anything built here. |
+| 4 | **Action-ID history** for per-turn state that must track undo/retry. Scripts keep `{ [actionId]: values }` in their state card; BD looks up the current tail's entry. | Robyn's insight: AI Dungeon actions carry stable ids in the `actionWindow`. No invisible text needed; everything is in cards + subscriptions. |
+| 5 | **File layout: `services/frontier/` + `modules/scripture/`.** | Core is infrastructure (services); modules are semantically distinct from BD features (own top-level dir). |
+| 6 | **Modules are built-in for MVP.** Registry + sandboxed user scripts deferred. | Keeps MVP tractable while shaping the module interface so plugins can slot in later. |
+| 7 | **Hide `frontier:*` cards in BetterDungeon UI surfaces only.** AI Dungeon's native Story Card list is untouched. | Minimal intrusion. |
+| 8 | **Multiplatform by default.** Every design choice must work on Chromium, Gecko, AND Android WebView. Fallbacks documented inline. | BD V2 ships on all three; Frontier can't be the feature that breaks platform parity. |
+| 9 | **Phase 1 delivers Scripture-on-action-ID end-to-end.** File restructure + WS interceptor + card-stream + Scripture module all land together, with action-ID lookup working. | Fastest path to a visible, testable win. Subsequent phases are polish (feature manager, popup, UI filtering, docs). |
+| 10 | **No NPM / TypeScript / bundler migration.** Keep pure-JS, manifest-based content scripts. | Out of scope for this plan. Robyn's pitch is acknowledged but declined for now; re-open as a separate epic later. |
+| 11 | **Action-ID stability is verified empirically in Phase 0.** We commit to the cards-only design on the assumption that action ids survive retry/edit/continue as expected; Phase 0 tests it before Phase 1 starts. | The whole design rests on this. Better to verify once than debug a flaky foundation forever. |
 
 ## Constraints that drive the design
 
-- **Script side is turn-gated.** AI Dungeon scripts only execute during `onInput`, `onModelContext`, and `onOutput` hooks. They cannot write outside of a turn cycle. Outbound protocol traffic from the script happens in bursts, one per turn.
-- **Extension side is always-on.** BetterDungeon's content script runs continuously while the adventure tab is open. It can receive WebSocket frames and issue GraphQL mutations at any moment.
-- **Story cards are persistent. Adventure text is history-linked.** Story cards do NOT revert on undo/retry (empirically confirmed). Adventure text blocks are turn-history-bound: when a turn is undone, that turn's text block (and anything embedded in it) disappears. Frontier exploits both properties: persistent things live in cards, ephemeral turn-bound things live in invisible text.
-- **Both transports are AI-Dungeon-native.** We deliberately do not try to open a side channel (direct WebSocket, new backend, custom DOM marker). Cards go over AI Dungeon's GraphQL / Story Card system; text rides inside AI Dungeon's own output blocks. State is always consistent with what AI Dungeon itself knows.
-- **Card size limits apply.** A single card's `value` has practical length limits (exact number TBD during implementation). Large payloads spill into separate state cards.
-- **Invisible text is visible to the AI.** Zero-width chars ARE in the model context unless stripped. A one-line Context Modifier (provided by the Frontier base Library as `frontierContextModifier`) handles this.
+- **Script side is turn-gated.** AI Dungeon scripts only execute during `onInput`, `onModelContext`, and `onOutput` hooks. They cannot write outside of a turn cycle. All script-side writes happen at most once per turn.
+- **Extension side is always-on.** BetterDungeon's content script runs continuously while the adventure tab is open. It can receive WebSocket frames (cards AND action list) and issue GraphQL mutations at any moment.
+- **Story cards are persistent.** Story cards do NOT revert on undo/retry (Robyn empirically confirmed). Frontier uses this as the persistence substrate; the action-ID history pattern layers turn-sensitive lookup on top of persistent storage.
+- **Actions carry stable ids.** Every AI Dungeon action in the `actionWindow` subscription has a unique id that survives retry/edit as long as the action is still in history. This is the other foundation of Frontier's correctness. (Phase 0 verifies behavior in every edge case.)
+- **Card size limits apply.** A single card's `value` has practical length limits (exact bound TBD during Phase 0 instrumentation; preliminary estimate ~8 KB before server-side risk). The history map defaults to 100 most-recent entries; authors can override via `scriptureConfigure({ historyLimit: N })`. Larger modules may eventually need to spill into supplementary cards, but MVP does not.
+- **Native wire only.** We deliberately do not open a side channel (direct WebSocket, new backend, custom DOM marker). All communication goes over AI Dungeon's own card + subscription system, so state is always consistent with what AI Dungeon itself knows.
 
 ## Glossary
 
 | Term | Definition |
 |------|------------|
-| **Frontier** | The platform. The whole thing: transport + core + modules. |
-| **Frontier Core** | The protocol layer. Lives in `services/frontier/core.js`. Module-agnostic. |
-| **Module** | A capability that plugs into Frontier Core. Has an AI-Dungeon-side Library + a BetterDungeon-side handler. |
+| **Frontier** | The platform. Transport + Core + modules. |
+| **Frontier Lite** | The MVP shape of Frontier — one-way (script → BD), cards-only, no ops. This is what Phase 1 ships. |
+| **Full Frontier** | The post-MVP extension adding two-way comms (requests/responses, ops, multi-turn). Planned; not designed in detail yet. |
+| **Frontier Core** | The routing layer. Lives in `services/frontier/core.js`. Module-agnostic. In Lite: reads card stream, tracks action id, dispatches to modules, emits heartbeat. |
+| **Module** | A capability that plugs into Frontier Core. Has an AI-Dungeon-side Library adapter + a BetterDungeon-side handler. In Lite: the handler only needs `onStateChange` + lifecycle hooks. |
 | **Scripture** | The first / reference module. Renders widget UI in the top bar above the story text. |
-| **Envelope** | A single message on the wire. JSON object with `id`, `module`, `op`/`replyTo`, `payload`, `ts`, etc. Carries an optional `transport` field. |
-| **Transport** | How a message crosses between the script and BD. Two options: **card transport** and **text transport**. |
-| **Card transport** | Messages flow through reserved Story Cards (`frontier:out`, `frontier:in:*`, `frontier:state:*`). Persistent; survives undo. |
-| **Text transport** | Messages flow as invisible zero-width characters embedded in the AI Dungeon output text. Ephemeral; reverts with the turn. |
-| **Text codec** | The encoder/decoder at `services/frontier/text-codec.js`, ported from Robyn's `invisible-unicode-decoder`. Handles framing, encoding, decoding. |
-| **Protocol card** | A Story Card whose title is in a reserved `frontier:*` / `scripture:*` namespace. Not meant for user consumption. |
-| **Heartbeat card** | `frontier:heartbeat` — the card BD Core writes each turn to advertise its presence, capabilities, and which transports are enabled. |
-| **Ephemeral envelope** | An envelope sent over text transport; has no ack or TTL because natural turn-history GC handles cleanup. |
-| **Persistent envelope** | An envelope sent over card transport; subject to ack/TTL rules. |
+| **State card** | A reserved `frontier:state:<name>` story card that a script uses to publish module-specific state. For Scripture, this is `frontier:state:scripture`. |
+| **Heartbeat card** | `frontier:heartbeat` — the card BD Core writes each turn to advertise its presence, protocol version, and enabled modules. |
+| **Action ID** | The stable identifier AI Dungeon assigns to each action (turn). Frontier scripts key their per-turn history by this id so BD can look up the correct values when the tail action changes (undo, retry, edit). |
+| **Action window** | AI Dungeon's subscription-pushed list of recent actions with ids. BD reads the tail (latest) id to know which history entry to display. |
+| **History map** | The `{ [actionId]: values }` object a script embeds in its state card alongside the manifest. |
+| **Manifest** | The schema half of a state card — widget definitions, types, labels, colors. Rarely changes. |
+| **Reserved card** | Any story card whose title begins with `frontier:*`. Hidden from BD's own card-listing UI; never from AI Dungeon's native one. |
