@@ -11,8 +11,8 @@ Frontier is part of **BetterDungeon V2**, which bundles:
 
 **Sequencing:**
 
-- **BetterRepository v1.6** ships first (unrelated to Frontier; last major BetterRepository release before a calm period).
-- BD V2 implementation then begins. Frontier is the largest single workstream inside V2.
+- **BetterRepository v1.6** shipped (unrelated to Frontier; last major BetterRepository release before a calm period).
+- BD V2 implementation now begins. Frontier is the largest single workstream inside V2.
 - Frontier does NOT ship independently; it releases with BD V2.
 
 ## Phase breakdown
