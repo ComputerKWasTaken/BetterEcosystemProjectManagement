@@ -118,11 +118,13 @@ BD observes AI Dungeon's backend over a single GraphQL-over-WebSocket connection
 
 | Payload key (under `data`) | Direction | Cadence | Purpose in Frontier |
 |---------------------------|-----------|---------|---------------------|
-| `adventureStoryCardsUpdate` | Server → Client | Every turn, unconditional | Sole source of truth for card state. Carries the full `storyCards` array. BD diffs against its last snapshot to detect added / changed / removed cards. |
+| `adventureStoryCardsUpdate` | Server → Client | **Only when the server originates the write** (see note) | Carries the full `storyCards` array. BD diffs against its last snapshot to detect added / changed / removed cards. This is the channel by which BD observes Scripture's AID-script-written state cards. |
 | `contextUpdate` | Server → Client | Every turn (during prompt build) | Carries `actionId` for the upcoming turn plus the prompt context. BD reads `actionId` as the current tail. |
 | `actionUpdates` | Server → Client | Every action mutation (create, edit, undo, rewind, delete) | Full `actions[]` snapshot with `id`, `undoneAt`, `text`, and `retriedActionId`. This is what fires on user-initiated edits, undos, rewinds, and deletions. |
 
 `contextUpdate` and `actionUpdates` share a `key` (UUID) field per turn, so BD can correlate them when needed.
+
+> **`adventureStoryCardsUpdate` firing rule.** Empirically verified (Phase 1 Commit 1 smoke test). The subscription fires only for card writes the **server** originated — i.e. writes from AI Dungeon's server-side script sandbox (`storyCards[i].value = ...` or `addStoryCard(...)` inside an Input/Output Modifier). It does **not** fire for client-initiated edits via the AID UI, nor for BD's own `updateStoryCard` mutations — those travel as HTTP mutations and the initiator learns the result from the response. This is the desired behavior for Frontier: Scripture's state cards are written exclusively by its AID output-modifier script, so every state change naturally produces a push. Scripture's **manifest** card, written by BD from the popup UI, takes the HTTP path; BD updates its local cache directly and no echo is needed. See `BetterDungeon/services/frontier/ACTION_IDS.md` for the full protocol record.
 
 ### Action-ID properties (confirmed)
 
