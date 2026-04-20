@@ -130,7 +130,7 @@ Scripture reads a single `frontier:state:scripture` card containing manifest + h
 Declared config:
   id: 'scripture'
   stateNames: ['scripture']
-  tracksActionId: true
+  tracksLiveCount: true
 
 onEnable(ctx):
   - Mount the widget container in the DOM if not already present.
