@@ -35,15 +35,15 @@ interface FrontierModule {
 
   /**
    * If true, Core also invokes `onStateChange` (with the cached parsed state)
-   * whenever the current tail action id changes, even if the card itself didn't change.
-   * Scripture sets this to true so widgets re-read `history[tailId]` on undo/retry.
+   * whenever the current live count changes, even if the card itself didn't change.
+   * Scripture sets this to true so widgets re-read `history[liveCount]` on undo/retry.
    */
-  tracksActionId?: boolean;
+  tracksLiveCount?: boolean;
 
   /**
-   * Called when one of this module's state cards changes, or (if `tracksActionId`)
-   * when the tail action id changes. `parsed` is the module's own cached parse
-   * of the state card's `value`; `ctx.currentActionId` tells the module which
+   * Called when one of this module's state cards changes, or (if `tracksLiveCount`)
+   * when the live count changes. `parsed` is the module's own cached parse
+   * of the state card's `value`; `ctx.currentLiveCount` tells the module which
    * history entry to look up.
    */
   onStateChange(name: string, parsed: unknown, ctx: FrontierContext): void;
