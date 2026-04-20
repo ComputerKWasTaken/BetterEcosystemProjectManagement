@@ -23,31 +23,29 @@ Each phase has an acceptance criterion. A phase is "done" when the criterion is 
 
 **Why separate:** the entire design rests on the assumption that AI Dungeon action ids are stable across retry/edit/continue. Verify that BEFORE writing any code.
 
-**Work:**
+**Status:** *investigation complete*. The protocol-design work that Phase 0 exists to unblock is done; the remaining items are workspace plumbing.
 
-1. Set up a scratch scenario with a minimal Output Modifier that logs `history.map(h => h.id)` on every turn. Also log `info.actionCount`.
-2. Manually walk through a matrix of operations:
-   - Normal forward progression → new ids appended.
-   - **Undo** → does the dropped tail keep its id if redone, or get a new one? (Do undo/redo a few times; note whether ids are preserved.)
-   - **Retry** → does the tail get a new id, or does the old one stay and the text change?
-   - **Continue** → does a new action get a new id, or does the previous tail extend?
-   - **Edit in place** → does the edited action keep its id?
-   - **Refresh the page** → do ids persist in history?
-   - **Multiple adventures loaded in different tabs** → are ids unique per adventure?
-3. Record findings in `services/frontier/PORT_NOTES.md` (or `ACTION_IDS.md` — rename for clarity). Flag any behavior that breaks the Scripture history assumption.
-4. In parallel, instrument the AI Dungeon WebSocket in the browser console to identify which GraphQL subscription carries the action window (`adventureActionsUpdate`? `actionWindowUpdate`? something else?). Log distinct top-level `data.*` keys over a few turns.
-5. Create `services/frontier/` and `modules/scripture/` directories with `.gitkeep`.
-6. Confirm `world: "MAIN"` behavior on:
-   - Chromium (Chrome stable + lowest supported Chromium version per `manifest.json`).
-   - Firefox (stable + strict_min_version).
-   - Android WebView (via the Android APK build once a dev build exists; may need a `<script>` injection fallback).
-7. Snapshot `features/better_scripts_feature.js` (git history preserves this; just note the commit SHA in planning).
+**Findings (canonical record: `BetterDungeon/services/frontier/ACTION_IDS.md`; summaries in [02 — Protocol](./02-protocol.md#ai-dungeon-observation-channels) and [05 — Risks](./05-risks-and-open-questions.md#r9--action-id-stability-assumption-resolved)):**
 
-**Acceptance:**
-- Directories exist in git.
-- `ACTION_IDS.md` documents empirical behavior for every operation in the matrix; we have a confirmed green light to proceed with action-ID history OR a documented fallback if something is unstable.
-- WS subscription name for the action window identified.
-- Multiplatform `world: "MAIN"` status documented (which platforms work natively, which need the `<script>` fallback).
+- **Observation channels:** `adventureStoryCardsUpdate`, `contextUpdate`, `actionUpdates` — all on `wss://api.aidungeon.com/graphql`. Event-to-channel matrix documented.
+- **Action ids:** numeric-string, monotonic +1, stable for life, never reused, soft-deleted via `undoneAt`.
+- **Retry:** Behavior A — new action at `tail+1` with `retriedActionId`; original gets `undoneAt`.
+- **Script-side limitation:** `history[i]` has no `id` field. Scripts cannot see wire action ids.
+- **Design resolution:** both sides key history by **live-count ordinal** (`history.length + 1` script-side ≡ `actions.filter(!undoneAt).length` BD-side). Documented in [02 — Protocol: live-count history convention](./02-protocol.md#live-count-history-convention).
+- **Injection:** `class extends NativeWebSocket` at `document-start` is required; function wrappers break Apollo's `instanceof` checks silently.
+
+**Workspace prep (done):**
+
+- `BetterDungeon/services/frontier/` exists and contains `ACTION_IDS.md` (the canonical Phase 0 record).
+- `BetterDungeon/modules/scripture/` exists with a `.gitkeep`.
+- `Project Management/frontier/action-hunter.user.js` is the canonical hunter userscript; scratch files (`ws-userscript.user.js`, `ws-find-cardchannel.js`, `ws-test-console.js`) have been removed.
+
+**Deferred to Phase 1 (first task):**
+
+- Port `action-hunter.user.js` into `BetterDungeon/services/frontier/ws-interceptor.js` as an MV3 page-world content script. This is effectively Phase 1's step 1 and there's no benefit to doing it under a "Phase 0 smoke test" heading.
+- Snapshot `features/better_scripts_feature.js` commit SHA at the start of Phase 1 (in the first commit's message) so the Scripture migration diff is clean.
+
+**Acceptance:** Workspace dirs in git; `ACTION_IDS.md` committed. **Phase 0 closed.**
 
 ### Phase 1 — Scripture on action-ID, end-to-end
 
@@ -69,8 +67,8 @@ This is the big one. Delivers a working Scripture widget system using the new Fr
 **Work, in implementation order:**
 
 1. **Transport (ws-interceptor + card-stream):**
-   - `ws-interceptor.js`: self-contained IIFE that shims `window.WebSocket`, watches frames for `adventureStoryCardsUpdate` AND the action-window subscription identified in Phase 0. Forwards normalized payloads via `window.postMessage({ source: 'BD_FRONTIER_WS', kind: 'cards' | 'actions', payload })`. Idempotent; multiplatform (native MAIN-world where supported, `<script>` injection fallback elsewhere).
-   - `card-stream.js`: content-script service. Listens on `window` for `BD_FRONTIER_WS` messages, maintains `Map<cardId, card>` + current action window. Emits `frontier:cards:full`, `frontier:cards:diff`, `frontier:actions:change` via an `EventTarget`. Exposes `writeCard(title, value, opts)` wrapping the GraphQL upsert, `getCurrentActionId()`, `isFrontierCard(card)`.
+   - `ws-interceptor.js`: self-contained IIFE that shims `window.WebSocket` via `class extends NativeWebSocket`, watches frames for `adventureStoryCardsUpdate`, `contextUpdate`, and `actionUpdates`. Forwards normalized payloads via `window.postMessage({ source: 'BD_FRONTIER_WS', kind: 'cards' | 'context' | 'actions', payload })`. Idempotent (guarded by `window.__frontierWsInstalled`); multiplatform (native MAIN-world where supported, `<script>` injection fallback elsewhere). Starting point: `frontier/ws-userscript.user.js`.
+   - `card-stream.js` (likely renamed `ws-stream.js` at Phase 1 start): content-script service. Listens on `window` for `BD_FRONTIER_WS` messages, maintains `Map<cardId, card>` + `actions[]` + current tail `actionId`. Emits `frontier:cards:full`, `frontier:cards:diff`, `frontier:actions:change`, `frontier:tail:change` via an `EventTarget`. Exposes `writeCard(title, value, opts)` wrapping the GraphQL upsert, `getCurrentActionId()`, `getActions()`, `isFrontierCard(card)`.
    - Update `manifest.json` to inject `ws-interceptor.js` in the MAIN world at `document_start` (with `<script>` fallback registered as `web_accessible_resources` for Firefox/WebView).
 
 2. **GraphQL write path:**
@@ -78,7 +76,7 @@ This is the big one. Delivers a working Scripture widget system using the new Fr
    - Wire `card-stream.js#writeCard` to call it.
 
 3. **Core (thin router):**
-   - `services/frontier/core.js`: singleton with `.instance`. Subscribes to `frontier:cards:diff` and `frontier:actions:change`. For each changed `frontier:state:<name>` card, looks up the registered module(s) and dispatches `onStateChange(name, parsed, ctx)`. For `frontier:actions:change`, re-dispatches `onStateChange` (with the cached parsed state) to every module that declared `tracksActionId: true`.
+   - `services/frontier/core.js`: singleton with `.instance`. Subscribes to `frontier:cards:diff` and `frontier:tail:change`. For each changed `frontier:state:<name>` card, looks up the registered module(s) and dispatches `onStateChange(name, parsed, ctx)`. For `frontier:tail:change`, re-dispatches `onStateChange` (with the cached parsed state) to every module that declared `tracksActionId: true`.
    - Emits `frontier:heartbeat` card on adventure load, module enable/disable, and coalesced at most once per WS push. Payload matches `02-protocol.md#frontierheartbeat`.
    - Debug mode: `chrome.storage.sync` key `frontier_debug` (migrated from `betterDungeon_betterScriptsDebug`). Exposed via popup message `SET_FRONTIER_DEBUG`.
 

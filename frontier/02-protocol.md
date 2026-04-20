@@ -31,12 +31,12 @@ Persistent script-published state. Module-specific semantics. The script writes;
 **Written by:** the script, during `onOutput` (or any hook).
 **Read by:** Core dispatches parse + `onStateChange(name, parsed)` to the module that declared `stateNames: ['<name>']`.
 
-#### Action-ID history convention
+#### Live-count history convention
 
-For modules whose displayed state must track undo/retry (e.g. Scripture widgets showing per-turn HP), the state card uses the **action-ID history** pattern. The card holds two parts:
+For modules whose displayed state must track undo/retry (e.g. Scripture widgets showing per-turn HP), the state card uses the **live-count history** pattern. The card holds two parts:
 
 - A **manifest** — structural, schema-like; rarely changes.
-- A **history map** — `{ [actionId]: values }` entries; one per recent action.
+- A **history map** — `{ [liveCount]: values }` entries; one per turn the script has written.
 
 Example for Scripture:
 
@@ -50,23 +50,29 @@ Example for Scripture:
     ]
   },
   "history": {
-    "a-0000001": { "hp-bar": 100, "gold": 0 },
-    "a-0000002": { "hp-bar": 95,  "gold": 25 },
-    "a-0000003": { "hp-bar": 75,  "gold": 1250 }
+    "2": { "hp-bar": 100, "gold": 0 },
+    "4": { "hp-bar": 95,  "gold": 25 },
+    "5": { "hp-bar": 75,  "gold": 1250 }
   },
   "historyLimit": 100
 }
 ```
 
+**Why live-count, not wire action ids?** AI Dungeon's script environment does **not** expose wire action ids. Output Modifier `history[i]` entries expose only `{ text, type, rawText }` — no `id` field. So scripts cannot key by the same ids BD observes on the wire. The live-count ordinal is the one ordinal both sides can derive natively and agree on.
+
 **Semantics:**
 
-- Each key in `history` is a stable AI Dungeon action id (as observed in `history[i].id` from the script side and in the `actionWindow` subscription from BD's side).
-- On each turn, the script writes the values for the current action id and prunes older entries to keep `history` under `historyLimit` (default 100).
-- BD determines the current tail action id from the WS action-window stream and looks up `history[tailId]` to get the active values.
-- On **undo**, the tail id changes to an earlier action → BD reads the corresponding older entry → widgets revert automatically.
-- On **retry**, the tail id is replaced with a new id → the next `onOutput` writes fresh values under the new id → BD reads them.
-- On **edit** / **continue** → same lookup mechanism.
-- If `history[tailId]` is missing (gap in recorded history), BD SHOULD fall back to the most recent available entry, then to manifest defaults.
+- Each key in `history` is a **live-count ordinal** — the number of live (non-undone) actions this adventure will have *after* the turn that wrote the entry completes. Both sides compute it trivially:
+  - **Script-side** at Output Modifier time: `String(history.length + 1)`. `history` already excludes undone actions; adding 1 accounts for the AI response being generated.
+  - **BD-side** at any moment: `String(actions.filter(a => a.undoneAt === null).length)`.
+- The two formulas produce the same integer by construction. Both sides serialize it as a decimal string so JSON object keys are unambiguous.
+- On each turn, the script writes values under the current key and prunes older entries to keep `history` under `historyLimit` (default 100).
+- **Undo:** live count drops by 1 (or more on multi-undo) → BD reads a lower key → widgets revert to the earlier turn's values.
+- **Retry:** live count is **unchanged** (one action's `undoneAt` flips, a replacement is created) → next modifier call writes under the **same** key → replacement values overwrite the original's. This matches what the user sees displayed.
+- **Edit:** live count is unchanged. A pure edit does not trigger a modifier, so the script does not write; BD continues to show the previously-written values for that key, which is correct because the edit modifies `text` only, not widget state.
+- **Rewind:** live count drops by the number of actions rewound past → BD reads a correspondingly earlier key.
+- **Continue / Take-a-turn:** treated as normal forward turns; new key is written.
+- **Missing key fallback:** if `history[currentKey]` is absent (script wasn't installed for that turn, or writes failed), BD SHOULD fall back to the nearest-earlier available entry, then to manifest-declared defaults.
 
 **Modules that don't need per-turn history** (e.g. a future Clock widget showing real-time) can omit the `history` map entirely and put values directly inside `manifest`.
 
@@ -89,7 +95,7 @@ BD Core's liveness and capability beacon. Scripts read this to detect whether Fr
   "frontier": { "version": "2.0.0", "protocol": 1, "profile": "lite" },
   "ts": 1700000000000,
   "turn": 42,
-  "tailActionId": "a-0000042",
+  "tailActionId": "42",
   "modules": [
     { "id": "scripture", "version": "1.0.0", "stateNames": ["scripture"] }
   ]
@@ -101,10 +107,60 @@ BD Core's liveness and capability beacon. Scripts read this to detect whether Fr
 - `frontier.profile` — `"lite"` for MVP; `"full"` once two-way comms ship. Scripts can branch on this to avoid trying to use features that aren't available yet.
 - `ts` — millisecond timestamp of this heartbeat.
 - `turn` — AI Dungeon's `actionCount` at which this heartbeat was written. Scripts use this to detect staleness.
-- `tailActionId` — the current tail action id Core has observed. Scripts SHOULD cross-check this against their own `history[history.length-1].id` to detect misalignment (e.g. Core is behind a turn).
+- `tailActionId` — the current tail action id Core has observed (numeric string, e.g. `"60"`). Scripts SHOULD cross-check this against their own `history[history.length-1].id` to detect misalignment (e.g. Core is behind a turn).
 - `modules` — array of currently enabled modules. Each entry:
   - `id`, `version` — identification.
   - `stateNames` — which `frontier:state:<name>` cards this module reads.
+
+## AI Dungeon observation channels
+
+BD observes AI Dungeon's backend over a single GraphQL-over-WebSocket connection to `wss://api.aidungeon.com/graphql`. Three subscription payloads drive Frontier Lite:
+
+| Payload key (under `data`) | Direction | Cadence | Purpose in Frontier |
+|---------------------------|-----------|---------|---------------------|
+| `adventureStoryCardsUpdate` | Server → Client | Every turn, unconditional | Sole source of truth for card state. Carries the full `storyCards` array. BD diffs against its last snapshot to detect added / changed / removed cards. |
+| `contextUpdate` | Server → Client | Every turn (during prompt build) | Carries `actionId` for the upcoming turn plus the prompt context. BD reads `actionId` as the current tail. |
+| `actionUpdates` | Server → Client | Every action mutation (create, edit, undo, rewind, delete) | Full `actions[]` snapshot with `id`, `undoneAt`, `text`, and `retriedActionId`. This is what fires on user-initiated edits, undos, rewinds, and deletions. |
+
+`contextUpdate` and `actionUpdates` share a `key` (UUID) field per turn, so BD can correlate them when needed.
+
+### Action-ID properties (confirmed)
+
+- **Numeric string.** Ids are strings containing a decimal integer (`"0"`, `"1"`, …).
+- **Monotonic, +1 per action.** Each new action's id is the previous id plus one. Both user input and AI output count as actions — a story/do/say submit creates two ids (user input + AI response); a continue creates one (AI response only); a retry creates one (the replacement AI response).
+- **Stable for life.** Edit, undo, rewind, retry, and delete never renumber. An action's id is assigned at creation and never changes.
+- **Never reused.** After a rewind marks ids 2–6 as undone, the next submit gets ids 7 and 8, not recycled slots. Undone ids stay allocated forever.
+- **Soft deletion.** Removal is expressed by setting `undoneAt` to an ISO timestamp; the action remains in `actions[]`. Restoring sets `undoneAt` back to `null`.
+- **Retry creates, never mutates.** Confirmed via Phase 0 capture: retry emits an `actionUpdates` frame containing the original (with `undoneAt` now set) **and** a new action at `tail+1` whose `retriedActionId` points back to the original. The new action's `text` is the regenerated output. The user-visible displayed text is the new action's; the original is retained only as history.
+- **Live count vs tail id.** These are different numbers. **Tail id** (`max(id where undoneAt === null)`) is the anchor for ordering actions on the wire. **Live count** (`actions.filter(a => !a.undoneAt).length`) is the anchor for script-side history lookups. On normal turns they both advance together; on retry, tail id advances but live count stays the same; on rewind, live count drops but the maximum tail id ever seen does not.
+
+### Event-to-channel matrix
+
+| User action | `contextUpdate` | `actionUpdates.type` | `SendEvent.eventName` |
+|---|:---:|:---:|:---|
+| Story / Do / Say submit | yes (tail +1) | `create`, `n=2` (user + AI) | `submit_button_pressed`, then `action_roundtrip_completed` |
+| Continue | yes (tail +1) | `create`, `n=1` (AI only) | `continue_button_pressed`, then `action_roundtrip_completed` |
+| Take-a-turn | yes (tail +1) | `create`, `n=1` or `n=2` depending on mode | `take_a_turn_button_pressed`, then `action_roundtrip_completed` |
+| Retry | yes (tail +1) | `create`, `n=2` carrying `retriedActionId` (original + new) | `retry_button_pressed`, then `action_roundtrip_completed` |
+| Edit | no | `update`, `n=1` (`text` changed) | `edit-action` with `actionId` |
+| Undo | **no** | `update`, `n=1` (`undoneAt` set) | **none** |
+| Restore (redo) | **no** | `update`, `n=1` (`undoneAt` cleared) | **none** |
+| Delete (erase) | no | `update`, `n=1` (`undoneAt` set) | `erase_button_pressed` |
+| Rewind | no | `update`, `n=count rewound past` (`undoneAt` set on each) | `rewind-to-here` with `actionId` + `position` |
+
+Two architectural consequences fall out of this matrix:
+
+1. **`contextUpdate.actionId` is NOT a reliable single source of truth for the tail.** It does not fire on undo / restore / delete / rewind. BD Core MUST derive the tail from `actions[]`: `tail = max(id where undoneAt === null)`. Use `contextUpdate.actionId` only as a supplementary early signal on new-turn events (it fires before the corresponding `actionUpdates` frame).
+2. **Undo and restore are observable only via `actionUpdates`.** There is no `SendEvent` counterpart. BD Core MUST NOT rely on `SendEvent` to detect either.
+
+### Observation-only
+
+BD does NOT need to hook the client-originated `UpdateActions` mutation (edit/undo/rewind/delete). The server rebroadcasts the resulting state via `actionUpdates` over the subscription, so one observation point covers both user-initiated and server-initiated changes.
+
+### Injection requirements
+
+- The shim that observes these subscriptions MUST be installed before AI Dungeon's bundle constructs its WebSocket. In the extension this means a content script registered with `"world": "MAIN"` + `"run_at": "document_start"`.
+- The shim MUST use the `class extends NativeWebSocket` pattern (not a function wrapper) to preserve `instanceof` checks inside Apollo Client.
 
 ## Availability detection
 

@@ -11,22 +11,24 @@ Tracked list of things that could bite us during implementation and unresolved d
 **Mitigation:**
 - Use manifest `"world": "MAIN"` + `"run_at": "document_start"`. On supported Chromium versions this is guaranteed-before-page-scripts.
 - Firefox: if `world: "MAIN"` isn't available on our minimum version, fall back to injecting a `<script>` element with `src = chrome.runtime.getURL('services/frontier/ws-interceptor.js')` from the isolated-world script at `document_start`.
+- Use `class extends NativeWebSocket` rather than a function wrapper; Apollo Client breaks silently if `instanceof WebSocket` returns false, and this was observed in Phase 0.
 - On install, log the first captured frame's timestamp and compare to `document.currentScript` timing; flag any race.
 
-**Verification:** First commit's manual test explicitly checks that frames are captured from the moment the adventure loads.
+**Verification (Phase 0):** Confirmed working via a Violentmonkey userscript (`frontier/ws-userscript.user.js`) at `@run-at document-start`. A paste-into-console install (i.e. post-bundle) failed silently because Apollo had already captured the native `WebSocket`. The extension equivalent is `"world": "MAIN"` + `"run_at": "document_start"` in the manifest.
 
-**Status:** Open until Phase 1 acceptance.
+**Status:** Mechanism proven; still open until the extension-hosted version lands in Phase 1 (userscript vs MV3 content-script timing may differ subtly on Firefox/WebView).
 
 ---
 
 ### R2 — AI Dungeon changes the GraphQL subscription shape
 
-**Risk:** The `adventureStoryCardsUpdate` subscription payload is not a documented public API. AI Dungeon could rename, restructure, or replace it at any time.
+**Risk:** Three subscription payloads are load-bearing and none are documented public APIs: `adventureStoryCardsUpdate`, `contextUpdate`, `actionUpdates`. AI Dungeon could rename, restructure, or replace any of them at any time.
 
 **Mitigation:**
-- Key identification off shape (`payload.data.adventureStoryCardsUpdate`) rather than operation name strings.
-- Warn-log any frame whose shape doesn't match the expected schema so we notice drift quickly.
-- Don't hard-error the extension on unknown shapes; degrade gracefully (BetterScripts features stop working; the rest of BetterDungeon is unaffected).
+- Key identification off presence of each top-level data key (`payload.data.<name>`) rather than GraphQL operation name strings, so an internal operation rename doesn't break us.
+- Log a counted sample of unknown top-level keys (not every frame) so we notice new or renamed subscriptions quickly.
+- Don't hard-error the extension on unknown shapes; degrade gracefully (Frontier modules stop updating; the rest of BetterDungeon is unaffected).
+- Validate the small set of fields we actually consume (`storyCards[].id/.keys/.title/.value`, `contextUpdate.actionId`, `actionUpdates.actions[].id/.undoneAt/.retriedActionId`). Warn if any is absent.
 
 **Status:** Ongoing — monitor post-release.
 
@@ -113,23 +115,23 @@ Tracked list of things that could bite us during implementation and unresolved d
 
 ---
 
-### R9 — Action-ID stability assumption (foundational)
+### R9 — Action-ID stability assumption (RESOLVED)
 
-**Risk:** The entire action-ID history design assumes AI Dungeon action ids are **stable** across the operations scripts and users perform:
-- Do ids survive `Retry` (tail replaced) as distinct new ids, or does the retry reuse the old id?
-- Do ids survive `Edit in place` on a past action?
-- Do ids survive `Continue` (extending the tail)?
-- Do ids survive page reload and adventure re-open?
-- Are ids globally unique, or reused across adventures?
+**Original risk:** The action-history design depended on AI Dungeon action ids being stable across retry/edit/undo/rewind/delete.
 
-If any answer breaks our assumption, the whole Scripture-on-action-ID design is compromised: widgets may show stale values, lose history entries, or fail to revert correctly.
+**Phase 0 findings (all confirmed via WS capture):**
+- **Format:** numeric strings (`"0"`, `"1"`, …), monotonic +1 per action. A story/do/say submit creates two ids (user input + AI response); continue creates one; retry creates one.
+- **Edit in place:** preserves id. Mutation updates `text`; `id` and `undoneAt` unchanged.
+- **Undo / rewind / delete:** preserves id; only `undoneAt` flips to a timestamp.
+- **Restore:** preserves id; `undoneAt` flips back to `null`.
+- **Retry:** creates a new action at `tail+1` with `retriedActionId` pointing to the original; original's `id` is preserved but gets `undoneAt` set. **Behavior A from the original Q11 framing.**
+- **Never reused:** after rewind marks ids 2–6 as undone, subsequent submits got ids 7 and 8, not recycled slots.
+- **Page reload:** ids persist (server-side adventure record).
+- **Multiple adventures:** ids scoped per adventure (each starts at `"0"`).
 
-**Mitigation:**
-- **Phase 0 verifies every case empirically** before any code is written. Findings recorded in `services/frontier/ACTION_IDS.md`.
-- If a specific operation breaks the assumption, fall back to `info.actionCount` (the numeric turn counter) instead of the stable id for that case, and document the caveat in the Scripture guide.
-- Core's `tailActionId` field in the heartbeat lets scripts cross-check against their own `history[history.length-1].id` and detect drift at runtime.
+**Design resolution:** Scripture and other history-tracking modules do NOT key by wire action id. Scripts cannot read those ids anyway (see resolved [Q2](#q2--is-historyiid-reliably-populated-in-ai-dungeons-script-environment-resolved)). Instead, both sides agree on a **live-count ordinal** — the count of non-undone actions that will exist after the current turn completes. Script-side: `history.length + 1`. BD-side: `actions.filter(a => a.undoneAt === null).length`. See [02 — Protocol: live-count history convention](./02-protocol.md#live-count-history-convention).
 
-**Status:** Verify in Phase 0 — blocking for all of Phase 1.
+**Status:** Closed.
 
 ---
 
@@ -170,19 +172,27 @@ If any answer breaks our assumption, the whole Scripture-on-action-ID design is 
 
 ---
 
-### Q2 — Is `history[i].id` reliably populated in AI Dungeon's script environment?
+### Q2 — Is `history[i].id` reliably populated in AI Dungeon's script environment? (RESOLVED)
 
-We assume the script can read the current action's stable id from `history[history.length - 1].id`. If that field isn't always present (e.g. first turn of a fresh adventure, or a specific scenario mode like Multiplayer), `frontierUpdateHistory` returns false and nothing is written for that turn.
+**Answer: No. There is no `id` field on script-side history entries at all.** Phase 0 probe confirmed `history[i]` exposes only `{ text, type, rawText }`. Wire action ids are completely inaccessible to Output Modifiers.
 
-**Resolution path:** Phase 0 scratch scenario verifies. If there's a gap, document the fallback (skip history write for that turn; script retries next turn).
+**Resolution:** The Scripture history pattern was redesigned to use a **live-count ordinal** instead of wire action ids. Both sides agree on `history.length + 1` (script) ≡ `actions.filter(!undoneAt).length` (BD). Because this ordinal is computed from observable data on each side independently, no id is needed. See [02 — Protocol: live-count history convention](./02-protocol.md#live-count-history-convention) and the resolution under [R9](#r9--action-id-stability-assumption-resolved).
+
+**Status:** Closed.
 
 ---
 
-### Q3 — Which WebSocket subscription carries the action window on BD's side?
+### Q3 — Which WebSocket subscriptions drive Frontier on BD's side? (RESOLVED)
 
-AI Dungeon pushes card updates via `adventureStoryCardsUpdate`. The action window arrives on a different subscription; exact name TBD from Phase 0 instrumentation. Candidates observed in the user's earlier WS capture: `adventure.actionWindow[]`, possibly `adventureActionsUpdate` or part of a larger `adventureUpdate` payload.
+Confirmed via Phase 0 WS capture. Three subscriptions, all under the single `wss://api.aidungeon.com/graphql` connection:
 
-**Resolution path:** Phase 0 logs distinct top-level `data.*` keys from every observed frame over a few turns. The subscription that carries action ids will be obvious from the shape.
+- `adventureStoryCardsUpdate` — full card list every turn.
+- `contextUpdate` — per-turn prompt context; carries `actionId` for the current tail.
+- `actionUpdates` — fires on every action mutation (create / edit / undo / rewind / delete); carries the full `actions[]` snapshot with `id`, `undoneAt`, and `retriedActionId`.
+
+See [02 — Protocol: observation channels](./02-protocol.md#ai-dungeon-observation-channels) for the canonical spec.
+
+**Resolution:** Documented. Closed.
 
 ---
 
@@ -254,17 +264,21 @@ When BD rehydrates after a reload, it reads the full `frontier:state:scripture` 
 
 ---
 
-### Q10 — Writing state before the first action exists
+### Q10 — Writing state before the first action exists (RESOLVED)
 
-On a brand-new adventure, turn 1's `onOutput` runs before the first action enters `history` (possibly; needs verification). If `frontierCurrentActionId()` returns null, `frontierUpdateHistory` bails. Widgets would not render until turn 2.
+**Answer: Not an issue.** Phase 0 probe confirmed that on turn 1 of a fresh adventure, the Output Modifier fires with `history.length === 1` (the user's submitted story input is already in history; the AI response is being generated). Scripts can compute the live-count key (`history.length + 1 === 2`) and write on turn 1 without any fallback.
 
-**Options:**
-- Accept the one-turn delay. Document it.
-- Fall back to writing under a sentinel key (e.g. `"a-initial"`) and letting BD rehydrate when the real action id arrives.
+**Status:** Closed.
 
-**Preferred:** Accept the one-turn delay. Simpler, and turn 1 is cheap to re-render.
+---
 
-**Resolution path:** Phase 0 scratch scenario confirms whether turn 1 has an action id by `onOutput`. If yes, no issue. If no, document.
+### Q11 — Retry semantics: do retries reuse an action id? (RESOLVED)
+
+**Answer: Behavior A.** Retry creates a new action at `tail+1` with `retriedActionId` pointing to the original. The original's `id` is preserved but its `undoneAt` is set. Confirmed via Phase 0 WS capture: `contextUpdate` tail advanced 4→5, and the accompanying `actionUpdates` frame carried `n=2` with both the original (now undone) and the new action (with `retriedActionId`).
+
+**Impact on design:** Under the live-count history scheme, retry leaves the live count unchanged (one action goes to undone, one new action is created; net 0). The script's next Output Modifier call writes the new values under the **same** live-count key, overwriting the original's values. This is the behavior Scripture wants: the user sees the new text, so widgets should reflect the new values. See the retry row in [02 — Protocol: event-to-channel matrix](./02-protocol.md#event-to-channel-matrix).
+
+**Status:** Closed.
 
 ---
 
