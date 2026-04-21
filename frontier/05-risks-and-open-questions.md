@@ -109,7 +109,7 @@ Tracked list of things that could bite us during implementation and unresolved d
 **Mitigation:**
 - Heartbeat is one small mutation per turn, consistent with the user's own interactions. Unlikely to be flagged.
 - If it does become a problem, reduce frequency to "every N turns" or "only on module registry changes."
-- In Lite, the heartbeat is the ONLY BD-originated write, so there's nothing else to coalesce with.
+- In Lite, the heartbeat is the only BD-originated write. In Full, ops responses also write `frontier:in:<module>` cards, but these are coalesced by the write queue and only one write per module per turn is expected.
 
 **Status:** Implement with per-turn default; revisit if rate-limit warnings appear.
 
@@ -282,17 +282,15 @@ When BD rehydrates after a reload, it reads the full `frontier:state:scripture` 
 
 ---
 
-## Follow-up work (post-MVP, explicitly scoped out)
+## Follow-up work (post-V2, explicitly scoped out)
 
 | Item | Priority | Rough estimate | Depends on |
 |------|----------|---------------|------------|
-| **Full Frontier (two-way comms)** | High | Large | Lite MVP released and stable |
-| First real capability module (likely WebFetch) | High | Medium | Full Frontier complete |
-| NPM / TypeScript / bundler migration | Medium | Large | Own epic; re-evaluate after MVP |
+| NPM / TypeScript / bundler migration | Medium | Large | Own epic; re-evaluate after V2 |
 | `story-card-scanner.js` migration to card-stream | Medium | Medium | Phase 1 complete |
-| GraphQL write path hardening (auth robustness) | Medium | Medium | MVP released; observed failure modes |
-| Registry UI + curated module catalog | Medium | Large | Full Frontier + first external module |
-| Sandboxed user scripts | Low | Very large | Security review; Full Frontier |
+| GraphQL write path hardening (auth robustness) | Medium | Medium | V2 released; observed failure modes |
+| Registry UI + curated module catalog | Medium | Large | At least one external module exists |
+| Sandboxed user scripts | Low | Very large | Security review; Full Frontier stable |
 | Inter-module calls | Low | Small | At least two real modules exist |
 | Debug inspector UI | Medium | Medium | Phase 1 complete |
 | Per-module permission prompts | Medium | Medium | Registry exists |
@@ -301,9 +299,8 @@ When BD rehydrates after a reload, it reads the full `frontier:state:scripture` 
 
 ## Questions for later that need USER input, not implementation
 
-- Do we want Frontier modules to be able to prompt the user for permission before a sensitive action (network fetch, clipboard read)? If so, how should that UI look? (Native browser permission prompts vs in-BD modal vs implicit trust for built-ins only.) — Relevant once Full Frontier ships.
+- Do we want Frontier modules to be able to prompt the user for permission before a sensitive action (network fetch, clipboard read)? If so, how should that UI look? (Native browser permission prompts vs in-BD modal vs implicit trust for built-ins only.) — Relevant now that Full Frontier is in V2.
 - Do we want Frontier modules to be able to render their own UI outside of Scripture's widget bar? (Future Dashboard module that overlays a full sidebar, etc.)
-- Should the BetterRepository host a module catalog even in MVP (just as static documentation), or wait until the install flow exists?
+- Should the BetterRepository host a module catalog even in V2 (just as static documentation), or wait until the install flow exists?
 - Naming: is the umbrella still "BetterScripts" in any user-facing sense, or fully "Frontier"? (Current plan: fully Frontier. Confirm before rewriting guides.)
-- When is the right time to revisit Robyn's NPM/bundler pitch? (Current plan: declined for MVP, re-open as a separate epic after Frontier stabilizes. User signal needed for prioritization.)
-- Should Full Frontier's two-way comms land as a single big milestone, or be broken into sub-phases (e.g. "ops without acks" → "multi-turn with acks" → "cancellation + timeouts")? — Decide when Full Frontier is queued up, not now.
+- When is the right time to revisit Robyn's NPM/bundler pitch? (Current plan: declined for V2, re-open as a separate epic after Frontier stabilizes. User signal needed for prioritization.)

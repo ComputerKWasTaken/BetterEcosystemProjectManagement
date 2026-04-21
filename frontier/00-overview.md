@@ -98,28 +98,32 @@ Every AI Dungeon action in the `actionWindow` subscription carries a stable `id`
 
 **What about gaps?** If BD sees a tail id for which the script has no history entry (e.g. the author just installed the script mid-adventure, or pruned too aggressively), BD falls back to the most-recent available entry, or to default values from the manifest if no history exists. Documented as a soft-degrade, not an error.
 
-## MVP scope — Frontier Lite
+## V2 scope — the "unshackle the sandbox" release
 
-**In scope for the first shippable release:**
+> **Scope revision:** the original plan scoped V2 to Frontier Lite (one-way, Scripture only) and deferred two-way comms to a post-MVP epic. The write path was solved ahead of schedule via mutation-template replay — capturing in-flight `SaveQueueStoryCard` mutations and deep-overriding their variables. That eliminated the single biggest risk blocking Full Frontier, so V2 is now re-scoped to deliver the full two-way platform. Details in [04 — Implementation Plan § Scope revision](./04-implementation-plan.md#scope-revision--full-frontier-in-v2).
 
-- **Transport:** WebSocket interceptor (page world) + `card-stream.js` content-script service. Observes `adventureStoryCardsUpdate` AND `adventureActionsUpdate` (or equivalent; exact name TBD during Phase 0 investigation) to track both cards and the current action id.
-- **Core (Lite):** thin module registry + card-family router + heartbeat emitter + action-ID tracker. No envelope parsing, no request dedup, no ack/TTL machinery, no in-flight request state.
-- **GraphQL write path:** only used by Core to write the `frontier:heartbeat` card. No other BD-originated writes in MVP.
-- **Scripture module:** widget functionality using action-ID history. Single `frontier:state:scripture` card holds manifest + recent history. Undo/retry/edit correctness from day one.
-- **Feature manager integration:** Frontier master toggle + per-module toggles. Simple hierarchy: Frontier off → nothing runs; Frontier on + Scripture off → Scripture specifically disabled.
-- **Popup UI updates:** Frontier section replaces the BetterScripts toggle.
-- **BD UI filtering:** hide `frontier:*` story cards from BetterDungeon-rendered card lists.
-- **Guide + docs rewrite:** BetterRepository's `BetterScriptsGuide.vue` → `FrontierGuide.vue`, plus `ScriptureGuide.vue`. Plain-JSON, plain-cards story — no codec, no invisible chars, no Context Modifier.
-- **Multiplatform smoke test:** verify on Chromium, Gecko, AND Android WebView before shipping.
+**In scope for V2:**
 
-**Explicitly out of MVP (designed-for but not implemented):**
+- **Transport foundation (landed):** WebSocket interceptor + fetch/XHR shim capturing subscriptions AND mutation templates. Content-script card + action + enrichment stream. Mutation-template replay supporting update AND create operations across any card. Verified end-to-end in a live adventure with persistence across reload.
+- **Transport hardening (Phase 1):** write queue with per-card serialization, retry, optimistic echo; action-stream HTTP hydration; adventure-boundary state reset; robust `adventureShortId` resolver.
+- **Core + Module Registry (Phase 2):** router, heartbeat emitter, action-ID tracker, shared `ctx` API with `writeCard` + `respond` primitives. Module lifecycle: `onEnable` / `onDisable` / `onStateChange` / `onAdventureChange` / `onOp`.
+- **Scripture module (Phase 3):** widget functionality using live-count history. Pixel-identical to legacy BetterScripts. Undo / retry / edit / continue all correct from day one.
+- **Full Frontier envelope protocol (Phase 4):** `frontier:out` request queue, per-module `frontier:in:<module>` response cards, request-id scheme, idempotent replay, crash-safe session-storage mirror, script-driven ack + Core-side TTL GC. Full specification in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md).
+- **WebFetch module (Phase 5):** HTTP requests from the sandbox, per-origin consent flow, rate limits, scheme allowlist. The canonical two-way demo.
+- **Clock module (Phase 6):** real-world `now` / `tz` / `format` ops. Tiny, marketable, validates the ops shape on a minimal module.
+- **Feature manager + popup (Phase 7):** Frontier master toggle, per-module toggles, WebFetch allowlist panel, debug mode.
+- **BD UI filtering (Phase 8):** hide `frontier:*`, `scripture:*`, `bd:*` cards from BD's own card-listing UIs.
+- **Guide + docs rewrite (Phase 9):** `FrontierGuide.vue`, `ScriptureGuide.vue`, `WebFetchGuide.vue`, `ClockGuide.vue`. Full-profile coverage including ops examples. No ZW / TagCipher / Context Modifier content.
+- **Multiplatform smoke test (Phase 10):** verify on Chromium, Gecko, AND Android WebView before shipping `2.0.0`.
 
-- **Two-way communication** (script → BD requests with BD-side responses). This is the whole "unshackle the sandbox" vision — WebFetch, LocalAI, Clock, Geolocation. The module interface is shaped to accommodate it later without refactoring.
-- **Module ops + request/response envelopes.** No `frontier:out`, no `frontier:in:*`, no multi-turn state machines, no acks, no timeouts.
-- **Invisible-text transport.** Dropped entirely. The undo/retry problem is solved by action-ID history instead.
-- **Module registry + sandboxed user scripts.** All modules are first-party built-ins for MVP.
-- **`story-card-scanner.js` migration.** Keep the existing DOM-scanner pathway intact; card-stream can optionally hydrate the cache, but the scanner still runs for now.
+**Explicitly out of V2 (designed-for but not implemented):**
+
+- **Invisible-text transport.** Dropped entirely. The undo/retry problem is solved by live-count history instead.
+- **Sandboxed user scripts.** Arbitrary JS modules in an iframe / Worker with a constrained Frontier SDK. Security-heavy; post-V2.
+- **Third-party module registry UI.** Architecturally unblocked by Phase 4 but the UI and trust model are their own workstream.
+- **`story-card-scanner.js` cut-over.** Keep the existing DOM-scanner pathway; ws-stream can optionally hydrate the cache, but the scanner still runs. Full cut-over is a post-V2 follow-up.
 - **NPM / TypeScript / bundler migration** (per decision #10 below).
+- **Additional ops modules beyond WebFetch + Clock.** LocalAI, LocalStorage, Geolocation, Notify — each slots onto the Phase 4 substrate without Core changes, so they're incremental post-V2 additions.
 
 ## Locked-in decisions
 
@@ -129,13 +133,13 @@ Six rounds of planning questions have produced the following commitments. Re-ope
 |---|----------|-----------|
 | 1 | **No backward compatibility** with the old BetterScripts wire protocol. ZW encoding fully removed; no invisible characters anywhere in Frontier. | Essentially no production scripts depend on the old format. Action-ID history solves undo/retry without invisible text, so we never need the codec. |
 | 2 | **Cards-only transport.** `frontier:state:<name>` cards (script → BD) + `frontier:heartbeat` (BD → script, one card). | Simplest possible wire. Everything AI-Dungeon-native. No side channels. |
-| 3 | **Frontier Lite is the MVP** — one-way (script → BD) only. No ops, no requests, no responses, no acks. | Smallest shippable Frontier. Unblocks Scripture immediately. Full two-way is Phase 2+ work that adds `frontier:out` / `frontier:in:*` without changing anything built here. |
+| 3 | **Full Frontier ships in V2** — two-way (script ↔ BD) with `frontier:out` request queue and per-module `frontier:in:<module>` response cards. ~~_(Superseded)_ Originally scoped as Lite-only; promoted after the write path was solved via mutation-template replay.~~ | The biggest risk blocking two-way comms — auth token capture / endpoint discovery / CSRF handling — was sidestepped entirely by replaying captured mutation templates. Full Frontier's remaining work (envelope protocol, ops dispatcher, ack/GC) is ~40% of Lite's scope rather than the 3-4× originally feared. V2 delivers the "unshackle the sandbox" vision the project was founded on. |
 | 4 | **Action-ID history** for per-turn state that must track undo/retry. Scripts keep `{ [actionId]: values }` in their state card; BD looks up the current tail's entry. | Robyn's insight: AI Dungeon actions carry stable ids in the `actionWindow`. No invisible text needed; everything is in cards + subscriptions. |
 | 5 | **File layout: `services/frontier/` + `modules/scripture/`.** | Core is infrastructure (services); modules are semantically distinct from BD features (own top-level dir). |
-| 6 | **Modules are built-in for MVP.** Registry + sandboxed user scripts deferred. | Keeps MVP tractable while shaping the module interface so plugins can slot in later. |
+| 6 | **First-party modules only in V2.** Registry UI + sandboxed user scripts deferred. V2 ships Scripture + WebFetch + Clock; third-party trust model is a post-V2 epic. | Keeps V2 tractable while shaping the module interface so plugins can slot in later. |
 | 7 | **Hide `frontier:*` cards in BetterDungeon UI surfaces only.** AI Dungeon's native Story Card list is untouched. | Minimal intrusion. |
 | 8 | **Multiplatform by default.** Every design choice must work on Chromium, Gecko, AND Android WebView. Fallbacks documented inline. | BD V2 ships on all three; Frontier can't be the feature that breaks platform parity. |
-| 9 | **Phase 1 delivers Scripture-on-action-ID end-to-end.** File restructure + WS interceptor + card-stream + Scripture module all land together, with action-ID lookup working. | Fastest path to a visible, testable win. Subsequent phases are polish (feature manager, popup, UI filtering, docs). |
+| 9 | **Phase ordering: transport → Core → Scripture → Full envelope → ops modules → polish.** Each phase has a standalone acceptance criterion; partial progress is always shippable if we need to cut scope under pressure. | Fastest path to visible, testable wins at each step. Scripture lands in Phase 3 (giving us a demo-able superset of Lite), Full Frontier in Phase 4 (unlocking ops modules), and WebFetch/Clock in 5–6 validate the envelope design with real modules. |
 | 10 | **No NPM / TypeScript / bundler migration.** Keep pure-JS, manifest-based content scripts. | Out of scope for this plan. Robyn's pitch is acknowledged but declined for now; re-open as a separate epic later. |
 | 11 | **Action-ID stability is verified empirically in Phase 0.** We commit to the cards-only design on the assumption that action ids survive retry/edit/continue as expected; Phase 0 tests it before Phase 1 starts. | The whole design rests on this. Better to verify once than debug a flaky foundation forever. |
 

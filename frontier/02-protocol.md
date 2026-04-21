@@ -1,8 +1,8 @@
-# 02 — Protocol (v1, Lite)
+# 02 — Protocol (v1)
 
-This is the canonical wire protocol specification for Frontier Lite. Implementations on both sides (AI-Dungeon-side Library, BetterDungeon-side Core) MUST conform to this document.
+Canonical wire-protocol specification for Frontier v1. Implementations on both sides (AI-Dungeon-side Library, BetterDungeon-side Core) MUST conform to this document.
 
-> **Scope:** Frontier Lite (MVP) is **cards-only, one-way (script → BD)**. There are no envelopes, no requests, no responses, no acks. This document reflects that. Two-way comms land as a future protocol extension and will be specified separately when Full Frontier is planned.
+> **Scope:** Frontier is **cards-only, bidirectional**. Scripts publish state to `frontier:state:<name>` cards and enqueue ops on `frontier:out`; BD publishes its heartbeat on `frontier:heartbeat` and writes op responses to `frontier:in:<module>`. The protocol ships with two **profiles** advertised in the heartbeat: `"lite"` (state-only) and `"full"` (state + ops). A module that declares no `ops` works identically under both profiles. V2 ships with `profile: "full"` active. The envelope protocol for the ops channel (request schemas, id scheme, status lifecycle, GC) is documented in depth in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md); this document covers the card families themselves.
 
 ## Reserved namespaces
 
@@ -12,8 +12,8 @@ Story cards whose `title` matches these prefixes are reserved and handled specia
 |--------|-----------|---------|
 | `frontier:state:<name>` | Script → BD | Persistent state the script publishes; module-specific semantics. This is the MVP's sole script-to-BD channel. |
 | `frontier:heartbeat` | BD → Script | BD liveness beacon + module advertisement. Written by Core, read by scripts. |
-| `frontier:out` | (reserved, unused in Lite) | Reserved for Full Frontier's script → BD request queue. Scripts MUST NOT write this card in MVP; Core will log and ignore. |
-| `frontier:in:<module>` | (reserved, unused in Lite) | Reserved for Full Frontier's BD → script response queue. Never written by MVP Core. |
+| `frontier:out` | Script → BD | Request queue for the ops channel. One card per adventure; holds an envelope with `requests[]` (new ops to dispatch) + `acks[]` (ids of responses the script has finished reading). Schema in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md#request-envelope-inside-frontierout). |
+| `frontier:in:<module>` | BD → Script | Response cards for the ops channel, sharded per module. Each card holds `{ responses: { [id]: { status, data?, error? } } }`. Sharding means large responses from one module don't bloat unrelated modules' inbound data. Schema in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md#response-envelope-inside-frontierinmodule). |
 | `scripture:*` | (reserved) | Unused; reserved for future Scripture-internal extensions. |
 | `bd:*` | (reserved) | Reserved for BetterDungeon-internal use outside Frontier. |
 
@@ -23,7 +23,7 @@ All reserved cards (including the unused Full-Frontier ones) are filtered out of
 
 ### `frontier:state:<name>`
 
-Persistent script-published state. Module-specific semantics. The script writes; BD reads. This is the only script-to-BD wire in Lite.
+Persistent script-published state. Module-specific semantics. The script writes; BD reads. Complemented on the ops channel by `frontier:out` for request/response traffic; state cards are the persistence layer, `frontier:out` is the RPC layer.
 
 **Cardinality:** one per module that uses it (e.g. `frontier:state:scripture`).
 **Lifetime:** persists for the adventure's lifetime unless the script deletes it. Survives undo, retry, edit, refresh.
@@ -92,29 +92,36 @@ BD Core's liveness and capability beacon. Scripts read this to detect whether Fr
 ```json
 {
   "v": 1,
-  "frontier": { "version": "2.0.0", "protocol": 1, "profile": "lite" },
+  "frontier": { "version": "2.0.0", "protocol": 1, "profile": "full" },
   "ts": 1700000000000,
   "turn": 42,
   "tailActionId": "42",
+  "liveCount": 38,
   "modules": [
-    { "id": "scripture", "version": "1.0.0", "stateNames": ["scripture"] }
+    { "id": "scripture", "version": "1.0.0", "stateNames": ["scripture"] },
+    { "id": "webfetch",  "version": "1.0.0", "ops": ["fetch"] },
+    { "id": "clock",     "version": "1.0.0", "ops": ["now", "tz", "format"] }
   ]
 }
 ```
 
 - `frontier.version` — BetterDungeon's Frontier version (SemVer).
-- `frontier.protocol` — wire protocol version. Scripts SHOULD check `protocol === 1` before publishing state.
-- `frontier.profile` — `"lite"` for MVP; `"full"` once two-way comms ship. Scripts can branch on this to avoid trying to use features that aren't available yet.
+- `frontier.protocol` — wire protocol version. Scripts SHOULD check `protocol === 1` before publishing state or enqueuing ops.
+- `frontier.profile` — `"full"` in V2. A V1 `"lite"` Core (hypothetical; never released) would have omitted `frontier:out` / `frontier:in:*` handling. Scripts branch on this to avoid enqueuing ops against a Core that can't service them.
 - `ts` — millisecond timestamp of this heartbeat.
 - `turn` — AI Dungeon's `actionCount` at which this heartbeat was written. Scripts use this to detect staleness.
-- `tailActionId` — the current tail action id Core has observed (numeric string, e.g. `"60"`). Scripts SHOULD cross-check this against their own `history[history.length-1].id` to detect misalignment (e.g. Core is behind a turn).
+- `tailActionId` — the current tail action id Core has observed (numeric string, e.g. `"60"`). Scripts SHOULD cross-check this against their own `history[history.length-1].id` to detect misalignment.
+- `liveCount` — non-undone action count at the time of write. Complements `tailActionId`; scripts keying state by live-count ordinal cross-check this rather than tail id.
 - `modules` — array of currently enabled modules. Each entry:
   - `id`, `version` — identification.
-  - `stateNames` — which `frontier:state:<name>` cards this module reads.
+  - `stateNames` — which `frontier:state:<name>` cards this module reads (present if the module consumes state).
+  - `ops` — which ops the module declares (present if the module has an ops handler). Scripts feature-detect specific ops via `heartbeat.modules.find(m => m.id === 'webfetch')?.ops?.includes('fetch')`.
+
+A module MAY advertise both `stateNames` and `ops` simultaneously; they are independent capabilities.
 
 ## AI Dungeon observation channels
 
-BD observes AI Dungeon's backend over a single GraphQL-over-WebSocket connection to `wss://api.aidungeon.com/graphql`. Three subscription payloads drive Frontier Lite:
+BD observes AI Dungeon's backend over a single GraphQL-over-WebSocket connection to `wss://api.aidungeon.com/graphql`. Three subscription payloads drive Frontier:
 
 | Payload key (under `data`) | Direction | Cadence | Purpose in Frontier |
 |---------------------------|-----------|---------|---------------------|
@@ -209,26 +216,32 @@ A heartbeat card can exist but be stale in three realistic scenarios:
 2. **User installed Frontier but never loaded this adventure since.** On first load, heartbeat is absent for one turn while Core initializes. Scripts should tolerate absence on turn 1.
 3. **User's BetterDungeon tab is in the background and throttled.** Heartbeats may be briefly delayed. Default `maxStaleTurns = 2` provides slack.
 
-## Future extensions (Full Frontier)
+## Ops channel (Full profile)
 
-When two-way comms are added in a future phase, the following protocol elements will be introduced alongside Lite. They are listed here so Lite implementations leave room for them without future-breaking refactors:
+When `heartbeat.frontier.profile === "full"`, the ops channel is active. Its full envelope schema, request-id scheme, status lifecycle, idempotency rules, and GC strategy live in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md). This section summarizes the surface visible at the card-protocol level so readers of 02 don't need to context-switch for basic understanding.
 
-- `frontier:out` card: script → BD request queue with envelopes (`{ id, module, op, payload }`).
-- `frontier:in:<module>` cards: BD → script response queues with acks.
-- Module `ops` dictionary + dispatcher in Core.
-- Ack / TTL / multi-turn state machines for long-running requests.
-- `_core` pseudo-module for protocol control (ping, cancel, capabilities).
-- Heartbeat `profile` flips from `"lite"` to `"full"`; additional capability fields added.
+- **`frontier:out`** is a single card holding `{ v: 1, requests: [...], acks: [...] }`. Scripts append new request envelopes (`{ id, module, op, args, ts }`) and append ids to `acks` after reading the corresponding response. Core treats request ids as idempotent — re-submitting the same id triggers exactly one handler invocation.
+- **`frontier:in:<module>`** is one card per module with `{ v: 1, responses: { [id]: { status, ...} } }`. Status lifecycle: `pending` → `ok` | `err` | `timeout`. Core writes `pending` immediately on dispatch and the terminal status when the handler resolves.
+- **Request ids** follow `<liveCount>-<moduleId>-<seq>` so replay after refresh is naturally idempotent and ids sort chronologically within a turn.
+- **GC** is two-tier: script-driven ack (primary) and Core TTL (safety net, default 10 turns).
+- **Reserved error codes** (`unknown_module`, `unknown_op`, `invalid_args`, `consent_denied`, `rate_limit`, `timeout`, `handler_threw`, plus module-namespaced codes like `webfetch:scheme_blocked`) are documented in 06. Modules MUST NOT reuse reserved codes for different meanings.
 
-Lite implementations MUST ignore unknown card prefixes and unknown heartbeat fields so that Full Frontier deployments remain backward-compatible with Lite-only scripts.
+### Graceful degradation
+
+Implementations MUST ignore unknown card prefixes and unknown heartbeat fields. Consequences:
+
+- A Lite-profile Core encountering `frontier:out` on a card feed from a Full-profile script: ignores the card, logs debug. Script sees no responses, and on turn N+1 detects stale `pending` entries via the ack path and can degrade to Lite-only behavior.
+- A Lite-profile script against a Full-profile Core: Core never sees a `frontier:out` write from the script, so nothing dispatches. Script uses state-only modules (e.g. Scripture) exactly as before.
+- A future v2 protocol bump: v1 clients observe the new heartbeat version number and degrade; v2 clients continue. See [Versioning and negotiation](#versioning-and-negotiation).
 
 ## Versioning and negotiation
 
-- The heartbeat advertises `protocol: 1` and `profile: "lite"`. Scripts compare both to their Library's supported values.
+- The heartbeat advertises `protocol: 1` and `profile: "full"` (V2) or `"lite"` (degraded / Core-disabled modes). Scripts compare both to their Library's supported values.
 - State cards carry their own `v` field at the top level. Core validates: unknown versions are logged and skipped (no dispatch).
-- Future minor versions of the Lite protocol (1.x) MUST be backward-compatible at the wire level.
-- Breaking changes bump to `v: 2` and MUST coexist with `v: 1` for at least one release to allow script migration.
-- The `profile` flip from `"lite"` to `"full"` is NOT breaking: Full Frontier scripts MUST work against Lite Core (ignoring unsupported ops silently), and Lite scripts MUST work against Full Core (Full Core simply never sees traffic on the unused `frontier:out` card).
+- Request / response envelopes on the ops channel carry their own `v` field (see 06). Core skips unknown versions.
+- Future minor additions (new optional heartbeat fields, new error codes, new ops) do NOT bump `protocol`. Modules advertise capabilities through `heartbeat.modules[].ops`; scripts feature-detect.
+- Breaking changes bump `protocol` to `2` and MUST coexist with `protocol: 1` for at least one release so scripts can migrate without a hard break.
+- The `profile` axis is orthogonal to `protocol` version. A v1-full Core can run v1-lite scripts unchanged; a v1-lite script can connect to a hypothetical v1-lite Core by never enqueuing ops.
 
 ## Size limits
 
@@ -237,18 +250,33 @@ Lite implementations MUST ignore unknown card prefixes and unknown heartbeat fie
 - If a state card would exceed the limit, the script SHOULD reduce `historyLimit` before writing. Core does NOT automatically spill oversized state cards; that's a module-level concern.
 - Core logs a warning for any state card that parses but exceeds 80% of the known size budget, so authors notice growth early.
 
-## Error handling in Lite
+## Error handling
 
-Lite has no request/response envelopes, so there are no wire-level error codes. Problems are logged by Core to the debug console and never returned to the script. Common failure modes:
+State-channel errors are implicit — Core logs to the debug console and the script only learns indirectly (e.g. by comparing its last-written live count against `heartbeat.liveCount` on the next turn). Ops-channel errors are explicit: Core writes a terminal response with `status: "err"` and a structured `error: { code, message }` that the script reads via `frontierPoll`.
+
+### State-channel failures
 
 | Situation | Core behavior |
 |-----------|---------------|
 | State card JSON fails to parse | Debug-warn; skip dispatch this tick. |
 | State card `v` is unknown | Debug-warn; skip dispatch. |
 | State card targets an unknown module | Debug-warn (module not registered or disabled); skip dispatch. |
-| Heartbeat write fails (GraphQL error) | Retry with exponential backoff; warn after N failures. |
-| `tailActionId` is `null` (no action window yet) | Modules receive `onStateChange` with whatever state the script wrote; action-ID-sensitive modules SHOULD fall back to the most-recent history entry. |
+| Heartbeat write fails | Write queue retries with exponential backoff; warn after N failures. |
+| `tailActionId` is `null` (no action window yet) | Modules receive `onStateChange` with whatever state the script wrote; live-count-sensitive modules fall back to nearest-earlier history entry, then manifest defaults. |
 
-Scripts in Lite do not see these errors directly. If a script needs to know whether its state was accepted, it can read the heartbeat's `tailActionId` next turn and compare to its own last-written action id. That's the closest thing Lite has to an ack, and it's implicit.
+### Ops-channel failures
 
-When Full Frontier lands, a proper error-code table (unsupported version, unknown op, timeout, etc.) will be added here.
+Full specification of the error-code table in [06 — Full Frontier Protocol § Response envelope](./06-full-frontier-protocol.md#response-envelope-inside-frontierinmodule). Summary of reserved codes:
+
+| Code | Meaning |
+|------|---------|
+| `unknown_module` | No module registered with that id, or the module is disabled in the popup. |
+| `unknown_op` | The module exists but declares no such op. |
+| `invalid_args` | Op handler rejected args with a validation error. |
+| `consent_denied` | Module-level consent was refused or revoked (e.g. WebFetch origin deny). |
+| `rate_limit` | Per-module rate limit exceeded. `error.retryAfterMs` hint may be present. |
+| `timeout` | Handler did not resolve within the op's configured timeout. |
+| `handler_threw` | Handler threw an unexpected exception. `error.message` is sanitized. |
+| `scheme_blocked` | WebFetch-specific: disallowed URL scheme (`file://`, `chrome://`, etc.). |
+
+Modules MAY define additional codes in their own namespace (e.g. `webfetch:cors_blocked`) but MUST NOT reuse reserved codes for different meanings.
