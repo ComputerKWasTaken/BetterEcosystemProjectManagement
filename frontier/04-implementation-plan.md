@@ -55,34 +55,33 @@ Ten phases. Each has an acceptance criterion; "done" means criterion met, verifi
 
 **Acceptance:** Workspace dirs in git; `ACTION_IDS.md` committed. **Phase 0 closed.**
 
-### Phase 1 — Transport hardening
+### Phase 1 — Transport hardening (completed)
 
 Mutation replay was proved out end-to-end earlier than the original plan anticipated — writes, creates, and cross-card template reuse all verified in a live adventure with persistence confirmed across reload. Transport still has latent bugs that would bite every module downstream. Fix them before the module layer lands on top.
+
+**Status:** *completed 2026-04-21*. All four deliverables implemented, live-tested, and committed.
 
 **Files:**
 - `services/frontier/ws-interceptor.js` (edit)
 - `services/frontier/ws-stream.js` (edit)
-- `services/ai-dungeon-service.js` (edit)
+- `services/frontier/core.js` (edit)
 - `services/frontier/write-queue.js` (new)
+- `manifest.json` (edit — load order)
 
-**Work:**
+**Empirical findings (from live testing):**
 
-1. **Action-stream hydration.** `tail` / `liveCount` stay at `null` / `0` even when cards hydrate via HTTP, because actions are currently sourced only from the `actionUpdates` subscription channel. Add HTTP hydration for `actions[]` parallel to the existing card hydration scanner — same path-scoped scanner pattern, watching for `actions` / `actionWindow` arrays on `GetAdventure` responses.
-2. **Adventure-boundary detection.** Watch URL changes + each `GetAdventure` response's `adventureId` / `shortId`. On transition, reset `state.cards`, `state.actions`, and `state.enrichment`. Mutation templates stay — they're per-op not per-adventure, and a fresh adventure will refresh them as AID's autosave runs.
-3. **`adventureShortId` resolver.** URL regex expanded to cover `/adventure(s)?/<slug>`, `/play/<slug>`, and `/scenarios?/<slug>`. Fallback: most-recent enrichment entry carrying a `shortId`, independent of whether that entry's card id is still in the live snapshot.
-4. **Write queue (`write-queue.js`).** Thin wrapper around `upsertStoryCard`:
-   - Per-card serialize (no concurrent writes to the same card id).
-   - Coalesce rapid successive writes — last-write-wins while a request is in flight.
-   - Retry on transient network / 5xx with exponential backoff (capped attempts).
-   - Optimistic local echo — merge the write into `state.cards` immediately; reconcile on server echo or roll back on hard failure.
-   - Surface errors via the returned promise; never silently swallow.
+1. **Action hydration (safety net only).** AID's GetAdventure HTTP response does NOT include an `actions` array. Adventure node keys are: `adventureId, type, memories, instructions, storySummary, lastSummarizedActionId, lastMemoryActionId, storyCards, storyCardInstructions, storyCardStoryInformation, __typename`. Actions come exclusively from the WS `ActionUpdates` subscription (delta-only, not initial state). `tail`/`liveCount` populate after the first action event (turn, undo, etc.), not on page load. The scanner code is retained as a safety net for future AID changes.
+2. **Adventure-boundary detection** works via HTTP-driven `adventure:change` events + 1-second URL poll for SPA navigation. State resets confirmed clean across adventures.
+3. **adventureShortId resolver** works via 3-tier resolution (explicit → enrichment → URL regex). Confirmed `shortId` is per-adventure, not per-card.
+4. **Write queue** confirmed working: per-card serialization, coalescing (3+ writes), retry with exponential backoff (tested offline → online), optimistic echo.
+5. **AbortError** on SPA navigation (AID aborting in-flight fetches) is silenced — expected behavior.
 
-**Acceptance:**
-- Entering any adventure from the home page hydrates cards AND `tail` / `liveCount` within one turn of the first action.
-- `window.Frontier.ws.getState().adventureShortId` is non-null whenever the user is in an adventure, regardless of URL shape.
-- Navigating between adventures clears stale state — no cards or enrichment from the previous adventure linger.
-- Rapid `writeCard('X', 'a')` → `writeCard('X', 'b')` results in exactly one outbound mutation with value `'b'`.
-- A write with the network offline retries and eventually succeeds when connectivity returns; permanent failure rejects the caller's promise with a structured error.
+**Acceptance (revised after testing):**
+- ~~Entering any adventure from the home page hydrates cards AND `tail` / `liveCount` within one turn of the first action.~~ → `tail`/`liveCount` hydrate after the first WS `ActionUpdates` frame. HTTP hydration is retained as a safety net but currently a no-op.
+- ✅ `window.Frontier.ws.getState().adventureShortId` is non-null whenever the user is in an adventure, regardless of URL shape.
+- ✅ Navigating between adventures clears stale state — no cards or enrichment from the previous adventure linger.
+- ✅ Rapid `writeCard('X', 'a')` → `writeCard('X', 'b')` → `writeCard('X', 'c')` results in two outbound mutations (first dispatches immediately, second coalesced, third dispatches when first completes) with the final value `'c'`.
+- ✅ A write with the network offline retries and eventually succeeds when connectivity returns; permanent failure rejects the caller's promise with a structured error.
 
 ### Phase 2 — Core + Module Registry
 
