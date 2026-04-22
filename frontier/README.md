@@ -13,6 +13,7 @@
 | 04 | [Implementation Plan](./04-implementation-plan.md) | Phase order, file-by-file breakdown, V2 release coordination |
 | 05 | [Risks & Open Questions](./05-risks-and-open-questions.md) | Tracked risks, unresolved decisions, follow-up work |
 | 06 | [Full Frontier Protocol](./06-full-frontier-protocol.md) | Two-way envelope protocol, request/response schemas, GC, idempotency (Phase 4) |
+| 07 | [Scripture AI Dungeon Test Suite](./07-scripture-ai-dungeon-test-suite.md) | Paste-ready live test harness + manual checklist for Scripture behavior |
 
 ## One-paragraph summary
 
@@ -27,10 +28,14 @@
 - [x] V2 rescoped to include Full Frontier + WebFetch + Clock alongside Scripture
 - [x] Phase 1 — transport hardening (write queue, adventure-boundary reset, shortId resolver). Action hydration retained as safety net; AID loads actions exclusively via WS.
 - [x] Phase 2 — Core dispatcher + Module Registry hardening (state-card dispatch, enable/disable persistence, ctx API, debug mode)
-- [ ] Phase 3 — Scripture module (state-only reference)
+- [x] Phase 3 — Scripture module (state-only reference). Live AI Dungeon Scripture suite passed 10/10 on 2026-04-22.
 - [ ] Phase 4 — Full Frontier envelope protocol
 - [ ] Phases 5–6 — WebFetch + Clock modules
 - [ ] Phases 7–10 — feature manager, UI filtering, guide rewrites, release
+
+## Current focus
+
+Phase 3 is closed. Next up is **Phase 4 - Full Frontier envelope protocol**, which turns Frontier from state-card publishing into a two-way request/response channel through `frontier:out` and `frontier:in:<module>` cards.
 
 ## Design principles
 

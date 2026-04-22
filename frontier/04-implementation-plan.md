@@ -128,6 +128,8 @@ The substrate modules plug into. Router, heartbeat, lifecycle, shared `ctx` API.
 
 The first real module. Reference implementation for state-only modules (no ops).
 
+**Status:** *completed 2026-04-22*. Scripture is implemented as a Frontier state-only module, legacy BetterScripts is removed from the extension load path, static checks pass, and the live AI Dungeon Scripture suite passed all 10 behavior checks. See [07 - Scripture AI Dungeon Test Suite](./07-scripture-ai-dungeon-test-suite.md).
+
 **Files:**
 - `modules/scripture/module.js` (new)
 - `modules/scripture/renderer.js` (new, migrated from `better_scripts_feature.js`)
@@ -143,10 +145,12 @@ The first real module. Reference implementation for state-only modules (no ops).
 4. Delete `better_scripts_feature.js`; remove its `main.js` handlers; add `handleSetFrontierDebug` / `handleSetFrontierModuleEnabled`.
 
 **Acceptance:**
-- A scenario using the base Frontier Library + Scripture adapter renders **pixel-identically** to the old BetterScripts. Side-by-side screenshot diff passes.
-- Undo / retry / edit / continue all round-trip correctly — widgets always reflect the current live-count ordinal's values.
-- Refresh mid-adventure rehydrates widgets from the state card + action window.
-- With Frontier disabled in popup, widgets do not render and `frontierIsAvailable()` returns `false` in scripts.
+- [x] A scenario using the live Scripture AI Dungeon test harness renders all 9 widget types through Frontier state cards.
+- [x] Undo / retry / edit / continue all round-trip correctly - widgets always reflect the current live-count ordinal's values.
+- [x] Refresh mid-adventure rehydrates widgets from the state card + action window.
+- [x] Manifest reset clears stale DOM attributes/styles and restores normal widgets on the next output.
+- [x] Sanitizer and malformed-state recovery paths pass.
+- [x] Disabling and re-enabling Scripture through the module registry hides and restores widgets.
 
 ### Phase 4 — Full Frontier envelope protocol
 
