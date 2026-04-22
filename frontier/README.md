@@ -26,7 +26,7 @@
 - [x] Transport foundation landed — WS + fetch/XHR capture, card + action stream, mutation-template replay. Writes and creates verified in a live adventure with persistence across reload.
 - [x] V2 rescoped to include Full Frontier + WebFetch + Clock alongside Scripture
 - [x] Phase 1 — transport hardening (write queue, adventure-boundary reset, shortId resolver). Action hydration retained as safety net; AID loads actions exclusively via WS.
-- [ ] Phase 2 — Core dispatcher + Module Registry hardening (state-card dispatch, enable/disable persistence, ctx API, debug mode)
+- [x] Phase 2 — Core dispatcher + Module Registry hardening (state-card dispatch, enable/disable persistence, ctx API, debug mode)
 - [ ] Phase 3 — Scripture module (state-only reference)
 - [ ] Phase 4 — Full Frontier envelope protocol
 - [ ] Phases 5–6 — WebFetch + Clock modules

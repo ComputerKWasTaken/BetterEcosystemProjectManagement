@@ -83,40 +83,46 @@ Mutation replay was proved out end-to-end earlier than the original plan anticip
 - ✅ Rapid `writeCard('X', 'a')` → `writeCard('X', 'b')` → `writeCard('X', 'c')` results in two outbound mutations (first dispatches immediately, second coalesced, third dispatches when first completes) with the final value `'c'`.
 - ✅ A write with the network offline retries and eventually succeeds when connectivity returns; permanent failure rejects the caller's promise with a structured error.
 
-### Phase 2 — Core + Module Registry
+### Phase 2 — Core + Module Registry (completed)
 
 The substrate modules plug into. Router, heartbeat, lifecycle, shared `ctx` API.
 
+**Status:** *completed 2026-04-21*. All deliverables implemented and manually verified.
+
 **Files:**
-- `services/frontier/core.js` (major edit — currently skeletal)
-- `services/frontier/module-registry.js` (new)
-- `services/frontier/heartbeat.js` (new)
+- `services/frontier/core.js` (rewrite)
+- `services/frontier/module-registry.js` (rewrite)
 - `main.js` (edit: register first-party modules)
+
+**Empirical findings (from live testing):**
+1. **Duplicate heartbeat cards:** Rapid successive events (`adventure:enter` and `mutation:template`) caused multiple heartbeats to be created before the server returned the ID for the first one. Fixed by adding a `heartbeatPending` guard so only one write is in flight at a time.
+2. **State dispatch inconsistency:** Optimistic echo in the write queue made `ws-stream` diffs "no change" when the real echo arrived, meaning `cards:diff` wouldn't fire for local writes. Fixed by adding immediate local dispatch for state cards inside `writeCard`.
 
 **Work:**
 
-1. **Core dispatcher.** Subscribes to `frontier:cards:diff` and `frontier:tail:change`. For each changed `frontier:state:<name>` card, finds modules whose `stateNames` include `<name>` and calls `onStateChange(name, parsed, ctx)`. On tail change, re-dispatches cached state to every module that declared `tracksActionId: true`.
-2. **Module registry.** `register(module)`, `enable(id)`, `disable(id)`. Persists enabled state in `chrome.storage.sync` under `frontier_enabled_modules`. Calls lifecycle hooks (`onEnable` / `onDisable` / `onAdventureChange`) at the right boundaries.
-3. **Heartbeat emitter.** On adventure load, module enable/disable, and coalesced at most once per WS push — writes `frontier:heartbeat` via the Phase 1 write queue. Schema per [02 — Protocol](./02-protocol.md#frontierheartbeat).
+1. **Core dispatcher.** Subscribes to `frontier:cards:diff` and `frontier:tail:change`. For each changed `frontier:state:<name>` card, finds modules whose `stateNames` include `<name>` and calls `onStateChange(name, parsed, ctx)`. On tail change, re-dispatches cached state to every module that declared `tracksLiveCount: true`. Added immediate local dispatch for state cards in `writeCard()`.
+2. **Module registry.** `register(module)`, `enable(id)`, `disable(id)`. Persists enabled state in `chrome.storage.sync` under `frontier_enabled_modules`. Calls lifecycle hooks (`onEnable` / `onDisable` / `onAdventureChange`) at the right boundaries. Replays cached state upon module enable.
+3. **Heartbeat emitter.** On adventure load and coalesced at most once per WS push — writes `frontier:heartbeat` via the Phase 1 write queue. Schema per [02 — Protocol](./02-protocol.md#frontierheartbeat). Protected by `heartbeatPending` guard.
 4. **`ctx` API** passed to every module hook:
    ```js
    ctx = {
-     cardId, cardTitle,                // set on card-scoped hooks
-     getActions(), getCurrentActionId(), getLiveCount(),
-     writeCard(title, value, opts),    // wraps the write queue
+     id, on(event, handler),
+     getState(name), getCardByTitle(title),
+     get adventureShortId(), getAdventureId(),
+     getActions(), getCurrentActionId(), getTail(), getLiveCount(),
+     writeCard(title, value, opts),
      respond(requestId, data),         // no-op in Phase 2; wired in Phase 4
      respondError(requestId, err),     // ditto
      log(level, ...args),
-     storage: { get(key), set(key, value) },
+     storage: { get(key), set(key, value), remove(key) },
    }
    ```
-   `respond` / `respondError` are present from day one so module code doesn't branch when Full Frontier ships.
-5. **Debug mode.** `frontier_debug` in `chrome.storage.sync` (migrated from `betterDungeon_betterScriptsDebug`). Structured console logs behind the flag.
+5. **Debug mode.** `frontier_debug` in `chrome.storage.sync`. Structured console logs behind the flag. `Frontier.core.setDebug(bool)`.
 
-**Acceptance:**
-- A stub module declaring `stateNames: ['test']` receives `onStateChange` exactly once when a `frontier:state:test` card first appears, and on every subsequent change.
-- `frontier:heartbeat` lands within 1 s of adventure load with the correct schema and module list.
-- Toggling a module off halts dispatch to it and triggers `onDisable`; toggling on triggers `onEnable` and replays the current state.
+**Acceptance (revised after testing):**
+- ✅ A stub module declaring `stateNames: ['test']` receives `onStateChange` exactly once when a `frontier:state:test` card first appears, and on every subsequent change. (Fixed via immediate local dispatch).
+- ✅ `frontier:heartbeat` lands within 1 s of adventure load with the correct schema and module list. (Fixed duplicate bug).
+- ✅ Toggling a module off halts dispatch to it and triggers `onDisable`; toggling on triggers `onEnable` and replays the current state.
 
 ### Phase 3 — Scripture module (state-only reference)
 
