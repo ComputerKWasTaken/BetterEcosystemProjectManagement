@@ -156,7 +156,7 @@ The TTL uses turn-count not wall-clock because scripts are turn-gated; they can'
 
 ### Request-side GC
 
-Requests in `frontier:out` are cleaned up by Core writing a tombstone marker once the response has been tombstoned (so both sides converge). Concretely: Core tracks completed-and-tombstoned request ids for M turns (default: same as response TTL) and then drops them from its in-memory dedup set. If a script re-submits an id older than M turns, it is re-processed — which is acceptable because it can only happen if the script explicitly chose to keep the id alive, which is user-level behavior, not a bug.
+Requests in `frontier:out` are cleaned up by the script-side Library: once a terminal response is observed, the Library removes that request from its local pending map and writes the smaller `frontier:out` envelope on the next ack. Core does not need to mutate `frontier:out`; it only maintains an in-memory/session dedup set for recently completed ids, pruned after the response TTL. If a script explicitly re-submits an id after that TTL, Core may process it again, which is user-level behavior rather than protocol corruption.
 
 ## Idempotency
 
@@ -170,7 +170,7 @@ Script authors are responsible for not reusing ids across semantically different
 
 ## Session-storage mirror (crash recovery)
 
-On every state change, Core mirrors to `sessionStorage` under `frontier:ops:inflight`:
+On every request state change, Core mirrors to `sessionStorage` under `frontier:ops:inflight`:
 
 ```json
 {
@@ -182,11 +182,13 @@ On every state change, Core mirrors to `sessionStorage` under `frontier:ops:infl
 }
 ```
 
-On BD reload:
+On BD reload in the v1 implementation:
 
 1. Core reads this entry and verifies `adventureShortId` matches the current adventure. If not, it's discarded — we're in a different adventure.
 2. `processed` merges into the dedup set so already-completed requests aren't re-invoked.
-3. `inflight` entries whose responses on `frontier:in:<module>` are still `pending` are re-dispatched (the handler re-runs — which is why handlers MUST be idempotent) or, if the handler is non-idempotent and the module opts in, the `pending` response is converted to `err: timeout` so the script can decide whether to retry.
+3. Still-pending work is recovered from the persistent `frontier:out` card: if the request remains present and the matching response is still `pending`, Core re-runs the handler. This is why default handlers MUST be idempotent.
+
+The `inflight` mirror is retained for diagnostics and for the future non-idempotent policy below; v1's recovery source of truth is the card state itself.
 
 Modules declare idempotency in their metadata:
 

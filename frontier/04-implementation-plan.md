@@ -156,12 +156,19 @@ The first real module. Reference implementation for state-only modules (no ops).
 
 The two-way breakthrough. Design specified in [06 — Full Frontier protocol](./06-full-frontier-protocol.md).
 
+**Status:** *completed 2026-04-22*. The first vertical slice is implemented: envelope helpers, ops dispatcher, Core wiring, `ctx.respond` / `ctx.respondError`, heartbeat ops advertisement, and the built-in opt-in `test.echo` validation module. Static syntax checks pass, local dispatcher simulations pass, the live AI Dungeon Full Frontier suite reached `checksPass: true` on run `full-mo9ejlzk`, and the manual `ff delay` reload-mid-pending check passed. See [08 - Full Frontier AI Dungeon Test Suite](./08-full-frontier-ai-dungeon-test-suite.md).
+
 **Files:**
 - `services/frontier/envelope.js` (new — request/response schemas + request-id generator + GC policies)
 - `services/frontier/ops-dispatcher.js` (new — consumes `frontier:out`, routes to module ops, writes `frontier:in:<module>`)
-- `services/frontier/core.js` (edit: wire ops dispatcher)
+- `services/frontier/core.js` (edit: wire ops dispatcher and response helpers)
+- `services/frontier/module-registry.js` (edit: heartbeat refresh on module mount/unmount)
+- `modules/test/module.js` (new — opt-in internal `test.echo` validation module)
+- `manifest.json` (edit: load Phase 4 services + test module)
+- `main.js` (edit: start ops dispatcher after registry startup)
 - `06-full-frontier-protocol.md` (new)
 - AI-Dungeon-side Library additions: `frontierCall`, `frontierPoll`, `frontierPollAll`, tombstone-on-read semantics
+- `08-full-frontier-ai-dungeon-test-suite.md` + paste-ready suite scripts (new)
 
 **Work:**
 
@@ -171,10 +178,10 @@ The two-way breakthrough. Design specified in [06 — Full Frontier protocol](./
 4. **Heartbeat upgrade.** `profile` flips to `"full"`. Per-module entries advertise `ops: string[]` so scripts can feature-detect specific ops.
 
 **Acceptance:**
-- A test module declaring `ops: { echo(args) { return { got: args }; } }` can be called via `frontier.call('test', 'echo', { hello: 'world' })` and the script receives `{ got: { hello: 'world' } }` within one turn.
-- An in-flight op survives a BD reload — the `pending` response is preserved and the op completes on the reloaded BD without duplication.
-- Calls to unknown module or op names produce `err` responses with structured codes (`unknown_module`, `unknown_op`).
-- Rewriting the same request id in `frontier:out` does not cause duplicate handler invocations.
+- [x] A test module declaring `ops: { echo(args) { return { got: args }; } }` can be called via `frontier.call('test', 'echo', { hello: 'world' })` and the script receives `{ got: { hello: 'world' } }` within one turn.
+- [x] An in-flight op survives a BD reload — the `pending` response is preserved and the op completes on the reloaded BD without duplication.
+- [x] Calls to unknown module or op names produce `err` responses with structured codes (`unknown_module`, `unknown_op`).
+- [x] Rewriting the same request id in `frontier:out` does not cause duplicate handler invocations.
 
 ### Phase 5 — WebFetch module (ops reference, consent flow)
 

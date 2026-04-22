@@ -28,6 +28,12 @@ interface FrontierModule {
   description?: string;
 
   /**
+   * Overrides the registry's default enablement. Built-in first-party modules
+   * default on unless this is explicitly false; third-party ids default off.
+   */
+  defaultEnabled?: boolean;
+
+  /**
    * The `frontier:state:<name>` card titles this module reads.
    * When any of these change, Core calls `onStateChange`. Omit for pure ops modules.
    */
@@ -136,7 +142,7 @@ core.registerModule(ClockModule);
 
 Registration triggers:
 1. Core adds the module to its `Map<id, module>`.
-2. Core calls the module's `onEnable` if the user has it enabled (default: true for built-ins).
+2. Core calls the module's `onEnable` if the user has it enabled (default: true for built-ins unless `defaultEnabled: false`; false for third-party ids).
 3. Core updates the heartbeat card to advertise the new module (including its `ops` list if it has any).
 4. The popup UI's Frontier section gains a toggle for the module (plus a consent sub-panel for WebFetch).
 
@@ -257,15 +263,13 @@ function frontierCurrentActionId() {
 }
 
 // --- State card I/O ----------------------------------------------------------
-function frontierReadState(name) {
-  const title = 'frontier:state:' + name;
+function frontierReadCard(title) {
   const card = storyCards.find(c => c.title === title);
   if (!card) return null;
   try { return JSON.parse(card.entry || card.value || '{}'); } catch { return null; }
 }
 
-function frontierWriteState(name, obj) {
-  const title = 'frontier:state:' + name;
+function frontierWriteCard(title, obj) {
   const json = JSON.stringify(obj);
   const idx = storyCards.findIndex(c => c.title === title);
   if (idx === -1) {
@@ -274,6 +278,14 @@ function frontierWriteState(name, obj) {
     const c = storyCards[idx];
     updateStoryCard(idx, c.keys || title, json, c.type || 'Frontier');
   }
+}
+
+function frontierReadState(name) {
+  return frontierReadCard('frontier:state:' + name);
+}
+
+function frontierWriteState(name, obj) {
+  frontierWriteCard('frontier:state:' + name, obj);
 }
 
 // --- Action-ID history helper ------------------------------------------------
@@ -317,7 +329,7 @@ function _frontierWriteOutCard() {
   const requests = Object.values(state.frontier._ops.pendingRequests);
   const acks = state.frontier._ops.acks;
   const payload = { v: 1, requests, acks };
-  frontierWriteState('out', payload);
+  frontierWriteCard('frontier:out', payload);
   state.frontier._ops.acks = []; // Clear acks after writing
 }
 
@@ -342,7 +354,7 @@ function frontierCall(module, op, args = {}, opts = {}) {
 
 function frontierPoll(requestId) {
   const module = requestId.split('-')[1]; // e.g., '42-webfetch-1' -> 'webfetch'
-  const card = frontierReadState(`in:${module}`);
+  const card = frontierReadCard(`frontier:in:${module}`);
   if (!card || !card.responses || !card.responses[requestId]) return null;
 
   const response = card.responses[requestId];
