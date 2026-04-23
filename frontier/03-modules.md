@@ -483,9 +483,46 @@ function scriptureSet(widgets) {
 ```js
 // === Clock (Frontier Time Module) =============================================
 // Usage:
-//   frontierCall('clock', 'now').then(time => console.log(time.iso));
-//   frontierCall('clock', 'format', { ts: Date.now(), format: 'YYYY-MM-DD' })
+//   frontierCall('clock', 'now').then(time => console.log(time.local));
+//   frontierCall('clock', 'tz', { timeZone: 'America/Chicago' })
+//     .then(info => console.log(info.offset));
+//   frontierCall('clock', 'format', { ts: Date.now(), format: 'YYYY-MM-DD', timeZone: 'UTC' })
 //     .then(formatted => console.log(formatted));
+
+// No specific script-side state or functions needed beyond frontierCall.
+// The module is primarily used via the generic frontierCall API.
+```
+
+### Geolocation Library adapter (pasted after the base Library)
+
+```js
+// === Geolocation (Frontier Location Module) ==================================
+// Usage:
+//   frontierCall('geolocation', 'permission')
+//     .then(status => console.log(status.permissionState));
+//   frontierCall('geolocation', 'getCurrent', {
+//     highAccuracy: false,
+//     timeoutMs: 15000,
+//     maximumAgeMs: 60000,
+//   }).then(position => console.log(position.latitude, position.longitude));
+
+// No specific script-side state or functions needed beyond frontierCall.
+// The module is primarily used via the generic frontierCall API.
+```
+
+### Weather Library adapter (pasted after the base Library)
+
+```js
+// === Weather (Frontier Weather Module) =======================================
+// Usage:
+//   frontierCall('weather', 'current', { place: 'Houston', units: 'imperial' })
+//     .then(report => console.log(report.current.weather, report.current.temperature));
+//   frontierCall('weather', 'forecast', {
+//     latitude: 29.7604,
+//     longitude: -95.3698,
+//     days: 3,
+//     units: 'imperial',
+//   }).then(report => console.log(report.days));
 
 // No specific script-side state or functions needed beyond frontierCall.
 // The module is primarily used via the generic frontierCall API.

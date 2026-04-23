@@ -217,10 +217,13 @@ The canonical two-way demo. "Scripts can now hit the internet."
 
 Low-risk, marketable, validates the ops shape on a minimal module.
 
+**Status:** *completed 2026-04-23*. Clock now exposes `now`, `tz`, and `format` as deterministic safe ops. The module validates IANA time zones through `Intl`, returns structured zone and offset info, and uses UTC as the default time zone for `format()` so scripts get stable cross-user output for patterns like `YYYY-MM-DD`. Local syntax and behavior smoke checks passed first, then the live AI Dungeon suite passed on run `clock-mobxzre5`. The harness remains documented in [13 - Clock AI Dungeon Test Suite](./13-clock-ai-dungeon-test-suite.md).
+
 **Files:**
 - `modules/clock/module.js` (new)
+- `manifest.json` (edit: Clock load order)
 
-**Work:** `ops: { now(), tz(), format({ ts, format }) }`. No consent needed; purely deterministic.
+**Work:** `ops: { now(args?), tz(args?), format({ ts, format, timeZone? }) }`. No consent needed; purely deterministic. `now` returns `{ ts, iso, timeZone, offsetMinutes, offset, local, date, time }`; `tz` returns the same shape plus `systemTimeZone`; `format` returns a single formatted string and defaults to UTC when `timeZone` is omitted.
 
 **Acceptance:** Script calls `frontier.call('clock', 'now')` and receives `{ ts, iso, tz }` within one turn. `format({ ts: 0, format: 'YYYY-MM-DD' })` returns `'1970-01-01'`.
 
@@ -406,6 +409,6 @@ These were originally out-of-MVP; the write-path breakthrough moved them into sc
 5. **Inter-module calls** — modules invoking other module ops via Core. Shape mostly falls out of Phase 4; ergonomics pass is deferred.
 6. **Richer popup UI** — live state viewer, heartbeat inspector, request-log panel. Phase 7 ships the minimum; the rest waits for feedback.
 7. **Mobile APK parity testing automation** — once the APK pipeline is in place, automate the Android WebView smoke tests.
-8. **Additional modules** — LocalAI, LocalStorage, Geolocation, Notify, and the long tail. Each is an incremental addition on the Full Frontier substrate; none require Core changes.
+8. **Additional modules** — Geolocation, Weather, Network, System, Provider AI (for example OpenRouter-backed), LocalAI, the future `bd.sdk` helper surface, and the long tail tracked in [12 - OS Capabilities Roadmap](./12-os-capabilities-roadmap.md). Earlier brainstorm items such as Notify, LocalStorage, Clipboard, Filesystem, Downloads, Share, Presence, and Speech are currently deprioritized or rejected for the turn-based Frontier use case. Each kept module is still an incremental addition on the Full Frontier substrate; none require Core changes.
 
 All of these slot into the existing architecture without refactoring Core.

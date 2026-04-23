@@ -1,4 +1,4 @@
-# Frontier — Planning Docs
+# Frontier - Planning Docs
 
 > Internal design + implementation plan for **Frontier**, the bidirectional message-channel platform replacing BetterScripts. Ships as part of **BetterDungeon V2**.
 
@@ -18,39 +18,42 @@
 | 09 | [WebFetch Test Suite Archive](./09-webfetch-ai-dungeon-test-suite.md) | Completed Phase 5 validation summary + archived paste-ready suite |
 | 10 | [WebFetch Phase 5 Validation](./10-webfetch-phase-5-validation.md) | Final sign-off record for hardened WebFetch |
 | 11 | [Frontier Test Suites](./11-test-suites.md) | Active-vs-archived test-suite index and rerun policy |
+| 12 | [OS Capabilities Roadmap](./12-os-capabilities-roadmap.md) | Expanded capability map for OS-adjacent modules, AI bridges, and the future BD SDK surface |
+| 13 | [Clock AI Dungeon Test Suite](./13-clock-ai-dungeon-test-suite.md) | Archived live sign-off summary for Phase 6 / Clock |
+| 14 | [Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md) | Archived live sign-off summary for Weather |
 
 ## One-paragraph summary
 
-**Frontier** is a standardized, cards-only communication channel between AI Dungeon scripts (sandboxed) and BetterDungeon (browser-privileged). Scripts publish module-specific state to reserved `frontier:state:*` story cards; BD reads them via a WebSocket interceptor and renders or acts on them. Modules may ALSO declare ops — scripts enqueue requests on a `frontier:out` card and BD writes responses to per-module `frontier:in:<module>` cards. V2 ships the full two-way platform along with three first-party modules: **Scripture** (widgets, state-only), **WebFetch** (HTTP requests from the sandbox), and **Clock** (real-world time). Widget state uses a **live-count history** pattern so undo / retry / continue / edit all "just work" without the script doing anything special. The whole system rides on AI Dungeon's native story-card + subscription wire, including the write path — Core reuses captured GraphQL mutation templates via deep-override replay, sidestepping auth / endpoint / CSRF concerns entirely.
+**Frontier** is a standardized, cards-only communication channel between AI Dungeon scripts (sandboxed) and BetterDungeon (browser-privileged). Scripts publish module-specific state to reserved `frontier:state:*` story cards; BD reads them via a WebSocket interceptor and renders or acts on them. Modules may also declare ops - scripts enqueue requests on a `frontier:out` card and BD writes responses to per-module `frontier:in:<module>` cards. V2 ships the full two-way platform along with three first-party modules: **Scripture** (widgets, state-only), **WebFetch** (HTTP requests from the sandbox), and **Clock** (real-world time). Widget state uses a **live-count history** pattern so undo / retry / continue / edit all "just work" without the script doing anything special. The whole system rides on AI Dungeon's native story-card + subscription wire, including the write path - Core reuses captured GraphQL mutation templates via deep-override replay, sidestepping auth / endpoint / CSRF concerns entirely.
 
 ## Status
 
-- [x] Architectural direction locked — cards-only, live-count history (see [Overview § Locked-in decisions](./00-overview.md#locked-in-decisions))
-- [x] Protocol v1 drafted — Lite (02) and Full (06)
+- [x] Architectural direction locked - cards-only, live-count history (see [Overview section Locked-in decisions](./00-overview.md#locked-in-decisions))
+- [x] Protocol v1 drafted - Lite (02) and Full (06)
 - [x] Action-ID behavior verified across retry / continue / edit (Phase 0 closed)
-- [x] Transport foundation landed — WS + fetch/XHR capture, card + action stream, mutation-template replay. Writes and creates verified in a live adventure with persistence across reload.
+- [x] Transport foundation landed - WS + fetch/XHR capture, card + action stream, mutation-template replay. Writes and creates verified in a live adventure with persistence across reload.
 - [x] V2 rescoped to include Full Frontier + WebFetch + Clock alongside Scripture
-- [x] Phase 1 — transport hardening (write queue, adventure-boundary reset, shortId resolver). Action hydration retained as safety net; AID loads actions exclusively via WS.
-- [x] Phase 2 — Core dispatcher + Module Registry hardening (state-card dispatch, enable/disable persistence, ctx API, debug mode)
-- [x] Phase 3 — Scripture module (state-only reference). Live AI Dungeon Scripture suite passed 10/10 on 2026-04-22.
-- [x] Phase 4 — Full Frontier envelope protocol. Live AI Dungeon Full Frontier suite passed, including reload-mid-pending, on 2026-04-22.
-- [x] Phase 5 — WebFetch module. Live AI Dungeon suite passed, including denied-origin consent, on 2026-04-23.
-- [ ] Phase 6 — Clock module
-- [ ] Phases 7–10 — feature manager, UI filtering, guide rewrites, release
+- [x] Phase 1 - transport hardening (write queue, adventure-boundary reset, shortId resolver). Action hydration retained as safety net; AID loads actions exclusively via WS.
+- [x] Phase 2 - Core dispatcher + Module Registry hardening (state-card dispatch, enable/disable persistence, ctx API, debug mode)
+- [x] Phase 3 - Scripture module (state-only reference). Live AI Dungeon Scripture suite passed 10/10 on 2026-04-22.
+- [x] Phase 4 - Full Frontier envelope protocol. Live AI Dungeon Full Frontier suite passed, including reload-mid-pending, on 2026-04-22.
+- [x] Phase 5 - WebFetch module. Live AI Dungeon suite passed, including denied-origin consent, on 2026-04-23.
+- [x] Phase 6 - Clock module. Live AI Dungeon suite passed on 2026-04-23.
+- [ ] Phases 7-10 - feature manager, UI filtering, guide rewrites, release
 
 ## Current focus
 
-Phase 5 is closed. Current work is **Phase 6 - Clock module**, the small deterministic ops reference that follows WebFetch.
+Phase 6 is closed. Geolocation has landed locally with `permission` and `getCurrent` ops, and Weather has now passed live validation in [14 - Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md). The next likely path is **Network**, **System**, then the bigger **AI bridge** work (`providerAI` / `localAI`). See [12 - OS Capabilities Roadmap](./12-os-capabilities-roadmap.md) for the accepted directions, the future `bd.sdk` concept, and the ideas that were deliberately cut.
 
 ## Test suites
 
-- Latest completed sign-off: [Phase 5 WebFetch](./09-webfetch-ai-dungeon-test-suite.md) and [its final validation record](./10-webfetch-phase-5-validation.md).
-- Archived regression suites: [Phase 3 Scripture](./07-scripture-ai-dungeon-test-suite.md), [Phase 4 Full Frontier](./08-full-frontier-ai-dungeon-test-suite.md), and [Phase 5 WebFetch](./09-webfetch-ai-dungeon-test-suite.md).
+- Latest completed live sign-off: [Weather](./14-weather-ai-dungeon-test-suite.md), before that [Clock](./13-clock-ai-dungeon-test-suite.md).
+- Archived regression suites: [Phase 3 Scripture](./07-scripture-ai-dungeon-test-suite.md), [Phase 4 Full Frontier](./08-full-frontier-ai-dungeon-test-suite.md), [Phase 5 WebFetch](./09-webfetch-ai-dungeon-test-suite.md), [Phase 6 Clock](./13-clock-ai-dungeon-test-suite.md), and [Weather](./14-weather-ai-dungeon-test-suite.md).
 
 ## Design principles
 
 - **Cards-only transport.** Everything round-trips through AI Dungeon's own story-card + subscription system. No side channels. Crash recovery, cross-tab continuity, and multi-device handoff are free.
-- **One step at a time.** Transport hardening → Core + modules → Full envelope → ops modules → polish. Each phase has a standalone acceptance criterion.
-- **Multiplatform by default.** Every design choice must work on Chromium (Chrome/Edge), Gecko (Firefox), AND Android WebView. No platform-specific shortcuts without a documented fallback.
+- **One step at a time.** Transport hardening -> Core + modules -> Full envelope -> ops modules -> polish. Each phase has a standalone acceptance criterion.
+- **Multiplatform by default.** Every design choice must work on Chromium (Chrome/Edge), Gecko (Firefox), and Android WebView. No platform-specific shortcuts without a documented fallback.
 - **No extra boilerplate for authors.** The Frontier Library snippet is tiny. No Context Modifier, no invisible characters, no hand-rolled framing.
 - **Registry / sandboxing / third-party modules are explicit non-goals for V2.** V2 ships the platform and three first-party modules. Trust boundaries for third-party code are a post-V2 epic.

@@ -4,12 +4,34 @@ This page tracks which live AI Dungeon suites are active, which are archived, an
 
 ## Current Status
 
-There is no active live sign-off suite at the moment. Phase 5 is complete, and Phase 6 has not yet landed its own AI Dungeon harness.
+There is no new active live sign-off suite at the moment. The most recent completed sign-off is:
 
-The most recent completed sign-off is:
+- [14 - Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md)
+- before that, [13 - Clock AI Dungeon Test Suite](./13-clock-ai-dungeon-test-suite.md)
+- before that, [09 - WebFetch Test Suite Archive](./09-webfetch-ai-dungeon-test-suite.md)
+- and [10 - WebFetch Phase 5 Validation](./10-webfetch-phase-5-validation.md)
 
-- [09 - WebFetch Test Suite Archive](./09-webfetch-ai-dungeon-test-suite.md)
-- [10 - WebFetch Phase 5 Validation](./10-webfetch-phase-5-validation.md)
+Clock is complete. Geolocation has landed locally. Weather is complete. The likely next implementation target is Network, but it does not have its own AI Dungeon harness yet.
+
+## Most Recent Completed Suite
+
+### Phase 6 - Clock
+
+Latest completed suite:
+
+- [13 - Clock AI Dungeon Test Suite](./13-clock-ai-dungeon-test-suite.md)
+- [Archived files](./archive/phase-6-clock-test-suite/README.md)
+
+Re-run this suite while changing Clock ops behavior, response shaping, heartbeat advertisement, or the Clock AI Dungeon harness itself.
+
+### Weather
+
+Latest completed suite:
+
+- [14 - Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md)
+- [Archived files](./archive/phase-7-weather-test-suite/README.md)
+
+Re-run this suite while changing Weather ops behavior, response shaping, upstream normalization, heartbeat advertisement, or the Weather AI Dungeon harness itself.
 
 ## Completed Archives
 
@@ -40,6 +62,24 @@ Archive:
 - [Final sign-off record](./10-webfetch-phase-5-validation.md)
 
 Re-run when changing WebFetch request validation, consent flow, background fetch behavior, response shaping, dispatcher integration, or the WebFetch AI Dungeon suite scripts.
+
+### Phase 6 - Clock
+
+Archive:
+
+- [13 - Clock AI Dungeon Test Suite](./13-clock-ai-dungeon-test-suite.md)
+- [Archived files](./archive/phase-6-clock-test-suite/README.md)
+
+Re-run when changing Clock ops behavior, response shaping, heartbeat advertisement, dispatcher integration, or the Clock AI Dungeon suite scripts.
+
+### Weather
+
+Archive:
+
+- [14 - Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md)
+- [Archived files](./archive/phase-7-weather-test-suite/README.md)
+
+Re-run when changing Weather ops behavior, response shaping, upstream normalization, dispatcher integration, or the Weather AI Dungeon suite scripts.
 
 ## Maintenance Rules
 
