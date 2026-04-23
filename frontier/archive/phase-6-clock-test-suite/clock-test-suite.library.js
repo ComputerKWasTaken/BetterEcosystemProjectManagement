@@ -356,7 +356,6 @@ function clkValidNowResponse(result) {
     typeof result.ts === 'number' &&
     typeof result.iso === 'string' &&
     typeof result.timeZone === 'string' &&
-    typeof result.systemTimeZone === 'string' &&
     typeof result.offsetMinutes === 'number' &&
     typeof result.offset === 'string' &&
     typeof result.local === 'string' &&
