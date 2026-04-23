@@ -13,8 +13,11 @@
 | 04 | [Implementation Plan](./04-implementation-plan.md) | Phase order, file-by-file breakdown, V2 release coordination |
 | 05 | [Risks & Open Questions](./05-risks-and-open-questions.md) | Tracked risks, unresolved decisions, follow-up work |
 | 06 | [Full Frontier Protocol](./06-full-frontier-protocol.md) | Two-way envelope protocol, request/response schemas, GC, idempotency (Phase 4) |
-| 07 | [Scripture AI Dungeon Test Suite](./07-scripture-ai-dungeon-test-suite.md) | Paste-ready live test harness + manual checklist for Scripture behavior |
-| 08 | [Full Frontier AI Dungeon Test Suite](./08-full-frontier-ai-dungeon-test-suite.md) | Paste-ready live test harness + manual checklist for the Phase 4 ops channel |
+| 07 | [Scripture Test Suite Archive](./07-scripture-ai-dungeon-test-suite.md) | Completed Phase 3 validation summary + archived paste-ready suite |
+| 08 | [Full Frontier Test Suite Archive](./08-full-frontier-ai-dungeon-test-suite.md) | Completed Phase 4 validation summary + archived paste-ready suite |
+| 09 | [WebFetch Test Suite Archive](./09-webfetch-ai-dungeon-test-suite.md) | Completed Phase 5 validation summary + archived paste-ready suite |
+| 10 | [WebFetch Phase 5 Validation](./10-webfetch-phase-5-validation.md) | Final sign-off record for hardened WebFetch |
+| 11 | [Frontier Test Suites](./11-test-suites.md) | Active-vs-archived test-suite index and rerun policy |
 
 ## One-paragraph summary
 
@@ -31,12 +34,18 @@
 - [x] Phase 2 — Core dispatcher + Module Registry hardening (state-card dispatch, enable/disable persistence, ctx API, debug mode)
 - [x] Phase 3 — Scripture module (state-only reference). Live AI Dungeon Scripture suite passed 10/10 on 2026-04-22.
 - [x] Phase 4 — Full Frontier envelope protocol. Live AI Dungeon Full Frontier suite passed, including reload-mid-pending, on 2026-04-22.
-- [ ] Phases 5–6 — WebFetch + Clock modules
+- [x] Phase 5 — WebFetch module. Live AI Dungeon suite passed, including denied-origin consent, on 2026-04-23.
+- [ ] Phase 6 — Clock module
 - [ ] Phases 7–10 — feature manager, UI filtering, guide rewrites, release
 
 ## Current focus
 
-Phase 4 is closed. Current work is **Phase 5 - WebFetch module**, the first real ops module on top of the Full Frontier channel.
+Phase 5 is closed. Current work is **Phase 6 - Clock module**, the small deterministic ops reference that follows WebFetch.
+
+## Test suites
+
+- Latest completed sign-off: [Phase 5 WebFetch](./09-webfetch-ai-dungeon-test-suite.md) and [its final validation record](./10-webfetch-phase-5-validation.md).
+- Archived regression suites: [Phase 3 Scripture](./07-scripture-ai-dungeon-test-suite.md), [Phase 4 Full Frontier](./08-full-frontier-ai-dungeon-test-suite.md), and [Phase 5 WebFetch](./09-webfetch-ai-dungeon-test-suite.md).
 
 ## Design principles
 

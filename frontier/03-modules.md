@@ -467,9 +467,12 @@ function scriptureSet(widgets) {
 ```js
 // === WebFetch (Frontier HTTP Module) ==========================================
 // Usage:
+//   // WebFetch v1 is safe-method-only: GET, HEAD, OPTIONS.
 //   frontierCall('webfetch', 'fetch', { url: 'https://api.example.com/data' })
 //     .then(response => { /* ... */ })
 //     .catch(error => { /* ... */ });
+//   frontierCall('webfetch', 'search', { query: 'AI Dungeon Frontier' })
+//     .then(result => { /* ... */ });
 
 // No specific script-side state or functions needed beyond frontierCall.
 // The module is primarily used via the generic frontierCall API.
@@ -513,12 +516,12 @@ const modifier = (text) => {
     { id: 'gold',   type: 'stat', label: 'Gold', value: state.game.gold,                            align: 'right' },
   ]);
 
-  // 3. Example of calling an ops module.
-  if (state.game.hp < 20 && !state.game.warnedLowHp) {
-    frontierCall('webfetch', 'fetch', { url: 'https://api.example.com/notify-low-hp' })
-      .then(res => console.log('Low HP notification sent:', res))
-      .catch(err => console.error('Failed to send low HP notification:', err));
-    state.game.warnedLowHp = true;
+  // 3. Example of calling a safe ops module.
+  if (state.game.hp < 20 && !state.game.lookedUpPotionHint) {
+    frontierCall('webfetch', 'search', { query: 'fantasy healing potion ideas' })
+      .then(res => console.log('Potion hint search:', res))
+      .catch(err => console.error('Potion hint search failed:', err));
+    state.game.lookedUpPotionHint = true;
   }
 
   return { text };

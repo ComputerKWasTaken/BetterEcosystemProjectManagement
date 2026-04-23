@@ -128,7 +128,7 @@ The substrate modules plug into. Router, heartbeat, lifecycle, shared `ctx` API.
 
 The first real module. Reference implementation for state-only modules (no ops).
 
-**Status:** *completed 2026-04-22*. Scripture is implemented as a Frontier state-only module, legacy BetterScripts is removed from the extension load path, static checks pass, and the live AI Dungeon Scripture suite passed all 10 behavior checks. See [07 - Scripture AI Dungeon Test Suite](./07-scripture-ai-dungeon-test-suite.md).
+**Status:** *completed 2026-04-22*. Scripture is implemented as a Frontier state-only module, legacy BetterScripts is removed from the extension load path, static checks pass, and the live AI Dungeon Scripture suite passed all 10 behavior checks. See [07 - Scripture Test Suite Archive](./07-scripture-ai-dungeon-test-suite.md).
 
 **Files:**
 - `modules/scripture/module.js` (new)
@@ -156,7 +156,7 @@ The first real module. Reference implementation for state-only modules (no ops).
 
 The two-way breakthrough. Design specified in [06 — Full Frontier protocol](./06-full-frontier-protocol.md).
 
-**Status:** *completed 2026-04-22*. The first vertical slice is implemented: envelope helpers, ops dispatcher, Core wiring, `ctx.respond` / `ctx.respondError`, heartbeat ops advertisement, and the built-in opt-in `test.echo` validation module. Static syntax checks pass, local dispatcher simulations pass, the live AI Dungeon Full Frontier suite reached `checksPass: true` on run `full-mo9ejlzk`, and the manual `ff delay` reload-mid-pending check passed. See [08 - Full Frontier AI Dungeon Test Suite](./08-full-frontier-ai-dungeon-test-suite.md).
+**Status:** *completed 2026-04-22*. The first vertical slice is implemented: envelope helpers, ops dispatcher, Core wiring, `ctx.respond` / `ctx.respondError`, heartbeat ops advertisement, and the built-in opt-in `test.echo` validation module. Static syntax checks pass, local dispatcher simulations pass, the live AI Dungeon Full Frontier suite reached `checksPass: true` on run `full-mo9ejlzk`, and the manual `ff delay` reload-mid-pending check passed. See [08 - Full Frontier Test Suite Archive](./08-full-frontier-ai-dungeon-test-suite.md).
 
 **Files:**
 - `services/frontier/envelope.js` (new — request/response schemas + request-id generator + GC policies)
@@ -168,7 +168,7 @@ The two-way breakthrough. Design specified in [06 — Full Frontier protocol](./
 - `main.js` (edit: start ops dispatcher after registry startup)
 - `06-full-frontier-protocol.md` (new)
 - AI-Dungeon-side Library additions: `frontierCall`, `frontierPoll`, `frontierPollAll`, tombstone-on-read semantics
-- `08-full-frontier-ai-dungeon-test-suite.md` + paste-ready suite scripts (new)
+- `08-full-frontier-ai-dungeon-test-suite.md` + archived paste-ready suite scripts
 
 **Work:**
 
@@ -187,23 +187,31 @@ The two-way breakthrough. Design specified in [06 — Full Frontier protocol](./
 
 The canonical two-way demo. "Scripts can now hit the internet."
 
+**Status:** *completed 2026-04-23*. WebFetch is wired as the first real Full Frontier ops module with safe-method `fetch` and `search` ops, origin consent prompts, fail-closed consent checks, per-origin rate limiting, blocked local/private schemes and hosts, request/response header filtering, a streaming body cap in the background fetch worker, and a paste-ready live AI Dungeon test suite. Local syntax checks and module simulations passed first; then live AI Dungeon validation passed on 2026-04-23, including the denied-origin consent check. See [09 - WebFetch Test Suite Archive](./09-webfetch-ai-dungeon-test-suite.md) and [10 - WebFetch Phase 5 Validation](./10-webfetch-phase-5-validation.md).
+
 **Files:**
 - `modules/webfetch/module.js` (new)
 - `modules/webfetch/consent.js` (new)
-- `popup.html` / `popup.js` (edit: WebFetch allowlist UI)
+- `background.js` (new: privileged http/https fetch worker)
+- `manifest.json` (edit: background worker, http/https host permissions, WebFetch load order)
+- `09-webfetch-ai-dungeon-test-suite.md` + archived paste-ready suite scripts
+- `10-webfetch-phase-5-validation.md` (new: Phase 5 sign-off checklist)
+- `popup.html` / `popup.js` (later edit: WebFetch allowlist UI)
 
 **Work:**
 
-1. **`ops: { fetch(args, ctx) }`**. Args: `{ url, method?, headers?, body?, timeoutMs? }`. Returns `{ status, statusText, headers, body }`. Binary bodies base64-encoded (detected via `Content-Type`); text otherwise.
-2. **Consent model.** First request to a new origin surfaces a consent prompt. User picks allow-once / allow-always / deny. Allowlist persisted in `chrome.storage.sync` under `frontier_webfetch_allowlist`.
+1. **`ops: { fetch(args, ctx), search(args, ctx) }`**. Fetch args: `{ url, method?, headers?, timeoutMs?, maxBodyBytes? }`, with v1 restricted to `GET`, `HEAD`, and `OPTIONS`. Returns `{ status, statusText, headers, body, bodyEncoding, truncated }`. Binary bodies are base64-encoded; text-like bodies are UTF-8 text. Search uses DuckDuckGo's instant-answer endpoint and returns a compact result object.
+2. **Consent model.** First request to a new origin surfaces an in-page consent prompt. User picks allow-once / allow-always / deny. Allowlist persisted in `chrome.storage.sync` under `frontier_webfetch_allowlist`.
 3. **Rate limits.** Per-origin: configurable RPM, default 20/min. Over-limit requests return `err: rate_limit` with a `retryAfterMs` hint.
-4. **Security.** Block `file://`, `chrome-extension://`, `chrome://`, localhost variants. Strip `Cookie` / `Authorization` headers unless explicitly upgraded for that origin.
+4. **Security.** Block `file://`, `chrome-extension://`, `chrome://`, localhost variants, `.localhost`, `.local`, private IPv4 literals, and obvious local/private IPv6 literals. Strip `Cookie` / `Authorization` headers unless explicitly upgraded for that origin.
 
 **Acceptance:**
-- Script calls `frontier.call('webfetch', 'fetch', { url: 'https://httpbin.org/get' })` and receives the JSON response envelope within one turn.
-- Denying consent causes all subsequent requests to that origin to fail fast with `err: consent_denied`.
-- 30 rapid requests to one origin: first 20 succeed, remaining receive `err: rate_limit` with a valid `retryAfterMs`.
-- Requests to blocked schemes return `err: scheme_blocked` without touching the network.
+- [x] Script calls `frontier.call('webfetch', 'fetch', { url: 'https://httpbin.org/get' })` and receives the JSON response envelope within one turn.
+- [x] Denying consent causes all subsequent requests to that origin to fail fast with `err: consent_denied`.
+- [x] 30 rapid requests to one origin: first 20 succeed, remaining receive `err: rate_limit` with a valid `retryAfterMs`. (Validated locally; live suite covered the normal WebFetch path.)
+- [x] Requests to blocked schemes return `err: scheme_blocked` without touching the network.
+- [x] Side-effectful methods and request bodies return `err: invalid_args` without touching the network.
+- [x] Script calls `frontier.call('webfetch', 'search', { query: 'AI Dungeon Frontier' })` and receives an ok search response.
 
 ### Phase 6 — Clock module (trivial ops reference)
 
