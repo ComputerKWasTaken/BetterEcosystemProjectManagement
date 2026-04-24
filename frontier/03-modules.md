@@ -528,6 +528,32 @@ function scriptureSet(widgets) {
 // The module is primarily used via the generic frontierCall API.
 ```
 
+### Network Library adapter (pasted after the base Library)
+
+```js
+// === Network (Frontier Connectivity Module) ==================================
+// Usage:
+//   frontierCall('network', 'status')
+//     .then(status => console.log(status.online, status.quality));
+
+// No specific script-side state or functions needed beyond frontierCall.
+// The module is primarily used via the generic frontierCall API.
+```
+
+### System Library adapter (pasted after the base Library)
+
+```js
+// === System (Frontier Device/Environment Module) =============================
+// Usage:
+//   frontierCall('system', 'info')
+//     .then(info => console.log(info.deviceClass, info.platform.family));
+//   frontierCall('system', 'power')
+//     .then(power => console.log(power.supported, power.state, power.levelPercent));
+
+// No specific script-side state or functions needed beyond frontierCall.
+// The module is primarily used via the generic frontierCall API.
+```
+
 ### Example full scenario flow
 
 ```js
@@ -536,6 +562,7 @@ function scriptureSet(widgets) {
 // (paste Scripture adapter here)
 // (paste WebFetch adapter here)
 // (paste Clock adapter here)
+// (paste System adapter here if using environment hints)
 
 state.game = state.game ?? { hp: 100, gold: 0 };
 ```

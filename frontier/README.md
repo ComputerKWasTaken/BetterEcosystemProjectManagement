@@ -21,10 +21,14 @@
 | 12 | [OS Capabilities Roadmap](./12-os-capabilities-roadmap.md) | Expanded capability map for OS-adjacent modules, AI bridges, and the future BD SDK surface |
 | 13 | [Clock AI Dungeon Test Suite](./13-clock-ai-dungeon-test-suite.md) | Archived live sign-off summary for Phase 6 / Clock |
 | 14 | [Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md) | Archived live sign-off summary for Weather |
+| 15 | [Network AI Dungeon Test Suite](./15-network-ai-dungeon-test-suite.md) | Archived live sign-off summary for Network |
+| 16 | [System AI Dungeon Test Suite](./16-system-ai-dungeon-test-suite.md) | Archived live sign-off summary for System |
+| 17 | [Provider AI Phase Plan](./17-provider-ai-phase-plan.md) | Deferred plan for hosted-model AI bridge work |
+| 18 | [Phase 7 Kickoff](./18-phase-7-kickoff.md) | Current feature-manager and popup integration scope |
 
 ## One-paragraph summary
 
-**Frontier** is a standardized, cards-only communication channel between AI Dungeon scripts (sandboxed) and BetterDungeon (browser-privileged). Scripts publish module-specific state to reserved `frontier:state:*` story cards; BD reads them via a WebSocket interceptor and renders or acts on them. Modules may also declare ops - scripts enqueue requests on a `frontier:out` card and BD writes responses to per-module `frontier:in:<module>` cards. V2 ships the full two-way platform along with three first-party modules: **Scripture** (widgets, state-only), **WebFetch** (HTTP requests from the sandbox), and **Clock** (real-world time). Widget state uses a **live-count history** pattern so undo / retry / continue / edit all "just work" without the script doing anything special. The whole system rides on AI Dungeon's native story-card + subscription wire, including the write path - Core reuses captured GraphQL mutation templates via deep-override replay, sidestepping auth / endpoint / CSRF concerns entirely.
+**Frontier** is a standardized, cards-only communication channel between AI Dungeon scripts (sandboxed) and BetterDungeon (browser-privileged). Scripts publish module-specific state to reserved `frontier:state:*` story cards; BD reads them via a WebSocket interceptor and renders or acts on them. Modules may also declare ops - scripts enqueue requests on a `frontier:out` card and BD writes responses to per-module `frontier:in:<module>` cards. V2 ships the full two-way platform and a growing first-party module set: **Scripture** (widgets, state-only), **WebFetch** (safe web access), **Clock** (real-world time), **Geolocation**, **Weather**, **Network**, and **System**. Widget state uses a **live-count history** pattern so undo / retry / continue / edit all "just work" without the script doing anything special. The whole system rides on AI Dungeon's native story-card + subscription wire, including the write path - Core reuses captured GraphQL mutation templates via deep-override replay, sidestepping auth / endpoint / CSRF concerns entirely.
 
 ## Status
 
@@ -39,16 +43,21 @@
 - [x] Phase 4 - Full Frontier envelope protocol. Live AI Dungeon Full Frontier suite passed, including reload-mid-pending, on 2026-04-22.
 - [x] Phase 5 - WebFetch module. Live AI Dungeon suite passed, including denied-origin consent, on 2026-04-23.
 - [x] Phase 6 - Clock module. Live AI Dungeon suite passed on 2026-04-23.
-- [ ] Phases 7-10 - feature manager, UI filtering, guide rewrites, release
+- [x] Weather module. Live AI Dungeon suite passed on 2026-04-23.
+- [x] Network module. Live AI Dungeon suite passed on 2026-04-24.
+- [x] System module. Live AI Dungeon suite passed on 2026-04-24.
+- [ ] Phase 7 - feature manager + popup integration
+- [ ] Phases 8-10 - UI filtering, guide rewrites, release
 
 ## Current focus
 
-Phase 6 is closed. Geolocation has landed locally with `permission` and `getCurrent` ops, and Weather has now passed live validation in [14 - Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md). The next likely path is **Network**, **System**, then the bigger **AI bridge** work (`providerAI` / `localAI`). See [12 - OS Capabilities Roadmap](./12-os-capabilities-roadmap.md) for the accepted directions, the future `bd.sdk` concept, and the ideas that were deliberately cut.
+Phase 6 and the lightweight capability-module run are closed: Clock, Geolocation, Weather, Network, and System are all implemented, with live sign-off suites archived for Clock, Weather, Network, and System. The current work is **Phase 7 - Feature Manager + popup integration**, tracked in [18 - Phase 7 Kickoff](./18-phase-7-kickoff.md). Provider AI and LocalAI remain parked as later flagship work; keep the plan in [17 - Provider AI Phase Plan](./17-provider-ai-phase-plan.md), but do not treat it as the active implementation lane.
 
 ## Test suites
 
-- Latest completed live sign-off: [Weather](./14-weather-ai-dungeon-test-suite.md), before that [Clock](./13-clock-ai-dungeon-test-suite.md).
-- Archived regression suites: [Phase 3 Scripture](./07-scripture-ai-dungeon-test-suite.md), [Phase 4 Full Frontier](./08-full-frontier-ai-dungeon-test-suite.md), [Phase 5 WebFetch](./09-webfetch-ai-dungeon-test-suite.md), [Phase 6 Clock](./13-clock-ai-dungeon-test-suite.md), and [Weather](./14-weather-ai-dungeon-test-suite.md).
+- No active live sign-off suite at the moment.
+- Latest completed live sign-off: [System](./16-system-ai-dungeon-test-suite.md), before that [Network](./15-network-ai-dungeon-test-suite.md), [Weather](./14-weather-ai-dungeon-test-suite.md), and [Clock](./13-clock-ai-dungeon-test-suite.md).
+- Archived regression suites: [Phase 3 Scripture](./07-scripture-ai-dungeon-test-suite.md), [Phase 4 Full Frontier](./08-full-frontier-ai-dungeon-test-suite.md), [Phase 5 WebFetch](./09-webfetch-ai-dungeon-test-suite.md), [Phase 6 Clock](./13-clock-ai-dungeon-test-suite.md), [Weather](./14-weather-ai-dungeon-test-suite.md), [Network](./15-network-ai-dungeon-test-suite.md), and [System](./16-system-ai-dungeon-test-suite.md).
 
 ## Design principles
 

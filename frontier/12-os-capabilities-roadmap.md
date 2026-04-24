@@ -323,33 +323,31 @@ This is the local-endpoint path: Ollama, LM Studio, local OpenAI-compatible serv
 
 Robyn is especially interested in this area, so it makes sense to hold deeper LocalAI design work until she is in the room.
 
-## Practical direction after Clock
+## Practical direction after the simple modules
 
-Now that Clock is done, the best sequence looks like:
+Clock, Weather, Network, and System are done. Geolocation has landed locally. The simple, generally useful OS-adjacent modules have earned their place and are no longer the active planning focus.
 
-1. Build `geolocation`.
-2. Add `weather` as the first streamlined real-world helper module.
-3. Add `network`.
-4. Add `system` as the environment-awareness support module.
-5. Move hard toward AI bridges, starting with `providerAI`.
-6. Revisit `localAI` with Robyn involved.
-7. Fold in a stable `bd.sdk` surface once there are enough BD-side capabilities to make that abstraction worthwhile.
+The best immediate sequence is:
+
+1. Return to the V2 integration path with Phase 7 Feature Manager + popup integration.
+2. Finish reserved-card UI filtering.
+3. Update public-facing guides and release docs.
+4. Revisit AI bridges after the V2 plumbing is in a healthier product shape.
 
 ## Recommendation
 
 My current recommendation is:
 
-1. Build `geolocation`.
-2. Build `weather`.
-3. Build `network`.
-4. Build `system`.
-5. Treat `providerAI` as the first major flagship after those.
-6. Treat `localAI` as a planned high-priority follow-on once we do the design with Robyn.
-7. Treat `bd.sdk` as a future cross-cutting helper surface, not a raw internal-class escape hatch.
+1. Treat Phase 7 as the active work.
+2. Keep `providerAI` and `localAI` documented but deferred.
+3. Bring `providerAI` back after the popup/settings plumbing is solid.
+4. Bring `localAI` back after the Robyn design pass.
+5. Treat `bd.sdk` as a future cross-cutting helper surface, not a raw internal-class escape hatch.
 
 That keeps the roadmap grounded in real script-author value:
 
 - first, real-world context
 - then, polished common-use helpers
 - then, environment awareness
+- then, product integration
 - then, the huge selling-point AI bridge work

@@ -236,12 +236,15 @@ Standard BD plumbing, expanded for the module catalog.
 - `popup.html` / `popup.js` (edit)
 - `main.js` (edit)
 
+**Status:** *active*. The simple module run is closed; Phase 7 is now the current Frontier lane.
+
 **Work:**
 
 1. Register Frontier as a top-level managed feature. `init` boots Core; `destroy` tears down Core + all modules cleanly.
 2. Popup UI:
    - Frontier master toggle.
-   - Per-module toggles: Scripture, WebFetch, Clock.
+   - Per-module toggles: Scripture, WebFetch, Clock, Geolocation, Weather, Network, System.
+   - Keep the internal `test` module hidden or development-only.
    - WebFetch permissions panel (per-origin allowlist from Phase 5).
    - Debug mode toggle.
 3. Chrome message types: `SET_FRONTIER_DEBUG`, `SET_FRONTIER_MODULE_ENABLED`, `GET_FRONTIER_STATE`, `SET_WEBFETCH_CONSENT`.
@@ -362,6 +365,10 @@ Optional but recommended: a minimal harness scenario committed to a private Bett
 | `modules/webfetch/module.js` | 5 | WebFetch ops module |
 | `modules/webfetch/consent.js` | 5 | Per-origin consent + allowlist |
 | `modules/clock/module.js` | 6 | Clock ops module (now / tz / format) |
+| `modules/geolocation/module.js` | post-Clock | Browser geolocation permission/status and current-location ops |
+| `modules/weather/module.js` | post-Clock | Open-Meteo current-weather and forecast ops |
+| `modules/network/module.js` | post-Clock | Browser online/offline and connection-hint ops |
+| `modules/system/module.js` | post-Clock | Coarse device, browser, locale, display, hardware, and power hints |
 | `06-full-frontier-protocol.md` | 4 | Envelope protocol, request-id scheme, GC, idempotency spec |
 | `BetterRepository/src/components/guides/ScriptureGuide.vue` | 9 | Scripture module guide |
 | `BetterRepository/src/components/guides/WebFetchGuide.vue` | 9 | WebFetch module guide |

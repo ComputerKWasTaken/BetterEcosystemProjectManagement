@@ -4,14 +4,18 @@ This page tracks which live AI Dungeon suites are active, which are archived, an
 
 ## Current Status
 
-There is no new active live sign-off suite at the moment. The most recent completed sign-off is:
+There is no active live sign-off suite at the moment.
 
-- [14 - Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md)
+The most recent completed sign-off is:
+
+- [16 - System AI Dungeon Test Suite](./16-system-ai-dungeon-test-suite.md)
+- before that, [15 - Network AI Dungeon Test Suite](./15-network-ai-dungeon-test-suite.md)
+- before that, [14 - Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md)
 - before that, [13 - Clock AI Dungeon Test Suite](./13-clock-ai-dungeon-test-suite.md)
 - before that, [09 - WebFetch Test Suite Archive](./09-webfetch-ai-dungeon-test-suite.md)
 - and [10 - WebFetch Phase 5 Validation](./10-webfetch-phase-5-validation.md)
 
-Clock is complete. Geolocation has landed locally. Weather is complete. The likely next implementation target is Network, but it does not have its own AI Dungeon harness yet.
+Clock is complete. Geolocation has landed locally. Weather is complete. Network is complete. System is complete. The current work is Phase 7 Feature Manager + popup integration, which does not have a live AI Dungeon paste suite yet.
 
 ## Most Recent Completed Suite
 
@@ -32,6 +36,24 @@ Latest completed suite:
 - [Archived files](./archive/phase-7-weather-test-suite/README.md)
 
 Re-run this suite while changing Weather ops behavior, response shaping, upstream normalization, heartbeat advertisement, or the Weather AI Dungeon harness itself.
+
+### Network
+
+Latest completed suite:
+
+- [15 - Network AI Dungeon Test Suite](./15-network-ai-dungeon-test-suite.md)
+- [Archived files](./archive/phase-8-network-test-suite/README.md)
+
+Re-run this suite while changing Network ops behavior, response shaping, heartbeat advertisement, or the Network AI Dungeon harness itself.
+
+### System
+
+Latest completed suite:
+
+- [16 - System AI Dungeon Test Suite](./16-system-ai-dungeon-test-suite.md)
+- [Archived files](./archive/phase-9-system-test-suite/README.md)
+
+Re-run this suite while changing System ops behavior, response shaping, heartbeat advertisement, or the System AI Dungeon harness itself.
 
 ## Completed Archives
 
@@ -80,6 +102,24 @@ Archive:
 - [Archived files](./archive/phase-7-weather-test-suite/README.md)
 
 Re-run when changing Weather ops behavior, response shaping, upstream normalization, dispatcher integration, or the Weather AI Dungeon suite scripts.
+
+### Network
+
+Archive:
+
+- [15 - Network AI Dungeon Test Suite](./15-network-ai-dungeon-test-suite.md)
+- [Archived files](./archive/phase-8-network-test-suite/README.md)
+
+Re-run when changing Network ops behavior, response shaping, heartbeat advertisement, dispatcher integration, or the Network AI Dungeon suite scripts.
+
+### System
+
+Archive:
+
+- [16 - System AI Dungeon Test Suite](./16-system-ai-dungeon-test-suite.md)
+- [Archived files](./archive/phase-9-system-test-suite/README.md)
+
+Re-run when changing System ops behavior, response shaping, heartbeat advertisement, dispatcher integration, or the System AI Dungeon suite scripts.
 
 ## Maintenance Rules
 
