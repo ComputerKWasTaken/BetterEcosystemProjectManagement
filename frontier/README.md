@@ -24,7 +24,8 @@
 | 15 | [Network AI Dungeon Test Suite](./15-network-ai-dungeon-test-suite.md) | Archived live sign-off summary for Network |
 | 16 | [System AI Dungeon Test Suite](./16-system-ai-dungeon-test-suite.md) | Archived live sign-off summary for System |
 | 17 | [Provider AI Phase Plan](./17-provider-ai-phase-plan.md) | Deferred plan for hosted-model AI bridge work |
-| 18 | [Phase 7 Kickoff](./18-phase-7-kickoff.md) | Current feature-manager and popup integration scope |
+| 18 | [Phase 7 Kickoff](./18-phase-7-kickoff.md) | Completed feature-manager and popup integration scope |
+| 19 | [Phase 8 Kickoff](./19-phase-8-kickoff.md) | Story Card DOM + GraphQL drift investigation scope |
 
 ## One-paragraph summary
 
@@ -46,12 +47,13 @@
 - [x] Weather module. Live AI Dungeon suite passed on 2026-04-23.
 - [x] Network module. Live AI Dungeon suite passed on 2026-04-24.
 - [x] System module. Live AI Dungeon suite passed on 2026-04-24.
-- [ ] Phase 7 - feature manager + popup integration
-- [ ] Phases 8-10 - UI filtering, guide rewrites, release
+- [x] Phase 7 - feature manager + popup integration
+- [ ] Phase 8 - Story Card DOM + GraphQL drift investigation
+- [ ] Phases 9-10 - guide rewrites, release
 
 ## Current focus
 
-Phase 6 and the lightweight capability-module run are closed: Clock, Geolocation, Weather, Network, and System are all implemented, with live sign-off suites archived for Clock, Weather, Network, and System. The current work is **Phase 7 - Feature Manager + popup integration**, tracked in [18 - Phase 7 Kickoff](./18-phase-7-kickoff.md). Provider AI and LocalAI remain parked as later flagship work; keep the plan in [17 - Provider AI Phase Plan](./17-provider-ai-phase-plan.md), but do not treat it as the active implementation lane.
+Phase 7 is closed: Frontier is managed through BetterDungeon's feature system and has its own popup tab with module toggles, richer module descriptions, WebFetch origin controls, debug mode, and live status. The current work is **Phase 8 - Story Card DOM + GraphQL drift investigation**, tracked in [19 - Phase 8 Kickoff](./19-phase-8-kickoff.md). AI Dungeon's new Story Card UI now provides native collapsible categories for custom types, so Phase 8 no longer starts with manual UI filtering. Provider AI and LocalAI remain parked as later flagship work; keep the plan in [17 - Provider AI Phase Plan](./17-provider-ai-phase-plan.md), but do not treat it as the active implementation lane.
 
 ## Test suites
 

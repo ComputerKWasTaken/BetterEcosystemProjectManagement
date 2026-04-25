@@ -236,7 +236,7 @@ Standard BD plumbing, expanded for the module catalog.
 - `popup.html` / `popup.js` (edit)
 - `main.js` (edit)
 
-**Status:** *active*. The simple module run is closed; Phase 7 is now the current Frontier lane.
+**Status:** *completed 2026-04-25*. Frontier is now managed through BetterDungeon's feature system and has its own popup tab with the module catalog, richer module descriptions, WebFetch origin controls, debug mode, and live status.
 
 **Work:**
 
@@ -251,17 +251,33 @@ Standard BD plumbing, expanded for the module catalog.
 
 **Acceptance:** Popup reflects and controls every toggle. Changes persist across reloads and propagate to Core within one tick. Heartbeat payload reflects enabled modules on every refresh.
 
-### Phase 8 — BD UI filtering
+### Phase 8 — Story Card DOM + GraphQL drift investigation
 
 **Files:**
-- `features/story_card_modal_dock_feature.js`, `story_card_analytics_feature.js`, `trigger_highlight_feature.js`, `auto_see_feature.js` (edit)
+- `Project Management/frontier/action-hunter.user.js` (edit)
+- `services/frontier/ws-interceptor.js`, `ws-stream.js`, `core.js`, `write-queue.js` (inspect; edit only if drift is confirmed)
+- `services/ai-dungeon-service.js` (inspect GraphQL mutation replay; edit only if mutation shape changed)
+- Frontier docs (update DOM assumptions and transport risks)
 
 **Work:**
 
-1. Each feature filters out cards where `isFrontierCard(card) === true` (helper lives in `ws-stream.js`).
-2. Prefix list is a single constant: `const FRONTIER_RESERVED_PREFIXES = ['frontier:', 'scripture:', 'bd:']`.
+1. Update `action-hunter.user.js` into a Phase 8 diagnostic harness:
+   - Capture the new Story Card tab DOM: selected tabs, search box, view controls, type category headers, expanded/collapsed state, visible card titles, and type badges.
+   - Capture every GraphQL operation name over fetch, XHR, and GraphQL WS, with Story Card operation samples called out separately.
+   - Capture Story Card mutation variable keys and response keys so we can detect `SaveQueueStoryCard` renames or shape drift.
+   - Add `__frontierActions.diagnoseHeartbeat()` to distinguish "heartbeat not visible in the new UI" from "heartbeat write path did not run".
+2. Document the new native AI Dungeon Story Card UI:
+   - Story Cards are now a dedicated section tab.
+   - Cards are grouped under collapsible type categories.
+   - Custom types, including `frontier`, get their own native category.
+   - Reserved Frontier cards no longer need BetterDungeon-side DOM filtering in AI Dungeon's native Story Card list.
+3. Investigate heartbeat injection failure:
+   - Confirm whether `SaveQueueStoryCard` is still emitted when editing/creating Story Cards.
+   - Confirm whether the mutation input still accepts `type: "frontier"`, `shortId`, `contentType`, `id`, `title`, `value`, `keys`, `description`, and `useForCharacterCreation`.
+   - Confirm whether the mutation response still returns a usable storyCard object or a field that `AIDungeonService._resolveResponseFieldName()` can resolve.
+   - Confirm whether `ws-stream.js` still learns the adventure `shortId` and mutation templates before Core schedules `frontier:heartbeat`.
 
-**Acceptance:** All reserved cards (`frontier:state:*`, `frontier:heartbeat`, `frontier:out`, `frontier:in:*`) are hidden from Story Card Modal Dock, Analytics, Trigger Highlight, and Auto-See. They remain visible in AI Dungeon's native Story Card list (per locked decision #7).
+**Acceptance:** `action-hunter.user.js` reports the new DOM categories and Story Card GraphQL operation names clearly. We know whether `frontier:heartbeat` is absent because of a UI move, missing mutation-template capture, a changed mutation name, changed variables, changed response shape, or a Core/write-queue timing issue. Any confirmed production drift gets a targeted fix before Phase 9.
 
 ### Phase 9 — Guide + docs rewrite
 
@@ -332,7 +348,7 @@ A regression checklist for all phases together. Run after Phase 1, then again af
 - [ ] Toggle Scripture off in popup; widgets disappear; heartbeat no longer advertises Scripture.
 - [ ] Toggle Frontier master off; no heartbeat written; scripture card changes are ignored.
 - [ ] Switch between adventures in separate tabs; widgets are scoped per adventure.
-- [ ] Reserved cards hidden from BD's own UI lists (Story Card Modal Dock, Analytics, Trigger Highlight, Auto-See).
+- [ ] BetterDungeon-owned story-card consumers ignore reserved Frontier cards where they would pollute user-facing lists, analytics, highlights, or automation.
 - [ ] `frontierIsAvailable()` returns correct boolean under (a) BD enabled, (b) BD disabled, (c) BD just loaded (no heartbeat yet), (d) stale heartbeat (>2 turns old — force by stopping Core temporarily).
 - [ ] **Multiplatform:** the above passes on Chromium, Gecko, and Android WebView.
 
@@ -385,10 +401,10 @@ Optional but recommended: a minimal harness scenario committed to a private Bett
 | `popup.html` / `popup.js` | 5, 7 | Frontier master toggle, per-module toggles, WebFetch allowlist panel, debug toggle |
 | `services/ai-dungeon-service.js` | 1 | Write queue integration; optimistic echo reconciliation |
 | `services/story-card-cache.js` | optional | Hydrate from ws-stream (non-breaking) |
-| `features/story_card_modal_dock_feature.js` | 8 | Filter reserved-prefix cards |
-| `features/story_card_analytics_feature.js` | 8 | Filter reserved-prefix cards |
-| `features/trigger_highlight_feature.js` | 8 | Filter reserved-prefix cards |
-| `features/auto_see_feature.js` | 8 | Filter reserved-prefix cards |
+| `features/story_card_modal_dock_feature.js` | audit | Ignore reserved-prefix cards if they would appear in BetterDungeon-owned lists |
+| `features/story_card_analytics_feature.js` | audit | Ignore reserved-prefix cards if they would skew analytics |
+| `features/trigger_highlight_feature.js` | audit | Ignore reserved-prefix cards if they would trigger highlights |
+| `features/auto_see_feature.js` | audit | Ignore reserved-prefix cards if they would affect automation |
 | `BetterRepository/src/components/guides/BetterScriptsGuide.vue` | 9 | Rename → `FrontierGuide.vue` + restructure for Full profile |
 | `BetterRepository/src/router/*` | 9 | Update routes for new guide set |
 | `Project Management/docs/01-scripting/api/story-cards-api.md` | 9 | Add reserved-prefix section |

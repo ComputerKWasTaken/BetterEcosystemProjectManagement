@@ -329,16 +329,15 @@ Clock, Weather, Network, and System are done. Geolocation has landed locally. Th
 
 The best immediate sequence is:
 
-1. Return to the V2 integration path with Phase 7 Feature Manager + popup integration.
-2. Finish reserved-card UI filtering.
-3. Update public-facing guides and release docs.
-4. Revisit AI bridges after the V2 plumbing is in a healthier product shape.
+1. Run Phase 8 as a Story Card DOM + GraphQL drift investigation. AI Dungeon's native collapsible type categories replaced the need for reserved-card DOM filtering.
+2. Update public-facing guides and release docs.
+3. Revisit AI bridges after the V2 plumbing is in a healthier product shape.
 
 ## Recommendation
 
 My current recommendation is:
 
-1. Treat Phase 7 as the active work.
+1. Treat Phase 8 as the active work.
 2. Keep `providerAI` and `localAI` documented but deferred.
 3. Bring `providerAI` back after the popup/settings plumbing is solid.
 4. Bring `localAI` back after the Robyn design pass.

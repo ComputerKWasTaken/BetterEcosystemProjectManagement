@@ -60,7 +60,7 @@ Live AI Dungeon tests:
 
 ## Current Status
 
-Deferred. Do not implement Provider AI during Phase 7. Keep this page as the shape of the future work so the idea does not get lost, but focus the active lane on Feature Manager + popup integration, UI filtering, guides, and release prep.
+Deferred. Do not implement Provider AI during Phase 8. Keep this page as the shape of the future work so the idea does not get lost, but focus the active lane on Story Card DOM + GraphQL drift investigation, guide work, and release prep.
 
 ## Future Next Step
 

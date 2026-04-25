@@ -112,7 +112,7 @@ Every AI Dungeon action in the `actionWindow` subscription carries a stable `id`
 - **WebFetch module (Phase 5):** HTTP requests from the sandbox, per-origin consent flow, rate limits, scheme allowlist. The canonical two-way demo.
 - **Clock module (Phase 6):** real-world `now` / `tz` / `format` ops. Tiny, marketable, validates the ops shape on a minimal module.
 - **Feature manager + popup (Phase 7):** Frontier master toggle, per-module toggles, WebFetch allowlist panel, debug mode.
-- **BD UI filtering (Phase 8):** hide `frontier:*`, `scripture:*`, `bd:*` cards from BD's own card-listing UIs.
+- **Story Card DOM + GraphQL drift investigation (Phase 8):** AI Dungeon now groups Story Cards by native collapsible type categories, including custom types like `frontier`. Instead of manual UI filtering, Phase 8 documents the new DOM and verifies the Story Card mutation path still supports heartbeat writes.
 - **Guide + docs rewrite (Phase 9):** `FrontierGuide.vue`, `ScriptureGuide.vue`, `WebFetchGuide.vue`, `ClockGuide.vue`. Full-profile coverage including ops examples. No ZW / TagCipher / Context Modifier content.
 - **Multiplatform smoke test (Phase 10):** verify on Chromium, Gecko, AND Android WebView before shipping `2.0.0`.
 
@@ -137,7 +137,7 @@ Six rounds of planning questions have produced the following commitments. Re-ope
 | 4 | **Action-ID history** for per-turn state that must track undo/retry. Scripts keep `{ [actionId]: values }` in their state card; BD looks up the current tail's entry. | Robyn's insight: AI Dungeon actions carry stable ids in the `actionWindow`. No invisible text needed; everything is in cards + subscriptions. |
 | 5 | **File layout: `services/frontier/` + `modules/scripture/`.** | Core is infrastructure (services); modules are semantically distinct from BD features (own top-level dir). |
 | 6 | **First-party modules only in V2.** Registry UI + sandboxed user scripts deferred. V2 ships Scripture + WebFetch + Clock; third-party trust model is a post-V2 epic. | Keeps V2 tractable while shaping the module interface so plugins can slot in later. |
-| 7 | **Hide `frontier:*` cards in BetterDungeon UI surfaces only.** AI Dungeon's native Story Card list is untouched. | Minimal intrusion. |
+| 7 | **Do not manually filter AI Dungeon's native Story Card list.** AI Dungeon now groups cards by type in native collapsible categories, including custom types. Frontier reserved cards may live in their own `frontier` category. | This keeps BetterDungeon out of brittle DOM filtering and lets the native UI organize custom transport cards for us. |
 | 8 | **Multiplatform by default.** Every design choice must work on Chromium, Gecko, AND Android WebView. Fallbacks documented inline. | BD V2 ships on all three; Frontier can't be the feature that breaks platform parity. |
 | 9 | **Phase ordering: transport → Core → Scripture → Full envelope → ops modules → polish.** Each phase has a standalone acceptance criterion; partial progress is always shippable if we need to cut scope under pressure. | Fastest path to visible, testable wins at each step. Scripture lands in Phase 3 (giving us a demo-able superset of Lite), Full Frontier in Phase 4 (unlocking ops modules), and WebFetch/Clock in 5–6 validate the envelope design with real modules. |
 | 10 | **No NPM / TypeScript / bundler migration.** Keep pure-JS, manifest-based content scripts. | Out of scope for this plan. Robyn's pitch is acknowledged but declined for now; re-open as a separate epic later. |

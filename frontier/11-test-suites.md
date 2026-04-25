@@ -15,7 +15,7 @@ The most recent completed sign-off is:
 - before that, [09 - WebFetch Test Suite Archive](./09-webfetch-ai-dungeon-test-suite.md)
 - and [10 - WebFetch Phase 5 Validation](./10-webfetch-phase-5-validation.md)
 
-Clock is complete. Geolocation has landed locally. Weather is complete. Network is complete. System is complete. The current work is Phase 7 Feature Manager + popup integration, which does not have a live AI Dungeon paste suite yet.
+Clock is complete. Geolocation has landed locally. Weather is complete. Network is complete. System is complete. The current work is Phase 8 Story Card DOM + GraphQL drift investigation, which uses the diagnostic hunter rather than a live AI Dungeon paste suite.
 
 ## Most Recent Completed Suite
 

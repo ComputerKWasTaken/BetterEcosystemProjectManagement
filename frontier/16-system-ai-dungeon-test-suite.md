@@ -29,6 +29,6 @@ Re-run this suite when changing System ops behavior, response shaping, heartbeat
 Current work after System points back to the core V2 integration path:
 
 - Phase 7 - Feature Manager + popup integration
-- Phase 8 - BD UI filtering
+- Phase 8 - Story Card DOM + GraphQL drift investigation
 - Phase 9 - guide and docs rewrite
 - Phase 10 - release prep

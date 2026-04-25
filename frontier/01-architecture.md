@@ -341,7 +341,9 @@ V2: a collapsible "Frontier" section containing:
 `services/story-card-cache.js` is currently populated by `story-card-scanner.js` scraping the DOM. In V2 we leave the cache's existing pathway untouched and additionally hydrate it from `ws-stream.js` when it fires. Full migration to ws-stream as the sole source of truth is a post-V2 follow-up.
 
 ### Other features that consume story cards
-`trigger_highlight_feature.js`, `story_card_modal_dock_feature.js`, `story_card_analytics_feature.js`, `auto_see_feature.js` — each gains a filter step that excludes reserved-prefix cards (`frontier:*`, `scripture:*`, `bd:*`) from their rendered lists. This is a small localized change per feature, centralized via `ws-stream.js#isFrontierCard`.
+Older Phase 8 planning assumed BetterDungeon would need to hide reserved Frontier cards from story-card UI surfaces. AI Dungeon's updated Story Card UI changed that calculus: cards are now grouped under native collapsible type categories, including custom types. A `frontier` card type naturally appears in its own category, so Phase 8 no longer starts with DOM filtering work.
+
+BetterDungeon features that consume story cards should still avoid treating reserved cards (`frontier:*`, `scripture:*`, `bd:*`) as author content when running analytics, trigger suggestions, or automation logic. That filtering belongs at the data-consumer layer, not as a native Story Card list DOM mutation.
 
 ## Why not a WebWorker or iframe?
 
@@ -351,3 +353,4 @@ V2: a collapsible "Frontier" section containing:
 ## Why not MutationObserver on the Story Cards UI?
 
 - The existing `story-card-scanner.js` already does this and suffers from virtualization, search-box state bugs, and coupling to DOM changes we don't control. The WebSocket stream is lossless, instant, and schema-stable.
+- Phase 8 does use DOM observation in `action-hunter.user.js`, but only as a diagnostic map of AI Dungeon's updated Story Card UI. It is not a runtime filtering strategy.

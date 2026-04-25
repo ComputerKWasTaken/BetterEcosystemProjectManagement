@@ -17,7 +17,7 @@ Story cards whose `title` matches these prefixes are reserved and handled specia
 | `scripture:*` | (reserved) | Unused; reserved for future Scripture-internal extensions. |
 | `bd:*` | (reserved) | Reserved for BetterDungeon-internal use outside Frontier. |
 
-All reserved cards (including the unused Full-Frontier ones) are filtered out of BetterDungeon's own UI surfaces (see [01 — Architecture](./01-architecture.md#other-features-that-consume-story-cards)). AI Dungeon's native Story Card list still shows them.
+Reserved cards are part of the normal AI Dungeon Story Card substrate. AI Dungeon's updated native Story Card UI groups cards by type, so Frontier cards written with `type: "frontier"` appear under their own collapsible category instead of needing BetterDungeon-side DOM filtering. BetterDungeon data consumers should still ignore reserved prefixes when doing analytics, trigger suggestions, or automation logic so transport cards are not treated as author-facing world content.
 
 ## Card families in detail
 
