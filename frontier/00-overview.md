@@ -48,7 +48,7 @@ Frontier's implementation window is gated by BD V2's broader release timing. Bet
 ┌─────────────────────────────────────────────────────────────┐
 │ MODULES (one per capability)                                │
 │   Scripture (widgets, built-in, MVP)                        │
-│   (post-MVP) WebFetch, Clock, LocalAI, ...                  │
+│   WebFetch, Clock, Weather, System, Provider AI, ...        │
 ├─────────────────────────────────────────────────────────────┤
 │ FRONTIER CORE (Lite)                                        │
 │   Card-family routing, heartbeat emission,                  │
@@ -112,9 +112,10 @@ Every AI Dungeon action in the `actionWindow` subscription carries a stable `id`
 - **WebFetch module (Phase 5):** HTTP requests from the sandbox, per-origin consent flow, rate limits, scheme allowlist. The canonical two-way demo.
 - **Clock module (Phase 6):** real-world `now` / `tz` / `format` ops. Tiny, marketable, validates the ops shape on a minimal module.
 - **Feature manager + popup (Phase 7):** Frontier master toggle, per-module toggles, WebFetch allowlist panel, debug mode.
-- **Story Card DOM + GraphQL drift investigation (Phase 8):** AI Dungeon now groups Story Cards by native collapsible type categories, including custom types like `frontier`. Instead of manual UI filtering, Phase 8 documents the new DOM and verifies the Story Card mutation path still supports heartbeat writes.
-- **Guide + docs rewrite (Phase 9):** `FrontierGuide.vue`, `ScriptureGuide.vue`, `WebFetchGuide.vue`, `ClockGuide.vue`. Full-profile coverage including ops examples. No ZW / TagCipher / Context Modifier content.
-- **Multiplatform smoke test (Phase 10):** verify on Chromium, Gecko, AND Android WebView before shipping `2.0.0`.
+- **Story Card DOM + GraphQL drift investigation (Phase 8):** AI Dungeon now groups Story Cards by native collapsible type categories, including custom types like `frontier`. Phase 8 verified no Story Card GraphQL drift and fixed duplicate heartbeat timing.
+- **Provider AI (Phase 9):** OpenRouter-backed hosted-model calls for sidecar script reasoning, with BetterDungeon-held API keys and bounded request shapes.
+- **Guide + docs rewrite (Phase 10):** `FrontierGuide.vue`, `ScriptureGuide.vue`, `WebFetchGuide.vue`, `ClockGuide.vue`. Full-profile coverage including ops examples. No ZW / TagCipher / Context Modifier content.
+- **Multiplatform smoke test (Phase 11):** verify on Chromium, Gecko, AND Android WebView before shipping `2.0.0`.
 
 **Explicitly out of V2 (designed-for but not implemented):**
 
@@ -123,7 +124,7 @@ Every AI Dungeon action in the `actionWindow` subscription carries a stable `id`
 - **Third-party module registry UI.** Architecturally unblocked by Phase 4 but the UI and trust model are their own workstream.
 - **`story-card-scanner.js` cut-over.** Keep the existing DOM-scanner pathway; ws-stream can optionally hydrate the cache, but the scanner still runs. Full cut-over is a post-V2 follow-up.
 - **NPM / TypeScript / bundler migration** (per decision #10 below).
-- **Additional ops modules beyond WebFetch + Clock.** LocalAI, LocalStorage, Geolocation, Notify — each slots onto the Phase 4 substrate without Core changes, so they're incremental post-V2 additions.
+- **LocalAI and broader third-party AI surfaces.** Provider AI is now in V2 Phase 9; LocalAI remains deferred for the Robyn design pass.
 
 ## Locked-in decisions
 

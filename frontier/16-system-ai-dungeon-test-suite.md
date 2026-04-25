@@ -26,9 +26,8 @@ The System live suite is complete and archived. Keep this page as the stable poi
 
 Re-run this suite when changing System ops behavior, response shaping, heartbeat advertisement, dispatcher integration, or the System AI Dungeon suite scripts.
 
-Current work after System points back to the core V2 integration path:
+Current work after System and Phase 8 points to the first AI bridge:
 
-- Phase 7 - Feature Manager + popup integration
-- Phase 8 - Story Card DOM + GraphQL drift investigation
-- Phase 9 - guide and docs rewrite
-- Phase 10 - release prep
+- Phase 9 - Provider AI module
+- Phase 10 - guide and docs rewrite
+- Phase 11 - release prep

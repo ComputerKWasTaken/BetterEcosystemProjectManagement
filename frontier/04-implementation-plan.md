@@ -25,7 +25,7 @@ That unlocks the whole Full Frontier roadmap. Two-way comms becomes a ~40% scope
 
 ## Phase breakdown
 
-Ten phases. Each has an acceptance criterion; "done" means criterion met, verified in a real browser, and committed with a passing build. Phases 1–3 deliver a superset of the original Lite plan; phases 4–6 deliver Full Frontier and its first two ops modules; phases 7–10 are integration and release.
+Eleven phases. Each has an acceptance criterion; "done" means criterion met, verified in a real browser, and committed with a passing build. Phases 1-3 deliver a superset of the original Lite plan; phases 4-6 deliver Full Frontier and its first ops modules; phases 7-8 close the V2 integration substrate; Phase 9 adds Provider AI; phases 10-11 are guides and release.
 
 ### Phase 0 — Pre-work (closed)
 
@@ -253,6 +253,8 @@ Standard BD plumbing, expanded for the module catalog.
 
 ### Phase 8 — Story Card DOM + GraphQL drift investigation
 
+**Status:** *completed 2026-04-25*. AI Dungeon's updated Story Card UI still exposes native custom type categories, including `frontier`. `SaveQueueStoryCard` did not drift. The production issue was heartbeat timing: Core could write during the post-boundary / pre-hydration gap and create duplicate `frontier:heartbeat` cards. Fixed by deferring heartbeat until first Story Card hydration, targeting a canonical heartbeat card id, and archiving exact-title duplicates.
+
 **Files:**
 - `Project Management/frontier/action-hunter.user.js` (edit)
 - `services/frontier/ws-interceptor.js`, `ws-stream.js`, `core.js`, `write-queue.js` (inspect; edit only if drift is confirmed)
@@ -277,9 +279,35 @@ Standard BD plumbing, expanded for the module catalog.
    - Confirm whether the mutation response still returns a usable storyCard object or a field that `AIDungeonService._resolveResponseFieldName()` can resolve.
    - Confirm whether `ws-stream.js` still learns the adventure `shortId` and mutation templates before Core schedules `frontier:heartbeat`.
 
-**Acceptance:** `action-hunter.user.js` reports the new DOM categories and Story Card GraphQL operation names clearly. We know whether `frontier:heartbeat` is absent because of a UI move, missing mutation-template capture, a changed mutation name, changed variables, changed response shape, or a Core/write-queue timing issue. Any confirmed production drift gets a targeted fix before Phase 9.
+**Acceptance:** `action-hunter.user.js` reports the new DOM categories and Story Card GraphQL operation names clearly. We know whether `frontier:heartbeat` is absent because of a UI move, missing mutation-template capture, a changed mutation name, changed variables, changed response shape, or a Core/write-queue timing issue. Any confirmed production drift gets a targeted fix before Phase 9. **Completed:** no GraphQL drift; heartbeat duplication fixed in Core/write path.
 
-### Phase 9 — Guide + docs rewrite
+### Phase 9 — Provider AI module
+
+Hosted sidecar model calls through Frontier.
+
+**Files:**
+- `modules/provider-ai/module.js` (new)
+- `background.js` (edit: privileged provider calls with stored credentials)
+- `main.js` (edit: register module + message handlers)
+- `manifest.json` (edit: module load order and provider host permissions if needed)
+- `popup.html` / `popup.js` (edit: Provider AI key/status/defaults)
+- `Project Management/frontier/17-provider-ai-phase-plan.md` (active plan)
+- `Project Management/frontier/20-phase-9-provider-ai-kickoff.md` (kickoff)
+- `Project Management/frontier/21-provider-ai-ai-dungeon-test-suite.md` (new live suite, once implemented)
+
+**Work:**
+
+1. Verify current official OpenRouter API details and model-list behavior before coding.
+2. Implement `providerAI.chat`, `providerAI.models`, and `providerAI.testConnection`.
+3. Keep API keys in BetterDungeon storage / background worker only; scripts never receive secrets.
+4. Add strict request caps: message count, message length, total content length, max tokens, timeout, and per-adventure rate limits.
+5. Normalize responses: provider, model, assistant text, usage if available, finish reason if available, and raw provider metadata only if safe.
+6. Add popup settings for API key, enabled state, default model, and connection status.
+7. Add static / VM coverage and a paste-ready live AI Dungeon validation suite.
+
+**Acceptance:** Heartbeat advertises `providerAI.chat`, `providerAI.models`, and `providerAI.testConnection`. Missing key fails with `not_configured`; invalid/oversized requests fail with `invalid_args`; mocked provider success/error paths normalize cleanly; live `testConnection` and one short `chat` call succeed through `frontier:in:providerAI`.
+
+### Phase 10 — Guide + docs rewrite
 
 BetterRepository content overhaul for V2.
 
@@ -310,7 +338,7 @@ BetterRepository content overhaul for V2.
 
 **Acceptance:** BetterRepository site renders all four new guides with working TOC + code examples. No references to the legacy BetterScripts system remain.
 
-### Phase 10 — Release prep
+### Phase 11 — Release prep
 
 **Files:**
 - `manifest.json` (version: `1.2.x` → `2.0.0`)
@@ -385,10 +413,11 @@ Optional but recommended: a minimal harness scenario committed to a private Bett
 | `modules/weather/module.js` | post-Clock | Open-Meteo current-weather and forecast ops |
 | `modules/network/module.js` | post-Clock | Browser online/offline and connection-hint ops |
 | `modules/system/module.js` | post-Clock | Coarse device, browser, locale, display, hardware, and power hints |
+| `modules/provider-ai/module.js` | 9 | Hosted-model sidecar reasoning ops |
 | `06-full-frontier-protocol.md` | 4 | Envelope protocol, request-id scheme, GC, idempotency spec |
-| `BetterRepository/src/components/guides/ScriptureGuide.vue` | 9 | Scripture module guide |
-| `BetterRepository/src/components/guides/WebFetchGuide.vue` | 9 | WebFetch module guide |
-| `BetterRepository/src/components/guides/ClockGuide.vue` | 9 | Clock module guide |
+| `BetterRepository/src/components/guides/ScriptureGuide.vue` | 10 | Scripture module guide |
+| `BetterRepository/src/components/guides/WebFetchGuide.vue` | 10 | WebFetch module guide |
+| `BetterRepository/src/components/guides/ClockGuide.vue` | 10 | Clock module guide |
 | `Project Management/frontier/*` | ongoing | Planning docs |
 
 ### Modified files
@@ -405,9 +434,9 @@ Optional but recommended: a minimal harness scenario committed to a private Bett
 | `features/story_card_analytics_feature.js` | audit | Ignore reserved-prefix cards if they would skew analytics |
 | `features/trigger_highlight_feature.js` | audit | Ignore reserved-prefix cards if they would trigger highlights |
 | `features/auto_see_feature.js` | audit | Ignore reserved-prefix cards if they would affect automation |
-| `BetterRepository/src/components/guides/BetterScriptsGuide.vue` | 9 | Rename → `FrontierGuide.vue` + restructure for Full profile |
-| `BetterRepository/src/router/*` | 9 | Update routes for new guide set |
-| `Project Management/docs/01-scripting/api/story-cards-api.md` | 9 | Add reserved-prefix section |
+| `BetterRepository/src/components/guides/BetterScriptsGuide.vue` | 10 | Rename → `FrontierGuide.vue` + restructure for Full profile |
+| `BetterRepository/src/router/*` | 10 | Update routes for new guide set |
+| `Project Management/docs/01-scripting/api/story-cards-api.md` | 10 | Add reserved-prefix section |
 
 ### Deleted files
 
@@ -432,6 +461,6 @@ These were originally out-of-MVP; the write-path breakthrough moved them into sc
 5. **Inter-module calls** — modules invoking other module ops via Core. Shape mostly falls out of Phase 4; ergonomics pass is deferred.
 6. **Richer popup UI** — live state viewer, heartbeat inspector, request-log panel. Phase 7 ships the minimum; the rest waits for feedback.
 7. **Mobile APK parity testing automation** — once the APK pipeline is in place, automate the Android WebView smoke tests.
-8. **Additional modules** — Geolocation, Weather, Network, System, Provider AI (for example OpenRouter-backed), LocalAI, the future `bd.sdk` helper surface, and the long tail tracked in [12 - OS Capabilities Roadmap](./12-os-capabilities-roadmap.md). Earlier brainstorm items such as Notify, LocalStorage, Clipboard, Filesystem, Downloads, Share, Presence, and Speech are currently deprioritized or rejected for the turn-based Frontier use case. Each kept module is still an incremental addition on the Full Frontier substrate; none require Core changes.
+8. **Additional modules** — LocalAI, the future `bd.sdk` helper surface, and the long tail tracked in [12 - OS Capabilities Roadmap](./12-os-capabilities-roadmap.md). Provider AI is now promoted into Phase 9. Earlier brainstorm items such as Notify, LocalStorage, Clipboard, Filesystem, Downloads, Share, Presence, and Speech are currently deprioritized or rejected for the turn-based Frontier use case. Each kept module is still an incremental addition on the Full Frontier substrate; none require Core changes.
 
 All of these slot into the existing architecture without refactoring Core.

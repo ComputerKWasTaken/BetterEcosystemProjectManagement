@@ -15,7 +15,7 @@ The most recent completed sign-off is:
 - before that, [09 - WebFetch Test Suite Archive](./09-webfetch-ai-dungeon-test-suite.md)
 - and [10 - WebFetch Phase 5 Validation](./10-webfetch-phase-5-validation.md)
 
-Clock is complete. Geolocation has landed locally. Weather is complete. Network is complete. System is complete. The current work is Phase 8 Story Card DOM + GraphQL drift investigation, which uses the diagnostic hunter rather than a live AI Dungeon paste suite.
+Clock is complete. Geolocation has landed locally. Weather is complete. Network is complete. System is complete. Phase 8 is complete. The current work is Phase 9 Provider AI, which will need a new live AI Dungeon paste suite once the first OpenRouter-backed vertical slice is implemented.
 
 ## Most Recent Completed Suite
 

@@ -329,19 +329,18 @@ Clock, Weather, Network, and System are done. Geolocation has landed locally. Th
 
 The best immediate sequence is:
 
-1. Run Phase 8 as a Story Card DOM + GraphQL drift investigation. AI Dungeon's native collapsible type categories replaced the need for reserved-card DOM filtering.
+1. Implement Phase 9 Provider AI with an OpenRouter-backed vertical slice.
 2. Update public-facing guides and release docs.
-3. Revisit AI bridges after the V2 plumbing is in a healthier product shape.
+3. Revisit LocalAI after the Robyn design pass.
 
 ## Recommendation
 
 My current recommendation is:
 
-1. Treat Phase 8 as the active work.
-2. Keep `providerAI` and `localAI` documented but deferred.
-3. Bring `providerAI` back after the popup/settings plumbing is solid.
-4. Bring `localAI` back after the Robyn design pass.
-5. Treat `bd.sdk` as a future cross-cutting helper surface, not a raw internal-class escape hatch.
+1. Treat `providerAI` as the active Phase 9 work.
+2. Keep `localAI` documented but deferred for Robyn's design pass.
+3. Implement hosted Provider AI first because it proves the model-query shape without local inference setup complexity.
+4. Treat `bd.sdk` as a future cross-cutting helper surface, not a raw internal-class escape hatch.
 
 That keeps the roadmap grounded in real script-author value:
 

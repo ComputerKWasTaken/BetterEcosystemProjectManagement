@@ -1,6 +1,6 @@
 # 17 - Provider AI Phase Plan
 
-Provider AI is a deferred flagship Frontier capability after the V2 integration pass.
+Provider AI is the active Phase 9 Frontier capability after the Phase 8 Story Card / heartbeat cleanup.
 
 The goal is to let AI Dungeon scripts ask a hosted language model for sidecar reasoning without hijacking the story model or smuggling tool requests through story text.
 
@@ -60,8 +60,8 @@ Live AI Dungeon tests:
 
 ## Current Status
 
-Deferred. Do not implement Provider AI during Phase 8. Keep this page as the shape of the future work so the idea does not get lost, but focus the active lane on Story Card DOM + GraphQL drift investigation, guide work, and release prep.
+Active as Phase 9. Start with the smallest OpenRouter-backed vertical slice: configuration status, one chat call, normalized response, and a paste-ready live suite. Before implementation, verify the current official OpenRouter API details and model-list behavior.
 
-## Future Next Step
+## Next Step
 
-When this comes back into scope, implement the smallest OpenRouter-backed vertical slice: configuration status, one chat call, normalized response, and a paste-ready live suite.
+Implement the smallest OpenRouter-backed vertical slice: configuration status, one chat call, normalized response, popup key/status plumbing, and a paste-ready live suite.
