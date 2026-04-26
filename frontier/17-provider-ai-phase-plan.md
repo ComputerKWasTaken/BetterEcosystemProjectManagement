@@ -1,6 +1,6 @@
 # 17 - Provider AI Phase Plan
 
-Provider AI is the active Phase 9 Frontier capability after the Phase 8 Story Card / heartbeat cleanup.
+Provider AI is the completed Phase 9 Frontier capability after the Phase 8 Story Card / heartbeat cleanup.
 
 The goal is to let AI Dungeon scripts ask a hosted language model for sidecar reasoning without hijacking the story model or smuggling tool requests through story text.
 
@@ -8,11 +8,11 @@ The goal is to let AI Dungeon scripts ask a hosted language model for sidecar re
 
 Start with a conservative hosted-provider bridge:
 
-- `providerAI.chat({ provider, model, messages, temperature?, maxTokens?, responseFormat? })`
-- `providerAI.models({ provider? })`
-- `providerAI.testConnection({ provider })`
+- `providerAI.chat({ provider, model, messages, temperature?, maxTokens?, responseFormat?, stop?, timeoutMs? })`
+- `providerAI.models({ provider?, query?, limit?, timeoutMs? })`
+- `providerAI.testConnection({ provider?, timeoutMs? })`
 
-OpenRouter is the likely first provider because it gives access to many models through one user-supplied key. Before implementation, verify the current official provider API details and model-list behavior.
+OpenRouter is the first provider because it gives access to many models through one user-supplied key. The background bridge uses OpenRouter's OpenAI-compatible `/chat/completions` endpoint for chat calls, `/models` for model discovery, and `/key` for validating the stored key during `testConnection`.
 
 ## Product Rules
 
@@ -22,6 +22,8 @@ OpenRouter is the likely first provider because it gives access to many models t
 - Users should be able to disable Provider AI globally.
 - Start with strict request caps: max messages, max content length, max tokens, and per-origin/per-adventure rate limits.
 - Responses should include provider, model, usage if available, finish reason if available, and normalized message content.
+- `testConnection` should prove the saved key is valid before reporting success; model discovery alone is not enough because provider catalogs can be public.
+- `chat` is marked unsafe so a BetterDungeon reload cannot duplicate a paid model call.
 - No automatic story insertion. Scripts decide how to use the result.
 
 ## Architecture Sketch
@@ -39,6 +41,7 @@ Static and VM tests:
 - Missing key returns `not_configured`.
 - Invalid messages return `invalid_args`.
 - Oversized request returns `invalid_args`.
+- Connection test validates the configured key through the provider metadata endpoint.
 - Mocked provider success returns normalized assistant content.
 - Mocked provider error returns structured provider error.
 - Rate limit trips on repeated requests.
@@ -60,8 +63,15 @@ Live AI Dungeon tests:
 
 ## Current Status
 
-Active as Phase 9. Start with the smallest OpenRouter-backed vertical slice: configuration status, one chat call, normalized response, and a paste-ready live suite. Before implementation, verify the current official OpenRouter API details and model-list behavior.
+Completed on 2026-04-26. The OpenRouter-backed vertical slice is implemented and live-validated:
+
+- `providerAI.chat`
+- `providerAI.models`
+- `providerAI.testConnection` with `/key` validation plus model count
+- background-worker OpenRouter bridge with BetterDungeon-held keys
+- popup OpenRouter key, default model, status, and connection test controls
+- live AI Dungeon suite in [21 - Provider AI AI Dungeon Test Suite](./21-provider-ai-ai-dungeon-test-suite.md), passed with run `provider-ai-mof04zzu`
 
 ## Next Step
 
-Implement the smallest OpenRouter-backed vertical slice: configuration status, one chat call, normalized response, popup key/status plumbing, and a paste-ready live suite.
+Move into Phase 10 guide and docs rewrite. Provider AI should be documented as the hosted-model bridge for script-side sidecar reasoning; LocalAI remains deferred for the later Robyn design pass.

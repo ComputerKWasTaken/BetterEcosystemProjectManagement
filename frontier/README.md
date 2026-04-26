@@ -23,14 +23,15 @@
 | 14 | [Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md) | Archived live sign-off summary for Weather |
 | 15 | [Network AI Dungeon Test Suite](./15-network-ai-dungeon-test-suite.md) | Archived live sign-off summary for Network |
 | 16 | [System AI Dungeon Test Suite](./16-system-ai-dungeon-test-suite.md) | Archived live sign-off summary for System |
-| 17 | [Provider AI Phase Plan](./17-provider-ai-phase-plan.md) | Active plan for hosted-model AI bridge work |
+| 17 | [Provider AI Phase Plan](./17-provider-ai-phase-plan.md) | Completed plan for hosted-model AI bridge work |
 | 18 | [Phase 7 Kickoff](./18-phase-7-kickoff.md) | Completed feature-manager and popup integration scope |
 | 19 | [Phase 8 Kickoff](./19-phase-8-kickoff.md) | Story Card DOM + GraphQL drift investigation scope |
 | 20 | [Phase 9 Provider AI Kickoff](./20-phase-9-provider-ai-kickoff.md) | OpenRouter-backed Provider AI implementation scope |
+| 21 | [Provider AI AI Dungeon Test Suite](./21-provider-ai-ai-dungeon-test-suite.md) | Completed Phase 9 live validation suite |
 
 ## One-paragraph summary
 
-**Frontier** is a standardized, cards-only communication channel between AI Dungeon scripts (sandboxed) and BetterDungeon (browser-privileged). Scripts publish module-specific state to reserved `frontier:state:*` story cards; BD reads them via a WebSocket interceptor and renders or acts on them. Modules may also declare ops - scripts enqueue requests on a `frontier:out` card and BD writes responses to per-module `frontier:in:<module>` cards. V2 ships the full two-way platform and a growing first-party module set: **Scripture** (widgets, state-only), **WebFetch** (safe web access), **Clock** (real-world time), **Geolocation**, **Weather**, **Network**, **System**, and next **Provider AI**. Widget state uses a **live-count history** pattern so undo / retry / continue / edit all "just work" without the script doing anything special. The whole system rides on AI Dungeon's native story-card + subscription wire, including the write path - Core reuses captured GraphQL mutation templates via deep-override replay, sidestepping auth / endpoint / CSRF concerns entirely.
+**Frontier** is a standardized, cards-only communication channel between AI Dungeon scripts (sandboxed) and BetterDungeon (browser-privileged). Scripts publish module-specific state to reserved `frontier:state:*` story cards; BD reads them via a WebSocket interceptor and renders or acts on them. Modules may also declare ops - scripts enqueue requests on a `frontier:out` card and BD writes responses to per-module `frontier:in:<module>` cards. V2 ships the full two-way platform and a growing first-party module set: **Scripture** (widgets, state-only), **WebFetch** (safe web access), **Clock** (real-world time), **Geolocation**, **Weather**, **Network**, **System**, and **Provider AI**. Widget state uses a **live-count history** pattern so undo / retry / continue / edit all "just work" without the script doing anything special. The whole system rides on AI Dungeon's native story-card + subscription wire, including the write path - Core reuses captured GraphQL mutation templates via deep-override replay, sidestepping auth / endpoint / CSRF concerns entirely.
 
 ## Status
 
@@ -50,18 +51,18 @@
 - [x] System module. Live AI Dungeon suite passed on 2026-04-24.
 - [x] Phase 7 - feature manager + popup integration
 - [x] Phase 8 - Story Card DOM + GraphQL drift investigation + heartbeat dedupe fix
-- [ ] Phase 9 - Provider AI module
+- [x] Phase 9 - Provider AI module. Live AI Dungeon suite passed on 2026-04-26 with run `provider-ai-mof04zzu`.
 - [ ] Phases 10-11 - guide rewrites, release
 
 ## Current focus
 
-Phase 8 is closed: AI Dungeon's updated Story Card UI still supports Frontier's GraphQL write path, and heartbeat injection now waits for Story Card hydration so duplicate `frontier:heartbeat` cards stop multiplying. The current work is **Phase 9 - Provider AI**, tracked in [17 - Provider AI Phase Plan](./17-provider-ai-phase-plan.md) and [20 - Phase 9 Provider AI Kickoff](./20-phase-9-provider-ai-kickoff.md). LocalAI remains parked for the later Robyn design pass.
+Phase 9 is complete. Provider AI now exposes `providerAI.chat`, `providerAI.models`, and `providerAI.testConnection`, with OpenRouter keys held in BetterDungeon local storage and requests routed through the background worker. Live validation confirmed key metadata, model discovery, validation failures, and one short chat completion through `frontier:in:providerAI`. Current focus moves to Phase 10 guide and docs rewrites. LocalAI remains parked for the later Robyn design pass.
 
 ## Test suites
 
-- No active live sign-off suite at the moment.
-- Latest completed live sign-off: [System](./16-system-ai-dungeon-test-suite.md), before that [Network](./15-network-ai-dungeon-test-suite.md), [Weather](./14-weather-ai-dungeon-test-suite.md), and [Clock](./13-clock-ai-dungeon-test-suite.md).
-- Archived regression suites: [Phase 3 Scripture](./07-scripture-ai-dungeon-test-suite.md), [Phase 4 Full Frontier](./08-full-frontier-ai-dungeon-test-suite.md), [Phase 5 WebFetch](./09-webfetch-ai-dungeon-test-suite.md), [Phase 6 Clock](./13-clock-ai-dungeon-test-suite.md), [Weather](./14-weather-ai-dungeon-test-suite.md), [Network](./15-network-ai-dungeon-test-suite.md), and [System](./16-system-ai-dungeon-test-suite.md).
+- Active live sign-off: none. Phase 10 is guide and docs rewrite work.
+- Latest completed live sign-off: [Provider AI](./21-provider-ai-ai-dungeon-test-suite.md), before that [System](./16-system-ai-dungeon-test-suite.md), [Network](./15-network-ai-dungeon-test-suite.md), [Weather](./14-weather-ai-dungeon-test-suite.md), and [Clock](./13-clock-ai-dungeon-test-suite.md).
+- Archived regression suites: [Phase 3 Scripture](./07-scripture-ai-dungeon-test-suite.md), [Phase 4 Full Frontier](./08-full-frontier-ai-dungeon-test-suite.md), [Phase 5 WebFetch](./09-webfetch-ai-dungeon-test-suite.md), [Phase 6 Clock](./13-clock-ai-dungeon-test-suite.md), [Weather](./14-weather-ai-dungeon-test-suite.md), [Network](./15-network-ai-dungeon-test-suite.md), [System](./16-system-ai-dungeon-test-suite.md), and [Provider AI](./21-provider-ai-ai-dungeon-test-suite.md).
 
 ## Design principles
 

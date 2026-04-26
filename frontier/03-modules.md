@@ -15,7 +15,7 @@ Every BD-side module exports an object conforming to this shape. Modules are a l
 
 ```ts
 interface FrontierModule {
-  /** Unique module id. Must match heartbeat advertisement. Lowercase, no spaces/dots. */
+  /** Unique module id. Must match heartbeat advertisement. First-party ids use lower camel case, no spaces/dots. */
   id: string;
 
   /** SemVer version of this module's BD-side handler. */
@@ -130,21 +130,19 @@ interface FrontierContext {
 
 ## Module registration
 
-In the extension's bootstrap (e.g. `main.js` or Frontier's own init), modules register themselves:
+In the extension bootstrap, modules register themselves after `module-registry.js` loads:
 
 ```js
-// services/frontier/core.js exposes the singleton.
-const core = FrontierCore.instance;
-core.registerModule(ScriptureModule);
-core.registerModule(WebFetchModule);
-core.registerModule(ClockModule);
+window.Frontier.registry.register(ScriptureModule);
+window.Frontier.registry.register(WebFetchModule);
+window.Frontier.registry.register(ClockModule);
 ```
 
 Registration triggers:
 1. Core adds the module to its `Map<id, module>`.
 2. Core calls the module's `onEnable` if the user has it enabled (default: true for built-ins unless `defaultEnabled: false`; false for third-party ids).
 3. Core updates the heartbeat card to advertise the new module (including its `ops` list if it has any).
-4. The popup UI's Frontier section gains a toggle for the module (plus a consent sub-panel for WebFetch).
+4. The popup UI's Frontier section gains a toggle for the module, plus module-specific controls such as WebFetch origins or Provider AI credentials.
 
 ## Enable / disable flow
 
@@ -554,6 +552,33 @@ function scriptureSet(widgets) {
 // The module is primarily used via the generic frontierCall API.
 ```
 
+### Provider AI Library adapter (pasted after the base Library)
+
+```js
+// === Provider AI (Frontier Hosted Model Module) ==========================
+// Setup:
+//   Save an OpenRouter API key in BetterDungeon -> Frontier -> AI Providers.
+// Usage:
+//   frontierCall('providerAI', 'testConnection', { provider: 'openrouter' })
+//     .then(status => console.log(status.ok, status.modelCount));
+//   frontierCall('providerAI', 'models', { provider: 'openrouter', limit: 5 })
+//     .then(list => console.log(list.models.map(m => m.id)));
+//   frontierCall('providerAI', 'chat', {
+//     provider: 'openrouter',
+//     model: 'openai/gpt-5.2',
+//     messages: [
+//       { role: 'system', content: 'Return concise JSON.' },
+//       { role: 'user', content: 'Classify this event: the door is locked.' }
+//     ],
+//     maxTokens: 128,
+//     temperature: 0,
+//     responseFormat: { type: 'json_object' }
+//   }).then(result => console.log(result.text));
+
+// No specific script-side state or functions needed beyond frontierCall.
+// The module is primarily used via the generic frontierCall API.
+```
+
 ### Example full scenario flow
 
 ```js
@@ -563,6 +588,7 @@ function scriptureSet(widgets) {
 // (paste WebFetch adapter here)
 // (paste Clock adapter here)
 // (paste System adapter here if using environment hints)
+// (paste Provider AI adapter here if using hosted sidecar model calls)
 
 state.game = state.game ?? { hp: 100, gold: 0 };
 ```
@@ -628,7 +654,7 @@ The module interface is designed so these three future loaders plug in without r
 | Prefix | Meaning |
 |--------|---------|
 | `_core` | Reserved for Frontier Core itself |
-| No prefix, short lowercase (e.g. `scripture`, `websearch`) | First-party built-in modules |
+| No prefix, short lower camel case (e.g. `scripture`, `webfetch`, `providerAI`) | First-party built-in modules |
 | `<author>.<module>` (e.g. `robyn.dicebot`) | Third-party modules (registry or user-scripted) |
 
 Core will reject registration attempts for unprefixed ids that conflict with reserved first-party ids.

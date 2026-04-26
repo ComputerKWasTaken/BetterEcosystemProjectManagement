@@ -9,7 +9,7 @@ Specifies the two-way extension added to the Lite protocol in [02 — Protocol](
 Full Frontier could have been implemented over a side channel (extension-injected postMessage, a custom WebSocket, etc.) but we stick with cards for the same reasons Lite does:
 
 - **Native wire.** Everything round-trips through AI Dungeon's own story-card + subscription system. State stays consistent with what AID itself knows.
-- **Crash recovery is free.** If BD reloads, any request still in `frontier:out` is re-dispatched naturally; any response still in `frontier:in:*` is still readable by the script. No separate persistence layer.
+- **Crash recovery rides on card state.** If BD reloads, safe requests still in `frontier:out` can be re-dispatched naturally, and any response still in `frontier:in:*` is still readable by the script. Unsafe requests are not replayed after reload because repeating them could duplicate external side effects.
 - **Cross-tab / cross-device continuity.** If the user reloads the tab or reopens the adventure on another device, the request/response queue is already on the server.
 - **Same write path.** The write queue built in Phase 1 handles response card writes identically to heartbeat writes.
 
@@ -104,6 +104,7 @@ Status lifecycle: `pending` → `ok` | `err` | `timeout`. Terminal statuses (`ok
 | `timeout` | Handler did not resolve within the op's configured timeout. |
 | `handler_threw` | Handler threw an unexpected exception. Payload includes sanitized message. |
 | `scheme_blocked` | WebFetch-specific: disallowed URL scheme (`file://`, `chrome://`, etc.). |
+| `unsafe_replay_blocked` | A pending unsafe op was found after reload and Core refused to replay it. |
 
 Modules MAY define additional codes in their own namespace (e.g. `webfetch:cors_blocked`) but MUST NOT reuse reserved codes for different meanings.
 
@@ -186,7 +187,7 @@ On BD reload in the v1 implementation:
 
 1. Core reads this entry and verifies `adventureShortId` matches the current adventure. If not, it's discarded — we're in a different adventure.
 2. `processed` merges into the dedup set so already-completed requests aren't re-invoked.
-3. Still-pending work is recovered from the persistent `frontier:out` card: if the request remains present and the matching response is still `pending`, Core re-runs the handler. This is why default handlers MUST be idempotent.
+3. Still-pending work is recovered from the persistent `frontier:out` card: if the request remains present and the matching response is still `pending`, Core re-runs the handler only when the op is marked `safe`. Unsafe ops settle to a terminal error instead of being replayed.
 
 The `inflight` mirror is retained for diagnostics and for the future non-idempotent policy below; v1's recovery source of truth is the card state itself.
 
@@ -200,7 +201,7 @@ Modules declare idempotency in their metadata:
 ```
 
 - `safe` — handler can be re-invoked freely (default for GET-like ops).
-- `unsafe` — never re-invoke; convert pending → timeout on reload (default for POST-like ops or ops with side effects).
+- `unsafe` — never re-invoke; convert pending → `err: unsafe_replay_blocked` on reload (default for POST-like ops, paid calls, or ops with side effects).
 
 ## Heartbeat changes in Full profile
 

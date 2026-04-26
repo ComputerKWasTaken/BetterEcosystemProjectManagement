@@ -4,20 +4,31 @@ This page tracks which live AI Dungeon suites are active, which are archived, an
 
 ## Current Status
 
-There is no active live sign-off suite at the moment.
+The active live sign-off suite is:
+
+- None. Phase 10 is guide and docs rewrite work.
 
 The most recent completed sign-off is:
 
-- [16 - System AI Dungeon Test Suite](./16-system-ai-dungeon-test-suite.md)
+- [21 - Provider AI AI Dungeon Test Suite](./21-provider-ai-ai-dungeon-test-suite.md)
+- before that, [16 - System AI Dungeon Test Suite](./16-system-ai-dungeon-test-suite.md)
 - before that, [15 - Network AI Dungeon Test Suite](./15-network-ai-dungeon-test-suite.md)
 - before that, [14 - Weather AI Dungeon Test Suite](./14-weather-ai-dungeon-test-suite.md)
 - before that, [13 - Clock AI Dungeon Test Suite](./13-clock-ai-dungeon-test-suite.md)
 - before that, [09 - WebFetch Test Suite Archive](./09-webfetch-ai-dungeon-test-suite.md)
 - and [10 - WebFetch Phase 5 Validation](./10-webfetch-phase-5-validation.md)
 
-Clock is complete. Geolocation has landed locally. Weather is complete. Network is complete. System is complete. Phase 8 is complete. The current work is Phase 9 Provider AI, which will need a new live AI Dungeon paste suite once the first OpenRouter-backed vertical slice is implemented.
+Clock is complete. Geolocation has landed locally. Weather is complete. Network is complete. System is complete. Phase 8 is complete. Phase 9 Provider AI is complete after live OpenRouter validation.
 
 ## Most Recent Completed Suite
+
+### Provider AI
+
+Latest completed suite:
+
+- [21 - Provider AI AI Dungeon Test Suite](./21-provider-ai-ai-dungeon-test-suite.md)
+
+Completed on 2026-04-26 with run `provider-ai-mof04zzu` using `inclusionai/ling-2.6-1t:free`. Re-run this suite while changing Provider AI op behavior, background OpenRouter normalization, popup key/default-model handling, heartbeat advertisement, dispatcher unsafe replay behavior, or the Provider AI harness itself.
 
 ### Phase 6 - Clock
 
@@ -120,6 +131,14 @@ Archive:
 - [Archived files](./archive/phase-9-system-test-suite/README.md)
 
 Re-run when changing System ops behavior, response shaping, heartbeat advertisement, dispatcher integration, or the System AI Dungeon suite scripts.
+
+### Provider AI
+
+Archive:
+
+- [21 - Provider AI AI Dungeon Test Suite](./21-provider-ai-ai-dungeon-test-suite.md)
+
+Re-run when changing Provider AI op behavior, OpenRouter request/response normalization, key/default-model settings, heartbeat advertisement, dispatcher unsafe replay behavior, or the Provider AI AI Dungeon suite scripts.
 
 ## Maintenance Rules
 

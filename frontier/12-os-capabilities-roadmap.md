@@ -329,17 +329,16 @@ Clock, Weather, Network, and System are done. Geolocation has landed locally. Th
 
 The best immediate sequence is:
 
-1. Implement Phase 9 Provider AI with an OpenRouter-backed vertical slice.
-2. Update public-facing guides and release docs.
-3. Revisit LocalAI after the Robyn design pass.
+1. Update public-facing guides and release docs with the completed Provider AI module.
+2. Revisit LocalAI after the Robyn design pass.
 
 ## Recommendation
 
 My current recommendation is:
 
-1. Treat `providerAI` as the active Phase 9 work.
+1. Treat `providerAI` as the completed hosted-model bridge and document it clearly in Phase 10.
 2. Keep `localAI` documented but deferred for Robyn's design pass.
-3. Implement hosted Provider AI first because it proves the model-query shape without local inference setup complexity.
+3. Use hosted Provider AI as the proven model-query shape before tackling local inference setup complexity.
 4. Treat `bd.sdk` as a future cross-cutting helper surface, not a raw internal-class escape hatch.
 
 That keeps the roadmap grounded in real script-author value:

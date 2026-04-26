@@ -173,13 +173,13 @@ The two-way breakthrough. Design specified in [06 — Full Frontier protocol](./
 **Work:**
 
 1. **Envelope format.** Request and response schemas, request-id scheme (`<liveCount>-<moduleId>-<seq>`), status lifecycle (`pending` → `ok` / `err` / `timeout`), per-module response sharding (`frontier:in:<module>`), GC strategy (script tombstones via ack-in-`frontier:out`; Core tombstones responses after N turns as a safety net).
-2. **Ops dispatcher.** Reads `frontier:out` diffs → dedupes by request id (idempotent replay-safe) → resolves module + op handler → writes `pending` response immediately → writes terminal response when handler resolves / rejects. In-flight request ids mirrored to `sessionStorage` so a BD reload mid-op can resume cleanly.
+2. **Ops dispatcher.** Reads `frontier:out` diffs → dedupes by request id → resolves module + op handler → writes `pending` response immediately → writes terminal response when handler resolves / rejects. In-flight request ids mirrored to `sessionStorage`; after reload, safe pending ops may replay, while unsafe pending ops settle with `unsafe_replay_blocked` so external side effects are not duplicated.
 3. **Module API extension.** Modules may declare `ops: { [opName]: async (args, ctx) => result }`. State-only modules (Scripture) declare none and continue to work exactly as before.
 4. **Heartbeat upgrade.** `profile` flips to `"full"`. Per-module entries advertise `ops: string[]` so scripts can feature-detect specific ops.
 
 **Acceptance:**
 - [x] A test module declaring `ops: { echo(args) { return { got: args }; } }` can be called via `frontier.call('test', 'echo', { hello: 'world' })` and the script receives `{ got: { hello: 'world' } }` within one turn.
-- [x] An in-flight op survives a BD reload — the `pending` response is preserved and the op completes on the reloaded BD without duplication.
+- [x] A safe in-flight op survives a BD reload — the `pending` response is preserved and the op completes on the reloaded BD without duplication. Unsafe pending ops are not replayed.
 - [x] Calls to unknown module or op names produce `err` responses with structured codes (`unknown_module`, `unknown_op`).
 - [x] Rewriting the same request id in `frontier:out` does not cause duplicate handler invocations.
 
@@ -288,16 +288,17 @@ Hosted sidecar model calls through Frontier.
 **Files:**
 - `modules/provider-ai/module.js` (new)
 - `background.js` (edit: privileged provider calls with stored credentials)
-- `main.js` (edit: register module + message handlers)
 - `manifest.json` (edit: module load order and provider host permissions if needed)
 - `popup.html` / `popup.js` (edit: Provider AI key/status/defaults)
-- `Project Management/frontier/17-provider-ai-phase-plan.md` (active plan)
+- `Project Management/frontier/17-provider-ai-phase-plan.md` (completed plan)
 - `Project Management/frontier/20-phase-9-provider-ai-kickoff.md` (kickoff)
-- `Project Management/frontier/21-provider-ai-ai-dungeon-test-suite.md` (new live suite, once implemented)
+- `Project Management/frontier/21-provider-ai-ai-dungeon-test-suite.md` (completed live suite)
+
+**Status:** *completed 2026-04-26*. Provider AI is implemented with OpenRouter-backed `chat`, `models`, and `testConnection` ops, BetterDungeon-held keys, popup configuration, bounded request validation, background-worker provider calls, and unsafe replay protection for paid chat calls. Static checks and VM simulations passed, then live AI Dungeon validation passed on run `provider-ai-mof04zzu` using `inclusionai/ling-2.6-1t:free`.
 
 **Work:**
 
-1. Verify current official OpenRouter API details and model-list behavior before coding.
+1. Verify current official OpenRouter API details and model-list behavior before coding. Phase 9 uses `/chat/completions` for model calls, `/models` for discovery, and `/key` for key validation.
 2. Implement `providerAI.chat`, `providerAI.models`, and `providerAI.testConnection`.
 3. Keep API keys in BetterDungeon storage / background worker only; scripts never receive secrets.
 4. Add strict request caps: message count, message length, total content length, max tokens, timeout, and per-adventure rate limits.
@@ -305,7 +306,7 @@ Hosted sidecar model calls through Frontier.
 6. Add popup settings for API key, enabled state, default model, and connection status.
 7. Add static / VM coverage and a paste-ready live AI Dungeon validation suite.
 
-**Acceptance:** Heartbeat advertises `providerAI.chat`, `providerAI.models`, and `providerAI.testConnection`. Missing key fails with `not_configured`; invalid/oversized requests fail with `invalid_args`; mocked provider success/error paths normalize cleanly; live `testConnection` and one short `chat` call succeed through `frontier:in:providerAI`.
+**Acceptance:** Heartbeat advertises `providerAI.chat`, `providerAI.models`, and `providerAI.testConnection`. Missing key fails with `not_configured`; invalid/oversized requests fail with `invalid_args`; mocked provider success/error paths normalize cleanly; live `testConnection` and one short `chat` call succeed through `frontier:in:providerAI`. **Met on 2026-04-26** with run `provider-ai-mof04zzu`.
 
 ### Phase 10 — Guide + docs rewrite
 

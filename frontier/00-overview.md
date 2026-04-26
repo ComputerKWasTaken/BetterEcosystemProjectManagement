@@ -113,7 +113,7 @@ Every AI Dungeon action in the `actionWindow` subscription carries a stable `id`
 - **Clock module (Phase 6):** real-world `now` / `tz` / `format` ops. Tiny, marketable, validates the ops shape on a minimal module.
 - **Feature manager + popup (Phase 7):** Frontier master toggle, per-module toggles, WebFetch allowlist panel, debug mode.
 - **Story Card DOM + GraphQL drift investigation (Phase 8):** AI Dungeon now groups Story Cards by native collapsible type categories, including custom types like `frontier`. Phase 8 verified no Story Card GraphQL drift and fixed duplicate heartbeat timing.
-- **Provider AI (Phase 9):** OpenRouter-backed hosted-model calls for sidecar script reasoning, with BetterDungeon-held API keys and bounded request shapes.
+- **Provider AI (Phase 9):** OpenRouter-backed hosted-model calls for sidecar script reasoning, with BetterDungeon-held API keys and bounded request shapes. Live validation passed on 2026-04-26.
 - **Guide + docs rewrite (Phase 10):** `FrontierGuide.vue`, `ScriptureGuide.vue`, `WebFetchGuide.vue`, `ClockGuide.vue`. Full-profile coverage including ops examples. No ZW / TagCipher / Context Modifier content.
 - **Multiplatform smoke test (Phase 11):** verify on Chromium, Gecko, AND Android WebView before shipping `2.0.0`.
 
