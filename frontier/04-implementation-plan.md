@@ -46,11 +46,11 @@ Eleven phases. Each has an acceptance criterion; "done" means criterion met, ver
 
 - `BetterDungeon/services/frontier/` exists and contains `ACTION_IDS.md` (the canonical Phase 0 record).
 - `BetterDungeon/modules/scripture/` exists with a `.gitkeep`.
-- `Project Management/frontier/action-hunter.user.js` is the canonical hunter userscript; scratch files (`ws-userscript.user.js`, `ws-find-cardchannel.js`, `ws-test-console.js`) have been removed.
+- The hunter userscript proved the Phase 0 observations and has since been removed during planning-doc cleanup. Scratch files (`ws-userscript.user.js`, `ws-find-cardchannel.js`, `ws-test-console.js`) were also removed.
 
 **Deferred to Phase 1 (first task):**
 
-- Port `action-hunter.user.js` into `BetterDungeon/services/frontier/ws-interceptor.js` as an MV3 page-world content script. This is effectively Phase 1's step 1 and there's no benefit to doing it under a "Phase 0 smoke test" heading.
+- Port the hunter behavior into `BetterDungeon/services/frontier/ws-interceptor.js` as an MV3 page-world content script. This is effectively Phase 1's step 1 and there's no benefit to doing it under a "Phase 0 smoke test" heading.
 - Snapshot `features/better_scripts_feature.js` commit SHA at the start of Phase 1 (in the first commit's message) so the Scripture migration diff is clean.
 
 **Acceptance:** Workspace dirs in git; `ACTION_IDS.md` committed. **Phase 0 closed.**
@@ -128,7 +128,7 @@ The substrate modules plug into. Router, heartbeat, lifecycle, shared `ctx` API.
 
 The first real module. Reference implementation for state-only modules (no ops).
 
-**Status:** *completed 2026-04-22*. Scripture is implemented as a Frontier state-only module, legacy BetterScripts is removed from the extension load path, static checks pass, and the live AI Dungeon Scripture suite passed all 10 behavior checks. See [07 - Scripture Test Suite Archive](./07-scripture-ai-dungeon-test-suite.md).
+**Status:** *completed 2026-04-22*. Scripture is implemented as a Frontier state-only module, legacy BetterScripts is removed from the extension load path, static checks pass, and the live AI Dungeon Scripture suite passed all 10 behavior checks.
 
 **Files:**
 - `modules/scripture/module.js` (new)
@@ -156,7 +156,7 @@ The first real module. Reference implementation for state-only modules (no ops).
 
 The two-way breakthrough. Design specified in [06 — Full Frontier protocol](./06-full-frontier-protocol.md).
 
-**Status:** *completed 2026-04-22*. The first vertical slice is implemented: envelope helpers, ops dispatcher, Core wiring, `ctx.respond` / `ctx.respondError`, heartbeat ops advertisement, and the built-in opt-in `test.echo` validation module. Static syntax checks pass, local dispatcher simulations pass, the live AI Dungeon Full Frontier suite reached `checksPass: true` on run `full-mo9ejlzk`, and the manual `ff delay` reload-mid-pending check passed. See [08 - Full Frontier Test Suite Archive](./08-full-frontier-ai-dungeon-test-suite.md).
+**Status:** *completed 2026-04-22*. The first vertical slice is implemented: envelope helpers, ops dispatcher, Core wiring, `ctx.respond` / `ctx.respondError`, heartbeat ops advertisement, and the built-in opt-in `test.echo` validation module. Static syntax checks pass, local dispatcher simulations pass, the live AI Dungeon Full Frontier suite reached `checksPass: true` on run `full-mo9ejlzk`, and the manual `ff delay` reload-mid-pending check passed.
 
 **Files:**
 - `services/frontier/envelope.js` (new — request/response schemas + request-id generator + GC policies)
@@ -168,7 +168,7 @@ The two-way breakthrough. Design specified in [06 — Full Frontier protocol](./
 - `main.js` (edit: start ops dispatcher after registry startup)
 - `06-full-frontier-protocol.md` (new)
 - AI-Dungeon-side Library additions: `frontierCall`, `frontierPoll`, `frontierPollAll`, tombstone-on-read semantics
-- `08-full-frontier-ai-dungeon-test-suite.md` + archived paste-ready suite scripts
+- Full Frontier AI Dungeon suite scripts (removed after sign-off; outcome retained here)
 
 **Work:**
 
@@ -187,15 +187,14 @@ The two-way breakthrough. Design specified in [06 — Full Frontier protocol](./
 
 The canonical two-way demo. "Scripts can now hit the internet."
 
-**Status:** *completed 2026-04-23*. WebFetch is wired as the first real Full Frontier ops module with safe-method `fetch` and `search` ops, origin consent prompts, fail-closed consent checks, per-origin rate limiting, blocked local/private schemes and hosts, request/response header filtering, a streaming body cap in the background fetch worker, and a paste-ready live AI Dungeon test suite. Local syntax checks and module simulations passed first; then live AI Dungeon validation passed on 2026-04-23, including the denied-origin consent check. See [09 - WebFetch Test Suite Archive](./09-webfetch-ai-dungeon-test-suite.md) and [10 - WebFetch Phase 5 Validation](./10-webfetch-phase-5-validation.md).
+**Status:** *completed 2026-04-23*. WebFetch is wired as the first real Full Frontier ops module with safe-method `fetch` and `search` ops, origin consent prompts, fail-closed consent checks, per-origin rate limiting, blocked local/private schemes and hosts, request/response header filtering, a streaming body cap in the background fetch worker, and a paste-ready live AI Dungeon test suite. Local syntax checks and module simulations passed first; then live AI Dungeon validation passed on 2026-04-23, including the denied-origin consent check.
 
 **Files:**
 - `modules/webfetch/module.js` (new)
 - `modules/webfetch/consent.js` (new)
 - `background.js` (new: privileged http/https fetch worker)
 - `manifest.json` (edit: background worker, http/https host permissions, WebFetch load order)
-- `09-webfetch-ai-dungeon-test-suite.md` + archived paste-ready suite scripts
-- `10-webfetch-phase-5-validation.md` (new: Phase 5 sign-off checklist)
+- WebFetch AI Dungeon suite scripts and sign-off checklist (removed after sign-off; outcome retained here)
 - `popup.html` / `popup.js` (later edit: WebFetch allowlist UI)
 
 **Work:**
@@ -217,7 +216,7 @@ The canonical two-way demo. "Scripts can now hit the internet."
 
 Low-risk, marketable, validates the ops shape on a minimal module.
 
-**Status:** *completed 2026-04-23*. Clock now exposes `now`, `tz`, and `format` as deterministic safe ops. The module validates IANA time zones through `Intl`, returns structured zone and offset info, and uses UTC as the default time zone for `format()` so scripts get stable cross-user output for patterns like `YYYY-MM-DD`. Local syntax and behavior smoke checks passed first, then the live AI Dungeon suite passed on run `clock-mobxzre5`. The harness remains documented in [13 - Clock AI Dungeon Test Suite](./13-clock-ai-dungeon-test-suite.md).
+**Status:** *completed 2026-04-23*. Clock now exposes `now`, `tz`, and `format` as deterministic safe ops. The module validates IANA time zones through `Intl`, returns structured zone and offset info, and uses UTC as the default time zone for `format()` so scripts get stable cross-user output for patterns like `YYYY-MM-DD`. Local syntax and behavior smoke checks passed first, then the live AI Dungeon suite passed on run `clock-mobxzre5`.
 
 **Files:**
 - `modules/clock/module.js` (new)
@@ -256,14 +255,14 @@ Standard BD plumbing, expanded for the module catalog.
 **Status:** *completed 2026-04-25*. AI Dungeon's updated Story Card UI still exposes native custom type categories, including `frontier`. `SaveQueueStoryCard` did not drift. The production issue was heartbeat timing: Core could write during the post-boundary / pre-hydration gap and create duplicate `frontier:heartbeat` cards. Fixed by deferring heartbeat until first Story Card hydration, targeting a canonical heartbeat card id, and archiving exact-title duplicates.
 
 **Files:**
-- `Project Management/frontier/action-hunter.user.js` (edit)
+- Temporary Phase 8 diagnostic harness (removed after sign-off)
 - `services/frontier/ws-interceptor.js`, `ws-stream.js`, `core.js`, `write-queue.js` (inspect; edit only if drift is confirmed)
 - `services/ai-dungeon-service.js` (inspect GraphQL mutation replay; edit only if mutation shape changed)
 - Frontier docs (update DOM assumptions and transport risks)
 
 **Work:**
 
-1. Update `action-hunter.user.js` into a Phase 8 diagnostic harness:
+1. Update the temporary hunter script into a Phase 8 diagnostic harness:
    - Capture the new Story Card tab DOM: selected tabs, search box, view controls, type category headers, expanded/collapsed state, visible card titles, and type badges.
    - Capture every GraphQL operation name over fetch, XHR, and GraphQL WS, with Story Card operation samples called out separately.
    - Capture Story Card mutation variable keys and response keys so we can detect `SaveQueueStoryCard` renames or shape drift.
@@ -279,7 +278,7 @@ Standard BD plumbing, expanded for the module catalog.
    - Confirm whether the mutation response still returns a usable storyCard object or a field that `AIDungeonService._resolveResponseFieldName()` can resolve.
    - Confirm whether `ws-stream.js` still learns the adventure `shortId` and mutation templates before Core schedules `frontier:heartbeat`.
 
-**Acceptance:** `action-hunter.user.js` reports the new DOM categories and Story Card GraphQL operation names clearly. We know whether `frontier:heartbeat` is absent because of a UI move, missing mutation-template capture, a changed mutation name, changed variables, changed response shape, or a Core/write-queue timing issue. Any confirmed production drift gets a targeted fix before Phase 9. **Completed:** no GraphQL drift; heartbeat duplication fixed in Core/write path.
+**Acceptance:** The temporary diagnostic harness reports the new DOM categories and Story Card GraphQL operation names clearly. We know whether `frontier:heartbeat` is absent because of a UI move, missing mutation-template capture, a changed mutation name, changed variables, changed response shape, or a Core/write-queue timing issue. Any confirmed production drift gets a targeted fix before Phase 9. **Completed:** no GraphQL drift; heartbeat duplication fixed in Core/write path.
 
 ### Phase 9 — Provider AI module
 
@@ -291,7 +290,7 @@ Hosted sidecar model calls through Frontier.
 - `manifest.json` (edit: module load order and provider host permissions if needed)
 - `popup.html` / `popup.js` (edit: Provider AI key/status/defaults)
 - `Project Management/frontier/17-provider-ai-phase-plan.md` (completed plan)
-- `Project Management/frontier/20-phase-9-provider-ai-kickoff.md` (kickoff)
+- Phase 9 kickoff notes (removed after sign-off; outcome retained here)
 - `Project Management/frontier/21-provider-ai-ai-dungeon-test-suite.md` (completed live suite)
 
 **Status:** *completed 2026-04-26*. Provider AI is implemented with OpenRouter-backed `chat`, `models`, and `testConnection` ops, BetterDungeon-held keys, popup configuration, bounded request validation, background-worker provider calls, and unsafe replay protection for paid chat calls. Static checks and VM simulations passed, then live AI Dungeon validation passed on run `provider-ai-mof04zzu` using `inclusionai/ling-2.6-1t:free`.

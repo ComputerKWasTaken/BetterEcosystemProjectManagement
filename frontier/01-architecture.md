@@ -353,4 +353,4 @@ BetterDungeon features that consume story cards should still avoid treating rese
 ## Why not MutationObserver on the Story Cards UI?
 
 - The existing `story-card-scanner.js` already does this and suffers from virtualization, search-box state bugs, and coupling to DOM changes we don't control. The WebSocket stream is lossless, instant, and schema-stable.
-- Phase 8 does use DOM observation in `action-hunter.user.js`, but only as a diagnostic map of AI Dungeon's updated Story Card UI. It is not a runtime filtering strategy.
+- Phase 8 used a temporary DOM observation harness to map AI Dungeon's updated Story Card UI. That diagnostic tool was removed after sign-off; it was never a runtime filtering strategy.
