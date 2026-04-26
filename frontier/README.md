@@ -13,7 +13,7 @@
 | 04 | [Implementation Plan](./04-implementation-plan.md) | Phase order, file-by-file breakdown, V2 release coordination |
 | 05 | [Risks & Open Questions](./05-risks-and-open-questions.md) | Tracked risks, unresolved decisions, follow-up work |
 | 06 | [Full Frontier Protocol](./06-full-frontier-protocol.md) | Two-way envelope protocol, request/response schemas, GC, idempotency (Phase 4) |
-| 11 | [Frontier Test Suites](./11-test-suites.md) | Active-vs-archived test-suite index and rerun policy |
+| 11 | [Frontier Test Suites](./11-test-suites.md) | Current regression suite, sign-off history, and cleanup policy |
 | 12 | [OS Capabilities Roadmap](./12-os-capabilities-roadmap.md) | Expanded capability map for OS-adjacent modules, AI bridges, and the future BD SDK surface |
 | 17 | [Provider AI Phase Plan](./17-provider-ai-phase-plan.md) | Completed plan for hosted-model AI bridge work |
 | 21 | [Provider AI AI Dungeon Test Suite](./21-provider-ai-ai-dungeon-test-suite.md) | Completed Phase 9 live validation suite |
@@ -28,13 +28,14 @@
 - [x] Protocol v1 drafted - Lite (02) and Full (06)
 - [x] Action-ID behavior verified across retry / continue / edit (Phase 0 closed)
 - [x] Transport foundation landed - WS + fetch/XHR capture, card + action stream, mutation-template replay. Writes and creates verified in a live adventure with persistence across reload.
-- [x] V2 rescoped to include Full Frontier + WebFetch + Clock alongside Scripture
+- [x] V2 rescoped to include Full Frontier and the first-party module suite alongside Scripture
 - [x] Phase 1 - transport hardening (write queue, adventure-boundary reset, shortId resolver). Action hydration retained as safety net; AID loads actions exclusively via WS.
 - [x] Phase 2 - Core dispatcher + Module Registry hardening (state-card dispatch, enable/disable persistence, ctx API, debug mode)
 - [x] Phase 3 - Scripture module (state-only reference). Live AI Dungeon Scripture suite passed 10/10 on 2026-04-22.
 - [x] Phase 4 - Full Frontier envelope protocol. Live AI Dungeon Full Frontier suite passed, including reload-mid-pending, on 2026-04-22.
 - [x] Phase 5 - WebFetch module. Live AI Dungeon suite passed, including denied-origin consent, on 2026-04-23.
 - [x] Phase 6 - Clock module. Live AI Dungeon suite passed on 2026-04-23.
+- [x] Geolocation module. Permission and current-location ops manually validated on 2026-04-23.
 - [x] Weather module. Live AI Dungeon suite passed on 2026-04-23.
 - [x] Network module. Live AI Dungeon suite passed on 2026-04-24.
 - [x] System module. Live AI Dungeon suite passed on 2026-04-24.
@@ -49,7 +50,7 @@ Phase 9 is complete. Provider AI now exposes `providerAI.chat`, `providerAI.mode
 
 ## Test suites
 
-- Active live sign-off: none. Phase 10 is guide and docs rewrite work.
+- Current live sign-off: none. Phase 10 is guide and docs rewrite work.
 - Latest completed live sign-off: [Provider AI](./21-provider-ai-ai-dungeon-test-suite.md).
 - Older live-suite scripts and phase kickoff notes were removed after sign-off. Canonical phase outcomes now live in this README, [Implementation Plan](./04-implementation-plan.md), and [Frontier Test Suites](./11-test-suites.md).
 
@@ -59,4 +60,4 @@ Phase 9 is complete. Provider AI now exposes `providerAI.chat`, `providerAI.mode
 - **One step at a time.** Transport hardening -> Core + modules -> Full envelope -> ops modules -> polish. Each phase has a standalone acceptance criterion.
 - **Multiplatform by default.** Every design choice must work on Chromium (Chrome/Edge), Gecko (Firefox), and Android WebView. No platform-specific shortcuts without a documented fallback.
 - **No extra boilerplate for authors.** The Frontier Library snippet is tiny. No Context Modifier, no invisible characters, no hand-rolled framing.
-- **Registry / sandboxing / third-party modules are explicit non-goals for V2.** V2 ships the platform and three first-party modules. Trust boundaries for third-party code are a post-V2 epic.
+- **Registry / sandboxing / third-party modules are explicit non-goals for V2.** V2 ships the platform and first-party modules. Trust boundaries for third-party code are a post-V2 epic.

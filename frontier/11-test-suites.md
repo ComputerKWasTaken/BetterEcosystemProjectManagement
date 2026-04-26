@@ -4,7 +4,7 @@ This page tracks the current live AI Dungeon regression harness and the complete
 
 ## Current Status
 
-Active live sign-off suite:
+Current live sign-off suite:
 
 - None. Phase 10 is guide and docs rewrite work.
 

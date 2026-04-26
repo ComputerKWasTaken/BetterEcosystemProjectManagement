@@ -103,7 +103,7 @@ Transport       ─────────────────────�
 
 ### Module layer
 
-A module is an object matching the `FrontierModule` interface documented in [03 — Modules](./03-modules.md). V2 ships three first-party modules covering both channel types:
+A module is an object matching the `FrontierModule` interface documented in [03 — Modules](./03-modules.md). V2 now ships a broad first-party module set covering state rendering, web access, OS-adjacent helpers, and hosted-model calls:
 
 **`modules/scripture/module.js`** — state-only module (reference for the pattern)
 - Registers with `FrontierCore`. Declares `stateNames: ['scripture']`, `tracksLiveCount: true`.
@@ -319,8 +319,8 @@ Script, during any hook:
 
 (Crash recovery: on BD reload, ops-dispatcher reads sessionStorage,
 merges processed ids, and re-dispatches any `pending` responses whose
-module declared idempotent: 'safe' — or converts them to err: timeout
-otherwise. See 06-full-frontier-protocol.md#idempotency.)
+module declared idempotent: 'safe' — or converts unsafe pending responses
+to err: unsafe_replay_blocked. See 06-full-frontier-protocol.md#idempotency.)
 ```
 
 ## Integration with existing BetterDungeon components
@@ -330,10 +330,11 @@ The Frontier top-level toggle behaves like any other feature: it initializes `se
 
 ### Popup UI
 Today: a single "BetterScripts" toggle.
-V2: a collapsible "Frontier" section containing:
+V2: a dedicated "Frontier" tab containing:
 - The Frontier master toggle (off → Core + all modules inert).
-- A nested list of modules, each with its own toggle: Scripture, WebFetch, Clock.
+- A nested list of modules, each with its own toggle and description: Scripture, WebFetch, Clock, Geolocation, Weather, Network, System, and Provider AI.
 - A WebFetch permissions sub-panel (per-origin allowlist with allow / deny / revoke controls).
+- Provider AI controls for OpenRouter key storage, default model, and connection testing.
 - A debug toggle for Frontier Core (replaces `SET_BETTERSCRIPTS_DEBUG`).
 - (Future placeholder, not rendered in V2:) "Manage modules…" button for third-party registry browsing.
 

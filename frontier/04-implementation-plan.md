@@ -19,7 +19,7 @@ Frontier is part of **BetterDungeon V2**, which bundles:
 
 The original plan scoped V2 to **Frontier Lite** (one-way, Scripture only) and deferred two-way comms to a post-MVP epic. That rested on an assumption that proved wrong in the best possible way: the GraphQL write path — formerly out-of-MVP item #5, "real GraphQL client robustness" — was solved ahead of schedule via **mutation-template replay**. We capture any in-flight `SaveQueueStoryCard` mutation, deep-override its variables, and re-send it. Auth-token capture, endpoint discovery, and CSRF handling are all sidestepped. Update AND create operations work for any card, including ones never touched in-session.
 
-That unlocks the whole Full Frontier roadmap. Two-way comms becomes a ~40% scope increase on top of Lite instead of the 3–4× cost originally feared. V2 is therefore re-scoped from "widgets-only MVP" to the **"unshackle the sandbox" release** the vision doc promised: Scripture PLUS Full Frontier's envelope protocol PLUS reference ops modules (WebFetch, Clock).
+That unlocks the whole Full Frontier roadmap. Two-way comms becomes a ~40% scope increase on top of Lite instead of the 3–4× cost originally feared. V2 is therefore re-scoped from "widgets-only MVP" to the **"unshackle the sandbox" release** the vision doc promised: Scripture PLUS Full Frontier's envelope protocol PLUS first-party ops modules (WebFetch, Clock, Geolocation, Weather, Network, System, and Provider AI).
 
 **Profile impact:** the heartbeat's `profile` field ships as `"full"` at V2 launch. Per `02-protocol.md`, this is explicitly non-breaking — Full-profile Core still runs Lite-only scripts.
 
@@ -316,6 +316,11 @@ BetterRepository content overhaul for V2.
 - `BetterRepository/src/components/guides/ScriptureGuide.vue` (new)
 - `BetterRepository/src/components/guides/WebFetchGuide.vue` (new)
 - `BetterRepository/src/components/guides/ClockGuide.vue` (new)
+- `BetterRepository/src/components/guides/GeolocationGuide.vue` (new)
+- `BetterRepository/src/components/guides/WeatherGuide.vue` (new)
+- `BetterRepository/src/components/guides/NetworkGuide.vue` (new)
+- `BetterRepository/src/components/guides/SystemGuide.vue` (new)
+- `BetterRepository/src/components/guides/ProviderAIGuide.vue` (new)
 - `BetterRepository/src/router/*` (edit)
 - `Project Management/docs/01-scripting/api/story-cards-api.md` (edit)
 
@@ -326,17 +331,22 @@ BetterRepository content overhaul for V2.
    - Section 2: Availability detection — heartbeat card, `frontierIsAvailable` pattern, profile negotiation (`lite` vs `full`), graceful degradation.
    - Section 3: Publishing state — `frontierWriteState` / `frontierReadState` / `frontierUpdateHistory`, the live-count history pattern.
    - Section 4: Calling ops — `frontierCall` / `frontierPoll` / `frontierPollAll`, request-id semantics, multi-turn examples.
-   - Section 5: Included modules — Scripture, WebFetch, Clock (linked).
+   - Section 5: Included modules — Scripture, WebFetch, Clock, Geolocation, Weather, Network, System, and Provider AI (linked).
    - Section 6: Roadmap.
 2. Per-module guides:
    - `ScriptureGuide.vue` — 9 widget-type reference material, config options, HTML/CSS sanitization rules, undo/retry behavior.
    - `WebFetchGuide.vue` — op reference, consent flow, rate limits, security caveats, worked examples (weather, wiki lookup, image fetch).
    - `ClockGuide.vue` — op reference, format-string table, worked examples.
+   - `GeolocationGuide.vue` — permission posture, `permission`, `getCurrent`, privacy guidance, and graceful denial handling.
+   - `WeatherGuide.vue` — Open-Meteo current/forecast ops, place vs coordinates, units, and worked examples.
+   - `NetworkGuide.vue` — connection status hints and degraded-mode examples.
+   - `SystemGuide.vue` — device/environment/power hints and platform-sensitive examples.
+   - `ProviderAIGuide.vue` — OpenRouter key setup, `testConnection`, `models`, `chat`, request caps, unsafe replay behavior, and sidecar reasoning examples.
 3. Update router / nav.
 4. `story-cards-api.md` — new section documenting reserved `frontier:*`, `scripture:*`, `bd:*` prefixes.
 5. Drop ALL ZW / TagCipher / Context Modifier sections.
 
-**Acceptance:** BetterRepository site renders all four new guides with working TOC + code examples. No references to the legacy BetterScripts system remain.
+**Acceptance:** BetterRepository site renders the Frontier guide and all first-party module guides with working TOC + code examples. No references to the legacy BetterScripts system remain.
 
 ### Phase 11 — Release prep
 

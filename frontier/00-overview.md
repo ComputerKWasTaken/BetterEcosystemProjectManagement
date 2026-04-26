@@ -48,7 +48,8 @@ Frontier's implementation window is gated by BD V2's broader release timing. Bet
 ┌─────────────────────────────────────────────────────────────┐
 │ MODULES (one per capability)                                │
 │   Scripture (widgets, built-in, MVP)                        │
-│   WebFetch, Clock, Weather, System, Provider AI, ...        │
+│   WebFetch, Clock, Geolocation, Weather, Network,           │
+│   System, Provider AI, ...                                  │
 ├─────────────────────────────────────────────────────────────┤
 │ FRONTIER CORE (Lite)                                        │
 │   Card-family routing, heartbeat emission,                  │
@@ -137,7 +138,7 @@ Six rounds of planning questions have produced the following commitments. Re-ope
 | 3 | **Full Frontier ships in V2** — two-way (script ↔ BD) with `frontier:out` request queue and per-module `frontier:in:<module>` response cards. ~~_(Superseded)_ Originally scoped as Lite-only; promoted after the write path was solved via mutation-template replay.~~ | The biggest risk blocking two-way comms — auth token capture / endpoint discovery / CSRF handling — was sidestepped entirely by replaying captured mutation templates. Full Frontier's remaining work (envelope protocol, ops dispatcher, ack/GC) is ~40% of Lite's scope rather than the 3-4× originally feared. V2 delivers the "unshackle the sandbox" vision the project was founded on. |
 | 4 | **Action-ID history** for per-turn state that must track undo/retry. Scripts keep `{ [actionId]: values }` in their state card; BD looks up the current tail's entry. | Robyn's insight: AI Dungeon actions carry stable ids in the `actionWindow`. No invisible text needed; everything is in cards + subscriptions. |
 | 5 | **File layout: `services/frontier/` + `modules/scripture/`.** | Core is infrastructure (services); modules are semantically distinct from BD features (own top-level dir). |
-| 6 | **First-party modules only in V2.** Registry UI + sandboxed user scripts deferred. V2 ships Scripture + WebFetch + Clock; third-party trust model is a post-V2 epic. | Keeps V2 tractable while shaping the module interface so plugins can slot in later. |
+| 6 | **First-party modules only in V2.** Registry UI + sandboxed user scripts deferred. V2 ships Scripture, WebFetch, Clock, Geolocation, Weather, Network, System, and Provider AI; third-party trust model is a post-V2 epic. | Keeps V2 tractable while shaping the module interface so plugins can slot in later. |
 | 7 | **Do not manually filter AI Dungeon's native Story Card list.** AI Dungeon now groups cards by type in native collapsible categories, including custom types. Frontier reserved cards may live in their own `frontier` category. | This keeps BetterDungeon out of brittle DOM filtering and lets the native UI organize custom transport cards for us. |
 | 8 | **Multiplatform by default.** Every design choice must work on Chromium, Gecko, AND Android WebView. Fallbacks documented inline. | BD V2 ships on all three; Frontier can't be the feature that breaks platform parity. |
 | 9 | **Phase ordering: transport → Core → Scripture → Full envelope → ops modules → polish.** Each phase has a standalone acceptance criterion; partial progress is always shippable if we need to cut scope under pressure. | Fastest path to visible, testable wins at each step. Scripture lands in Phase 3 (giving us a demo-able superset of Lite), Full Frontier in Phase 4 (unlocking ops modules), and WebFetch/Clock in 5–6 validate the envelope design with real modules. |

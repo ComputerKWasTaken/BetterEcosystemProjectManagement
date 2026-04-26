@@ -126,6 +126,8 @@ Platform release timeline.
 ### 12-graphql-schema/
 Complete GraphQL schema from introspection, split by type category.
 
+This folder is a generated reference dump. It is intentionally bulky and should be treated as lookup material, not hand-maintained planning prose.
+
 - `_index.json` - Schema metadata and type listings
 - `scalars/` - 7 scalar types (Boolean, DateTime, Float, ID, Int, JSONObject, String)
 - `enums/` - 6 enum types
@@ -180,7 +182,7 @@ Speculative documentation derived from minified frontend source analysis. **Not 
 
 ## Document Statistics
 
-- Total documents: 61 markdown + 302 schema JSON files
+- Total documents: 79 markdown + 302 schema JSON files
 - Categories: 14
 - Created for RAG context retrieval
 

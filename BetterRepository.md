@@ -1,57 +1,49 @@
 # BetterRepository Project Management
 
-> Project tracking and management for BetterRepository development.
+> Project tracking for the public BetterEcosystem resource and guide site.
 
----
+## Current Focus
 
-## 🚀 Roadmap / Future Plans
+BetterRepository is the next major work area because Frontier has reached Phase 10: guide and documentation rewrite.
 
-### Most Likely Happening
--
+## Phase 10 Guide Work
 
-### Considering
--
+Create or update public-facing guides for:
 
-### Long-Term Ideas
-- **Voyage Resources:** When Voyage comes out of Early Access, we can build onto our current system to add information and resources relevant to Voyage, such as world building resources, tooling, and more.
+- Frontier overview and availability detection.
+- Frontier state publishing and live-count history.
+- Frontier ops calls, polling, acknowledgements, errors, and reload behavior.
+- Scripture widgets.
+- WebFetch consent, safe fetch, search, rate limits, and blocked targets.
+- Clock, Geolocation, Weather, Network, and System modules.
+- Provider AI setup, OpenRouter key configuration, safe usage, request caps, and examples.
 
----
-
-## ✅ To-Do List
-
-### Critical Priority
-<!-- Must be done ASAP -->
+## To Do
 
 ### High Priority
-<!-- Important, do soon -->
+
+- Replace legacy BetterScripts guide material with Frontier.
+- Remove Zero-width / TagCipher / Context Modifier guidance where it only existed for old BetterScripts.
+- Add module reference pages with copyable AI Dungeon Library snippets.
+- Fix known navigation issues where buttons link to wrong pages.
 
 ### Medium Priority
-<!-- Standard priority -->
 
-### Low Priority
-<!-- Nice to have -->
+- Add scenario-author examples that combine modules, such as weather grounded by geolocation or NPC reasoning through Provider AI.
+- Cross-link BetterDungeon popup setup steps with each module guide.
 
----
+### Later
 
-## 🐛 Bugs & Issues
+- Add LocalAI documentation after the later design pass.
+- Add Voyage resources when Voyage leaves Early Access and the product direction is clear.
 
-### Critical
-<!-- App-breaking, immediate fix required -->
+## Known Issues
 
-### Major
-<!-- Significant impact on functionality -->
+- Some existing site buttons incorrectly link to the wrong pages.
 
-### Minor
-<!-- Small issues, low impact -->
-- Many buttons incorrectly link to the wrong pages
+## Canonical Inputs
 
-### Trivial
-<!-- Cosmetic or negligible -->
-
----
-
-## Notes & Ideas
-
-*Use this section for BetterRepository-specific ideas and brainstorming.*
-
--
+- [Frontier planning index](./frontier/README.md)
+- [Implementation plan](./frontier/04-implementation-plan.md)
+- [Full Frontier protocol](./frontier/06-full-frontier-protocol.md)
+- [Provider AI phase plan](./frontier/17-provider-ai-phase-plan.md)

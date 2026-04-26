@@ -1,31 +1,27 @@
 # BetterEcosystem Project Management Hub
 
-> A central hub for tracking the future, issues, and tasks across all BetterEcosystem projects.
+> Central tracking hub for BetterEcosystem planning docs.
 
----
+## Current State
 
-## Project Overview
+The active product track is **BetterDungeon V2**, centered on Frontier. Frontier Phases 1-9 are complete, including Scripture, Full Frontier, WebFetch, Clock, Geolocation, Weather, Network, System, popup integration, heartbeat dedupe, and Provider AI.
 
-### 📋 Available Projects
+The next workstream is **Phase 10: guide and documentation rewrite**, mostly in BetterRepository. Phase 11 follows with release preparation, versioning, and multiplatform smoke testing.
 
-- **[BetterDungeon](./BetterDungeon.md)** - AI Dungeon browser extension featuring QOL changes and brand new features
-- **[BetterRepository](./BetterRepository.md)** - Web page that is a comprehensive resource and script collection for AI Dungeon
-- **[BetterVoyage](./BetterVoyage.md)** - A browser extension for Voyage that will feature QOL changes and brand new features (planned)
+## Projects
 
----
+- **[BetterDungeon](./BetterDungeon.md)** - AI Dungeon browser extension. Active project.
+- **[BetterRepository](./BetterRepository.md)** - Public guide/resource site. Next major work area for Frontier V2 docs.
+- **[BetterVoyage](./BetterVoyage.md)** - Future Voyage extension idea. Parked until Voyage is out of Early Access.
 
-## General Notes & Ideas
+## Planning Areas
 
-*Use this section for cross-project ideas, brainstorming, and general notes.*
+- **[Frontier planning](./frontier/README.md)** - Canonical Frontier implementation plan, protocol notes, module roadmap, and current test suite.
+- **[AI Dungeon reference docs](./docs/index.md)** - RAG-oriented AI Dungeon platform, scripting, DOM, and GraphQL reference.
+- **[Design notes](./design/README.md)** - Shared product/design references.
 
-- 
+## Cleanup Policy
 
----
-
-## Documentation Structure
-
-Each project has its own dedicated documentation file containing:
-- **Roadmap & Future Plans** - Short-term and long-term development goals
-- **To-Do Lists** - Organized by priority (Critical, High, Medium, Low)
-- **Bug & Issue Tracking** - Categorized by severity
-- **Project-Specific Notes** - Individual project ideas and brainstorming
+- Keep canonical planning docs short and current.
+- Remove completed scratch suites once their results are summarized.
+- Keep bulky generated references only when they are still useful for implementation or documentation work.

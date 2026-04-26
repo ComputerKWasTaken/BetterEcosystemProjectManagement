@@ -1,51 +1,18 @@
 # BetterVoyage Project Management
 
-> Project tracking and management for BetterVoyage development.
+> Future project notes for a Voyage browser extension.
 
-> **Note:** BetterVoyage is currently not in development yet as Voyage has not come out of Early Access.
+## Current State
 
----
+BetterVoyage is not in active development. Keep this parked until Voyage leaves Early Access and the product surface is stable enough to justify extension work.
 
-## 🚀 Roadmap / Future Plans
+## Possible Future Direction
 
-- Lorem Ipsum dolor sit amet
+- Quality-of-life browser extension for Voyage.
+- Worldbuilding and writing workflow helpers.
+- Shared BetterEcosystem design patterns where they make sense.
+- BetterRepository resource pages for Voyage once public documentation and user workflows settle.
 
----
+## Current Priority
 
-## ✅ To-Do List
-
-### Critical Priority
-<!-- Must be done ASAP -->
-
-### High Priority
-<!-- Important, do soon -->
-
-### Medium Priority
-<!-- Standard priority -->
-
-### Low Priority
-<!-- Nice to have -->
-
----
-
-## 🐛 Bugs & Issues
-
-### Critical
-<!-- App-breaking, immediate fix required -->
-
-### Major
-<!-- Significant impact on functionality -->
-
-### Minor
-<!-- Small issues, low impact -->
-
-### Trivial
-<!-- Cosmetic or negligible -->
-
----
-
-## Notes & Ideas
-
-*Use this section for BetterVoyage-specific ideas and brainstorming.*
-
--
+None. BetterDungeon V2 and Frontier documentation remain the active work.

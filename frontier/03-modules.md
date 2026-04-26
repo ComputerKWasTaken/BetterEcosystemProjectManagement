@@ -5,7 +5,7 @@
 A **Frontier module** is a matched pair:
 
 1. **AI-Dungeon-side Library snippet** — JavaScript the user pastes into their scenario's Library tab. Provides the in-script API for calling the module's ops.
-2. **BetterDungeon-side handler** — JavaScript loaded by the extension. Registers with Frontier Core; implements the ops' actual logic (widget rendering, network fetches, filesystem access, etc.).
+2. **BetterDungeon-side handler** — JavaScript loaded by the extension. Registers with Frontier Core; implements the ops' actual logic (widget rendering, safe web requests, time/location/weather helpers, device hints, hosted AI calls, etc.).
 
 Frontier Core is the only thing that bridges the two. Neither half knows anything about the other's implementation — they share only the protocol envelope shape.
 
@@ -75,7 +75,7 @@ type OpHandler = (args: unknown, ctx: FrontierContext) => Promise<unknown> | unk
 
 interface OpDescriptor {
   handler: OpHandler;
-  /** 'safe' = re-invoke on reload; 'unsafe' = convert pending to err:timeout instead. Default 'safe'. */
+  /** 'safe' = re-invoke on reload; 'unsafe' = convert pending to err:unsafe_replay_blocked instead. Default 'safe'. */
   idempotent?: 'safe' | 'unsafe';
   /** Max ms before Core times out the op. Default 30_000. */
   timeoutMs?: number;
@@ -125,7 +125,7 @@ interface FrontierContext {
 - MUST NOT rely on module-level mutable state for correctness across handler invocations, because Core may replay a handler on BD reload if the op is marked `idempotent: 'safe'` (which is the default). Use `ctx.storage` for anything that needs to persist.
 - SHOULD validate args at the top of the handler and throw `{ code: 'invalid_args', message: '...' }` on rejection.
 - SHOULD honor `args.timeoutMs` if provided, otherwise rely on Core's per-op default timeout.
-- MUST NOT touch module-specific DOM or UI. UI-producing modules (Scripture) are state-only by design; ops-producing modules (WebFetch, Clock) are background workers.
+- MUST NOT touch module-specific DOM or UI. UI-producing modules (Scripture) are state-only by design; ops-producing modules (WebFetch, Clock, Weather, Provider AI, etc.) route privileged or asynchronous work through bounded handlers and, when needed, the background worker.
 - For multi-turn ops, return a `Promise` that resolves / rejects across turn boundaries. Core writes `pending` immediately and the terminal status when the Promise settles. The script polls across turns.
 
 ## Module registration
@@ -136,6 +136,11 @@ In the extension bootstrap, modules register themselves after `module-registry.j
 window.Frontier.registry.register(ScriptureModule);
 window.Frontier.registry.register(WebFetchModule);
 window.Frontier.registry.register(ClockModule);
+window.Frontier.registry.register(GeolocationModule);
+window.Frontier.registry.register(WeatherModule);
+window.Frontier.registry.register(NetworkModule);
+window.Frontier.registry.register(SystemModule);
+window.Frontier.registry.register(ProviderAIModule);
 ```
 
 Registration triggers:

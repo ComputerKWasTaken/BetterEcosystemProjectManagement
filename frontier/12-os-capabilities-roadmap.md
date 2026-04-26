@@ -325,7 +325,7 @@ Robyn is especially interested in this area, so it makes sense to hold deeper Lo
 
 ## Practical direction after the simple modules
 
-Clock, Weather, Network, and System are done. Geolocation has landed locally. The simple, generally useful OS-adjacent modules have earned their place and are no longer the active planning focus.
+Clock, Geolocation, Weather, Network, and System are done. Provider AI is also complete as the hosted-model bridge. The simple, generally useful OS-adjacent modules have earned their place and are no longer the active planning focus.
 
 The best immediate sequence is:
 
