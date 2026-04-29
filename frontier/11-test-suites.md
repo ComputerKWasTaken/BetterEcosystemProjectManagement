@@ -6,11 +6,14 @@ This page tracks the current live AI Dungeon regression harness and the complete
 
 Current live sign-off suite:
 
-- None. Phase 10 is guide and docs rewrite work.
+- [22 - Scripture Interactive Widgets AI Dungeon Test Suite](./22-scripture-interactive-widgets-test-suite.md)
 
 Current regression suite:
 
+- [22 - Scripture Interactive Widgets AI Dungeon Test Suite](./22-scripture-interactive-widgets-test-suite.md)
 - [21 - Provider AI AI Dungeon Test Suite](./21-provider-ai-ai-dungeon-test-suite.md)
+
+Use the Scripture Interactive Widgets suite when changing Scripture widget validation/rendering, widget risk behavior, the `frontier:in:scripture.widgetEvents` queue, optimistic UI behavior, event coalescing, or interaction acknowledgements.
 
 Use the Provider AI suite when changing Provider AI op behavior, OpenRouter request/response normalization, key/default-model settings, heartbeat advertisement, dispatcher unsafe replay behavior, or the Provider AI AI Dungeon harness itself.
 
