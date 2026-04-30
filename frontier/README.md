@@ -17,6 +17,7 @@
 | 12 | [OS Capabilities Roadmap](./12-os-capabilities-roadmap.md) | Expanded capability map for OS-adjacent modules, AI bridges, and the future BD SDK surface |
 | 17 | [Provider AI Phase Plan](./17-provider-ai-phase-plan.md) | Completed plan for hosted-model AI bridge work |
 | 21 | [Provider AI AI Dungeon Test Suite](./21-provider-ai-ai-dungeon-test-suite.md) | Completed Phase 9 live validation suite |
+| 23 | [Phase 10 Documentation Plan](./23-phase-10-documentation-plan.md) | Private + public documentation rewrite scope, decisions, and execution order |
 
 ## One-paragraph summary
 
