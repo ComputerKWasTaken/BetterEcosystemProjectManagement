@@ -560,7 +560,7 @@ function scriptureSet(widgets) {
 ### Provider AI Library adapter (pasted after the base Library)
 
 ```js
-// === Provider AI (Frontier Hosted Model Module) ==========================
+// === Provider AI (Frontier AI Bridge) ====================================
 // Setup:
 //   Save an OpenRouter API key in BetterDungeon -> Frontier -> AI Providers.
 // Usage:
@@ -581,7 +581,8 @@ function scriptureSet(widgets) {
 //   }).then(result => console.log(result.text));
 
 // No specific script-side state or functions needed beyond frontierCall.
-// The module is primarily used via the generic frontierCall API.
+// The module is Frontier's provider-backed path for sidecar model calls.
+// It never exposes API keys to scripts or inserts results into the story by itself.
 ```
 
 ### Example full scenario flow

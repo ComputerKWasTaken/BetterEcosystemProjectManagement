@@ -19,8 +19,7 @@ The strongest next capability areas are:
 3. `network`
 4. `system`
 5. `providerAI`
-6. `localAI`
-7. `bd.sdk`
+6. `bd.sdk`
 
 The weak or rejected ideas for now are:
 
@@ -170,13 +169,13 @@ This combines the most useful parts of device / power / environment awareness in
 **Why it is useful**
 
 - Lets scripts and future modules adapt to desktop vs mobile vs tablet.
-- Useful for local-AI gating later.
+- Useful for provider-backed AI defaults and request sizing.
 - Gives better defaults and cleaner fallbacks.
 
 **What it unlocks**
 
 - platform-sensitive UI decisions
-- deciding whether a local model flow is realistic
+- tuning provider-backed AI requests to the device class
 - tuning request size / behavior to the device class
 
 **Suggested ops**
@@ -251,25 +250,27 @@ That is a huge selling point because it lets script authors use language models 
 
 ### Provider AI
 
-This is the hosted-model path, with OpenRouter as the most obvious first candidate.
+This is Frontier's AI bridge: hosted-model access through providers configured in BetterDungeon, with OpenRouter as the first supported provider.
 
 **Why it is useful**
 
 - Easier to implement than local inference
 - Gives access to much stronger models than most local devices can run
 - Lets script authors build genuinely smart helpers quickly
+- Keeps the user experience centered on keys, models, and limits instead of per-device inference setup
 
 **Tradeoffs**
 
 - Requires user-provided API keys
 - Costs money
-- Less seamless than local capability
+- Needs clear settings, provider status, and cost/rate-limit communication
 
 **What it unlocks**
 
 - best-in-class reasoning and language quality
 - fast path to a flagship Frontier feature
 - multi-model scripts where AI Dungeon handles story and provider AI handles side tasks
+- a stable surface for future provider presets, model recommendations, and scenario-author examples
 
 **Suggested ops**
 
@@ -286,42 +287,19 @@ This is the hosted-model path, with OpenRouter as the most obvious first candida
 
 - High, but in a manageable "credentials and billing" way rather than a machine-safety way
 
-### LocalAI
+### Local AI
 
-This is the local-endpoint path: Ollama, LM Studio, local OpenAI-compatible servers, llama.cpp server, and similar tools.
+Local model integration is removed from the Frontier plan. Ollama, LM Studio, local OpenAI-compatible servers, llama.cpp server, and similar tools are interesting for power users, but they create the wrong default product burden for Frontier: platform-specific setup, hardware detection, networking quirks, model management, performance surprises, and a support matrix that most AI Dungeon players do not want to handle.
 
-**Why it is useful**
+**Decision:** do not build a `localAI` module. Focus AI work on Provider AI instead.
 
-- Solves the "query a model from a script" problem without forcing cloud dependence
-- Strong privacy story
-- Very compelling power-user differentiator
+The useful ideas from local inference should flow back into Provider AI where they fit:
 
-**Tradeoffs**
-
-- Harder product problem
-- More setup burden
-- Device capability matters a lot
-
-**What it unlocks**
-
-- offline or mostly-local model workflows
-- private sidecar assistants
-- personal memory / scripture / journal helpers
-- user-owned model experimentation inside Frontier
-
-**Suggested ops**
-
-- `localAI.chat({ provider, model, messages, temperature?, maxTokens? })`
-- `localAI.models()`
-- `localAI.status()`
-
-**Risk**
-
-- High, but strategically important
-
-**Planning note**
-
-Robyn is especially interested in this area, so it makes sense to hold deeper LocalAI design work until she is in the room.
+- privacy and cost messaging
+- model capability guidance
+- request-size controls
+- fallback behavior when AI calls are unavailable
+- scenario-author examples that keep sidecar reasoning explicit and bounded
 
 ## Practical direction after the simple modules
 
@@ -329,16 +307,16 @@ Clock, Geolocation, Weather, Network, and System are done. Provider AI is also c
 
 The best immediate sequence is:
 
-1. Update public-facing guides and release docs with the completed Provider AI module.
-2. Revisit LocalAI after the Robyn design pass.
+1. Update public-facing guides and release docs with Provider AI as a flagship Frontier module.
+2. Expand Provider AI around provider setup, model discovery, default-model guidance, safe request limits, and reusable examples.
 
 ## Recommendation
 
 My current recommendation is:
 
-1. Treat `providerAI` as the completed hosted-model bridge and document it clearly in Phase 10.
-2. Keep `localAI` documented but deferred for Robyn's design pass.
-3. Use hosted Provider AI as the proven model-query shape before tackling local inference setup complexity.
+1. Treat `providerAI` as the core Frontier AI bridge and document it clearly in Phase 10.
+2. Remove `localAI` from the planned module set.
+3. Improve Provider AI before adding any new AI surface: more providers, clearer settings, safer defaults, better examples.
 4. Treat `bd.sdk` as a future cross-cutting helper surface, not a raw internal-class escape hatch.
 
 That keeps the roadmap grounded in real script-author value:

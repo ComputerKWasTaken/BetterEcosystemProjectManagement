@@ -11,6 +11,7 @@
 | 3 | **BetterScripts migration is a standalone guide.** Not a section inside FrontierGuide, not changelog material. | Clean separation: Frontier is the new thing, migration is the bridge from the old thing. Authors who never used BetterScripts don't need to wade through it. |
 | 4 | **Existing `docs/00-foundation` through `docs/13-DOM` preserved as-is.** New Frontier and BetterDungeon internal docs go in `14-frontier/` and `15-betterdungeon/`. | The existing docs cover AI Dungeon's platform, not Frontier. They remain useful reference material; no reason to touch them. |
 | 5 | **FrontierGuide updated to reflect production status.** "Coming in V2" and "(Preview)" labels removed. Tab promoted to primary. | Docs are written assuming Frontier is live — they ship on a branch and go public with the release. |
+| 6 | **Provider AI is the only planned AI bridge.** No Local AI guide, tab, setup path, or roadmap promise. | Hosted providers are easier for users to configure and for BetterDungeon to support. Provider AI gets the product attention: setup UX, request limits, model guidance, additional providers, and practical examples. |
 
 ---
 
@@ -27,7 +28,7 @@ Internal-facing, technically exhaustive. Written for future-us, late-night debug
 | `core.md` | `core.js`, `ops-dispatcher.js`, `heartbeat.js`, `module-registry.js`. State-channel dispatch (card-family routing by `frontier:state:*` prefix), ops dispatch (`frontier:out` consumption, dedup, idempotency, GC), adventure scoping, heartbeat coalescing and echo suppression, protocol-version negotiation, debug mode. |
 | `modules.md` | Module interface contract (`FrontierModule` shape), handler rules (state vs ops), lifecycle hooks (`onEnable`/`onDisable`/`onStateChange`/`onAdventureChange`), registration flow, enable/disable wiring via `chrome.storage.sync`, `ctx` API reference (`writeCard`, `respond`, `respondError`, `storage`, `log`), idempotency model (`safe` vs `unsafe`). |
 | `scripture-internals.md` | `scripture/module.js`, `renderer.js`, `validators.js`. Widget DOM creation pipeline, 9 widget types, alignment zones (left/center/right), density recalculation, layout monitoring, live-count history lookup and fallback chain, manifest reconciliation, HTML/CSS sanitization for `custom` type. |
-| `ops-modules.md` | Per-module internals: WebFetch (consent model via `consent.js`, per-origin rate limits, scheme blocklist, header stripping), Clock (format engine, timezone handling), Geolocation (permission flow, `getCurrent` args), Weather (geocoding → Open-Meteo pipeline, forecast assembly), Network (`navigator.connection` surface), System (UA parsing, Battery API, device classification), Provider AI (OpenRouter routing, background worker relay, key storage in `chrome.storage.local`, bounded request shapes, model discovery). |
+| `ops-modules.md` | Per-module internals: WebFetch (consent model via `consent.js`, per-origin rate limits, scheme blocklist, header stripping), Clock (format engine, timezone handling), Geolocation (permission flow, `getCurrent` args), Weather (geocoding → Open-Meteo pipeline, forecast assembly), Network (`navigator.connection` surface), System (UA parsing, Battery API, device classification), Provider AI as the canonical AI bridge (OpenRouter routing, background worker relay, key storage in `chrome.storage.local`, bounded request shapes, model discovery, future provider-adapter seam). |
 | `troubleshooting.md` | Known gotchas, debug-mode usage (`Frontier.debug = true`), common failure patterns (heartbeat not writing, card echo loops, stale mutation templates), sessionStorage inspection (`frontier:ops:inflight`), card-state debugging (reading `frontier:out` / `frontier:in:*` in AID's story card UI), mutation replay edge cases, platform-specific quirks (Gecko `fetch` shim, Android WebView MAIN world fallback). |
 
 ### `docs/15-betterdungeon/` — Extension Internal Reference
@@ -111,6 +112,15 @@ Each follows a compact template:
 | Example         | Complete scenario snippet using the module. |
 | Notes & Caveats | Consent model, rate limits, platform quirks, etc. |
 ```
+
+Provider AI gets extra coverage because it is now Frontier's core AI feature:
+
+- OpenRouter key setup and connection testing in BetterDungeon.
+- Recommended default-model guidance and how authors should let users override it.
+- Safe request design: concise prompts, explicit JSON when needed, max-token caps, timeout handling, and failure fallbacks.
+- Billing/privacy language that makes clear scripts never see API keys and calls are never inserted into the story automatically.
+- Examples for classification, extraction, summarization, and sidecar NPC reasoning.
+- Notes on future provider expansion through the same `providerAI` surface, not separate AI modules.
 
 ### `MigrationGuide.vue` — new
 
