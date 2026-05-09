@@ -34,7 +34,7 @@ Create or update public-facing guides for:
 
 ### Later
 
-- Add LocalAI documentation after the later design pass.
+- Add deeper Provider AI recipes once additional providers, presets, or recommended models are available.
 - Add Voyage resources when Voyage leaves Early Access and the product direction is clear.
 
 ## Known Issues

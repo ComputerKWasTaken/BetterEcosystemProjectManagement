@@ -25,7 +25,7 @@ Current next step:
 
 - Write public Frontier documentation and module guides.
 - Keep Provider AI as the current regression suite while docs are updated.
-- Preserve LocalAI for the later Robyn design pass.
+- Treat Provider AI as Frontier's core AI bridge and expand it through provider support, configuration, safety controls, and examples.
 
 ### Next
 
@@ -33,7 +33,6 @@ Current next step:
 
 ### Later
 
-- LocalAI module.
 - `bd.sdk` helper surface for exposing safe BetterDungeon capabilities.
 - Third-party module registry and sandboxing.
 - NPM/TypeScript/bundler migration as a separate epic.

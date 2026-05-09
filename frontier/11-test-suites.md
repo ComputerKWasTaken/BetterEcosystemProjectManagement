@@ -15,7 +15,7 @@ Current regression suite:
 
 Use the Scripture Interactive Widgets suite when changing Scripture widget validation/rendering, widget risk behavior, the `frontier:in:scripture.widgetEvents` queue, optimistic UI behavior, event coalescing, or interaction acknowledgements.
 
-Use the Provider AI suite when changing Provider AI op behavior, OpenRouter request/response normalization, key/default-model settings, heartbeat advertisement, dispatcher unsafe replay behavior, or the Provider AI AI Dungeon harness itself.
+Use the Provider AI suite when changing Provider AI op behavior, provider request/response normalization, key/default-model settings, heartbeat advertisement, dispatcher unsafe replay behavior, or the Provider AI AI Dungeon harness itself.
 
 ## Completed Sign-offs
 

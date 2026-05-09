@@ -282,7 +282,7 @@ Standard BD plumbing, expanded for the module catalog.
 
 ### Phase 9 — Provider AI module
 
-Hosted sidecar model calls through Frontier.
+Provider-backed sidecar model calls through Frontier. This is the core AI path for Frontier.
 
 **Files:**
 - `modules/provider-ai/module.js` (new)
@@ -293,7 +293,7 @@ Hosted sidecar model calls through Frontier.
 - Phase 9 kickoff notes (removed after sign-off; outcome retained here)
 - `Project Management/frontier/21-provider-ai-ai-dungeon-test-suite.md` (completed live suite)
 
-**Status:** *completed 2026-04-26*. Provider AI is implemented with OpenRouter-backed `chat`, `models`, and `testConnection` ops, BetterDungeon-held keys, popup configuration, bounded request validation, background-worker provider calls, and unsafe replay protection for paid chat calls. Static checks and VM simulations passed, then live AI Dungeon validation passed on run `provider-ai-mof04zzu` using `inclusionai/ling-2.6-1t:free`.
+**Status:** *completed 2026-04-26*. Provider AI is implemented with OpenRouter-backed `chat`, `models`, and `testConnection` ops, BetterDungeon-held keys, popup configuration, bounded request validation, background-worker provider calls, and unsafe replay protection for paid chat calls. Static checks and VM simulations passed, then live AI Dungeon validation passed on run `provider-ai-mof04zzu` using `inclusionai/ling-2.6-1t:free`. Follow-up work should strengthen this provider-backed surface rather than adding local-model setup flows.
 
 **Work:**
 
@@ -341,7 +341,7 @@ BetterRepository content overhaul for V2.
    - `WeatherGuide.vue` — Open-Meteo current/forecast ops, place vs coordinates, units, and worked examples.
    - `NetworkGuide.vue` — connection status hints and degraded-mode examples.
    - `SystemGuide.vue` — device/environment/power hints and platform-sensitive examples.
-   - `ProviderAIGuide.vue` — OpenRouter key setup, `testConnection`, `models`, `chat`, request caps, unsafe replay behavior, and sidecar reasoning examples.
+   - `ProviderAIGuide.vue` — OpenRouter key setup, `testConnection`, `models`, `chat`, request caps, unsafe replay behavior, provider expansion expectations, and sidecar reasoning examples.
 3. Update router / nav.
 4. `story-cards-api.md` — new section documenting reserved `frontier:*`, `scripture:*`, `bd:*` prefixes.
 5. Drop ALL ZW / TagCipher / Context Modifier sections.
@@ -471,6 +471,6 @@ These were originally out-of-MVP; the write-path breakthrough moved them into sc
 5. **Inter-module calls** — modules invoking other module ops via Core. Shape mostly falls out of Phase 4; ergonomics pass is deferred.
 6. **Richer popup UI** — live state viewer, heartbeat inspector, request-log panel. Phase 7 ships the minimum; the rest waits for feedback.
 7. **Mobile APK parity testing automation** — once the APK pipeline is in place, automate the Android WebView smoke tests.
-8. **Additional modules** — LocalAI, the future `bd.sdk` helper surface, and the long tail tracked in [12 - OS Capabilities Roadmap](./12-os-capabilities-roadmap.md). Provider AI is now promoted into Phase 9. Earlier brainstorm items such as Notify, LocalStorage, Clipboard, Filesystem, Downloads, Share, Presence, and Speech are currently deprioritized or rejected for the turn-based Frontier use case. Each kept module is still an incremental addition on the Full Frontier substrate; none require Core changes.
+8. **Additional modules** — the future `bd.sdk` helper surface and the long tail tracked in [12 - OS Capabilities Roadmap](./12-os-capabilities-roadmap.md). Provider AI is now promoted into Phase 9 and is the AI bridge Frontier should deepen. Earlier brainstorm items such as Notify, LocalStorage, Clipboard, Filesystem, Downloads, Share, Presence, Speech, and local-model integration are currently deprioritized or rejected for the turn-based Frontier use case. Each kept module is still an incremental addition on the Full Frontier substrate; none require Core changes.
 
 All of these slot into the existing architecture without refactoring Core.

@@ -103,7 +103,7 @@ Transport       ─────────────────────�
 
 ### Module layer
 
-A module is an object matching the `FrontierModule` interface documented in [03 — Modules](./03-modules.md). V2 now ships a broad first-party module set covering state rendering, web access, OS-adjacent helpers, and hosted-model calls:
+A module is an object matching the `FrontierModule` interface documented in [03 — Modules](./03-modules.md). V2 now ships a broad first-party module set covering state rendering, web access, OS-adjacent helpers, and Provider AI calls:
 
 **`modules/scripture/module.js`** — state-only module (reference for the pattern)
 - Registers with `FrontierCore`. Declares `stateNames: ['scripture']`, `tracksLiveCount: true`.
@@ -334,7 +334,7 @@ V2: a dedicated "Frontier" tab containing:
 - The Frontier master toggle (off → Core + all modules inert).
 - A nested list of modules, each with its own toggle and description: Scripture, WebFetch, Clock, Geolocation, Weather, Network, System, and Provider AI.
 - A WebFetch permissions sub-panel (per-origin allowlist with allow / deny / revoke controls).
-- Provider AI controls for OpenRouter key storage, default model, and connection testing.
+- Provider AI controls for provider key storage, default model guidance, connection testing, and bounded request settings.
 - A debug toggle for Frontier Core (replaces `SET_BETTERSCRIPTS_DEBUG`).
 - (Future placeholder, not rendered in V2:) "Manage modules…" button for third-party registry browsing.
 

@@ -1,12 +1,12 @@
 # 17 - Provider AI Phase Plan
 
-Provider AI is the completed Phase 9 Frontier capability after the Phase 8 Story Card / heartbeat cleanup.
+Provider AI is the completed Phase 9 Frontier capability after the Phase 8 Story Card / heartbeat cleanup. It is Frontier's core AI bridge.
 
-The goal is to let AI Dungeon scripts ask a hosted language model for sidecar reasoning without hijacking the story model or smuggling tool requests through story text.
+The goal is to let AI Dungeon scripts ask a provider-backed language model for sidecar reasoning without hijacking the story model or smuggling tool requests through story text. This is the AI path Frontier should keep expanding.
 
 ## V1 Scope
 
-Start with a conservative hosted-provider bridge:
+Start with a conservative provider bridge:
 
 - `providerAI.chat({ provider, model, messages, temperature?, maxTokens?, responseFormat?, stop?, timeoutMs? })`
 - `providerAI.models({ provider?, query?, limit?, timeoutMs? })`
@@ -14,17 +14,21 @@ Start with a conservative hosted-provider bridge:
 
 OpenRouter is the first provider because it gives access to many models through one user-supplied key. The background bridge uses OpenRouter's OpenAI-compatible `/chat/completions` endpoint for chat calls, `/models` for model discovery, and `/key` for validating the stored key during `testConnection`.
 
+Future providers should plug into the same `providerAI` surface. Avoid separate AI modules unless they solve a clearly different product problem.
+
 ## Product Rules
 
 - Scripts never receive API keys.
 - Keys live in BetterDungeon settings / extension storage.
 - If no key is configured, calls fail with a clear `not_configured` error.
 - Users should be able to disable Provider AI globally.
+- Provider setup, key status, model selection, and limits should be visible in BetterDungeon's Frontier UI.
 - Start with strict request caps: max messages, max content length, max tokens, and per-origin/per-adventure rate limits.
 - Responses should include provider, model, usage if available, finish reason if available, and normalized message content.
 - `testConnection` should prove the saved key is valid before reporting success; model discovery alone is not enough because provider catalogs can be public.
 - `chat` is marked unsafe so a BetterDungeon reload cannot duplicate a paid model call.
 - No automatic story insertion. Scripts decide how to use the result.
+- Keep examples focused on bounded sidecar tasks such as classification, extraction, summarization, translation, and NPC helper reasoning.
 
 ## Architecture Sketch
 
@@ -56,10 +60,10 @@ Live AI Dungeon tests:
 
 ## Not In V1
 
-- LocalAI. Keep this for the Robyn design pass.
 - Letting scripts choose arbitrary HTTP providers.
 - Fine-grained prompt templates or scenario-wide AI routing.
 - Replacing the AI Dungeon story model automatically.
+- Local model integration. Frontier should not ask normal users to configure Ollama, LM Studio, local OpenAI-compatible servers, or per-device inference stacks.
 
 ## Current Status
 
@@ -74,4 +78,4 @@ Completed on 2026-04-26. The OpenRouter-backed vertical slice is implemented and
 
 ## Next Step
 
-Move into Phase 10 guide and docs rewrite. Provider AI should be documented as the hosted-model bridge for script-side sidecar reasoning; LocalAI remains deferred for the later Robyn design pass.
+Move into Phase 10 guide and docs rewrite. Provider AI should be documented as the core Frontier AI bridge for script-side sidecar reasoning, with follow-up work focused on stronger provider support, clearer configuration, safer request limits, and richer scenario-author examples.

@@ -125,7 +125,7 @@ Every AI Dungeon action in the `actionWindow` subscription carries a stable `id`
 - **Third-party module registry UI.** Architecturally unblocked by Phase 4 but the UI and trust model are their own workstream.
 - **`story-card-scanner.js` cut-over.** Keep the existing DOM-scanner pathway; ws-stream can optionally hydrate the cache, but the scanner still runs. Full cut-over is a post-V2 follow-up.
 - **NPM / TypeScript / bundler migration** (per decision #10 below).
-- **LocalAI and broader third-party AI surfaces.** Provider AI is now in V2 Phase 9; LocalAI remains deferred for the Robyn design pass.
+- **Broader third-party AI surfaces.** Provider AI is V2's AI bridge. Future AI work should expand provider support, presets, safety controls, and examples rather than adding local-model setup flows.
 
 ## Locked-in decisions
 

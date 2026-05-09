@@ -47,7 +47,7 @@
 
 ## Current focus
 
-Phase 9 is complete. Provider AI now exposes `providerAI.chat`, `providerAI.models`, and `providerAI.testConnection`, with OpenRouter keys held in BetterDungeon local storage and requests routed through the background worker. Live validation confirmed key metadata, model discovery, validation failures, and one short chat completion through `frontier:in:providerAI`. Current focus moves to Phase 10 guide and docs rewrites. LocalAI remains parked for the later Robyn design pass.
+Phase 9 is complete. Provider AI now exposes `providerAI.chat`, `providerAI.models`, and `providerAI.testConnection`, with OpenRouter keys held in BetterDungeon local storage and requests routed through the background worker. Live validation confirmed key metadata, model discovery, validation failures, and one short chat completion through `frontier:in:providerAI`. Current focus moves to Phase 10 guide and docs rewrites. Provider AI is the canonical AI bridge for Frontier; future AI work should deepen hosted provider coverage, settings, safety, and examples instead of adding a local-model module.
 
 ## Test suites
 
