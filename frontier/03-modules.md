@@ -585,6 +585,27 @@ function scriptureSet(widgets) {
 // It never exposes API keys to scripts or inserts results into the story by itself.
 ```
 
+### Multi-module script pattern
+
+Chronos V2 in `BetterDungeon/examples/aid-scripts/chronos-v2/` is the
+reference example for combining a state-only UI module with several ops
+modules in one AI Dungeon script.
+
+Use this shape for scripts that need a live dashboard plus sidecar module work:
+
+- Publish interactive widgets through `frontier:state:scripture`.
+- Read `frontier:in:scripture` widget events and acknowledge the highest
+  processed script-owned event sequence in the next Scripture state payload.
+- Feature-detect ops from `frontier:heartbeat` before queueing requests on
+  `frontier:out`.
+- Poll `frontier:in:<module>` cards over later turns, apply terminal
+  responses, and ack consumed request ids through `frontier:out`.
+- Keep local simulation or cached state as the fallback so missing modules,
+  denied permissions, timeouts, and stale heartbeats never break gameplay.
+
+Chronos uses that pattern for `clock.now` and `weather.current` while
+Scripture remains the single UI surface.
+
 ### Example full scenario flow
 
 ```js

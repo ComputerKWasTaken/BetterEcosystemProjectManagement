@@ -2,13 +2,12 @@
 
 Live regression suite for Phase 9.5, the Scripture interactive widget system.
 
-Use this after loading the extension, opening AI Dungeon, enabling Frontier, enabling Scripture, and setting BetterDungeon -> Frontier -> Widget Risk to `Enhanced`.
+Use this after loading the extension, opening AI Dungeon, and enabling Frontier + Scripture.
 
 This suite validates:
 
-- New interactive widget types render under the `Enhanced` risk ceiling.
-- `Safe` blocks interactive widgets while leaving passive Scripture widgets alive.
-- `Unsafe` allows widgets that explicitly request `risk: "unsafe"`.
+- New interactive widget types render without additional permission gating.
+- Custom widgets can render rich HTML, images, styles, and script-controlled behavior.
 - Button clicks are preserved as separate actions.
 - Slider, toggle, select, input, and textarea changes coalesce to the latest useful value.
 - BetterDungeon writes user interactions to `frontier:in:scripture` under `widgetEvents`.
@@ -48,7 +47,7 @@ state.scriptureInteractiveSuite = state.scriptureInteractiveSuite || {
   stance: 'normal',
   codename: '',
   note: '',
-  unsafePings: 0,
+  customPings: 0,
   processedEvents: {},
   consumedCommands: {},
   touched: {},
@@ -209,7 +208,7 @@ function siResetSuite() {
     stance: 'normal',
     codename: '',
     note: '',
-    unsafePings: 0,
+    customPings: 0,
     processedEvents: {},
     consumedCommands: {},
     touched: {},
@@ -266,9 +265,9 @@ function siProcessWidgetEvents() {
     } else if (event.widgetId === 'si-note') {
       suite.note = String(event.value || '').slice(0, 120);
       suite.touched.textarea = true;
-    } else if (event.widgetId === 'si-unsafe-demo') {
-      suite.unsafePings += 1;
-      suite.touched.unsafe = true;
+    } else if (event.widgetId === 'si-custom-demo') {
+      suite.customPings += 1;
+      suite.touched.custom = true;
     }
 
     siLog('widget-event', event.widgetId + ' #' + seq + ' count=' + count + ' value=' + JSON.stringify(event.value));
@@ -282,24 +281,30 @@ function siManifest() {
     widgets: [
       { id: 'si-status', type: 'badge', label: 'Status', align: 'left', color: 'cyan' },
       { id: 'si-potions-left', type: 'counter', icon: '+', label: 'Potions', align: 'left' },
-      { id: 'si-potion', type: 'button', label: 'Potion', text: 'Use Potion', icon: '+', variant: 'primary', align: 'left', risk: 'enhanced' },
-      { id: 'si-hard-mode', type: 'toggle', label: 'Hard Mode', align: 'center', risk: 'enhanced' },
-      { id: 'si-difficulty', type: 'slider', label: 'Difficulty', min: 1, max: 100, step: 1, showValue: true, align: 'center', risk: 'enhanced' },
+      { id: 'si-potion', type: 'button', label: 'Potion', text: 'Use Potion', icon: '+', variant: 'primary', align: 'left' },
+      { id: 'si-hard-mode', type: 'toggle', label: 'Hard Mode', align: 'center' },
+      { id: 'si-difficulty', type: 'slider', label: 'Difficulty', min: 1, max: 100, step: 1, showValue: true, align: 'center' },
       {
         id: 'si-stance',
         type: 'select',
         label: 'Stance',
         align: 'center',
-        risk: 'enhanced',
         options: [
           { label: 'Careful', value: 'careful' },
           { label: 'Normal', value: 'normal' },
           { label: 'Bold', value: 'bold' }
         ]
       },
-      { id: 'si-codename', type: 'input', label: 'Codename', placeholder: 'Type name', maxLength: 24, align: 'right', risk: 'enhanced' },
-      { id: 'si-note', type: 'textarea', label: 'Note', placeholder: 'Type test note', rows: 2, maxLength: 120, align: 'right', risk: 'enhanced' },
-      { id: 'si-unsafe-demo', type: 'button', label: 'Unsafe', text: 'Unsafe Ping', icon: '!', align: 'right', risk: 'unsafe' },
+      { id: 'si-codename', type: 'input', label: 'Codename', placeholder: 'Type name', maxLength: 24, align: 'right' },
+      { id: 'si-note', type: 'textarea', label: 'Note', placeholder: 'Type test note', rows: 2, maxLength: 120, align: 'right' },
+      {
+        id: 'si-custom-html',
+        type: 'custom',
+        align: 'right',
+        html: '<div class="si-custom-widget" style="display:flex;align-items:center;gap:6px"><img alt="" width="18" height="18" src="data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="><span><strong>Custom HTML</strong><br><small>script ready</small></span><script>window.__scriptureInteractiveCustomSeen=(window.__scriptureInteractiveCustomSeen||0)+1;</script></div>',
+        style: { minWidth: '180px' }
+      },
+      { id: 'si-custom-demo', type: 'button', label: 'Custom', text: 'Custom Ping', icon: '!', align: 'right' },
       { id: 'si-summary', type: 'panel', title: 'Script State', align: 'right' }
     ]
   };
@@ -321,7 +326,7 @@ function siValues() {
     'si-stance': suite.stance,
     'si-codename': suite.codename,
     'si-note': suite.note,
-    'si-unsafe-demo': { text: 'Unsafe Ping ' + suite.unsafePings },
+    'si-custom-demo': { text: 'Custom Ping ' + suite.customPings },
     'si-summary': {
       items: [
         { label: 'Run', value: siRunId() },
@@ -329,7 +334,7 @@ function siValues() {
         { label: 'Hard', value: suite.hardMode ? 'on' : 'off' },
         { label: 'Stance', value: suite.stance },
         { label: 'Potion clicks', value: suite.potionClicks },
-        { label: 'Unsafe pings', value: suite.unsafePings },
+        { label: 'Custom pings', value: suite.customPings },
         { label: 'Ack seq', value: suite.ackSeq }
       ]
     }
@@ -378,7 +383,7 @@ function siChecks() {
     inputSeen: !!suite.touched.input,
     textareaSeen: !!suite.touched.textarea,
     ackAdvanced: suite.ackSeq > 0,
-    unsafeSeen: !!suite.touched.unsafe
+    customSeen: !!suite.touched.custom
   };
 }
 
@@ -433,7 +438,7 @@ function siWriteTrace() {
       stance: suite.stance,
       codename: suite.codename,
       note: suite.note,
-      unsafePings: suite.unsafePings,
+      customPings: suite.customPings,
       ackSeq: suite.ackSeq
     },
     widgetEventsCard: siWidgetEventsCard(),
@@ -484,17 +489,16 @@ modifier(text);
 2. Open an AI Dungeon adventure.
 3. Open BetterDungeon -> Frontier.
 4. Confirm Frontier and Scripture are enabled.
-5. Set `Widget Risk` to `Enhanced`.
-6. Paste the Library script into the scenario Library.
-7. Paste the Output Modifier script into the scenario Output Modifier.
-8. Submit or continue once.
+5. Paste the Library script into the scenario Library.
+6. Paste the Output Modifier script into the scenario Output Modifier.
+7. Submit or continue once.
 
 Expected after the first turn:
 
 - `frontier:state:scripture` exists.
 - Passive widgets render.
-- Interactive widgets render: Potion button, Hard Mode toggle, Difficulty slider, Stance select, Codename input, and Note textarea.
-- `Unsafe Ping` does not render yet, because it asks for `risk: "unsafe"`.
+- Interactive widgets render: Potion button, Hard Mode toggle, Difficulty slider, Stance select, Codename input, Note textarea, and Custom Ping button.
+- The custom HTML widget renders with its inline image and styled layout.
 - `frontier:test:scripture-interactive` has `phase: "waiting for widget interactions"`.
 
 ## Core Interaction Check
@@ -530,31 +534,17 @@ Expected:
 - The first completed turn may still show the old script state, depending on when AI Dungeon snapshotted Story Cards.
 - The next available script turn processes the queued widget event and acknowledges it.
 
-## Risk Ceiling Checks
+## Custom Widget Check
 
-### Safe
-
-1. Set BetterDungeon -> Frontier -> Widget Risk to `Safe`.
-2. Take one turn or reload the adventure.
+1. Press `Custom Ping`.
+2. Take another turn.
 
 Expected:
 
-- Passive widgets remain.
-- Interactive widgets are rejected by Scripture validation and disappear.
-- Restore `Widget Risk` to `Enhanced` before continuing the normal suite.
-
-### Unsafe
-
-1. Set BetterDungeon -> Frontier -> Widget Risk to `Unsafe`.
-2. Take one turn or reload the adventure.
-3. Press `Unsafe Ping`.
-4. Take another turn.
-
-Expected:
-
-- The `Unsafe Ping` button renders.
-- `unsafePings` increments in the script state panel.
-- The trace card has `checks.unsafeSeen: true`.
+- The `Custom Ping` button renders.
+- `customPings` increments in the script state panel.
+- The trace card has `checks.customSeen: true`.
+- In the page console, `window.__scriptureInteractiveCustomSeen` is greater than `0`.
 
 ## Reset
 
@@ -620,4 +610,3 @@ The script acknowledges by writing:
 ```
 
 inside `frontier:state:scripture`.
-
