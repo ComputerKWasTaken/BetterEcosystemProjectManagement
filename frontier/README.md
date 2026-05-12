@@ -9,9 +9,8 @@
 | 00 | [Overview](./00-overview.md) | Vision, scope, relationship to BD V2, locked-in design decisions |
 | 01 | [Architecture](./01-architecture.md) | Three-layer model, file layout, component responsibilities |
 | 02 | [Protocol](./02-protocol.md) | Reserved card namespaces, state-card schema, live-count history convention, heartbeat, availability detection |
-| 03 | [Modules](./03-modules.md) | Module API, Scripture reference, Library adapters for all 8 modules, extensibility roadmap |
-| 04 | [Implementation Plan](./04-implementation-plan.md) | Phase history, file-by-file breakdown, remaining roadmap |
-| 05 | [Risks & Open Questions](./05-risks-and-open-questions.md) | Tracked risks (mostly resolved), design decisions, follow-up work |
+| 03 | [Modules](./03-modules.md) | Live module contract, shipped modules, and how to author new ones |
+| 04 | [Implementation Status](./04-implementation-plan.md) | What is shipped, what remains, and what is intentionally out of scope |
 | 06 | [Full Frontier Protocol](./06-full-frontier-protocol.md) | Two-way envelope protocol, request/response schemas, GC, idempotency |
 | 11 | [Frontier Test Suites](./11-test-suites.md) | Current regression suite, sign-off history, and cleanup policy |
 | 12 | [OS Capabilities Roadmap](./12-os-capabilities-roadmap.md) | Capability map for OS-adjacent modules, AI bridges, and the future BD SDK surface |
@@ -69,7 +68,7 @@ Five phases remain before BetterDungeon V2 ships:
 
 - Current regression suites: [22 — Scripture Interactive Widgets](./22-scripture-interactive-widgets-test-suite.md) and [21 — Provider AI](./archive/21-provider-ai-ai-dungeon-test-suite.md) (archived, still valid for regression checks).
 - Per-module test scripts are the next testing milestone (Phase 10).
-- Older live-suite scripts and phase kickoff notes were removed after sign-off. Canonical phase outcomes live in this README and [Implementation Plan](./04-implementation-plan.md).
+- Older live-suite scripts and phase kickoff notes were removed after sign-off. Canonical phase outcomes live in this README and [Implementation Status](./04-implementation-plan.md).
 
 ## Design principles
 
