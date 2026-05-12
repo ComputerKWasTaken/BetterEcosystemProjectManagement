@@ -1,4 +1,4 @@
-# 04 - Implementation Status
+# 03 - Implementation Status
 
 > This document is the current implementation-status and roadmap summary for Frontier. It replaces the older phase-by-phase construction log. Frontier's core system is already built and working; this doc exists to show what is shipped, what remains, and what is intentionally out of scope for now.
 
@@ -196,6 +196,18 @@ Goal:
 
 - public docs explain Frontier clearly without reintroducing outdated technical assumptions
 
+### BetterDungeon SDK feature
+
+Planned:
+
+- ship a curated BetterDungeon SDK surface through Frontier rather than leaving scripts limited to module-by-module discovery alone
+- expose stable capability-level helpers instead of raw BetterDungeon internals
+- use it as the clean place for version checks, capability checks, and future cross-cutting utilities
+
+Goal:
+
+- give script authors a powerful BetterDungeon-aware helper surface without coupling them to private extension classes
+
 ## What is no longer an active implementation problem
 
 These should not keep showing up in active planning docs as if they are still open:
@@ -217,7 +229,6 @@ These are still reasonable future ideas, but they are not required to describe F
 - sandboxed user-authored modules
 - richer inspector/debugger UI
 - full migration of every older BetterDungeon card consumer to Frontier-native streams
-- broader BD SDK surfaces beyond the currently shipped modules
 - additional AI provider expansion beyond the current shipped bridge
 
 ## Practical file references
@@ -226,7 +237,7 @@ If someone needs the real implementation, these are the most useful places to st
 
 - [00-overview.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/00-overview.md)
 - [01-architecture.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/01-architecture.md)
-- [03-modules.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/03-modules.md)
+- [02-modules.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/02-modules.md)
 - [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/core.js)
 - [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/module-registry.js)
 - [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/ops-dispatcher.js)

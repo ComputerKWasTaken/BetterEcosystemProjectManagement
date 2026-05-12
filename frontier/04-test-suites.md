@@ -1,4 +1,4 @@
-# 11 - Frontier Test Suites
+# 04 - Frontier Test Suites
 
 > This document tracks the Frontier regression surfaces that actually exist today, what each one is for, and where current coverage is still thin.
 
@@ -7,7 +7,7 @@
 Frontier currently has three meaningful testing surfaces in the repo:
 
 - dedicated AI Dungeon regression scripts under `BetterDungeon/tests/aid-scripts/`
-- the dedicated Scripture interactive suite doc in [22-scripture-interactive-widgets-test-suite.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/22-scripture-interactive-widgets-test-suite.md)
+- the dedicated Scripture interactive suite doc in [06-scripture-interactive-widgets-test-suite.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/06-scripture-interactive-widgets-test-suite.md)
 - example scripts under `BetterDungeon/examples/aid-scripts/` that also serve as real-world integration checks
 
 This is important because Frontier is not validated only through unit-style local checks. A lot of the runtime depends on live AI Dungeon behavior, so scenario-driven regression scripts are still the most useful proof surface.
@@ -74,7 +74,7 @@ Use this suite when changing:
 
 ## Dedicated interactive widget suite
 
-[22-scripture-interactive-widgets-test-suite.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/22-scripture-interactive-widgets-test-suite.md) is still the dedicated deep-dive suite for the newer Scripture interactive widget path.
+[06-scripture-interactive-widgets-test-suite.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/06-scripture-interactive-widgets-test-suite.md) is still the dedicated deep-dive suite for the newer Scripture interactive widget path.
 
 It is especially useful when changing:
 

@@ -1,4 +1,4 @@
-# 03 - Modules
+# 02 - Modules
 
 > This document describes how Frontier modules work in the current BetterDungeon implementation, what the live module contract looks like, and how to build a new module that fits the system cleanly.
 

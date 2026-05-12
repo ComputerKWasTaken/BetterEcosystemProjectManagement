@@ -1,4 +1,4 @@
-# 22 - Scripture Interactive Widgets AI Dungeon Test Suite
+# 06 - Scripture Interactive Widgets AI Dungeon Test Suite
 
 Live regression suite for Phase 9.5, the Scripture interactive widget system.
 
