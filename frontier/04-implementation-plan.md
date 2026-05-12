@@ -17,11 +17,11 @@ Frontier is part of **BetterDungeon V2**, which bundles:
 
 ## Scope revision — Full Frontier in V2
 
-The original plan scoped V2 to **Frontier Lite** (one-way, Scripture only) and deferred two-way comms to a post-MVP epic. That rested on an assumption that proved wrong in the best possible way: the GraphQL write path — formerly out-of-MVP item #5, "real GraphQL client robustness" — was solved ahead of schedule via **mutation-template replay**. We capture any in-flight `SaveQueueStoryCard` mutation, deep-override its variables, and re-send it. Auth-token capture, endpoint discovery, and CSRF handling are all sidestepped. Update AND create operations work for any card, including ones never touched in-session.
+The original plan briefly considered a reduced one-way Scripture-only scope and deferred two-way comms to a post-MVP epic. That assumption proved unnecessary once the GraphQL write path was solved via **mutation-template replay**. We capture any in-flight `SaveQueueStoryCard` mutation, deep-override its variables, and re-send it. Auth-token capture, endpoint discovery, and CSRF handling are all sidestepped. Update AND create operations work for any card, including ones never touched in-session.
 
-That unlocks the whole Full Frontier roadmap. Two-way comms becomes a ~40% scope increase on top of Lite instead of the 3–4× cost originally feared. V2 is therefore re-scoped from "widgets-only MVP" to the **"unshackle the sandbox" release** the vision doc promised: Scripture PLUS Full Frontier's envelope protocol PLUS first-party ops modules (WebFetch, Clock, Geolocation, Weather, Network, System, and Provider AI).
+That unlocked the whole Frontier roadmap. Two-way comms turned out to be a manageable extension of the same architecture rather than a separate product tier. V2 was therefore scoped around the unified Frontier platform: Scripture plus the envelope protocol plus first-party ops modules (WebFetch, Clock, Geolocation, Weather, Network, System, and Provider AI).
 
-**Profile impact:** the heartbeat's `profile` field ships as `"full"` at V2 launch. Per `02-protocol.md`, this is explicitly non-breaking — Full-profile Core still runs Lite-only scripts.
+**Runtime note:** the heartbeat's `profile` field ships as `"full"` at V2 launch, but this is now just a runtime descriptor. It should not be treated as a separate architectural tier in the docs.
 
 ## Phase breakdown
 
@@ -175,7 +175,7 @@ The two-way breakthrough. Design specified in [06 — Full Frontier protocol](./
 1. **Envelope format.** Request and response schemas, request-id scheme (`<liveCount>-<moduleId>-<seq>`), status lifecycle (`pending` → `ok` / `err` / `timeout`), per-module response sharding (`frontier:in:<module>`), GC strategy (script tombstones via ack-in-`frontier:out`; Core tombstones responses after N turns as a safety net).
 2. **Ops dispatcher.** Reads `frontier:out` diffs → dedupes by request id → resolves module + op handler → writes `pending` response immediately → writes terminal response when handler resolves / rejects. In-flight request ids mirrored to `sessionStorage`; after reload, safe pending ops may replay, while unsafe pending ops settle with `unsafe_replay_blocked` so external side effects are not duplicated.
 3. **Module API extension.** Modules may declare `ops: { [opName]: async (args, ctx) => result }`. State-only modules (Scripture) declare none and continue to work exactly as before.
-4. **Heartbeat upgrade.** `profile` flips to `"full"`. Per-module entries advertise `ops: string[]` so scripts can feature-detect specific ops.
+4. **Heartbeat upgrade.** Per-module entries advertise `ops: string[]` so scripts can feature-detect specific ops.
 
 **Acceptance:**
 - [x] A test module declaring `ops: { echo(args) { return { got: args }; } }` can be called via `frontier.call('test', 'echo', { hello: 'world' })` and the script receives `{ got: { hello: 'world' } }` within one turn.
@@ -339,7 +339,7 @@ Known scripts:
 ### Phase 14 — BetterRepository Documentation & Release Prep
 
 **Work:**
-1. Write `FrontierGuide.vue` (core overview, full-profile architecture, base Library, heartbeat, availability detection).
+1. Write `FrontierGuide.vue` (core overview, unified architecture, base Library, heartbeat, availability detection).
 2. Write per-module guide components:
    - `ScriptureGuide.vue`, `WebFetchGuide.vue`, `ClockGuide.vue`
    - `GeolocationGuide.vue`, `WeatherGuide.vue`, `NetworkGuide.vue`
@@ -437,7 +437,7 @@ Optional but recommended: a minimal harness scenario committed to a private Bett
 | `popup.html` / `popup.js` / `popup.css` | 5, 7, 9 | Frontier tab with module toggles, WebFetch allowlist, Provider AI config, debug toggle |
 | `services/ai-dungeon-service.js` | 1 | Write queue integration; optimistic echo reconciliation |
 | `services/story-card-cache.js` | optional | Hydrate from ws-stream (non-breaking) |
-| `BetterRepository/src/components/guides/BetterScriptsGuide.vue` | 14 | Rename → `FrontierGuide.vue` + restructure for Full profile |
+| `BetterRepository/src/components/guides/BetterScriptsGuide.vue` | 14 | Rename → `FrontierGuide.vue` + restructure for Frontier |
 | `BetterRepository/src/router/*` | 14 | Update routes for new guide set |
 | `Project Management/docs/01-scripting/api/story-cards-api.md` | 14 | Add reserved-prefix section |
 

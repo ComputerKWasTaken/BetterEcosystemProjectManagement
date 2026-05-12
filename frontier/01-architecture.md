@@ -1,6 +1,6 @@
 # 01 — Architecture
 
-> This document describes the V2 architecture — Transport + Core + Modules, with both the state channel (Lite profile) and the ops channel (Full profile) as first-class concerns. The ops channel's envelope protocol detail lives in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md); this document covers how Core is structured to service it.
+> This document describes Frontier's current architecture: Transport + Core + Modules. State cards and the ops channel are both part of the same unified runtime. The envelope protocol detail lives in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md); this document covers how Core is structured to service it.
 
 ## Three layers, one direction of dependency
 
@@ -84,7 +84,7 @@ Transport       ─────────────────────�
 - Persist long-lived module-specific state outside of story cards (modules use `ctx.storage` for small per-module prefs).
 - Mediate between modules (inter-module calls are a post-V2 addition).
 
-**`services/frontier/ops-dispatcher.js`** (Full profile)
+**`services/frontier/ops-dispatcher.js`**
 - Consumes `frontier:cards:diff` filtered to `frontier:out`.
 - Parses the envelope, dedupes request ids against its in-memory + `sessionStorage`-mirrored set of already-processed ids, and for each new request: resolves `module.ops[op]`, writes a `pending` response to `frontier:in:<module>` via the write queue, invokes the handler, then writes the terminal response (`ok` / `err` / `timeout`).
 - Honors the `acks` array in `frontier:out` by tombstoning matching responses.
@@ -93,7 +93,7 @@ Transport       ─────────────────────�
 
 **`services/frontier/heartbeat.js`**
 - Writes `frontier:heartbeat` via the write queue on adventure load, module enable/disable, and at most once per WS push (coalesced).
-- Payload schema in [02 — Protocol](./02-protocol.md#frontierheartbeat). In Full profile the `ops` field on each module entry advertises dispatch-able op names.
+- Payload schema in [02 — Protocol](./02-protocol.md#frontierheartbeat). The `ops` field on each module entry advertises dispatch-able op names.
 
 **`services/frontier/module-registry.js`**
 - Keeps the set of registered modules and their enabled/disabled state.
@@ -278,7 +278,7 @@ heartbeat.js writes `frontier:heartbeat` via the write queue on:
   - Module enable/disable
   - Every N turns as a liveness refresh (default: every turn, coalesced)
 
-Payload (Full profile, abbreviated; full schema in 02-protocol.md):
+Payload (abbreviated; full schema in 02-protocol.md):
   {
     v: 1,
     frontier: { version, protocol: 1, profile: 'full' },
@@ -292,7 +292,7 @@ Payload (Full profile, abbreviated; full schema in 02-protocol.md):
   }
 ```
 
-### Ops dispatch (Full profile: script → BD and back)
+### Ops dispatch (script → BD and back)
 
 ```
 Script, during any hook:

@@ -109,7 +109,7 @@ interface FrontierContext {
 }
 ```
 
-**Backward shape notes:** Lite modules that only declare `stateNames` + `onStateChange` work unchanged. `ctx.respond` / `ctx.respondError` are present but no-ops when the module declares no `ops`. Modules that don't need `tracksLiveCount` can omit it (defaults to `false`).
+**Shape notes:** State-only modules that only declare `stateNames` + `onStateChange` work unchanged. `ctx.respond` / `ctx.respondError` are present for advanced async cases, but most modules should just return or throw from their handlers. Modules that don't need `tracksLiveCount` can omit it (defaults to `false`).
 
 ## Handler rules
 
@@ -237,10 +237,9 @@ function frontierHeartbeat() {
 }
 
 function frontierIsAvailable(opts = {}) {
-  const { maxStaleTurns = 2, requireModules = [], requireProfile = 'full' } = opts;
+  const { maxStaleTurns = 2, requireModules = [] } = opts;
   const hb = frontierHeartbeat();
   if (!hb || hb.frontier?.protocol !== 1) return false;
-  if (hb.frontier.profile !== requireProfile) return false;
   if (typeof hb.turn === 'number' && info.actionCount - hb.turn > maxStaleTurns) return false;
   if (requireModules.length) {
     const avail = new Set((hb.modules || []).map(m => m.id));
@@ -337,9 +336,9 @@ function _frontierWriteOutCard() {
 }
 
 function frontierCall(module, op, args = {}, opts = {}) {
-  if (!frontierIsAvailable({ requireModules: [module], requireProfile: 'full' })) {
-    console.warn(`Frontier: Module ${module} not available or profile not full. Op ${op} not sent.`);
-    return Promise.reject({ code: 'unavailable', message: `Module ${module} unavailable or Frontier profile not full.` });
+  if (!frontierIsAvailable({ requireModules: [module] })) {
+    console.warn(`Frontier: Module ${module} not available. Op ${op} not sent.`);
+    return Promise.reject({ code: 'unavailable', message: `Module ${module} unavailable.` });
   }
 
   const liveCount = frontierCurrentLiveCount();
@@ -650,7 +649,7 @@ modifier(text);
 
 ### What about undo / retry?
 
-Nothing. The script just writes `history[currentActionId] = values` every turn. If the user undoes, AI Dungeon drops the tail action from `history`; BD's `currentActionId` changes; BD reads `history[newTailId]` from the same unchanged state card and shows those older values. The script doesn't need to know or care.
+Nothing special. The script just writes the current turn's values into the live-count-keyed history map every turn. If the user undoes, retries, rewinds, or continues, BetterDungeon recalculates the current live count and reads a different entry from the same unchanged state card. The script doesn't need a separate mode or exception case.
 
 ## Extensibility roadmap (post-MVP)
 

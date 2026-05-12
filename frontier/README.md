@@ -9,7 +9,7 @@
 | 00 | [Overview](./00-overview.md) | Vision, scope, relationship to BD V2, locked-in design decisions |
 | 01 | [Architecture](./01-architecture.md) | Three-layer model, file layout, component responsibilities |
 | 02 | [Protocol](./02-protocol.md) | Reserved card namespaces, state-card schema, live-count history convention, heartbeat, availability detection |
-| 03 | [Modules](./03-modules.md) | Module API (Full profile), Scripture reference, Library adapters for all 8 modules, extensibility roadmap |
+| 03 | [Modules](./03-modules.md) | Module API, Scripture reference, Library adapters for all 8 modules, extensibility roadmap |
 | 04 | [Implementation Plan](./04-implementation-plan.md) | Phase history, file-by-file breakdown, remaining roadmap |
 | 05 | [Risks & Open Questions](./05-risks-and-open-questions.md) | Tracked risks (mostly resolved), design decisions, follow-up work |
 | 06 | [Full Frontier Protocol](./06-full-frontier-protocol.md) | Two-way envelope protocol, request/response schemas, GC, idempotency |
@@ -36,7 +36,7 @@ Completed phase plans and test suites that are no longer actively referenced liv
 All foundational Frontier work (Phases 0–9) is done and live-tested:
 
 - [x] Architectural direction locked — cards-only, live-count history
-- [x] Protocol v1 shipped — Full profile with two-way ops channel
+- [x] Protocol v1 shipped — unified two-way ops channel
 - [x] Action-ID behavior verified across retry / continue / edit (Phase 0 closed)
 - [x] Transport foundation landed — WS + fetch/XHR capture, card + action stream, mutation-template replay. Writes and creates verified in a live adventure with persistence across reload.
 - [x] Transport hardening (Phase 1) — write queue, adventure-boundary reset, shortId resolver
