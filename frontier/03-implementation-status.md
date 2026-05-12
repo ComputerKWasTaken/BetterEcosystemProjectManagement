@@ -129,9 +129,22 @@ It should not describe Frontier as:
 
 ## Remaining work before Frontier is fully wrapped
 
-The remaining work is mostly polish, verification, examples, and public-facing documentation.
+The remaining work is mostly SDK expansion, polish, verification, examples, and public-facing documentation.
 
-### Phase 10 - Module polish and test coverage
+### Phase 10 - BetterDungeon SDK
+
+Still needed:
+
+- add the `sdk` Frontier module
+- ship the first `bd.sdk` helper surface for scripts
+- expose stable BetterDungeon/Frontier capability metadata without leaking internals
+- document the initial SDK contract clearly enough for script authors to rely on it
+
+Goal:
+
+- make the BetterDungeon SDK the next real Frontier feature and give scripts an official BetterDungeon-aware integration surface
+
+### Phase 11 - Module polish and test coverage
 
 Still needed:
 
@@ -143,7 +156,7 @@ Goal:
 
 - every shipped module has a dedicated regression surface and a clean confidence story
 
-### Phase 11 - Documentation cleanup
+### Phase 12 - Documentation cleanup
 
 This is the current pass.
 
@@ -157,7 +170,7 @@ Goal:
 
 - every active file under `Project Management/frontier/` reflects the shipped Frontier system rather than the earlier build process
 
-### Phase 12 - Showcase scripts
+### Phase 13 - Showcase scripts
 
 Still needed:
 
@@ -173,7 +186,7 @@ Goal:
 
 - each important module has at least one strong example script
 
-### Phase 13 - Mobile/WebView follow-through
+### Phase 14 - Mobile/WebView follow-through
 
 Still needed:
 
@@ -184,7 +197,7 @@ Goal:
 
 - Frontier behavior is understood and documented across supported BetterDungeon targets
 
-### Phase 14 - BetterRepository documentation and release prep
+### Phase 15 - BetterRepository documentation and release prep
 
 Still needed:
 
@@ -195,18 +208,6 @@ Still needed:
 Goal:
 
 - public docs explain Frontier clearly without reintroducing outdated technical assumptions
-
-### BetterDungeon SDK feature
-
-Planned:
-
-- ship a curated BetterDungeon SDK surface through Frontier rather than leaving scripts limited to module-by-module discovery alone
-- expose stable capability-level helpers instead of raw BetterDungeon internals
-- use it as the clean place for version checks, capability checks, and future cross-cutting utilities
-
-Goal:
-
-- give script authors a powerful BetterDungeon-aware helper surface without coupling them to private extension classes
 
 ## What is no longer an active implementation problem
 

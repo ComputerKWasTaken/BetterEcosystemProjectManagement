@@ -83,6 +83,69 @@ Suggested core capabilities:
 - `bd.sdk.modules()`
 - `bd.sdk.frontier()`
 
+For the actual Frontier module, the cleanest v1 is:
+
+- module id: `sdk`
+- public script-side helper namespace: `bd.sdk`
+- transport shape: normal Frontier ops through `frontier:out` and `frontier:in:sdk`
+
+That gives us a simple rule:
+
+- `sdk` is the Frontier module
+- `bd.sdk.*` is the author-friendly helper layer built on top of that module
+
+## Proposed `sdk` module shape
+
+The v1 module should be ops-only.
+
+Suggested BetterDungeon-side definition shape:
+
+```js
+const FrontierSdkModule = {
+  id: 'sdk',
+  version: '1.0.0',
+  label: 'BetterDungeon SDK',
+  description: 'Exposes stable BetterDungeon and Frontier capability metadata to scripts.',
+
+  ops: {
+    version: {
+      idempotent: 'safe',
+      timeoutMs: 1000,
+      handler: versionOp,
+    },
+    capabilities: {
+      idempotent: 'safe',
+      timeoutMs: 1000,
+      handler: capabilitiesOp,
+    },
+    modules: {
+      idempotent: 'safe',
+      timeoutMs: 1000,
+      handler: modulesOp,
+    },
+    frontier: {
+      idempotent: 'safe',
+      timeoutMs: 1000,
+      handler: frontierOp,
+    },
+  },
+
+  mount(ctx) {
+    this._ctx = ctx;
+  },
+
+  unmount() {
+    this._ctx = null;
+  },
+};
+```
+
+## V1 ops
+
+These four ops are enough for a strong first release.
+
+### `sdk.version`
+
 ### `bd.sdk.version()`
 
 Purpose:
@@ -94,6 +157,27 @@ Expected return shape:
 - BetterDungeon version
 - Frontier protocol version
 - maybe a compact SDK version string
+
+Recommended v1 response:
+
+```json
+{
+  "sdkVersion": "1.0.0",
+  "betterDungeonVersion": "2.0.0",
+  "frontierProtocol": 1,
+  "frontierClient": "BetterDungeon"
+}
+```
+
+Recommended script helper:
+
+```js
+bd.sdk.version = function () {
+  return frontierCall('sdk', 'version', {});
+};
+```
+
+### `sdk.capabilities`
 
 ### `bd.sdk.capabilities()`
 
@@ -108,6 +192,44 @@ Expected return shape:
 - optional platform flags where appropriate
 - maybe a list of explicitly supported SDK methods
 
+Recommended v1 response:
+
+```json
+{
+  "sdkVersion": "1.0.0",
+  "helperGroups": ["sdk"],
+  "modules": ["scripture", "webfetch", "clock", "geolocation", "weather", "network", "system", "ai", "sdk"],
+  "opsModules": ["webfetch", "clock", "geolocation", "weather", "network", "system", "ai", "sdk"],
+  "stateModules": ["scripture"],
+  "features": {
+    "frontier": true,
+    "scriptureWidgets": true,
+    "providerAI": true,
+    "webfetchConsent": true
+  },
+  "platform": {
+    "browserFamily": "chromium",
+    "mobileLike": false
+  }
+}
+```
+
+Notes:
+
+- keep this intentionally high-level
+- do not dump every internal toggle or implementation detail
+- only expose capability concepts we are willing to support as public contract
+
+Recommended script helper:
+
+```js
+bd.sdk.capabilities = function () {
+  return frontierCall('sdk', 'capabilities', {});
+};
+```
+
+### `sdk.modules`
+
 ### `bd.sdk.modules()`
 
 Purpose:
@@ -119,6 +241,48 @@ Expected return shape:
 - mounted module ids
 - mounted module ops
 - maybe state names for state-driven modules
+
+Recommended v1 response:
+
+```json
+{
+  "modules": [
+    {
+      "id": "scripture",
+      "mounted": true,
+      "stateNames": ["scripture"],
+      "ops": []
+    },
+    {
+      "id": "clock",
+      "mounted": true,
+      "stateNames": [],
+      "ops": ["now", "tz", "format"]
+    },
+    {
+      "id": "sdk",
+      "mounted": true,
+      "stateNames": [],
+      "ops": ["version", "capabilities", "modules", "frontier"]
+    }
+  ]
+}
+```
+
+Notes:
+
+- this should be derived from the registry/heartbeat truth, not a second parallel model
+- include only stable author-useful fields
+
+Recommended script helper:
+
+```js
+bd.sdk.modules = function () {
+  return frontierCall('sdk', 'modules', {});
+};
+```
+
+### `sdk.frontier`
 
 ### `bd.sdk.frontier()`
 
@@ -132,6 +296,173 @@ Expected return shape:
 - enabled state
 - current advertised module list
 - maybe heartbeat freshness information if that proves useful
+
+Recommended v1 response:
+
+```json
+{
+  "protocol": 1,
+  "enabled": true,
+  "turn": 42,
+  "heartbeatPresent": true,
+  "heartbeatFresh": true,
+  "moduleCount": 9,
+  "modules": ["scripture", "webfetch", "clock", "geolocation", "weather", "network", "system", "ai", "sdk"]
+}
+```
+
+Recommended script helper:
+
+```js
+bd.sdk.frontier = function () {
+  return frontierCall('sdk', 'frontier', {});
+};
+```
+
+## Suggested script-side helper layer
+
+The raw ops are useful, but the script-side helper layer is what will make this feel like a real SDK.
+
+Recommended base helper shape:
+
+```js
+state.bd = state.bd || {};
+var bd = state.bd;
+bd.sdk = bd.sdk || {};
+
+bd.sdk.version = function () {
+  return frontierCall('sdk', 'version', {});
+};
+
+bd.sdk.capabilities = function () {
+  return frontierCall('sdk', 'capabilities', {});
+};
+
+bd.sdk.modules = function () {
+  return frontierCall('sdk', 'modules', {});
+};
+
+bd.sdk.frontier = function () {
+  return frontierCall('sdk', 'frontier', {});
+};
+```
+
+## Author-facing convenience helpers
+
+These are not required for v1, but they are high-value additions if we want the SDK to feel genuinely useful.
+
+### `bd.sdk.hasModule(moduleId)`
+
+```js
+bd.sdk.hasModule = function (moduleId) {
+  var hb = frontierHeartbeat();
+  var mods = (hb && Array.isArray(hb.modules)) ? hb.modules : [];
+  for (var i = 0; i < mods.length; i++) {
+    if (mods[i] && mods[i].id === moduleId) return true;
+  }
+  return false;
+};
+```
+
+### `bd.sdk.hasOp(moduleId, opName)`
+
+```js
+bd.sdk.hasOp = function (moduleId, opName) {
+  var hb = frontierHeartbeat();
+  var mods = (hb && Array.isArray(hb.modules)) ? hb.modules : [];
+  for (var i = 0; i < mods.length; i++) {
+    var mod = mods[i];
+    if (!mod || mod.id !== moduleId) continue;
+    var ops = Array.isArray(mod.ops) ? mod.ops : [];
+    return ops.indexOf(opName) !== -1;
+  }
+  return false;
+};
+```
+
+### `bd.sdk.ensure(moduleId, opName?)`
+
+Purpose:
+
+- give authors one clean capability gate instead of repeated custom checks
+
+Recommended return shape:
+
+```js
+{
+  ok: true,
+  code: 'ok'
+}
+```
+
+or:
+
+```js
+{
+  ok: false,
+  code: 'module_unavailable'
+}
+```
+
+This helper can stay script-side and does not need a dedicated BetterDungeon op in v1.
+
+## Recommended V1 non-goals
+
+Do not ship these in v1:
+
+- direct access to BetterDungeon classes or services
+- DOM inspection helpers
+- popup state internals
+- feature-manager internals
+- direct storage mutation helpers for arbitrary BetterDungeon settings
+- "run arbitrary BetterDungeon command" escape hatches
+
+That is where the SDK would become brittle.
+
+## Error model
+
+The `sdk` module should be boring and consistent.
+
+Recommended structured errors:
+
+- `unknown_op`
+- `not_available`
+- `internal_error`
+
+Realistically, the v1 SDK ops should almost never fail except for generic runtime issues.
+
+## Why `sdk` is a good module id
+
+`sdk` is:
+
+- short
+- obvious
+- easy to remember
+- clean on the wire
+
+So scripts can do things like:
+
+```js
+frontierCall('sdk', 'capabilities', {})
+frontierCall('sdk', 'modules', {})
+```
+
+and then wrap those with:
+
+```js
+bd.sdk.capabilities()
+bd.sdk.modules()
+```
+
+That gives us both a clean protocol identity and a clean authoring identity.
+
+## Recommended first implementation order
+
+1. add the `sdk` Frontier module with the four v1 ops
+2. advertise it in heartbeat like any other ops module
+3. add a tiny script-side `bd.sdk` helper snippet to the base Frontier library docs
+4. create one example script that uses the SDK for graceful capability detection
+5. only then consider extra convenience helpers
 
 ## How it should ship
 
@@ -251,8 +582,8 @@ The BetterDungeon SDK should be treated as a real planned Frontier feature.
 
 Recommended priority:
 
-1. finish current doc cleanup, module polish, and regression coverage work
-2. keep showcase-script work moving
-3. define and ship the first BetterDungeon SDK surface
+1. finish the current doc cleanup pass
+2. define and ship the first BetterDungeon SDK surface
+3. move into broader module polish and regression-suite expansion after the SDK lands
 
 This is a strong next-step feature because it deepens Frontier as a platform without bloating the core runtime model.

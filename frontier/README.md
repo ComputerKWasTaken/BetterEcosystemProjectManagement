@@ -29,11 +29,11 @@ The core Frontier runtime is shipped.
 
 What remains is mostly:
 
+- the planned BetterDungeon SDK feature
 - module polish and broader regression coverage
 - documentation cleanup and public guide work
 - showcase scripts
 - multiplatform/mobile follow-through
-- the planned BetterDungeon SDK feature
 
 ## Doc rules
 
