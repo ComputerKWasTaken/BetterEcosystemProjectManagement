@@ -1,51 +1,181 @@
 # 11 - Frontier Test Suites
 
-This page tracks the current live AI Dungeon regression harness, planned test infrastructure, and the completed sign-off history.
+> This document tracks the Frontier regression surfaces that actually exist today, what each one is for, and where current coverage is still thin.
 
-## Current Status
+## Current test surfaces
 
-Active regression suites:
+Frontier currently has three meaningful testing surfaces in the repo:
 
-- [22 - Scripture Interactive Widgets AI Dungeon Test Suite](./22-scripture-interactive-widgets-test-suite.md)
-- [21 - Provider AI AI Dungeon Test Suite](./archive/21-provider-ai-ai-dungeon-test-suite.md) (archived; still valid for regression checks)
+- dedicated AI Dungeon regression scripts under `BetterDungeon/tests/aid-scripts/`
+- the dedicated Scripture interactive suite doc in [22-scripture-interactive-widgets-test-suite.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/22-scripture-interactive-widgets-test-suite.md)
+- example scripts under `BetterDungeon/examples/aid-scripts/` that also serve as real-world integration checks
 
-Use the Scripture Interactive Widgets suite when changing Scripture widget validation/rendering, custom widget behavior, the `frontier:in:scripture.widgetEvents` queue, optimistic UI behavior, event coalescing, or interaction acknowledgements.
+This is important because Frontier is not validated only through unit-style local checks. A lot of the runtime depends on live AI Dungeon behavior, so scenario-driven regression scripts are still the most useful proof surface.
 
-Use the Provider AI suite when changing Provider AI op behavior, provider request/response normalization, key/default-model settings, heartbeat advertisement, dispatcher unsafe replay behavior, or the Provider AI AI Dungeon harness itself.
+## Active AI Dungeon regression suites
 
-## Planned — Per-Module Test Scripts
+The current `tests/aid-scripts/` directories are:
 
-The next testing milestone is creating a regression test script for **every** module. Each will live in `tests/aid-scripts/<module>/` and follow the pattern established by the AI module test suite:
+- `ai-module`
+- `scripture-module`
 
-| Module | Directory | Status |
-|--------|-----------|--------|
-| Scripture | `tests/aid-scripts/scripture-module/` | Exists (interactive widgets suite) |
-| Provider AI | `tests/aid-scripts/ai-module/` | Exists |
-| WebFetch | `tests/aid-scripts/webfetch-module/` | Planned |
-| Clock | `tests/aid-scripts/clock-module/` | Planned |
-| Geolocation | `tests/aid-scripts/geolocation-module/` | Planned |
-| Weather | `tests/aid-scripts/weather-module/` | Planned |
-| Network | `tests/aid-scripts/network-module/` | Planned |
-| System | `tests/aid-scripts/system-module/` | Planned |
+These are the real, active per-module test suites currently present in the codebase.
 
-Each test script should exercise the module's ops (or state publishing for Scripture), validate error paths, and confirm regression-free behavior after changes.
+### `tests/aid-scripts/ai-module`
 
-## Completed Sign-offs
+Files:
+
+- `library.js`
+- `output-modifier.js`
+- `README.md`
+
+Purpose:
+
+- end-to-end validation of the Frontier `ai` module
+- validation of alias compatibility through `providerAI`
+- request/response envelope behavior
+- pending to terminal response flow
+- ack cleanup
+- dispatcher behavior around bad module names, bad op names, and invalid args
+- unsafe replay protection for chat requests
+
+Use this suite when changing:
+
+- `modules/ai/module.js`
+- `services/frontier/ops-dispatcher.js`
+- `services/frontier/envelope.js`
+- registry/heartbeat behavior that affects AI module discovery
+
+### `tests/aid-scripts/scripture-module`
+
+Files:
+
+- `library.js`
+- `input-modifier.js`
+- `output-modifier.js`
+- `README.md`
+- `ROADMAP.md`
+
+Purpose:
+
+- behavior-focused validation of the main Scripture module surface
+- rendering coverage across widget families
+- interaction coverage
+- manifest validation behavior
+- custom widget sanitization/rendering checks
+- transition behavior and edge-case scenarios
+
+Use this suite when changing:
+
+- `modules/scripture/module.js`
+- `modules/scripture/renderer.js`
+- `modules/scripture/validators.js`
+- shared Scripture styles or interaction behavior
+
+## Dedicated interactive widget suite
+
+[22-scripture-interactive-widgets-test-suite.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/22-scripture-interactive-widgets-test-suite.md) is still the dedicated deep-dive suite for the newer Scripture interactive widget path.
+
+It is especially useful when changing:
+
+- `frontier:in:scripture` widget event queue behavior
+- event coalescing
+- acknowledgement flow
+- optimistic interaction behavior
+- interactive widget state round-tripping between BetterDungeon and the script
+
+That suite overlaps with the general Scripture module suite, but it is narrower and deeper on the interaction-specific behavior.
+
+## Example scripts as integration checks
+
+The current `examples/aid-scripts/` directories are:
+
+- `aura-cards`
+- `chronos-v2`
+
+These are not formal regression suites, but they are still valuable integration checks because they exercise Frontier the way real scenario authors use it.
+
+### `examples/aid-scripts/aura-cards`
+
+Useful as a live integration check for:
+
+- `ai`
+- Scripture-backed UI/state publishing
+- mixed state plus ops workflows
+
+### `examples/aid-scripts/chronos-v2`
+
+Useful as a live integration check for:
+
+- `clock`
+- `weather`
+- Scripture-backed dashboard behavior
+- heartbeat/module detection from a real author-style script
+
+## Current coverage picture
+
+Coverage is strongest in these areas:
+
+- Scripture
+- AI module
+- core request/response behavior as exercised by the AI suite
+- real example-script usage through Aura Cards and Chronos V2
+
+Coverage is weaker in these areas:
+
+- WebFetch
+- Clock as a dedicated standalone suite
+- Geolocation
+- Weather as a dedicated standalone suite
+- Network
+- System
+
+Those modules are implemented and shipped, but they do not yet have the same dedicated `tests/aid-scripts/<module>/` coverage footprint that Scripture and AI currently have.
+
+## What this means in practice
+
+When changing Frontier today:
+
+- use the Scripture module suite for widget/render/state work
+- use the Scripture interactive suite for queue/ack/coalescing work
+- use the AI module suite for envelope/dispatcher/AI module changes
+- use Aura Cards and Chronos V2 as realistic integration smoke checks
+
+If work touches WebFetch, Clock, Geolocation, Weather, Network, or System heavily, that is a signal that dedicated regression coverage for that module would be worth adding rather than relying only on ad hoc manual checks.
+
+## Current sign-off history
+
+The implementation sign-offs currently reflected across the Frontier docs are:
 
 | Area | Date | Result |
 |---|---:|---|
 | Scripture | 2026-04-22 | Live AI Dungeon suite passed 10/10 |
 | Full Frontier | 2026-04-22 | Live suite passed, including reload-mid-pending |
 | WebFetch | 2026-04-23 | Live suite passed, including denied-origin consent |
-| Clock | 2026-04-23 | Live suite passed with `clock-mobxzre5` |
+| Clock | 2026-04-23 | Live suite passed |
 | Weather | 2026-04-23 | Live suite passed |
 | Network | 2026-04-24 | Live suite passed |
 | System | 2026-04-24 | Live suite passed |
-| Provider AI | 2026-04-26 | Live suite passed with `provider-ai-mof04zzu` |
+| Provider AI / AI module | 2026-04-26 | Live suite passed |
 
-## Cleanup Policy
+This is useful historical confidence, but it should not be confused with "there is a still-maintained dedicated regression suite for every one of these modules in the repo today." That is not yet true.
 
-- Keep only the current or strategically useful live suite in the main Frontier folder. Completed artifacts move to `archive/`.
-- Once a suite passes and its result is summarized here and in [Implementation Plan](./04-implementation-plan.md), archive old paste-ready scripts.
-- Keep phase details in the canonical planning docs instead of one file per completed test run.
-- Recreate older harnesses from version history only when a real regression investigation needs them.
+## Cleanup policy
+
+- Keep active, high-value suites in the main Frontier doc set.
+- Move completed one-off live sign-off artifacts to `archive/` when they stop being part of routine regression work.
+- Keep the current repo-facing truth in sync with what actually exists under `tests/aid-scripts/`.
+- Do not describe a suite as active or present unless the files are really still in the repo.
+
+## Recommended next testing work
+
+The next useful testing expansion would be dedicated `tests/aid-scripts/` coverage for:
+
+- `webfetch`
+- `clock`
+- `geolocation`
+- `weather`
+- `network`
+- `system`
+
+That would bring the per-module testing story in line with the shipped module catalog.
