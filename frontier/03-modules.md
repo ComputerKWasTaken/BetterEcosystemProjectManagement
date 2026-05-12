@@ -1,693 +1,455 @@
-# 03 — Modules
+# 03 - Modules
+
+> This document describes how Frontier modules work in the current BetterDungeon implementation, what the live module contract looks like, and how to build a new module that fits the system cleanly.
 
 ## What a module is
 
-A **Frontier module** is a matched pair:
+A Frontier module is a BetterDungeon-side capability that plugs into the shared Frontier runtime.
 
-1. **AI-Dungeon-side Library snippet** — JavaScript the user pastes into their scenario's Library tab. Provides the in-script API for calling the module's ops.
-2. **BetterDungeon-side handler** — JavaScript loaded by the extension. Registers with Frontier Core; implements the ops' actual logic (widget rendering, safe web requests, time/location/weather helpers, device hints, hosted AI calls, etc.).
+A module can do one or both of these things:
 
-Frontier Core is the only thing that bridges the two. Neither half knows anything about the other's implementation — they share only the protocol envelope shape.
+- read Frontier state cards such as `frontier:state:scripture`
+- expose callable ops that scripts can reach through the `frontier:out` / `frontier:in:<module>` request-response path
 
-## Module interface (BD side)
+That is the core model. A module does not need a special profile, mode, or exception case.
 
-Every BD-side module exports an object conforming to this shape. Modules are a la carte: declare `stateNames` to consume state cards, declare `ops` to expose ops, or both.
+In practice:
+
+- `scripture` is the reference state-reading module
+- `webfetch`, `clock`, `geolocation`, `weather`, `network`, `system`, and `ai` are ops modules
+
+## Current shipped modules
+
+Frontier currently ships these first-party modules:
+
+- `scripture`
+- `webfetch`
+- `clock`
+- `geolocation`
+- `weather`
+- `network`
+- `system`
+- `ai`
+
+Current ops exposed by those modules:
+
+- `webfetch`: `fetch`, `search`
+- `clock`: `now`, `tz`, `format`
+- `geolocation`: `permission`, `getCurrent`
+- `weather`: `current`, `forecast`
+- `network`: `status`
+- `system`: `info`, `power`
+- `ai`: `chat`, `models`, `testConnection`
+
+The `ai` module also keeps the alias `providerAI` for compatibility.
+
+## How modules fit into Frontier
+
+The live flow is:
+
+1. A module registers with `window.Frontier.registry`.
+2. The registry decides whether it should be enabled.
+3. If enabled, the registry calls `mount(ctx)`.
+4. Core dispatches matching state-card updates to `onStateChange(...)`.
+5. Ops requests are routed to declared `ops` handlers by `ops-dispatcher.js`.
+6. Core advertises the mounted module in `frontier:heartbeat`.
+
+The important split is:
+
+- Core owns dispatch and shared runtime state.
+- The registry owns module lifecycle.
+- The ops dispatcher owns request routing and response writing.
+
+## The live module contract
+
+The current BetterDungeon-side contract is defined by how [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/module-registry.js) and [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/core.js) interact with modules.
 
 ```ts
 interface FrontierModule {
-  /** Unique module id. Must match heartbeat advertisement. First-party ids use lower camel case, no spaces/dots. */
   id: string;
-
-  /** SemVer version of this module's BD-side handler. */
-  version: string;
-
-  /** Human-readable label for the popup UI. */
-  label: string;
-
-  /** Long description for settings / module registry UI. */
+  version?: string;
+  label?: string;
   description?: string;
-
-  /**
-   * Overrides the registry's default enablement. Built-in first-party modules
-   * default on unless this is explicitly false; third-party ids default off.
-   */
+  aliases?: string[];
   defaultEnabled?: boolean;
 
-  /**
-   * The `frontier:state:<name>` card titles this module reads.
-   * When any of these change, Core calls `onStateChange`. Omit for pure ops modules.
-   */
   stateNames?: string[];
-
-  /**
-   * Ops this module exposes over the Full-profile `frontier:out` channel.
-   * Each handler receives args (deserialized from the request envelope) + ctx,
-   * returns a JSON-serializable result (wrapped in `{ status: 'ok', data }`),
-   * or throws a structured error (wrapped in `{ status: 'err', error }`).
-   */
-  ops?: {
-    [opName: string]: OpHandler | OpDescriptor;
-  };
-
-  /**
-   * If true, Core also invokes `onStateChange` (with the cached parsed state)
-   * whenever the current live count changes, even if the card itself didn't change.
-   * Scripture sets this to true so widgets re-read `history[liveCount]` on undo/retry.
-   */
   tracksLiveCount?: boolean;
 
-  /**
-   * Called when one of this module's state cards changes, or (if `tracksLiveCount`)
-   * when the live count changes. `parsed` is the module's own cached parse
-   * of the state card's `value`; `ctx.getLiveCount()` gives the key to look up.
-   */
+  ops?: Record<string, {
+    handler: (args: unknown, ctx: FrontierContext) => unknown | Promise<unknown>;
+    idempotent?: 'safe' | 'unsafe';
+    timeoutMs?: number;
+  }>;
+
+  mount(ctx: FrontierContext): void;
+  unmount?(): void;
+
+  onEnable?(ctx: FrontierContext): void | Promise<void>;
+  onDisable?(ctx: FrontierContext): void | Promise<void>;
   onStateChange?(name: string, parsed: unknown, ctx: FrontierContext): void;
-
-  /** Lifecycle hooks. */
-  onEnable?: (ctx: FrontierContext) => Promise<void> | void;
-  onDisable?: (ctx: FrontierContext) => Promise<void> | void;
-
-  /** Called on adventure transitions so modules can reset per-adventure state. */
-  onAdventureChange?: (newAdventureShortId: string | null, ctx: FrontierContext) => void;
+  onAdventureChange?(shortId: string | null, ctx: FrontierContext): void;
 }
+```
 
-type OpHandler = (args: unknown, ctx: FrontierContext) => Promise<unknown> | unknown;
+Notes from the real implementation:
 
-interface OpDescriptor {
-  handler: OpHandler;
-  /** 'safe' = re-invoke on reload; 'unsafe' = convert pending to err:unsafe_replay_blocked instead. Default 'safe'. */
-  idempotent?: 'safe' | 'unsafe';
-  /** Max ms before Core times out the op. Default 30_000. */
-  timeoutMs?: number;
-}
+- `mount(ctx)` is required.
+- `unmount()` is optional, but most real modules should have one.
+- `stateNames` is how a module subscribes to `frontier:state:<name>` cards.
+- `tracksLiveCount` tells Core to re-run `onStateChange(...)` when live count changes.
+- `ops` is an object of named descriptors, not just raw functions.
+- Built-in modules default to enabled unless overridden.
+- Dotted ids are treated like third-party-style ids and default to disabled unless overridden.
 
+## The live module context
+
+Modules receive a scoped context from Core. The current live context includes:
+
+```ts
 interface FrontierContext {
-  /** Log (respects Frontier's debug toggle). */
-  log(level: 'debug' | 'info' | 'warn' | 'error', ...args: unknown[]): void;
+  id: string;
 
-  /** Read current adventure state. */
+  on(eventName: string, handler: (detail: unknown) => void): () => void;
+
+  getState(name: string): unknown;
+  getCardByTitle(title: string): unknown;
+
   readonly adventureShortId: string | null;
-  getActions(): Action[];
+  getAdventureId(): string | null;
+  getActions(): unknown[];
   getCurrentActionId(): string | null;
+  getTail(): string | null;
   getLiveCount(): number;
 
-  /** Write a story card via the write queue. Coalesced, serialized, retrying. */
-  writeCard(title: string, value: string, opts?: { type?: string; keys?: string }): Promise<void>;
+  writeCard(title: string, value: string, opts?: Record<string, unknown>): Promise<unknown>;
 
-  /** Respond to an in-flight op (normally handled by returning/throwing from the handler;
-   *  these helpers are for advanced cases like multi-turn ops). */
-  respond(requestId: string, data: unknown): void;
-  respondError(requestId: string, error: { code: string; message?: string; [k: string]: unknown }): void;
+  respond(requestId: string, data: unknown): Promise<unknown>;
+  respondError(requestId: string, err: unknown): Promise<unknown>;
 
-  /** Per-module persistent key-value store backed by chrome.storage.sync
-   *  under a per-module namespace. Intended for small prefs (allowlists, etc.). */
+  log(level: 'debug' | 'info' | 'warn' | 'error', ...args: unknown[]): void;
+
   storage: {
-    get<T = unknown>(key: string, fallback?: T): Promise<T>;
+    get(key: string, fallback?: unknown): Promise<unknown>;
     set(key: string, value: unknown): Promise<void>;
     remove(key: string): Promise<void>;
   };
 }
 ```
 
-**Shape notes:** State-only modules that only declare `stateNames` + `onStateChange` work unchanged. `ctx.respond` / `ctx.respondError` are present for advanced async cases, but most modules should just return or throw from their handlers. Modules that don't need `tracksLiveCount` can omit it (defaults to `false`).
+What that means in practice:
 
-## Handler rules
+- use `ctx.writeCard(...)` for any Frontier-owned card writes
+- use `ctx.storage` for small persistent module preferences
+- use `ctx.log(...)` instead of ad hoc console noise
+- use `ctx.getLiveCount()` when your state is keyed by turn history rather than only by card content
 
-### State handlers (`onStateChange`)
-- MUST NOT throw synchronously. Catch errors internally, log via `ctx.log`, and no-op if state is malformed.
-- MAY be called many times per turn (once per card change, plus one extra on live-count change if `tracksLiveCount`). MUST be idempotent — same input produces same effect.
-- MUST check `ctx.adventureShortId` before touching cross-turn persistence. Per-adventure state is the module's responsibility.
-- `ctx.getCurrentActionId()` may be `null` early in load (before the action window arrives). Modules should fall back to the most-recent history entry or to manifest defaults in that case.
+## State modules
 
-### Op handlers (`ops.<opName>`)
-- MUST be `async` OR return a Promise if the work is asynchronous. Sync returns are supported for trivially deterministic ops (e.g. Clock's `now`).
-- MUST return a JSON-serializable value OR throw an object `{ code, message?, ... }`. Thrown `Error` instances are wrapped as `{ code: 'handler_threw', message: err.message }`.
-- MUST NOT rely on module-level mutable state for correctness across handler invocations, because Core may replay a handler on BD reload if the op is marked `idempotent: 'safe'` (which is the default). Use `ctx.storage` for anything that needs to persist.
-- SHOULD validate args at the top of the handler and throw `{ code: 'invalid_args', message: '...' }` on rejection.
-- SHOULD honor `args.timeoutMs` if provided, otherwise rely on Core's per-op default timeout.
-- MUST NOT touch module-specific DOM or UI. UI-producing modules (Scripture) are state-only by design; ops-producing modules (WebFetch, Clock, Weather, Provider AI, etc.) route privileged or asynchronous work through bounded handlers and, when needed, the background worker.
-- For multi-turn ops, return a `Promise` that resolves / rejects across turn boundaries. Core writes `pending` immediately and the terminal status when the Promise settles. The script polls across turns.
+A state module reads one or more `frontier:state:<name>` cards and reacts when those cards change.
 
-## Module registration
+To build one:
 
-In the extension bootstrap, modules register themselves after `module-registry.js` loads:
+- declare `stateNames`
+- implement `onStateChange(...)`
+- optionally set `tracksLiveCount: true` if the same card needs to render differently after undo, rewind, restore, or retry
 
-```js
-window.Frontier.registry.register(ScriptureModule);
-window.Frontier.registry.register(WebFetchModule);
-window.Frontier.registry.register(ClockModule);
-window.Frontier.registry.register(GeolocationModule);
-window.Frontier.registry.register(WeatherModule);
-window.Frontier.registry.register(NetworkModule);
-window.Frontier.registry.register(SystemModule);
-window.Frontier.registry.register(ProviderAIModule);
-```
+### Scripture as the reference pattern
 
-Registration triggers:
-1. Core adds the module to its `Map<id, module>`.
-2. Core calls the module's `onEnable` if the user has it enabled (default: true for built-ins unless `defaultEnabled: false`; false for third-party ids).
-3. Core updates the heartbeat card to advertise the new module (including its `ops` list if it has any).
-4. The popup UI's Frontier section gains a toggle for the module, plus module-specific controls such as WebFetch origins or Provider AI credentials.
+[modules/scripture/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/scripture/module.js) is the clearest state-module example.
 
-## Enable / disable flow
+It does all of these things:
 
-```
-User toggles module off in popup
-         │
-         ▼
-chrome.runtime message → main.js → core.setModuleEnabled(id, false)
-         │
-         ▼
-Core calls module.onDisable(ctx); module tears down listeners / UI
-         │
-         ▼
-Core updates heartbeat card (module removed from `modules[]`)
-         │
-         ▼
-Ops dispatcher drops the module from its routing table; any pending
-requests for that module receive err: unknown_module responses.
-         │
-         ▼
-Scripts reading heartbeat on next turn see the module gone,
-either gracefully degrade or surface a "module X unavailable" notice
-```
+- declares `stateNames: ['scripture']`
+- declares `tracksLiveCount: true`
+- mounts a renderer in `mount(ctx)`
+- clears its UI in `unmount()` and `onAdventureChange(...)`
+- rerenders in `onStateChange(...)`
+- picks values from `history[liveCount]`
+- falls back gracefully when the exact live-count entry is missing
 
-## Module lifecycle for Scripture (state-only reference)
+That last point matters. Scripture is not just reacting to card changes. It is reacting to "which turn are we currently on?" That is why `tracksLiveCount` exists.
 
-Scripture reads a single `frontier:state:scripture` card containing manifest + history. Widget structure comes from the manifest; widget values come from `history[ctx.getLiveCount()]` with graceful fallbacks. Undo/retry just changes which history key BD reads.
+### State-module rules
 
-```
-Declared config:
-  id: 'scripture'
-  stateNames: ['scripture']
-  tracksLiveCount: true
-  // No ops — pure state consumer.
+- `onStateChange(...)` should be safe to run many times.
+- Treat parsed card data as untrusted input and validate it.
+- If the state is malformed, log and no-op instead of crashing the runtime.
+- If the module owns DOM, tear it down cleanly on disable or adventure change.
+- If the module uses live-count history, do not key behavior only to tail action id.
 
-onEnable(ctx):
-  - Mount the widget container in the DOM if not already present.
-  - If there's already a `frontier:state:scripture` card, synthesize an
-    onStateChange call to hydrate immediately.
-  - Install resize/layout observers.
+## Ops modules
 
-onStateChange('scripture', parsed, ctx):
-  // Called when the card changes OR when ctx.getLiveCount() changes (because tracksLiveCount=true).
-  - Validate parsed.manifest via validators.js. Drop invalid widgets with a warning.
-  - Reconcile widget DOM against parsed.manifest.widgets:
-      create new widgets, update changed structure, destroy removed ones.
-  - Compute values = parsed.history[String(ctx.getLiveCount())]
-                      ?? mostRecentEntry(parsed.history)
-                      ?? {};
-  - For each widget in the manifest, apply values[widget.id] if present;
-    otherwise fall back to manifest-declared defaults or leave blank.
+An ops module exposes callable work to scripts.
 
-onAdventureChange(newAdventureShortId, ctx):
-  - Clear widget cache.
-  - Wait for the next onStateChange (Core will synthesize one if there's a card).
+To build one:
 
-onDisable(ctx):
-  - Tear down all widgets.
-  - Remove the widget container from the DOM.
-  - Disconnect observers.
-```
+- declare an `ops` object
+- give each op a `handler`
+- mark each op as `safe` or `unsafe` for replay
+- set a reasonable timeout
 
-**Why this works:** the manifest is structural (rarely changes) and should persist across undo (the user undoing a turn shouldn't un-add a widget that was defined turns ago). The history map holds per-turn values; BD picks whichever entry corresponds to the current live-count ordinal. If the user undoes from turn 10 to turn 5, `ctx.getLiveCount()` changes, Core re-invokes `onStateChange`, Scripture looks up `history['5']`, and widgets show their turn-5 values. No invisible characters required.
-
-## AI-Dungeon-side Library
-
-Every module ships a short Library snippet the user pastes into their scenario. Frontier provides a shared base Library the user pastes once; per-module adapters are small additions on top.
-
-The base Library has three responsibilities:
-1. Availability detection (heartbeat reader).
-2. State-card writing (`frontier:state:*`).
-3. Ops-channel request/response (`frontier:out` / `frontier:in:*`).
-
-That's it. No codec. No Context Modifier. The Library handles request queueing, response polling, and acks under the hood.
-
-### Base Frontier Library (pasted once per scenario)
+Each op descriptor currently looks like this:
 
 ```js
-// === Frontier Base Library (v1) ==============================================
-state.frontier = state.frontier ?? {};
-
-// --- Heartbeat / availability ----------------------------------------------
-function frontierHeartbeat() {
-  const card = storyCards.find(c => c.title === 'frontier:heartbeat');
-  if (!card) return null;
-  try { return JSON.parse(card.entry || card.value || '{}'); } catch { return null; }
+someOp: {
+  idempotent: 'safe',
+  timeoutMs: 1000,
+  handler: someOpHandler,
 }
+```
 
-function frontierIsAvailable(opts = {}) {
-  const { maxStaleTurns = 2, requireModules = [] } = opts;
-  const hb = frontierHeartbeat();
-  if (!hb || hb.frontier?.protocol !== 1) return false;
-  if (typeof hb.turn === 'number' && info.actionCount - hb.turn > maxStaleTurns) return false;
-  if (requireModules.length) {
-    const avail = new Set((hb.modules || []).map(m => m.id));
-    if (!requireModules.every(m => avail.has(m))) return false;
-  }
-  return true;
-}
+### How ops are executed
 
-// --- Current action id / live count ------------------------------------------
-function frontierCurrentLiveCount() {
-  // AI Dungeon exposes the action history; its length is the live count.
-  // Note: history[] excludes undone actions.
-  return history.length;
-}
+When a script writes a request into `frontier:out`:
 
-function frontierCurrentActionId() {
-  // AI Dungeon exposes the action history; the tail is the current turn's action.
-  if (history.length > 0) {
-    const tail = history[history.length - 1];
-    if (tail && tail.id) return tail.id; // Only available in some contexts
-  }
-  return String(frontierCurrentLiveCount()); // Fallback for script-side actionId
-}
+1. `ops-dispatcher.js` parses the envelope.
+2. It finds the target module and op.
+3. It writes a pending response.
+4. It runs the handler.
+5. It writes either:
+   - `ok`
+   - `err`
+   - `timeout`
 
-// --- State card I/O ----------------------------------------------------------
-function frontierReadCard(title) {
-  const card = storyCards.find(c => c.title === title);
-  if (!card) return null;
-  try { return JSON.parse(card.entry || card.value || '{}'); } catch { return null; }
-}
+Most modules should simply return a JSON-serializable value or throw an error.
 
-function frontierWriteCard(title, obj) {
-  const json = JSON.stringify(obj);
-  const idx = storyCards.findIndex(c => c.title === title);
-  if (idx === -1) {
-    addStoryCard(title, json, 'Frontier');
-  } else {
-    const c = storyCards[idx];
-    updateStoryCard(idx, c.keys || title, json, c.type || 'Frontier');
-  }
-}
+### Ops-module rules
 
-function frontierReadState(name) {
-  return frontierReadCard('frontier:state:' + name);
-}
+- Validate args at the top of the handler.
+- Return plain serializable data.
+- Throw clear structured errors when input is bad or work cannot be done.
+- Use `idempotent: 'unsafe'` when replaying the op on reload would be wrong.
+- Keep handler scope bounded and explicit.
 
-function frontierWriteState(name, obj) {
-  frontierWriteCard('frontier:state:' + name, obj);
-}
+The `ai.chat` op is the best example of an unsafe op. Replaying a hosted-model call is not the same as replaying a deterministic time lookup, so it is marked `unsafe`.
 
-// --- Action-ID history helper ------------------------------------------------
-// For modules that want the undo/retry-correct behavior without hand-rolling it.
-function frontierUpdateHistory(name, values, opts = {}) {
-  const { historyLimit = 100, manifest } = opts;
-  const liveCount = frontierCurrentLiveCount();
-  if (liveCount === 0) return false; // No current action; can't key the entry.
+## Lifecycle hooks
 
-  const existing = frontierReadState(name) ?? { v: 1, history: {} };
-  existing.v = 1;
-  existing.history = existing.history || {};
-  existing.history[String(liveCount)] = values; // Key by stringified liveCount
-  if (manifest !== undefined) existing.manifest = manifest;
-  existing.historyLimit = historyLimit;
+Modules can participate in a few different moments:
 
-  // Prune oldest by insertion order. In practice we re-sort by the script's
-  // own action sequence via state.frontier._historyOrder[<name>].
-  const order = (state.frontier._historyOrder = state.frontier._historyOrder || {});
-  const list = (order[name] = order[name] || []);
-  if (!list.includes(liveCount)) list.push(liveCount); // Track liveCount, not actionId
-  while (list.length > historyLimit) {
-    const drop = list.shift();
-    delete existing.history[String(drop)]; // Delete by stringified liveCount
-  }
+- `mount(ctx)`: called when the module is enabled and mounted
+- `onEnable(ctx)`: optional post-mount hook
+- `onDisable(ctx)`: optional pre-unmount hook
+- `unmount()`: teardown hook
+- `onAdventureChange(shortId, ctx)`: reset per-adventure state without needing a full disable/enable cycle
+- `onStateChange(name, parsed, ctx)`: state-card dispatch hook
 
-  frontierWriteState(name, existing);
-  return true;
-}
+What each is best for:
 
-// --- Ops channel -------------------------------------------------------------
-// Manages the frontier:out / frontier:in:<module> cards.
-state.frontier._ops = state.frontier._ops ?? {
-  requestIdCounter: 0,
-  pendingRequests: {},
-  responseCache: {},
-  acks: [],
+- Use `mount(ctx)` to set up long-lived module resources.
+- Use `onEnable(ctx)` for lightweight startup behavior or logging.
+- Use `onDisable(ctx)` to clear active behavior before teardown.
+- Use `unmount()` to destroy DOM, timers, or held references.
+- Use `onAdventureChange(...)` to clear per-adventure state.
+
+## Registration
+
+In the current codebase, first-party modules register themselves from their own module files if the Frontier registry is already present.
+
+The registration call is simply:
+
+```js
+window.Frontier.registry.register(MyModule);
+```
+
+The registry then:
+
+- stores the definition
+- applies aliases
+- checks enabled state
+- mounts the module if it should be active
+- replays cached state to newly enabled state modules
+- schedules a fresh heartbeat so scripts can see the updated module list
+
+## Building a new module
+
+Use this process.
+
+### 1. Decide what kind of module it is
+
+Pick one:
+
+- state-only
+- ops-only
+- mixed
+
+Most modules should be clearly one or the other.
+
+### 2. Create the module folder
+
+Use the current convention:
+
+```text
+BetterDungeon/modules/<module-id>/module.js
+```
+
+Add sibling files if the module needs them.
+
+Examples:
+
+- validators
+- renderers
+- consent helpers
+- normalizers
+
+### 3. Write the module object
+
+Minimal state-only example:
+
+```js
+const FrontierExampleStateModule = {
+  id: 'exampleState',
+  version: '1.0.0',
+  label: 'Example State',
+  description: 'Reads and reacts to a Frontier state card.',
+  stateNames: ['exampleState'],
+
+  mount(ctx) {
+    this._ctx = ctx;
+  },
+
+  unmount() {
+    this._ctx = null;
+  },
+
+  onStateChange(name, parsed, ctx) {
+    if (name !== 'exampleState') return;
+    ctx.log('debug', 'State changed:', parsed);
+  },
 };
+```
 
-function _frontierWriteOutCard() {
-  const requests = Object.values(state.frontier._ops.pendingRequests);
-  const acks = state.frontier._ops.acks;
-  const payload = { v: 1, requests, acks };
-  frontierWriteCard('frontier:out', payload);
-  state.frontier._ops.acks = []; // Clear acks after writing
-}
+Minimal ops-only example:
 
-function frontierCall(module, op, args = {}, opts = {}) {
-  if (!frontierIsAvailable({ requireModules: [module] })) {
-    console.warn(`Frontier: Module ${module} not available. Op ${op} not sent.`);
-    return Promise.reject({ code: 'unavailable', message: `Module ${module} unavailable.` });
-  }
-
-  const liveCount = frontierCurrentLiveCount();
-  const requestId = `${liveCount}-${module}-${++state.frontier._ops.requestIdCounter}`;
-  const request = { id: requestId, module, op, args, ts: Date.now() };
-
-  state.frontier._ops.pendingRequests[requestId] = request;
-  _frontierWriteOutCard();
-
-  return new Promise((resolve, reject) => {
-    state.frontier._ops.pendingRequests[requestId].__resolve = resolve;
-    state.frontier._ops.pendingRequests[requestId].__reject = reject;
-  });
-}
-
-function frontierPoll(requestId) {
-  const module = requestId.split('-')[1]; // e.g., '42-webfetch-1' -> 'webfetch'
-  const card = frontierReadCard(`frontier:in:${module}`);
-  if (!card || !card.responses || !card.responses[requestId]) return null;
-
-  const response = card.responses[requestId];
-  if (response.status !== 'pending') {
-    state.frontier._ops.acks.push(requestId);
-    _frontierWriteOutCard(); // Ack immediately
-    delete state.frontier._ops.pendingRequests[requestId];
-  }
-  return response;
-}
-
-function frontierPollAll() {
-  // Scan all frontier:in:<module> cards for completed responses.
-  const allResponses = {};
-  for (const card of storyCards) {
-    if (card.title.startsWith('frontier:in:')) {
-      const module = card.title.substring('frontier:in:'.length);
-      try {
-        const parsed = JSON.parse(card.entry || card.value || '{}');
-        if (parsed.responses) {
-          for (const requestId in parsed.responses) {
-            if (parsed.responses[requestId].status !== 'pending') {
-              allResponses[requestId] = parsed.responses[requestId];
-              state.frontier._ops.acks.push(requestId);
-              delete state.frontier._ops.pendingRequests[requestId];
-            }
-          }
-        }
-      } catch (e) { console.error(`Frontier: Failed to parse ${card.title}:`, e); }
-    }
-  }
-  if (Object.keys(allResponses).length > 0) {
-    _frontierWriteOutCard(); // Ack all found responses
-  }
-  return allResponses;
-}
-
-// This should be called once per turn by the script to process responses.
-state.frontier._processResponses = state.frontier._processResponses ?? (() => {
-  const allResponses = frontierPollAll();
-  for (const requestId in allResponses) {
-    const response = allResponses[requestId];
-    const pending = state.frontier._ops.pendingRequests[requestId];
-    if (pending) {
-      if (response.status === 'ok') {
-        pending.__resolve(response.data);
-      } else {
-        pending.__reject(response.error);
-      }
-    }
-  }
-});
-
-// Call _processResponses at the end of each turn.
-// This assumes the script runs in an Output Modifier.
-// If the script runs in an Input Modifier, it should call this manually.
-if (typeof onOutput === 'function') {
-  const originalOnOutput = onOutput;
-  onOutput = (text) => {
-    state.frontier._processResponses();
-    return originalOnOutput(text);
+```js
+async function pingOp(args, ctx) {
+  return {
+    ok: true,
+    received: args ?? null,
+    liveCount: ctx.getLiveCount(),
   };
-} else {
-  // If no onOutput, assume manual polling or call it here if appropriate.
-  // For simplicity, we'll just call it once at the end of the script for now.
-  state.frontier._processResponses();
 }
 
-```
+const FrontierExampleOpsModule = {
+  id: 'exampleOps',
+  version: '1.0.0',
+  label: 'Example Ops',
+  description: 'Exposes a simple Frontier op.',
 
-That's the whole base Library. About 60 lines. No Context Modifier required.
+  ops: {
+    ping: {
+      idempotent: 'safe',
+      timeoutMs: 1000,
+      handler: pingOp,
+    },
+  },
 
-### Scripture Library adapter (pasted after the base Library)
+  mount(ctx) {
+    this._ctx = ctx;
+  },
 
-```js
-// === Scripture (Frontier Widget Module) =======================================
-// Usage:
-//   scriptureConfigure({ historyLimit: 100 });   // optional; defaults shown
-//   scriptureSet([
-//     { id: 'hp-bar', type: 'bar', label: 'HP', value: 75, max: 100, color: 'green', align: 'center' },
-//     { id: 'gold',   type: 'stat', label: 'Gold', value: 1250, align: 'right' },
-//   ]);
-
-state.scripture = state.scripture ?? { historyLimit: 100 };
-
-function scriptureConfigure(opts = {}) {
-  if (typeof opts.historyLimit === 'number') state.scripture.historyLimit = opts.historyLimit;
-}
-
-function scriptureSet(widgets) {
-  if (!frontierIsAvailable({ requireModules: ['scripture'] })) return false;
-
-  // Split: structure goes in manifest, values go in history[currentLiveCount].
-  const manifest = { widgets: widgets.map(({ value, progress, ...rest }) => rest) };
-  const values = {};
-  for (const w of widgets) {
-    if (w.value !== undefined) values[w.id] = w.value;
-    if (w.progress !== undefined) values[w.id + '__progress'] = w.progress;
-  }
-
-  return frontierUpdateHistory('scripture', values, {
-    historyLimit: state.scripture.historyLimit,
-    manifest,
-  });
-}
-```
-
-### WebFetch Library adapter (pasted after the base Library)
-
-```js
-// === WebFetch (Frontier HTTP Module) ==========================================
-// Usage:
-//   // WebFetch v1 is safe-method-only: GET, HEAD, OPTIONS.
-//   frontierCall('webfetch', 'fetch', { url: 'https://api.example.com/data' })
-//     .then(response => { /* ... */ })
-//     .catch(error => { /* ... */ });
-//   frontierCall('webfetch', 'search', { query: 'AI Dungeon Frontier' })
-//     .then(result => { /* ... */ });
-
-// No specific script-side state or functions needed beyond frontierCall.
-// The module is primarily used via the generic frontierCall API.
-```
-
-### Clock Library adapter (pasted after the base Library)
-
-```js
-// === Clock (Frontier Time Module) =============================================
-// Usage:
-//   frontierCall('clock', 'now').then(time => console.log(time.local));
-//   frontierCall('clock', 'tz', { timeZone: 'America/Chicago' })
-//     .then(info => console.log(info.offset));
-//   frontierCall('clock', 'format', { ts: Date.now(), format: 'YYYY-MM-DD', timeZone: 'UTC' })
-//     .then(formatted => console.log(formatted));
-
-// No specific script-side state or functions needed beyond frontierCall.
-// The module is primarily used via the generic frontierCall API.
-```
-
-### Geolocation Library adapter (pasted after the base Library)
-
-```js
-// === Geolocation (Frontier Location Module) ==================================
-// Usage:
-//   frontierCall('geolocation', 'permission')
-//     .then(status => console.log(status.permissionState));
-//   frontierCall('geolocation', 'getCurrent', {
-//     highAccuracy: false,
-//     timeoutMs: 15000,
-//     maximumAgeMs: 60000,
-//   }).then(position => console.log(position.latitude, position.longitude));
-
-// No specific script-side state or functions needed beyond frontierCall.
-// The module is primarily used via the generic frontierCall API.
-```
-
-### Weather Library adapter (pasted after the base Library)
-
-```js
-// === Weather (Frontier Weather Module) =======================================
-// Usage:
-//   frontierCall('weather', 'current', { place: 'Houston', units: 'imperial' })
-//     .then(report => console.log(report.current.weather, report.current.temperature));
-//   frontierCall('weather', 'forecast', {
-//     latitude: 29.7604,
-//     longitude: -95.3698,
-//     days: 3,
-//     units: 'imperial',
-//   }).then(report => console.log(report.days));
-
-// No specific script-side state or functions needed beyond frontierCall.
-// The module is primarily used via the generic frontierCall API.
-```
-
-### Network Library adapter (pasted after the base Library)
-
-```js
-// === Network (Frontier Connectivity Module) ==================================
-// Usage:
-//   frontierCall('network', 'status')
-//     .then(status => console.log(status.online, status.quality));
-
-// No specific script-side state or functions needed beyond frontierCall.
-// The module is primarily used via the generic frontierCall API.
-```
-
-### System Library adapter (pasted after the base Library)
-
-```js
-// === System (Frontier Device/Environment Module) =============================
-// Usage:
-//   frontierCall('system', 'info')
-//     .then(info => console.log(info.deviceClass, info.platform.family));
-//   frontierCall('system', 'power')
-//     .then(power => console.log(power.supported, power.state, power.levelPercent));
-
-// No specific script-side state or functions needed beyond frontierCall.
-// The module is primarily used via the generic frontierCall API.
-```
-
-### Provider AI Library adapter (pasted after the base Library)
-
-```js
-// === Provider AI (Frontier AI Bridge) ====================================
-// Setup:
-//   Save an OpenRouter API key in BetterDungeon -> Frontier -> AI Providers.
-// Usage:
-//   frontierCall('providerAI', 'testConnection', { provider: 'openrouter' })
-//     .then(status => console.log(status.ok, status.modelCount));
-//   frontierCall('providerAI', 'models', { provider: 'openrouter', limit: 5 })
-//     .then(list => console.log(list.models.map(m => m.id)));
-//   frontierCall('providerAI', 'chat', {
-//     provider: 'openrouter',
-//     model: 'openai/gpt-5.2',
-//     messages: [
-//       { role: 'system', content: 'Return concise JSON.' },
-//       { role: 'user', content: 'Classify this event: the door is locked.' }
-//     ],
-//     maxTokens: 128,
-//     temperature: 0,
-//     responseFormat: { type: 'json_object' }
-//   }).then(result => console.log(result.text));
-
-// No specific script-side state or functions needed beyond frontierCall.
-// The module is Frontier's provider-backed path for sidecar model calls.
-// It never exposes API keys to scripts or inserts results into the story by itself.
-```
-
-### Multi-module script pattern
-
-Chronos V2 in `BetterDungeon/examples/aid-scripts/chronos-v2/` is the
-reference example for combining a state-only UI module with several ops
-modules in one AI Dungeon script.
-
-Use this shape for scripts that need a live dashboard plus sidecar module work:
-
-- Publish interactive widgets through `frontier:state:scripture`.
-- Read `frontier:in:scripture` widget events and acknowledge the highest
-  processed script-owned event sequence in the next Scripture state payload.
-- Feature-detect ops from `frontier:heartbeat` before queueing requests on
-  `frontier:out`.
-- Poll `frontier:in:<module>` cards over later turns, apply terminal
-  responses, and ack consumed request ids through `frontier:out`.
-- Keep local simulation or cached state as the fallback so missing modules,
-  denied permissions, timeouts, and stale heartbeats never break gameplay.
-
-Chronos uses that pattern for `clock.now` and `weather.current` while
-Scripture remains the single UI surface.
-
-### Example full scenario flow
-
-```js
-// Library
-// (paste base Frontier Library here)
-// (paste Scripture adapter here)
-// (paste WebFetch adapter here)
-// (paste Clock adapter here)
-// (paste System adapter here if using environment hints)
-// (paste Provider AI adapter here if using hosted sidecar model calls)
-
-state.game = state.game ?? { hp: 100, gold: 0 };
-```
-
-```js
-// Output Modifier
-const modifier = (text) => {
-  // 1. Do game logic.
-  state.game.hp = Math.max(0, state.game.hp - 5);
-  state.game.gold += 10;
-
-  // 2. Publish widget state. Scripture handles live-count history under the hood.
-  scriptureSet([
-    { id: 'hp-bar', type: 'bar',  label: 'HP',   value: state.game.hp,   max: 100, color: 'green', align: 'center' },
-    { id: 'gold',   type: 'stat', label: 'Gold', value: state.game.gold,                            align: 'right' },
-  ]);
-
-  // 3. Example of calling a safe ops module.
-  if (state.game.hp < 20 && !state.game.lookedUpPotionHint) {
-    frontierCall('webfetch', 'search', { query: 'fantasy healing potion ideas' })
-      .then(res => console.log('Potion hint search:', res))
-      .catch(err => console.error('Potion hint search failed:', err));
-    state.game.lookedUpPotionHint = true;
-  }
-
-  return { text };
+  unmount() {
+    this._ctx = null;
+  },
 };
-modifier(text);
 ```
 
-**Two hooks total.** Library (setup) + Output Modifier (publish state + enqueue ops). No Input Modifier, no Context Modifier, no invisible characters in the output text. The entire scenario integration is concise and clear.
+### 4. Register it
 
-### What about undo / retry?
+At the end of the module file:
 
-Nothing special. The script just writes the current turn's values into the live-count-keyed history map every turn. If the user undoes, retries, rewinds, or continues, BetterDungeon recalculates the current live count and reads a different entry from the same unchanged state card. The script doesn't need a separate mode or exception case.
+```js
+window.Frontier = window.Frontier || {};
 
-## Extensibility roadmap (post-MVP)
+if (window.Frontier?.registry) {
+  window.Frontier.registry.register(FrontierExampleOpsModule);
+}
+```
 
-The module interface is designed so these three future loaders plug in without refactoring Core or existing modules:
+### 5. Make sure it is loaded by BetterDungeon
 
-### Post-V2: Curated module registry
+Registration only works if the module file is actually loaded into the extension runtime. The exact loader path depends on how the surrounding BetterDungeon bundle/script includes the module, but the key rule is simple: creating the file is not enough. It has to be part of the shipped extension load path.
 
-- A registry hosted on BetterRepository (or a sub-domain) lists vetted third-party modules.
-- Each registry entry includes: module id, display name, description, BD-side JS source URL, AI-Dungeon-side Library snippet, SHA-256 of the JS.
-- A new UI in BD's popup / settings lets the user browse, install, and enable registry modules.
-- On install, BD fetches the JS, verifies the hash, stores it in `chrome.storage.local`, and calls `core.registerModule(parsed)` on next startup.
-- Scripts can pre-flight-check registry modules in the same heartbeat-based way.
+### 6. Test the right surface
 
-### Post-V2: Sandboxed user scripts
+Test according to module type:
 
-- Users paste arbitrary JS into a settings panel.
-- BD runs it in an iframe sandbox or Web Worker with a constrained Frontier SDK exposed.
-- Permissions prompts gate access to network, storage, clipboard, etc.
-- Core-side: loader constructs a `FrontierModule` object whose `ops` handlers postMessage into the sandbox; responses come back the same way.
+- state module: verify card changes dispatch correctly and survive undo/rewind behavior
+- ops module: verify request, pending, response, ack, and timeout behavior
+- mixed module: test both paths independently
 
-### Post-V2: Frontier inter-module communication
+## Authoring guidance
 
-- Modules can call other modules via Core. E.g. a "Scenario Stats Dashboard" module could be a composite that reads from Scripture and several data-fetching modules.
-- Reuses the same envelope machinery; just internal routing instead of wire traffic.
+### Keep responsibilities tight
 
-## Module ID namespacing conventions
+Good Frontier modules are narrow.
 
-| Prefix | Meaning |
-|--------|---------|
-| `_core` | Reserved for Frontier Core itself |
-| No prefix, short lower camel case (e.g. `scripture`, `webfetch`, `providerAI`) | First-party built-in modules |
-| `<author>.<module>` (e.g. `robyn.dicebot`) | Third-party modules (registry or user-scripted) |
+- Scripture renders widget state.
+- WebFetch does controlled network access.
+- Clock does time helpers.
+- System exposes environment hints.
 
-Core will reject registration attempts for unprefixed ids that conflict with reserved first-party ids.
+That is the right scale.
 
-## Naming conventions inside the codebase
+### Prefer explicit validation
 
-- Module files: `modules/<module_id>/module.js` (entry point), plus as many siblings as the module needs.
-- Module class names: `ScriptureModule`, `WebFetchModule`, etc. PascalCase.
-- Op handlers within a module: lowercase camelCase matching the wire `op` name.
-- Ops on the wire: lowercase camelCase. No spaces, no dots.
+Frontier modules sit on a boundary:
+
+- scripts can write malformed state
+- scripts can send malformed op args
+- browser capabilities can be unavailable
+
+Validate early and fail clearly.
+
+### Respect adventure boundaries
+
+If the module keeps ephemeral state, clear it on `onAdventureChange(...)`.
+
+Do not assume one global session equals one adventure.
+
+### Use storage sparingly
+
+`ctx.storage` is good for:
+
+- preferences
+- consents
+- small module settings
+
+It is not a replacement for scenario state cards or large caches.
+
+### Treat state re-renders as normal
+
+Core may replay cached state to a newly enabled module. Live-count-aware modules may also be called again when the card itself did not change. Write module logic so that repeated calls are safe and unsurprising.
+
+## Naming conventions
+
+Use the current codebase pattern:
+
+- module entry file: `modules/<module-id>/module.js`
+- exported runtime object: PascalCase variable name if the file uses one
+- wire op names: lower camel case
+- first-party ids: short lowercase names already consistent with the codebase
+
+Third-party-style dotted ids are supported by the registry's enablement rules, but first-party shipped modules currently use short ids like `scripture`, `webfetch`, and `ai`.
+
+## What not to build into a module by default
+
+- do not invent a separate profile or capability tier
+- do not bypass `ctx.writeCard(...)` for Frontier-owned card writes
+- do not make replay-sensitive ops look safe if they are not
+- do not tie history-sensitive rendering only to action id when live count is the real key
+- do not assume older planning docs reflect current loader or lifecycle behavior
+
+## Best reference files
+
+When adding or revising a module, these are the best current references:
+
+- [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/module-registry.js)
+- [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/core.js)
+- [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/ops-dispatcher.js)
+- [modules/scripture/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/scripture/module.js)
+- [modules/webfetch/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/webfetch/module.js)
+- [modules/ai/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/ai/module.js)
+
+Those reflect the real Frontier module system better than the older planning-era script snippets.
