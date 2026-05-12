@@ -132,18 +132,19 @@ It should not describe Frontier as:
 
 The remaining work is mostly SDK follow-through, polish, verification, examples, and public-facing documentation.
 
-### Phase 10 - BetterDungeon SDK follow-through
+### Phase 10 - BetterDungeon SDK
 
-Still needed:
+Completed:
 
-- ship the first `bd.sdk` helper surface for scripts
-- document the separation clearly: heartbeat owns Frontier discovery, SDK owns BetterDungeon-facing metadata
-- add at least one example script or helper snippet that uses heartbeat for module detection and `sdk.version` / `sdk.config` for BetterDungeon-aware branching
-- expand regression coverage around the new `sdk` module once script-side helpers land
+- shipped the `sdk` Frontier module
+- locked in the separation clearly: heartbeat owns Frontier discovery, SDK owns BetterDungeon-facing metadata
+- shipped `sdk.version` and `sdk.config`
+- added a dedicated `tests/aid-scripts/sdk-module/` regression script
+- validated the SDK live in AI Dungeon, including the background-authoritative config path for AI settings
 
-Goal:
+Result:
 
-- keep heartbeat as the one Frontier discovery surface while the SDK grows only through non-overlapping BetterDungeon metadata
+- Frontier now has a real BetterDungeon-facing SDK surface without introducing a second discovery system
 
 ### Phase 11 - Module polish and test coverage
 
@@ -152,6 +153,7 @@ Still needed:
 - tighten module behavior where needed
 - create or finish per-module regression scripts in `tests/aid-scripts/`
 - make sure every shipped module has a dependable validation path
+- add the first reusable `bd.sdk` helper snippet once the helper shape is worth freezing
 
 Goal:
 

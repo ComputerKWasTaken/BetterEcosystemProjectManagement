@@ -392,11 +392,25 @@ The shipped v1 already does these:
 3. exposes a popup toggle like the other first-party Frontier modules
 4. returns safe BetterDungeon configuration context without duplicating heartbeat discovery
 
+## Current completion state
+
+The core SDK milestone is complete.
+
+Done:
+
+1. shipped the `sdk` module
+2. kept heartbeat as the only Frontier discovery surface
+3. shipped `sdk.version` and `sdk.config`
+4. added and live-validated the dedicated `sdk-module` regression script
+5. moved config reads through the background-authoritative path so the SDK reflects real saved AI settings instead of fallback-looking defaults
+
+What remains is optional follow-through, not core justification work.
+
 ## Recommended next implementation order
 
-1. add a tiny script-side `bd.sdk` helper snippet to the base Frontier library docs
-2. create one example script that uses heartbeat for graceful capability detection and `sdk.version` for BetterDungeon-aware branching
-3. add dedicated regression coverage once helper usage settles
+1. move into broader module polish and regression expansion across the remaining shipped modules
+2. add a tiny script-side `bd.sdk` helper snippet to the base Frontier library docs when we want to freeze that shape
+3. create one example script that uses heartbeat for graceful capability detection and `sdk.version` / `sdk.config` for BetterDungeon-aware branching
 4. only then consider extra convenience helpers
 
 ## How it should ship
@@ -516,12 +530,12 @@ That means the answer is restraint, not fear.
 
 ## Current recommendation
 
-The BetterDungeon SDK should now be treated as a shipped Frontier surface with follow-through work still to do.
+The BetterDungeon SDK should now be treated as a completed shipped Frontier surface.
 
 Recommended priority:
 
-1. add the first author-facing `bd.sdk` helper layer and examples
-2. keep the SDK docs synced to the narrowed, non-overlapping contract
-3. move into broader module polish and regression-suite expansion with `sdk` included in that coverage story
+1. keep the SDK contract narrow and resist overlap with heartbeat
+2. move into broader module polish and regression-suite expansion with `sdk` included in that coverage story
+3. add author-facing helper/examples only when they clearly reduce script boilerplate without freezing a bad shape too early
 
 This keeps the architecture cleaner: heartbeat owns Frontier discovery, and the SDK only grows if it provides clearly BetterDungeon-specific value.

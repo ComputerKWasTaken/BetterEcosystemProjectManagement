@@ -28,11 +28,12 @@ The core Frontier runtime is shipped.
 
 What remains is mostly:
 
-- the first author-facing `bd.sdk` helper/docs layer on top of the shipped SDK module
 - module polish and broader regression coverage
 - documentation cleanup and public guide work
 - showcase scripts
 - multiplatform/mobile follow-through
+
+The BetterDungeon SDK itself is now shipped and validated. The next Frontier target is broader module polish and test coverage.
 
 ## Doc rules
 
