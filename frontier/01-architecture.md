@@ -188,7 +188,7 @@ WebFetch is the clearest reference ops module.
 ### Other shipped ops modules
 
 - `clock`: `now`, `tz`, `format`
-- `sdk`: `version`
+- `sdk`: `version`, `config`
 - `geolocation`: `permission`, `getCurrent`
 - `weather`: `current`, `forecast`
 - `network`: `status`
@@ -314,7 +314,7 @@ The current separation is deliberate:
 - `frontier:heartbeat` is the one source of truth for Frontier availability
 - the `sdk` module is reserved for BetterDungeon-facing metadata that does not need a second discovery system
 
-That means scripts should inspect heartbeat when they need to know which modules or ops are available, and only call `sdk` when they want BetterDungeon metadata such as version information.
+That means scripts should inspect heartbeat when they need to know which modules or ops are available, and only call `sdk` when they want BetterDungeon metadata such as version information or curated configuration context.
 
 ### Existing story-card systems
 

@@ -128,7 +128,7 @@ The checked-in module registry currently loads these built-in modules:
 | `scripture` | Renders script-driven widgets in BetterDungeon | `frontier:state:scripture` | none |
 | `webfetch` | Fetches external HTTP/HTTPS resources with consent and limits | none | `fetch`, `search` |
 | `clock` | Time and formatting helpers | none | `now`, `tz`, `format` |
-| `sdk` | Exposes BetterDungeon-facing metadata that complements heartbeat | none | `version` |
+| `sdk` | Exposes BetterDungeon-facing metadata and safe configuration context that complement heartbeat | none | `version`, `config` |
 | `geolocation` | Browser geolocation helpers | none | `permission`, `getCurrent` |
 | `weather` | Open-Meteo current weather and forecast lookups | none | `current`, `forecast` |
 | `network` | Connection state hints | none | `status` |

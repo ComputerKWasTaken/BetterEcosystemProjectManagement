@@ -21,6 +21,7 @@ The SDK should let scripts ask questions like:
 - what version of BetterDungeon am I running?
 - what BetterDungeon-aware helper layer am I targeting?
 - what metadata can I branch on without turning heartbeat into two systems at once?
+- how has the player configured BetterDungeon in ways that matter to script behavior?
 
 That is clever in exactly the right way: useful, composable, and future-friendly.
 
@@ -82,6 +83,7 @@ The current SDK surface is intentionally small.
 Shipped op:
 
 - `bd.sdk.version()`
+- `bd.sdk.config()`
 
 For the actual Frontier module, the shipped v1 is:
 
@@ -110,6 +112,11 @@ const FrontierSdkModule = {
       idempotent: 'safe',
       timeoutMs: 1000,
       handler: versionOp,
+    },
+    config: {
+      idempotent: 'safe',
+      timeoutMs: 1500,
+      handler: configOp,
     },
   },
 
@@ -158,6 +165,95 @@ bd.sdk.version = function () {
 };
 ```
 
+### `sdk.config`
+
+### `bd.sdk.config()`
+
+Purpose:
+
+- expose safe BetterDungeon configuration that materially affects how a script may want to behave
+
+Expected return shape:
+
+- BetterDungeon feature toggles
+- Frontier module enablement preferences
+- safe Scripture/WebFetch/AI configuration context
+- no secrets such as API keys
+
+Current response shape:
+
+```json
+{
+  "sdkVersion": "1.0.0",
+  "betterDungeonVersion": "1.2.1",
+  "frontierProtocol": 1,
+  "frontierClient": "BetterDungeon",
+  "features": {
+    "frontier": true,
+    "markdown": true,
+    "command": true,
+    "try": true,
+    "triggerHighlight": true,
+    "hotkey": true,
+    "favoriteInstructions": true,
+    "inputModeColor": true,
+    "characterPreset": true,
+    "autoSee": false,
+    "notes": true,
+    "storyCardModalDock": true,
+    "inputHistory": true,
+    "textToSpeech": false
+  },
+  "frontier": {
+    "enabled": true,
+    "runtimeEnabled": true,
+    "debug": false,
+    "modulePreferences": {
+      "scripture": true,
+      "webfetch": true,
+      "clock": true,
+      "sdk": true,
+      "geolocation": true,
+      "weather": true,
+      "network": true,
+      "system": true,
+      "ai": true
+    },
+    "scriptureDisplay": {
+      "size": "normal",
+      "maxHeight": "medium",
+      "layout": "balanced"
+    },
+    "webfetch": {
+      "savedOriginCount": 0,
+      "allowCount": 0,
+      "denyCount": 0
+    },
+    "ai": {
+      "configured": true,
+      "defaultModel": "google/gemini-2.0-flash-exp:free",
+      "costControls": {
+        "freeModelsOnly": true,
+        "advancedOpen": false,
+        "maxPromptPricePerMillion": 0,
+        "maxCompletionPricePerMillion": 0,
+        "perCallEstimateCap": 0,
+        "dailySpendCap": 0,
+        "monthlySpendCap": 0
+      }
+    }
+  }
+}
+```
+
+Recommended script helper:
+
+```js
+bd.sdk.config = function () {
+  return frontierCall('sdk', 'config', {});
+};
+```
+
 ## Suggested script-side helper layer
 
 The raw op is useful, but the script-side helper layer is what will make this feel like a real SDK.
@@ -171,6 +267,10 @@ bd.sdk = bd.sdk || {};
 
 bd.sdk.version = function () {
   return frontierCall('sdk', 'version', {});
+};
+
+bd.sdk.config = function () {
+  return frontierCall('sdk', 'config', {});
 };
 ```
 
@@ -271,6 +371,7 @@ So scripts can do things like:
 
 ```js
 frontierCall('sdk', 'version', {})
+frontierCall('sdk', 'config', {})
 ```
 
 and wrap heartbeat parsing helpers under:
@@ -289,6 +390,7 @@ The shipped v1 already does these:
 1. adds the `sdk` Frontier module
 2. advertises it in heartbeat like any other ops module
 3. exposes a popup toggle like the other first-party Frontier modules
+4. returns safe BetterDungeon configuration context without duplicating heartbeat discovery
 
 ## Recommended next implementation order
 
@@ -386,6 +488,7 @@ Good SDK value:
 
 - BetterDungeon versioning
 - BetterDungeon-facing metadata
+- player configuration that affects script behavior
 - a stable anchor for script-side helpers layered on top of heartbeat
 
 Bad SDK value:

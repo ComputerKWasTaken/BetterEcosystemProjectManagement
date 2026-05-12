@@ -41,11 +41,11 @@ Current ops exposed by those modules:
 - `network`: `status`
 - `system`: `info`, `power`
 - `ai`: `chat`, `models`, `testConnection`
-- `sdk`: `version`
+- `sdk`: `version`, `config`
 
 The `ai` module also keeps the alias `providerAI` for compatibility.
 
-The `sdk` module is intentionally narrow. Frontier availability itself belongs to `frontier:heartbeat`, so the SDK should only expose BetterDungeon-facing metadata that complements heartbeat instead of mirroring it.
+The `sdk` module is intentionally narrow. Frontier availability itself belongs to `frontier:heartbeat`, so the SDK should only expose BetterDungeon-facing metadata that complements heartbeat instead of mirroring it. The current useful direction is curated BetterDungeon configuration that affects script behavior without exposing secrets.
 
 ## How modules fit into Frontier
 

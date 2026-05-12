@@ -138,7 +138,7 @@ Still needed:
 
 - ship the first `bd.sdk` helper surface for scripts
 - document the separation clearly: heartbeat owns Frontier discovery, SDK owns BetterDungeon-facing metadata
-- add at least one example script or helper snippet that uses heartbeat for module detection and `sdk.version` for BetterDungeon-aware branching
+- add at least one example script or helper snippet that uses heartbeat for module detection and `sdk.version` / `sdk.config` for BetterDungeon-aware branching
 - expand regression coverage around the new `sdk` module once script-side helpers land
 
 Goal:

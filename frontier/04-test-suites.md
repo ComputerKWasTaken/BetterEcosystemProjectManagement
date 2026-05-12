@@ -93,6 +93,7 @@ Use this suite when changing:
 - `modules/sdk/module.js`
 - heartbeat payload structure in `services/frontier/core.js`
 - version/runtime metadata surfaced through `sdk.version`
+- curated BetterDungeon configuration surfaced through `sdk.config`
 
 Interactive Scripture coverage currently lives inside `tests/aid-scripts/scripture-module` rather than in a separate active Frontier doc file. That suite is still the place to verify widget event queue behavior, acknowledgement flow, optimistic interactions, and state round-tripping.
 

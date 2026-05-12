@@ -20,7 +20,7 @@ Completed phase plans and older sign-off artifacts live in [`archive/`](./archiv
 
 ## One-paragraph summary
 
-Frontier is BetterDungeon's cards-based runtime for AI Dungeon scripting. Scripts publish state through reserved story cards, BetterDungeon observes and reacts to that state, and ops-capable modules can answer requests back through the same card-driven request/response path. The current shipped module set is `scripture`, `webfetch`, `clock`, `sdk`, `geolocation`, `weather`, `network`, `system`, and `ai`. The runtime is unified, live-count-aware, and already implemented, with heartbeat as the one discovery surface for Frontier availability.
+Frontier is BetterDungeon's cards-based runtime for AI Dungeon scripting. Scripts publish state through reserved story cards, BetterDungeon observes and reacts to that state, and ops-capable modules can answer requests back through the same card-driven request/response path. The current shipped module set is `scripture`, `webfetch`, `clock`, `sdk`, `geolocation`, `weather`, `network`, `system`, and `ai`. The runtime is unified, live-count-aware, and already implemented, with heartbeat as the one discovery surface for Frontier availability and `sdk` reserved for BetterDungeon-facing metadata like version and safe configuration context.
 
 ## Current status
 
