@@ -1,6 +1,6 @@
 # 05 - BetterDungeon SDK Roadmap
 
-> This document covers the next capability layer we want Frontier to ship: a curated BetterDungeon SDK surface for scripts. This is no longer a vague post-V2 curiosity. It is a real planned feature direction.
+> This document now records the first shipped BetterDungeon SDK surface in Frontier and the follow-through still worth doing around it.
 
 ## Why this matters
 
@@ -72,7 +72,7 @@ It should not be:
 
 If we make it sloppy, it will create exactly the maintenance problems we are trying to avoid.
 
-## Suggested first version
+## Current first version
 
 The first SDK surface should stay small and obviously useful.
 
@@ -83,7 +83,7 @@ Suggested core capabilities:
 - `bd.sdk.modules()`
 - `bd.sdk.frontier()`
 
-For the actual Frontier module, the cleanest v1 is:
+For the actual Frontier module, the shipped v1 is:
 
 - module id: `sdk`
 - public script-side helper namespace: `bd.sdk`
@@ -197,15 +197,23 @@ Recommended v1 response:
 ```json
 {
   "sdkVersion": "1.0.0",
+  "betterDungeonVersion": "1.2.1",
+  "frontierProtocol": 1,
+  "frontierClient": "BetterDungeon",
   "helperGroups": ["sdk"],
-  "modules": ["scripture", "webfetch", "clock", "geolocation", "weather", "network", "system", "ai", "sdk"],
-  "opsModules": ["webfetch", "clock", "geolocation", "weather", "network", "system", "ai", "sdk"],
+  "methods": ["version", "capabilities", "modules", "frontier"],
+  "modules": ["scripture", "webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"],
+  "enabledModules": ["scripture", "webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"],
+  "availableModules": ["scripture", "webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"],
+  "opsModules": ["webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"],
   "stateModules": ["scripture"],
   "features": {
     "frontier": true,
+    "sdk": true,
     "scriptureWidgets": true,
     "providerAI": true,
-    "webfetchConsent": true
+    "webfetchConsent": true,
+    "moduleToggles": true
   },
   "platform": {
     "browserFamily": "chromium",
@@ -249,18 +257,30 @@ Recommended v1 response:
   "modules": [
     {
       "id": "scripture",
+      "aliases": [],
+      "label": "scripture",
+      "version": "1.0.0",
+      "enabled": true,
       "mounted": true,
       "stateNames": ["scripture"],
       "ops": []
     },
     {
       "id": "clock",
+      "aliases": [],
+      "label": "Clock",
+      "version": "1.0.0",
+      "enabled": true,
       "mounted": true,
       "stateNames": [],
       "ops": ["now", "tz", "format"]
     },
     {
       "id": "sdk",
+      "aliases": [],
+      "label": "BetterDungeon SDK",
+      "version": "1.0.0",
+      "enabled": true,
       "mounted": true,
       "stateNames": [],
       "ops": ["version", "capabilities", "modules", "frontier"]
@@ -302,12 +322,17 @@ Recommended v1 response:
 ```json
 {
   "protocol": 1,
+  "client": "BetterDungeon",
   "enabled": true,
   "turn": 42,
   "heartbeatPresent": true,
   "heartbeatFresh": true,
+  "heartbeatTurn": 42,
+  "heartbeatTurnDelta": 0,
+  "heartbeatWrittenAt": "2026-05-12T00:00:00.000Z",
   "moduleCount": 9,
-  "modules": ["scripture", "webfetch", "clock", "geolocation", "weather", "network", "system", "ai", "sdk"]
+  "modules": ["scripture", "webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"],
+  "advertisedModules": ["scripture", "webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"]
 }
 ```
 
@@ -456,13 +481,20 @@ bd.sdk.modules()
 
 That gives us both a clean protocol identity and a clean authoring identity.
 
-## Recommended first implementation order
+## Landed pieces
 
-1. add the `sdk` Frontier module with the four v1 ops
-2. advertise it in heartbeat like any other ops module
-3. add a tiny script-side `bd.sdk` helper snippet to the base Frontier library docs
-4. create one example script that uses the SDK for graceful capability detection
-5. only then consider extra convenience helpers
+The shipped v1 already does these:
+
+1. adds the `sdk` Frontier module with the four v1 ops
+2. advertises it in heartbeat like any other ops module
+3. exposes a popup toggle like the other first-party Frontier modules
+
+## Recommended next implementation order
+
+1. add a tiny script-side `bd.sdk` helper snippet to the base Frontier library docs
+2. create one example script that uses the SDK for graceful capability detection
+3. add dedicated regression coverage once helper usage settles
+4. only then consider extra convenience helpers
 
 ## How it should ship
 
@@ -578,12 +610,12 @@ That means the answer is restraint, not fear.
 
 ## Current recommendation
 
-The BetterDungeon SDK should be treated as a real planned Frontier feature.
+The BetterDungeon SDK should now be treated as a shipped Frontier surface with follow-through work still to do.
 
 Recommended priority:
 
-1. finish the current doc cleanup pass
-2. define and ship the first BetterDungeon SDK surface
-3. move into broader module polish and regression-suite expansion after the SDK lands
+1. add the first author-facing `bd.sdk` helper layer and examples
+2. keep the SDK docs synced to the actual response shapes
+3. move into broader module polish and regression-suite expansion with `sdk` included in that coverage story
 
-This is a strong next-step feature because it deepens Frontier as a platform without bloating the core runtime model.
+This was a strong next-step feature because it deepened Frontier as a platform without bloating the core runtime model, and now the main task is finishing the author-facing polish around it.

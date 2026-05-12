@@ -152,6 +152,7 @@ Frontier's shipped first-party modules are:
 - `scripture`
 - `webfetch`
 - `clock`
+- `sdk`
 - `geolocation`
 - `weather`
 - `network`
@@ -187,6 +188,7 @@ WebFetch is the clearest reference ops module.
 ### Other shipped ops modules
 
 - `clock`: `now`, `tz`, `format`
+- `sdk`: `version`, `capabilities`, `modules`, `frontier`
 - `geolocation`: `permission`, `getCurrent`
 - `weather`: `current`, `forecast`
 - `network`: `status`
@@ -215,6 +217,7 @@ BetterDungeon/
 |   |-- clock/
 |   |-- geolocation/
 |   |-- network/
+|   |-- sdk/
 |   |-- scripture/
 |   |-- system/
 |   |-- weather/

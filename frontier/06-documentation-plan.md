@@ -1,4 +1,4 @@
-# 07 - Documentation Plan
+# 06 - Documentation Plan
 
 > This is the active plan for Frontier-facing documentation work across the internal docs and BetterRepository public guides.
 
@@ -21,8 +21,7 @@ The active internal Frontier doc set is now:
 - [03-implementation-status.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/03-implementation-status.md)
 - [04-test-suites.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/04-test-suites.md)
 - [05-betterdungeon-sdk-roadmap.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/05-betterdungeon-sdk-roadmap.md)
-- [06-scripture-interactive-widgets-test-suite.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/06-scripture-interactive-widgets-test-suite.md)
-- [07-documentation-plan.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/07-documentation-plan.md)
+- [06-documentation-plan.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/06-documentation-plan.md)
 
 ## Internal documentation goals
 
@@ -70,14 +69,14 @@ Core public guide areas should include:
 - AI
 - migration/help material as needed
 
-If and when the BetterDungeon SDK feature ships, it should get its own guide or a clearly defined section rather than being buried as a footnote.
+Now that the BetterDungeon SDK module ships, it should get its own guide or a clearly defined section rather than being buried as a footnote.
 
 ## Recommended execution order
 
 1. keep the internal Frontier docs accurate first
 2. keep the high-level Frontier public guide clear and compelling
 3. expand or polish per-module guides as the shipped module surfaces stabilize
-4. add dedicated BetterDungeon SDK documentation once that feature has a defined public contract
+4. add dedicated BetterDungeon SDK documentation now that the first public contract exists
 
 ## Verification
 
@@ -93,4 +92,4 @@ When documentation is updated, verify:
 
 The immediate priority remains documentation accuracy.
 
-The next priority after that is making sure the public BetterRepository guide set tells a coherent story about Frontier as a real platform, with room for the upcoming BetterDungeon SDK feature to fit naturally.
+The next priority after that is making sure the public BetterRepository guide set tells a coherent story about Frontier as a real platform, with a clean place for the shipped BetterDungeon SDK surface to fit naturally.

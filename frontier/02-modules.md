@@ -16,7 +16,7 @@ That is the core model. A module does not need a special profile, mode, or excep
 In practice:
 
 - `scripture` is the reference state-reading module
-- `webfetch`, `clock`, `geolocation`, `weather`, `network`, `system`, and `ai` are ops modules
+- `webfetch`, `clock`, `sdk`, `geolocation`, `weather`, `network`, `system`, and `ai` are ops modules
 
 ## Current shipped modules
 
@@ -25,6 +25,7 @@ Frontier currently ships these first-party modules:
 - `scripture`
 - `webfetch`
 - `clock`
+- `sdk`
 - `geolocation`
 - `weather`
 - `network`
@@ -35,6 +36,7 @@ Current ops exposed by those modules:
 
 - `webfetch`: `fetch`, `search`
 - `clock`: `now`, `tz`, `format`
+- `sdk`: `version`, `capabilities`, `modules`, `frontier`
 - `geolocation`: `permission`, `getCurrent`
 - `weather`: `current`, `forecast`
 - `network`: `status`
@@ -450,6 +452,7 @@ When adding or revising a module, these are the best current references:
 - [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/ops-dispatcher.js)
 - [modules/scripture/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/scripture/module.js)
 - [modules/webfetch/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/webfetch/module.js)
+- [modules/sdk/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/sdk/module.js)
 - [modules/ai/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/ai/module.js)
 
 Those reflect the real Frontier module system better than the older planning-era script snippets.

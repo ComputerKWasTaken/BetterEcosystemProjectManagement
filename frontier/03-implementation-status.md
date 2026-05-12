@@ -19,6 +19,7 @@ Shipped first-party modules:
 - `scripture`
 - `webfetch`
 - `clock`
+- `sdk`
 - `geolocation`
 - `weather`
 - `network`
@@ -129,20 +130,20 @@ It should not describe Frontier as:
 
 ## Remaining work before Frontier is fully wrapped
 
-The remaining work is mostly SDK expansion, polish, verification, examples, and public-facing documentation.
+The remaining work is mostly SDK follow-through, polish, verification, examples, and public-facing documentation.
 
-### Phase 10 - BetterDungeon SDK
+### Phase 10 - BetterDungeon SDK follow-through
 
 Still needed:
 
-- add the `sdk` Frontier module
 - ship the first `bd.sdk` helper surface for scripts
-- expose stable BetterDungeon/Frontier capability metadata without leaking internals
-- document the initial SDK contract clearly enough for script authors to rely on it
+- document the shipped SDK contract clearly enough for script authors to rely on it
+- add at least one example script or helper snippet that uses the SDK for capability detection
+- expand regression coverage around the new `sdk` module once script-side helpers land
 
 Goal:
 
-- make the BetterDungeon SDK the next real Frontier feature and give scripts an official BetterDungeon-aware integration surface
+- treat the shipped BetterDungeon SDK module as a stable author-facing integration surface and finish the missing helper/docs layer around it
 
 ### Phase 11 - Module polish and test coverage
 

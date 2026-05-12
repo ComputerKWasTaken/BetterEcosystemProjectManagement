@@ -21,7 +21,7 @@ The runtime pieces are:
 - Transport: [ws-interceptor.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/ws-interceptor.js), [ws-stream.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/ws-stream.js), and [write-queue.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/write-queue.js)
 - Core runtime: [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/core.js), [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/module-registry.js), [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/ops-dispatcher.js), and [envelope.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/envelope.js)
 - Feature lifecycle wrapper: [frontier_feature.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/features/frontier_feature.js)
-- Shipped modules: `scripture`, `webfetch`, `clock`, `geolocation`, `weather`, `network`, `system`, and `ai`
+- Shipped modules: `scripture`, `webfetch`, `clock`, `sdk`, `geolocation`, `weather`, `network`, `system`, and `ai`
 
 ## What Frontier does today
 
@@ -35,14 +35,14 @@ Frontier currently provides all of the following:
 - Processes a two-way request/response channel using `frontier:out` and `frontier:in:<module>` cards.
 - Persists module enabled state in extension storage and replays cached state to freshly mounted modules.
 
-This is a live two-way runtime, not a one-way widget-only prototype. In `core.js`, the heartbeat currently writes `profile: "full"` and `protocol: 1`, but that profile value is just metadata now, not a separate architecture tier.
+This is a live two-way runtime, not a one-way widget-only prototype. In `core.js`, the heartbeat writes `protocol: 1` plus BetterDungeon/client metadata and the mounted module list. It no longer uses a profile split.
 
 ## Three-layer mental model
 
 ```text
 +--------------------------------------------------------------+
 | MODULES                                                      |
-|   scripture  webfetch  clock  geolocation  weather           |
+|   scripture  webfetch  clock  sdk  geolocation  weather      |
 |   network  system  ai                                        |
 +--------------------------------------------------------------+
 | FRONTIER CORE                                                |
@@ -128,6 +128,7 @@ The checked-in module registry currently loads these built-in modules:
 | `scripture` | Renders script-driven widgets in BetterDungeon | `frontier:state:scripture` | none |
 | `webfetch` | Fetches external HTTP/HTTPS resources with consent and limits | none | `fetch`, `search` |
 | `clock` | Time and formatting helpers | none | `now`, `tz`, `format` |
+| `sdk` | Exposes BetterDungeon/Frontier runtime and capability metadata | none | `version`, `capabilities`, `modules`, `frontier` |
 | `geolocation` | Browser geolocation helpers | none | `permission`, `getCurrent` |
 | `weather` | Open-Meteo current weather and forecast lookups | none | `current`, `forecast` |
 | `network` | Connection state hints | none | `status` |
