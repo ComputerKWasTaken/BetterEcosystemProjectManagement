@@ -25,25 +25,27 @@ Frontier currently ships these first-party modules:
 - `scripture`
 - `webfetch`
 - `clock`
-- `sdk`
 - `geolocation`
 - `weather`
 - `network`
 - `system`
 - `ai`
+- `sdk`
 
 Current ops exposed by those modules:
 
 - `webfetch`: `fetch`, `search`
 - `clock`: `now`, `tz`, `format`
-- `sdk`: `version`, `capabilities`, `modules`, `frontier`
 - `geolocation`: `permission`, `getCurrent`
 - `weather`: `current`, `forecast`
 - `network`: `status`
 - `system`: `info`, `power`
 - `ai`: `chat`, `models`, `testConnection`
+- `sdk`: `version`
 
 The `ai` module also keeps the alias `providerAI` for compatibility.
+
+The `sdk` module is intentionally narrow. Frontier availability itself belongs to `frontier:heartbeat`, so the SDK should only expose BetterDungeon-facing metadata that complements heartbeat instead of mirroring it.
 
 ## How modules fit into Frontier
 

@@ -83,7 +83,7 @@ Files:
 Purpose:
 
 - end-to-end validation of the Frontier `sdk` module
-- heartbeat discovery of the `sdk` module and its four public ops
+- heartbeat discovery of the `sdk` module and its shipped op surface
 - request/response behavior on `frontier:in:sdk`
 - live inspection of returned SDK payloads directly in story text
 - trace-card capture of the same results for easier comparison
@@ -92,8 +92,7 @@ Use this suite when changing:
 
 - `modules/sdk/module.js`
 - heartbeat payload structure in `services/frontier/core.js`
-- registry fields surfaced through `sdk.modules`
-- capability/runtime metadata surfaced through `sdk.capabilities` and `sdk.frontier`
+- version/runtime metadata surfaced through `sdk.version`
 
 Interactive Scripture coverage currently lives inside `tests/aid-scripts/scripture-module` rather than in a separate active Frontier doc file. That suite is still the place to verify widget event queue behavior, acknowledgement flow, optimistic interactions, and state round-tripping.
 

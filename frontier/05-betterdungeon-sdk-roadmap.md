@@ -1,6 +1,6 @@
 # 05 - BetterDungeon SDK Roadmap
 
-> This document now records the first shipped BetterDungeon SDK surface in Frontier and the follow-through still worth doing around it.
+> This document records the current SDK direction after a key architectural decision: heartbeat remains the one source of truth for Frontier availability, and the SDK only exists for BetterDungeon-facing metadata that should not become a second discovery system.
 
 ## Why this matters
 
@@ -10,22 +10,23 @@ Frontier already gives scripts a strong module model:
 - call module ops
 - read responses back
 
-What it does not yet give them is a clean, stable "BetterDungeon-aware" helper surface.
+Heartbeat already tells scripts what Frontier modules and ops are available.
 
-That is where a BetterDungeon SDK becomes valuable.
+What heartbeat should not have to become is a general BetterDungeon product metadata API.
+
+That is where the SDK still has value.
 
 The SDK should let scripts ask questions like:
 
-- what BetterDungeon capabilities are available here?
-- what Frontier modules are mounted?
 - what version of BetterDungeon am I running?
-- what stable helper surfaces can I rely on without touching internals?
+- what BetterDungeon-aware helper layer am I targeting?
+- what metadata can I branch on without turning heartbeat into two systems at once?
 
 That is clever in exactly the right way: useful, composable, and future-friendly.
 
 ## The core rule
 
-The BetterDungeon SDK must expose capabilities, not private classes.
+The BetterDungeon SDK must expose BetterDungeon metadata, not Frontier availability.
 
 Bad version:
 
@@ -37,29 +38,31 @@ Bad version:
 Good version:
 
 - a documented SDK module
-- a stable set of ops or helper surfaces
-- capability-oriented responses
+- a stable set of BetterDungeon-facing ops or helper surfaces
+- heartbeat as the only Frontier discovery contract
 - versioned contracts that BetterDungeon can evolve intentionally
 
 This keeps BetterDungeon flexible while still giving script authors more power.
 
-## What the SDK should be
+## Separation of concerns
 
-The SDK should be Frontier's product-integration layer.
+Heartbeat owns:
 
-It should answer:
+- module availability
+- op availability
+- state-module discovery
+- live Frontier runtime advertisement
 
-- what can BetterDungeon do for me right now?
-- what modules are available?
-- what optional capabilities are present?
-- what safe helper calls are officially supported?
+The SDK owns:
 
-It should become the place for:
-
-- capability introspection
 - BetterDungeon version checks
-- Frontier runtime metadata
-- future curated helper utilities that are too BetterDungeon-specific to belong in generic modules
+- future BetterDungeon-facing metadata that does not belong in heartbeat
+- a clean identity anchor for script-side helpers like `bd.sdk.*`
+
+This keeps the architecture simple:
+
+- one discovery system for Frontier
+- one metadata/helper surface for BetterDungeon
 
 ## What the SDK should not be
 
@@ -72,16 +75,13 @@ It should not be:
 
 If we make it sloppy, it will create exactly the maintenance problems we are trying to avoid.
 
-## Current first version
+## Current shipped version
 
-The first SDK surface should stay small and obviously useful.
+The current SDK surface is intentionally small.
 
-Suggested core capabilities:
+Shipped op:
 
 - `bd.sdk.version()`
-- `bd.sdk.capabilities()`
-- `bd.sdk.modules()`
-- `bd.sdk.frontier()`
 
 For the actual Frontier module, the shipped v1 is:
 
@@ -94,11 +94,9 @@ That gives us a simple rule:
 - `sdk` is the Frontier module
 - `bd.sdk.*` is the author-friendly helper layer built on top of that module
 
-## Proposed `sdk` module shape
+## Current `sdk` module shape
 
-The v1 module should be ops-only.
-
-Suggested BetterDungeon-side definition shape:
+The current module is ops-only and intentionally minimal:
 
 ```js
 const FrontierSdkModule = {
@@ -113,21 +111,6 @@ const FrontierSdkModule = {
       timeoutMs: 1000,
       handler: versionOp,
     },
-    capabilities: {
-      idempotent: 'safe',
-      timeoutMs: 1000,
-      handler: capabilitiesOp,
-    },
-    modules: {
-      idempotent: 'safe',
-      timeoutMs: 1000,
-      handler: modulesOp,
-    },
-    frontier: {
-      idempotent: 'safe',
-      timeoutMs: 1000,
-      handler: frontierOp,
-    },
   },
 
   mount(ctx) {
@@ -140,9 +123,7 @@ const FrontierSdkModule = {
 };
 ```
 
-## V1 ops
-
-These four ops are enough for a strong first release.
+## Current op
 
 ### `sdk.version`
 
@@ -177,176 +158,9 @@ bd.sdk.version = function () {
 };
 ```
 
-### `sdk.capabilities`
-
-### `bd.sdk.capabilities()`
-
-Purpose:
-
-- provide a stable machine-readable summary of what BetterDungeon officially exposes
-
-Expected return shape:
-
-- available modules
-- available helper groups
-- optional platform flags where appropriate
-- maybe a list of explicitly supported SDK methods
-
-Recommended v1 response:
-
-```json
-{
-  "sdkVersion": "1.0.0",
-  "betterDungeonVersion": "1.2.1",
-  "frontierProtocol": 1,
-  "frontierClient": "BetterDungeon",
-  "helperGroups": ["sdk"],
-  "methods": ["version", "capabilities", "modules", "frontier"],
-  "modules": ["scripture", "webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"],
-  "enabledModules": ["scripture", "webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"],
-  "availableModules": ["scripture", "webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"],
-  "opsModules": ["webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"],
-  "stateModules": ["scripture"],
-  "features": {
-    "frontier": true,
-    "sdk": true,
-    "scriptureWidgets": true,
-    "providerAI": true,
-    "webfetchConsent": true,
-    "moduleToggles": true
-  },
-  "platform": {
-    "browserFamily": "chromium",
-    "mobileLike": false
-  }
-}
-```
-
-Notes:
-
-- keep this intentionally high-level
-- do not dump every internal toggle or implementation detail
-- only expose capability concepts we are willing to support as public contract
-
-Recommended script helper:
-
-```js
-bd.sdk.capabilities = function () {
-  return frontierCall('sdk', 'capabilities', {});
-};
-```
-
-### `sdk.modules`
-
-### `bd.sdk.modules()`
-
-Purpose:
-
-- give scripts a clean module inventory without requiring custom heartbeat parsing every time
-
-Expected return shape:
-
-- mounted module ids
-- mounted module ops
-- maybe state names for state-driven modules
-
-Recommended v1 response:
-
-```json
-{
-  "modules": [
-    {
-      "id": "scripture",
-      "aliases": [],
-      "label": "scripture",
-      "version": "1.0.0",
-      "enabled": true,
-      "mounted": true,
-      "stateNames": ["scripture"],
-      "ops": []
-    },
-    {
-      "id": "clock",
-      "aliases": [],
-      "label": "Clock",
-      "version": "1.0.0",
-      "enabled": true,
-      "mounted": true,
-      "stateNames": [],
-      "ops": ["now", "tz", "format"]
-    },
-    {
-      "id": "sdk",
-      "aliases": [],
-      "label": "BetterDungeon SDK",
-      "version": "1.0.0",
-      "enabled": true,
-      "mounted": true,
-      "stateNames": [],
-      "ops": ["version", "capabilities", "modules", "frontier"]
-    }
-  ]
-}
-```
-
-Notes:
-
-- this should be derived from the registry/heartbeat truth, not a second parallel model
-- include only stable author-useful fields
-
-Recommended script helper:
-
-```js
-bd.sdk.modules = function () {
-  return frontierCall('sdk', 'modules', {});
-};
-```
-
-### `sdk.frontier`
-
-### `bd.sdk.frontier()`
-
-Purpose:
-
-- expose a compact official snapshot of the Frontier runtime from the script author's point of view
-
-Expected return shape:
-
-- protocol version
-- enabled state
-- current advertised module list
-- maybe heartbeat freshness information if that proves useful
-
-Recommended v1 response:
-
-```json
-{
-  "protocol": 1,
-  "client": "BetterDungeon",
-  "enabled": true,
-  "turn": 42,
-  "heartbeatPresent": true,
-  "heartbeatFresh": true,
-  "heartbeatTurn": 42,
-  "heartbeatTurnDelta": 0,
-  "heartbeatWrittenAt": "2026-05-12T00:00:00.000Z",
-  "moduleCount": 9,
-  "modules": ["scripture", "webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"],
-  "advertisedModules": ["scripture", "webfetch", "clock", "sdk", "geolocation", "weather", "network", "system", "ai"]
-}
-```
-
-Recommended script helper:
-
-```js
-bd.sdk.frontier = function () {
-  return frontierCall('sdk', 'frontier', {});
-};
-```
-
 ## Suggested script-side helper layer
 
-The raw ops are useful, but the script-side helper layer is what will make this feel like a real SDK.
+The raw op is useful, but the script-side helper layer is what will make this feel like a real SDK.
 
 Recommended base helper shape:
 
@@ -358,23 +172,11 @@ bd.sdk = bd.sdk || {};
 bd.sdk.version = function () {
   return frontierCall('sdk', 'version', {});
 };
-
-bd.sdk.capabilities = function () {
-  return frontierCall('sdk', 'capabilities', {});
-};
-
-bd.sdk.modules = function () {
-  return frontierCall('sdk', 'modules', {});
-};
-
-bd.sdk.frontier = function () {
-  return frontierCall('sdk', 'frontier', {});
-};
 ```
 
 ## Author-facing convenience helpers
 
-These are not required for v1, but they are high-value additions if we want the SDK to feel genuinely useful.
+These are not required in the module itself, but they are high-value additions if we want `bd.sdk` to feel genuinely useful.
 
 ### `bd.sdk.hasModule(moduleId)`
 
@@ -468,31 +270,30 @@ Realistically, the v1 SDK ops should almost never fail except for generic runtim
 So scripts can do things like:
 
 ```js
-frontierCall('sdk', 'capabilities', {})
-frontierCall('sdk', 'modules', {})
+frontierCall('sdk', 'version', {})
 ```
 
-and then wrap those with:
+and wrap heartbeat parsing helpers under:
 
 ```js
-bd.sdk.capabilities()
-bd.sdk.modules()
+bd.sdk.hasModule(...)
+bd.sdk.hasOp(...)
 ```
 
-That gives us both a clean protocol identity and a clean authoring identity.
+That gives us both a clean protocol identity and a clean authoring identity without creating a second discovery system.
 
 ## Landed pieces
 
 The shipped v1 already does these:
 
-1. adds the `sdk` Frontier module with the four v1 ops
+1. adds the `sdk` Frontier module
 2. advertises it in heartbeat like any other ops module
 3. exposes a popup toggle like the other first-party Frontier modules
 
 ## Recommended next implementation order
 
 1. add a tiny script-side `bd.sdk` helper snippet to the base Frontier library docs
-2. create one example script that uses the SDK for graceful capability detection
+2. create one example script that uses heartbeat for graceful capability detection and `sdk.version` for BetterDungeon-aware branching
 3. add dedicated regression coverage once helper usage settles
 4. only then consider extra convenience helpers
 
@@ -577,13 +378,15 @@ That separation keeps the system understandable.
 
 Heartbeat already gives scripts raw runtime discovery.
 
-The SDK should not duplicate heartbeat blindly. It should make the most useful parts easier and more stable to consume.
+Heartbeat should stay the one source of truth for Frontier availability.
+
+The SDK should not duplicate heartbeat at all. Its job is to complement heartbeat, not reinterpret it as a second discovery surface.
 
 Good SDK value:
 
-- normalized capability answers
-- cleaner script ergonomics
-- less repeated heartbeat-parsing boilerplate
+- BetterDungeon versioning
+- BetterDungeon-facing metadata
+- a stable anchor for script-side helpers layered on top of heartbeat
 
 Bad SDK value:
 
@@ -615,7 +418,7 @@ The BetterDungeon SDK should now be treated as a shipped Frontier surface with f
 Recommended priority:
 
 1. add the first author-facing `bd.sdk` helper layer and examples
-2. keep the SDK docs synced to the actual response shapes
+2. keep the SDK docs synced to the narrowed, non-overlapping contract
 3. move into broader module polish and regression-suite expansion with `sdk` included in that coverage story
 
-This was a strong next-step feature because it deepened Frontier as a platform without bloating the core runtime model, and now the main task is finishing the author-facing polish around it.
+This keeps the architecture cleaner: heartbeat owns Frontier discovery, and the SDK only grows if it provides clearly BetterDungeon-specific value.

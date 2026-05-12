@@ -11,7 +11,7 @@
 | 02 | [Modules](./02-modules.md) | Live module contract, shipped modules, and how to build new ones |
 | 03 | [Implementation Status](./03-implementation-status.md) | What is shipped, what remains, and current roadmap direction |
 | 04 | [Frontier Test Suites](./04-test-suites.md) | Active regression surfaces and current coverage gaps |
-| 05 | [BetterDungeon SDK Roadmap](./05-betterdungeon-sdk-roadmap.md) | Shipped SDK surface, contract notes, and follow-through work |
+| 05 | [BetterDungeon SDK Roadmap](./05-betterdungeon-sdk-roadmap.md) | SDK direction, separation rules, and follow-through work |
 | 06 | [Documentation Plan](./06-documentation-plan.md) | Internal/public documentation alignment plan |
 
 ### Archived
@@ -20,7 +20,7 @@ Completed phase plans and older sign-off artifacts live in [`archive/`](./archiv
 
 ## One-paragraph summary
 
-Frontier is BetterDungeon's cards-based runtime for AI Dungeon scripting. Scripts publish state through reserved story cards, BetterDungeon observes and reacts to that state, and ops-capable modules can answer requests back through the same card-driven request/response path. The current shipped module set is `scripture`, `webfetch`, `clock`, `sdk`, `geolocation`, `weather`, `network`, `system`, and `ai`. The runtime is unified, live-count-aware, and already implemented.
+Frontier is BetterDungeon's cards-based runtime for AI Dungeon scripting. Scripts publish state through reserved story cards, BetterDungeon observes and reacts to that state, and ops-capable modules can answer requests back through the same card-driven request/response path. The current shipped module set is `scripture`, `webfetch`, `clock`, `sdk`, `geolocation`, `weather`, `network`, `system`, and `ai`. The runtime is unified, live-count-aware, and already implemented, with heartbeat as the one discovery surface for Frontier availability.
 
 ## Current status
 
