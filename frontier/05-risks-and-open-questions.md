@@ -14,9 +14,9 @@ Tracked list of things that could bite us during implementation and unresolved d
 - Use `class extends NativeWebSocket` rather than a function wrapper; Apollo Client breaks silently if `instanceof WebSocket` returns false, and this was observed in Phase 0.
 - On install, log the first captured frame's timestamp and compare to `document.currentScript` timing; flag any race.
 
-**Verification (Phase 0):** Confirmed working via a Violentmonkey userscript (`frontier/ws-userscript.user.js`) at `@run-at document-start`. A paste-into-console install (i.e. post-bundle) failed silently because Apollo had already captured the native `WebSocket`. The extension equivalent is `"world": "MAIN"` + `"run_at": "document_start"` in the manifest.
+**Verification (Phase 0):** Confirmed working via a Violentmonkey userscript at `@run-at document-start`. A paste-into-console install (i.e. post-bundle) failed silently because Apollo had already captured the native `WebSocket`. The extension equivalent is `"world": "MAIN"` + `"run_at": "document_start"` in the manifest.
 
-**Status:** Mechanism proven; still open until the extension-hosted version lands in Phase 1 (userscript vs MV3 content-script timing may differ subtly on Firefox/WebView).
+**Status:** Resolved. Phase 1 shipped the extension-hosted version. Working on Chromium; Firefox and Android WebView parity are being verified as part of the mobile port.
 
 ---
 
@@ -44,7 +44,7 @@ Tracked list of things that could bite us during implementation and unresolved d
 - Core warns any time a state card exceeds 80% of the budget. Scripts use the `historyLimit` knob to stay comfortably under.
 - Overflow into supplementary cards is explicitly NOT implemented in MVP; a module that grows past the per-card budget is a design bug to be solved at the module level.
 
-**Status:** Measure during Phase 0; wire the warning in Phase 1.
+**Status:** Never became a blocking issue during Phases 0–9. The default `historyLimit` of 100 entries keeps cards well under budget. Core’s 80% budget warning was implemented. No hard-cap enforcement was needed — the auto-prune in `frontierUpdateHistory` prevents runaway growth.
 
 ---
 
@@ -59,7 +59,7 @@ Tracked list of things that could bite us during implementation and unresolved d
 
 **Fallback:** If authenticated writes prove fragile, Core falls back to a DOM-driven write (open the card in AI Dungeon's UI, set its value, submit — same pattern as `story-card-scanner.js` uses for reads). Slow and fragile but works.
 
-**Status:** Investigate during Phase 2.
+**Status:** Resolved. Mutation-template replay sidesteps auth entirely — BD captures in-flight mutations from AID’s own client and replays them with deep-overridden variables. No separate auth token capture needed. See `services/frontier/ws-interceptor.js` for template capture and `services/ai-dungeon-service.js` for replay.
 
 ---
 
@@ -73,7 +73,7 @@ Tracked list of things that could bite us during implementation and unresolved d
 - Scripture exposes `scriptureConfigure({ historyLimit })` for authors who want a different cap.
 - Phase 0 measures the actual size limit; once known, Core can enforce a hard cap before attempting the write.
 
-**Status:** Bake the auto-prune into Phase 1; enforce the hard cap once Phase 0 measurements land.
+**Status:** Resolved. `frontierUpdateHistory` auto-prunes to `historyLimit` (default 100) on every write. Core warns at 80% of budget. No runaway growth observed across all live test suites.
 
 ---
 
@@ -85,7 +85,7 @@ Tracked list of things that could bite us during implementation and unresolved d
 - Target the Firefox minimum version specified in `manifest.json` (currently `"strict_min_version": "109.0"`). Confirm MV3 features we rely on are available there.
 - If `world: "MAIN"` isn't supported on our min version, bump the min version OR use the `<script>` injection fallback.
 
-**Status:** Verify during Phase 0.
+**Status:** Resolved. Firefox MV3 with `world: "MAIN"` works on the minimum version targeted. Full Firefox parity testing is part of the mobile port / multiplatform smoke phase.
 
 ---
 
@@ -98,7 +98,7 @@ Tracked list of things that could bite us during implementation and unresolved d
 - Module list below Frontier section is scrollable if it exceeds a height threshold.
 - Defer "Manage modules…" button rendering until there's actually a registry to browse.
 
-**Status:** Design during Phase 4.
+**Status:** Resolved in Phase 7. Frontier has its own dedicated popup tab. The module list is scrollable. No space issues.
 
 ---
 
@@ -145,7 +145,7 @@ Tracked list of things that could bite us during implementation and unresolved d
 - Document any WebView-specific quirks as they're discovered.
 - If WebView turns out to block the WS shim entirely, fall back to a DOM MutationObserver on the card list (slower but functional) and document the degraded mode.
 
-**Status:** Verify in Phase 0. If blocking issues surface, decide whether to gate WebView support on a later BD release.
+**Status:** Resolved. The extension-hosted WS shim works on Chromium. Firefox works with `world: "MAIN"`. Android WebView parity testing is scheduled as part of the mobile port phase. No blocking issues surfaced during desktop testing.
 
 ---
 
@@ -158,7 +158,7 @@ Tracked list of things that could bite us during implementation and unresolved d
 - `frontierUpdateHistory` always writes the current tail's entry BEFORE pruning, so the most recent entry should never be missing in normal operation.
 - Document the fallback behavior in the Scripture guide so users understand why stale-looking values may appear briefly after installing Scripture mid-adventure.
 
-**Status:** Implement the fallback in Phase 1; document in Phase 4.
+**Status:** Resolved. Scripture’s `onStateChange` implements the nearest-earlier fallback chain, then manifest-declared defaults. Documented in the Scripture Library adapter.
 
 ---
 
@@ -205,18 +205,17 @@ When the tail action id changes, Core re-dispatches `onStateChange` so modules c
 
 Option A is simpler and symmetric with the card-change path. Option B is slightly more efficient but adds an API distinction.
 
-**Preferred:** Option A. Keep the API uniform; one `onStateChange` per state-card entry in `stateNames`.
+**Resolution:** Implemented as Option A in Phase 2. One `onStateChange` call per card. Documented in 03-modules.md.
 
-**Resolution path:** Implement in Phase 1; document in 03-modules.md.
+**Status:** Closed.
 
 ---
 
 ### Q5 — BetterRepository guide split: one page or two?
 
-Option A: One `FrontierGuide.vue` with Scripture as a sub-section.
-Option B: Two separate guides with cross-links.
+**Resolution:** Split. Scripture and each module gets its own guide component. FrontierGuide is the overview; module guides are separate tabs. See [23 — Phase 10 Documentation Plan](./23-phase-10-documentation-plan.md).
 
-**Resolution path:** Review the length of the existing `BetterScriptsGuide.vue` (1221 lines) and the proposed Frontier + Scripture content. If combined content exceeds ~1500 lines, split; otherwise one page with clear TOC.
+**Status:** Closed.
 
 ---
 
@@ -224,7 +223,9 @@ Option B: Two separate guides with cross-links.
 
 Should Core offer modules a key-value store (e.g. `ctx.storage.get/set`) scoped to the module id, or should each module manage its own `chrome.storage` usage? Offering it centrally makes module code cleaner and enables future namespacing / quota enforcement; making it BYO is zero-effort for Core.
 
-**Resolution path:** Offer a thin `ctx.storage` helper in Phase 2 that wraps `chrome.storage.sync` under a per-module key prefix. Modules can still reach `chrome.storage` directly if needed.
+**Resolution:** Implemented as described in Phase 2. `ctx.storage` wraps `chrome.storage.sync` under a per-module key prefix. Modules can still reach `chrome.storage` directly if needed.
+
+**Status:** Closed.
 
 ---
 
@@ -235,9 +236,9 @@ Options:
 - Core ignores it until the module is enabled.
 - Core emits an error response to the next turn (but there's no request to reply to).
 
-**Preferred:** Cache-and-replay. When a module's `onEnable` is called, Core synchronously emits `onStateChange` for any state cards the module claims that already exist.
+**Resolution:** Implemented as cache-and-replay in Phase 2. When a module's `onEnable` is called, Core synchronously emits `onStateChange` for any state cards the module claims that already exist. Documented in 03-modules.md.
 
-**Resolution path:** Implement as described; document in 03-modules.md.
+**Status:** Closed.
 
 ---
 
@@ -248,7 +249,9 @@ For dev workflow, an in-browser inspector showing live state-card changes, actio
 - An injected overlay on the adventure page activated by keyboard shortcut.
 - A popup tab.
 
-**Resolution path:** Defer past MVP. Useful for Phase 2+ module development but not blocking Scripture-only MVP.
+**Resolution:** Deferred past V2 as planned. Debug mode (`Frontier.debug = true`) provides structured console logging. A full DevTools inspector panel is a post-V2 enhancement.
+
+**Status:** Deferred.
 
 ---
 
@@ -258,9 +261,9 @@ When BD rehydrates after a reload, it reads the full `frontier:state:scripture` 
 
 **Question:** Does BD ever need to know the order? Or is it sufficient for BD to just look up `history[tailId]` and never iterate?
 
-**Preferred:** BD doesn't need order. Keep it script-side.
+**Resolution:** Confirmed during Phase 1. BD doesn't need insertion order. It only looks up `history[liveCount]` and never iterates.
 
-**Resolution path:** Confirm during Phase 1 implementation.
+**Status:** Closed.
 
 ---
 
@@ -299,8 +302,10 @@ When BD rehydrates after a reload, it reads the full `frontier:state:scripture` 
 
 ## Questions for later that need USER input, not implementation
 
-- Do we want Frontier modules to be able to prompt the user for permission before a sensitive action (network fetch, clipboard read)? If so, how should that UI look? (Native browser permission prompts vs in-BD modal vs implicit trust for built-ins only.) — Relevant now that Full Frontier is in V2.
 - Do we want Frontier modules to be able to render their own UI outside of Scripture's widget bar? (Future Dashboard module that overlays a full sidebar, etc.)
 - Should the BetterRepository host a module catalog even in V2 (just as static documentation), or wait until the install flow exists?
-- Naming: is the umbrella still "BetterScripts" in any user-facing sense, or fully "Frontier"? (Current plan: fully Frontier. Confirm before rewriting guides.)
 - When is the right time to revisit Robyn's NPM/bundler pitch? (Current plan: declined for V2, re-open as a separate epic after Frontier stabilizes. User signal needed for prioritization.)
+
+**Answered during implementation (removed from active list):**
+- Naming: fully "Frontier". No BetterScripts branding remains.
+- Permission prompts: V2 ships WebFetch's per-origin consent and Geolocation's native browser prompt. A generic permission framework is post-V2.

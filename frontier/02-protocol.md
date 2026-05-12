@@ -2,7 +2,7 @@
 
 Canonical wire-protocol specification for Frontier v1. Implementations on both sides (AI-Dungeon-side Library, BetterDungeon-side Core) MUST conform to this document.
 
-> **Scope:** Frontier is **cards-only, bidirectional**. Scripts publish state to `frontier:state:<name>` cards and enqueue ops on `frontier:out`; BD publishes its heartbeat on `frontier:heartbeat` and writes op responses to `frontier:in:<module>`. The protocol ships with two **profiles** advertised in the heartbeat: `"lite"` (state-only) and `"full"` (state + ops). A module that declares no `ops` works identically under both profiles. V2 ships with `profile: "full"` active. The envelope protocol for the ops channel (request schemas, id scheme, status lifecycle, GC) is documented in depth in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md); this document covers the card families themselves.
+> **Scope:** Frontier is **cards-only, bidirectional**. Scripts publish state to `frontier:state:<name>` cards and enqueue ops on `frontier:out`; BD publishes its heartbeat on `frontier:heartbeat` and writes op responses to `frontier:in:<module>`. The protocol defines two **profiles** advertised in the heartbeat: `"lite"` (state-only) and `"full"` (state + ops). A module that declares no `ops` works identically under both profiles. V2 ships `profile: "full"` as the default. The envelope protocol for the ops channel (request schemas, id scheme, status lifecycle, GC) is documented in depth in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md); this document covers the card families themselves.
 
 ## Reserved namespaces
 

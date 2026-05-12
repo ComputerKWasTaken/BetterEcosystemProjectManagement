@@ -12,16 +12,16 @@ If a module is flashy but does not clear those bars, it should wait or die.
 
 ## Current read
 
-The strongest next capability areas are:
+All approved capability modules are now shipped and live-tested:
 
-1. `geolocation`
-2. `weather`
-3. `network`
-4. `system`
-5. `providerAI`
-6. `bd.sdk`
+1. `geolocation` — ✅ shipped
+2. `weather` — ✅ shipped
+3. `network` — ✅ shipped
+4. `system` — ✅ shipped
+5. `providerAI` — ✅ shipped
+6. `bd.sdk` — planned (post-V2)
 
-The weak or rejected ideas for now are:
+The weak or rejected ideas remain unchanged:
 
 - `notify`
 - `localStorage`
@@ -301,28 +301,32 @@ The useful ideas from local inference should flow back into Provider AI where th
 - fallback behavior when AI calls are unavailable
 - scenario-author examples that keep sidecar reasoning explicit and bounded
 
-## Practical direction after the simple modules
+## Practical direction
 
-Clock, Geolocation, Weather, Network, and System are done. Provider AI is also complete as the hosted-model bridge. The simple, generally useful OS-adjacent modules have earned their place and are no longer the active planning focus.
+Clock, Geolocation, Weather, Network, and System are shipped and live-tested. Provider AI is also complete as the hosted-model bridge. The simple, generally useful OS-adjacent modules have earned their place and are no longer the active planning focus.
 
-The best immediate sequence is:
+Completed:
 
-1. Update public-facing guides and release docs with Provider AI as a flagship Frontier module.
-2. Expand Provider AI around provider setup, model discovery, default-model guidance, safe request limits, and reusable examples.
+1. ✅ All approved OS-adjacent modules shipped.
+2. ✅ Provider AI shipped as the flagship Frontier AI module.
 
-## Recommendation
+Next steps:
 
-My current recommendation is:
+1. Polish all modules and create per-module regression test scripts.
+2. Write BetterRepository documentation with Provider AI featured as a flagship Frontier capability.
 
-1. Treat `providerAI` as the core Frontier AI bridge and document it clearly in Phase 10.
-2. Remove `localAI` from the planned module set.
-3. Improve Provider AI before adding any new AI surface: more providers, clearer settings, safer defaults, better examples.
-4. Treat `bd.sdk` as a future cross-cutting helper surface, not a raw internal-class escape hatch.
+## Recommendation (updated)
 
-That keeps the roadmap grounded in real script-author value:
+The original recommendation has been executed:
 
-- first, real-world context
-- then, polished common-use helpers
-- then, environment awareness
-- then, product integration
-- then, the huge selling-point AI bridge work
+1. ✅ `providerAI` is the core Frontier AI bridge, shipped and live-tested.
+2. ✅ `localAI` removed from the planned module set.
+3. Provider AI should continue to be improved: more providers, clearer settings, safer defaults, better examples.
+4. `bd.sdk` remains the next capability area to explore as a future cross-cutting helper surface.
+
+The capability stack is grounded in real script-author value:
+
+- ✅ real-world context (Clock, Geolocation, Weather)
+- ✅ environment awareness (Network, System)
+- ✅ core AI bridge (Provider AI)
+- planned: product integration (`bd.sdk`)

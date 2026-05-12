@@ -144,31 +144,45 @@ BetterDungeon/
 │   └── frontier/
 │       ├── ws-interceptor.js          (page-world, document_start; subscriptions + mutation-template capture)
 │       ├── ws-stream.js               (content script; cards/actions/templates stream; diff + live-count)
-│       ├── write-queue.js             ← NEW (serialized coalesced retrying writes)
-│       ├── core.js                    (state-channel dispatcher, adventure scoping)
-│       ├── ops-dispatcher.js          ← NEW (frontier:out consumer; ops dispatch; idempotency; GC)
-│       ├── envelope.js                ← NEW (request/response schemas, id generator, GC policies)
-│       ├── heartbeat.js               ← NEW (coalesced heartbeat writer)
-│       └── module-registry.js         ← NEW (registration + enabled-state persistence)
-├── modules/                           ← NEW directory
+│       ├── write-queue.js             (serialized coalesced retrying writes)
+│       ├── core.js                    (state-channel dispatcher, adventure scoping, heartbeat emitter)
+│       ├── ops-dispatcher.js          (frontier:out consumer; ops dispatch; idempotency; GC)
+│       ├── envelope.js                (request/response schemas, id generator, GC policies)
+│       ├── module-registry.js         (registration + enabled-state persistence)
+│       └── ACTION_IDS.md              (Phase 0 empirical findings on action-id behavior)
+├── modules/
 │   ├── scripture/
 │   │   ├── module.js                  (state-only; manifest + live-count history)
 │   │   ├── renderer.js                (widget DOM/CSS; migrated from better_scripts_feature.js)
-│   │   └── validators.js              (widget schema + HTML/CSS sanitization; migrated)
+│   │   └── validators.js              (widget schema + HTML/CSS sanitization)
 │   ├── webfetch/
-│   │   ├── module.js                  ← NEW (ops: fetch)
-│   │   └── consent.js                 ← NEW (per-origin allowlist)
-│   └── clock/
-│       └── module.js                  ← NEW (ops: now, tz, format)
+│   │   ├── module.js                  (ops: fetch, search)
+│   │   └── consent.js                 (per-origin allowlist)
+│   ├── clock/
+│   │   └── module.js                  (ops: now, tz, format)
+│   ├── geolocation/
+│   │   └── module.js                  (ops: permission, getCurrent)
+│   ├── weather/
+│   │   └── module.js                  (ops: current, forecast)
+│   ├── network/
+│   │   └── module.js                  (ops: status)
+│   ├── system/
+│   │   └── module.js                  (ops: info, power)
+│   └── ai/
+│       └── module.js                  (ops: chat, models, testConnection)
 ├── features/
-│   ├── (better_scripts_feature.js DELETED)
-│   └── (others gain an isFrontierCard filter for reserved prefixes)
+│   └── (better_scripts_feature.js DELETED; others gain isFrontierCard filter)
 ├── core/
 │   └── feature-manager.js             (extended to know about Frontier modules)
-├── main.js                            (Frontier bootstrap; module registration; new message handlers)
+├── tests/
+│   └── aid-scripts/                   (per-module AI Dungeon test scripts)
+├── examples/
+│   └── aid-scripts/                   (showcase scripts: Aura Cards, Chronos V2)
+├── main.js                            (Frontier bootstrap; module registration; message handlers)
+├── background.js                      (background worker: privileged HTTP fetch, Provider AI bridge)
 ├── manifest.json                      (MAIN-world entry for ws-interceptor.js; content-script load order; version 2.0.0)
-├── popup.html / popup.js              (Frontier master toggle + per-module toggles + WebFetch allowlist UI)
-└── styles.css                         (Scripture reuses existing widget CSS; WebFetch consent UI adds a modal)
+├── popup.html / popup.js / popup.css   (Frontier tab with module toggles, WebFetch allowlist, Provider AI config)
+└── styles.css                         (Scripture widget CSS; WebFetch consent modal)
 ```
 
 ## Cross-component data flow
@@ -329,13 +343,12 @@ to err: unsafe_replay_blocked. See 06-full-frontier-protocol.md#idempotency.)
 The Frontier top-level toggle behaves like any other feature: it initializes `services/frontier/` when enabled, tears it down when disabled. Scripture's enable state is stored separately from Frontier's, but Scripture cannot be enabled if Frontier is disabled (Core is its dependency).
 
 ### Popup UI
-Today: a single "BetterScripts" toggle.
-V2: a dedicated "Frontier" tab containing:
+BetterDungeon has a dedicated "Frontier" tab in the popup containing:
 - The Frontier master toggle (off → Core + all modules inert).
 - A nested list of modules, each with its own toggle and description: Scripture, WebFetch, Clock, Geolocation, Weather, Network, System, and Provider AI.
 - A WebFetch permissions sub-panel (per-origin allowlist with allow / deny / revoke controls).
 - Provider AI controls for provider key storage, default model guidance, connection testing, and bounded request settings.
-- A debug toggle for Frontier Core (replaces `SET_BETTERSCRIPTS_DEBUG`).
+- A debug toggle for Frontier Core.
 - (Future placeholder, not rendered in V2:) "Manage modules…" button for third-party registry browsing.
 
 ### Story Card Cache

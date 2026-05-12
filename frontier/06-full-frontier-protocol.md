@@ -1,6 +1,6 @@
 # 06 — Full Frontier Protocol (v1)
 
-Specifies the two-way extension added to the Lite protocol in [02 — Protocol](./02-protocol.md). This document covers everything needed to ship Phase 4 of the [implementation plan](./04-implementation-plan.md) and to design ops modules (Phases 5–6).
+Specifies the two-way extension added to the Lite protocol in [02 — Protocol](./02-protocol.md). This document covers the envelope protocol shipped in Phase 4 and used by all ops modules (Phases 5–9).
 
 > **Relationship to Lite:** Full Frontier is strictly additive. A Lite-only script running against a Full Core continues to work unchanged — it never writes `frontier:out`, so the ops dispatcher has nothing to do. A Full-profile script running against a Lite Core sees `profile: "lite"` in the heartbeat and degrades gracefully (per the availability-detection pattern already defined in `02-protocol.md`). The `profile` flip from `"lite"` to `"full"` is explicitly a non-breaking change.
 
@@ -245,14 +245,14 @@ Cards are plaintext in AI Dungeon's database — anything written to `frontier:o
 - **Rate limits are enforced by Core.** Modules can request stricter limits but cannot weaken the Core default.
 - **Origin isolation.** Future Phase 11+ work. For V2, all first-party modules share a single trust boundary. Third-party modules are out of V2.
 
-## Open questions (design not yet locked)
+## Design decisions (resolved during Phase 4)
 
-These must be resolved during Phase 4 implementation:
+These were open questions at time of writing, resolved during implementation:
 
-1. **`frontier:out` cap behavior.** If the script exceeds its own size budget and cannot fit new requests, what happens? Options: (a) reject `frontierCall` synchronously, (b) evict oldest un-sent request. Leaning (a) — predictable, script can fall back to degrade.
-2. **Multi-turn pending UX.** Should scripts be able to show a pending indicator between turns? Requires a read-side signal that's visible mid-turn. Card writes from Core are observable via the subscription in real time, but the script can't *read* mid-turn. Likely resolved by Scripture-style rendering if BD wants to surface the pending state directly in-page.
-3. **Cross-tab deduplication.** If the user has the same adventure open in two tabs and both BD instances see a new request, both will try to handle it. Options: (a) elect a primary per-adventure via `BroadcastChannel`, (b) rely on idempotency (both write `pending`, one wins on the server). Leaning (b) for simplicity, with a `BroadcastChannel` fast-path optimization later.
-4. **Sensitive-op prompts inside popups.** Chrome MV3 popups close when focus leaves them, which is a UX problem for consent prompts that need user attention during an in-progress AID turn. Options: (a) in-page overlay injected by BD, (b) desktop notifications with click-through. Leaning (a) — consistent with BD's existing in-page UI patterns.
+1. **`frontier:out` cap behavior.** Resolved as option (a): reject `frontierCall` synchronously if the card would exceed its size budget. Scripts can fall back to graceful degradation.
+2. **Multi-turn pending UX.** Resolved: scripts cannot read mid-turn, so pending state is surfaced only if BD renders it in-page (e.g. Scripture could show a spinner widget). The card-based `pending` status is visible to BD immediately via the subscription.
+3. **Cross-tab deduplication.** Resolved as option (b): rely on idempotency. Both BD instances write `pending`; the server arbitrates; the same terminal response is written once. A `BroadcastChannel` fast-path is a post-V2 optimization.
+4. **Sensitive-op prompts.** Resolved as option (a): in-page overlay injected by BD, consistent with existing in-page UI patterns.
 
 ## Versioning
 

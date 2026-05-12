@@ -1,6 +1,10 @@
-# 23 — Phase 10: Documentation Plan
+# 23 — BetterRepository Documentation Plan
 
-> Plan for the V2 documentation rewrite. Two deliverables: private internal docs for maintenance/debugging, and public guides on BetterRepository for scenario authors and developers. Locked decisions from planning review included inline.
+> Plan for the V2 documentation rewrite. Two deliverables: private internal docs for maintenance/debugging, and public guides on BetterRepository for scenario authors and developers.
+>
+> **Sequencing note (updated 2026-05-12):** This plan was originally written as "Phase 10" when docs were expected to be the immediate next step after Phase 9 (Provider AI). The project has since been re-sequenced: module polish + per-module test scripts, planning doc cleanup, and showcase scripts all come first. This documentation work is now **Phase 14** in the updated roadmap. The plan itself remains valid — it describes the work to be done when the time comes.
+>
+> Locked decisions from planning review included inline.
 
 ## Decisions (locked)
 

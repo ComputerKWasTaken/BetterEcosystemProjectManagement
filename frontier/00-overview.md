@@ -47,27 +47,28 @@ Frontier's implementation window is gated by BD V2's broader release timing. Bet
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ MODULES (one per capability)                                │
-│   Scripture (widgets, built-in, MVP)                        │
+│   Scripture (widgets, reference state-only module)           │
 │   WebFetch, Clock, Geolocation, Weather, Network,           │
-│   System, Provider AI, ...                                  │
+│   System, Provider AI                                       │
 ├─────────────────────────────────────────────────────────────┤
-│ FRONTIER CORE (Lite)                                        │
+│ FRONTIER CORE (Full profile)                                │
 │   Card-family routing, heartbeat emission,                  │
-│   action-ID tracking, module registry, adventure scoping    │
+│   action-ID tracking, module registry, adventure scoping,   │
+│   ops dispatcher, envelope protocol, idempotency + GC       │
 ├─────────────────────────────────────────────────────────────┤
-│ TRANSPORT (cards only, read-only in MVP)                    │
+│ TRANSPORT (cards only, bidirectional)                        │
 │   WS interceptor → card-stream → diff events                │
-│   GraphQL write path (heartbeat writes only)                │
+│   GraphQL write path (mutation-template replay)             │
 └─────────────────────────────────────────────────────────────┘
                               ↑
                  AI Dungeon Script Sandbox
               (Library + onInput/onModelContext/onOutput)
-                 writes `frontier:state:*` cards
+                 writes `frontier:state:*` + `frontier:out`
 ```
 
-- **Transport** is the wire: the WebSocket interceptor observes AI Dungeon's `adventureStoryCardsUpdate` subscription. BD reads cards for free; BD writes only the heartbeat card via GraphQL.
-- **Core** is a thin router: reads the card stream, identifies `frontier:*` prefixes, dispatches state-change events to the right module. Tracks the current action ID from the WS frames so modules can look up history entries.
-- **Modules** are the capabilities. A Lite module only needs an `onStateChange(name, parsed)` handler and a lifecycle pair (`onEnable` / `onDisable`). No ops, no responses.
+- **Transport** is the wire: the WebSocket interceptor observes AI Dungeon's `adventureStoryCardsUpdate` subscription. BD reads cards for free; BD writes via mutation-template replay through the write queue.
+- **Core** is a thin router: reads the card stream, identifies `frontier:*` prefixes, dispatches state-change events to the right module. The ops dispatcher handles two-way request/response traffic. Tracks the current action ID from the WS frames so modules can look up history entries.
+- **Modules** are the capabilities. A state-only module needs `onStateChange(name, parsed)` and lifecycle hooks (`onEnable` / `onDisable`). An ops module declares `ops: { [name]: handler }` to expose callable operations. Modules may do both.
 
 ## Action-ID history — how undo/retry works without invisible text
 
@@ -101,24 +102,35 @@ Every AI Dungeon action in the `actionWindow` subscription carries a stable `id`
 
 ## V2 scope — the "unshackle the sandbox" release
 
-> **Scope revision:** the original plan scoped V2 to Frontier Lite (one-way, Scripture only) and deferred two-way comms to a post-MVP epic. The write path was solved ahead of schedule via mutation-template replay — capturing in-flight `SaveQueueStoryCard` mutations and deep-overriding their variables. That eliminated the single biggest risk blocking Full Frontier, so V2 is now re-scoped to deliver the full two-way platform. Details in [04 — Implementation Plan § Scope revision](./04-implementation-plan.md#scope-revision--full-frontier-in-v2).
+> **Scope history:** the original plan scoped V2 to Frontier Lite (one-way, Scripture only) and deferred two-way comms to a post-MVP epic. The write path was solved ahead of schedule via mutation-template replay — capturing in-flight `SaveQueueStoryCard` mutations and deep-overriding their variables. That eliminated the single biggest risk blocking Full Frontier, so V2 was re-scoped to deliver the full two-way platform. Details in [04 — Implementation Plan § Scope revision](./04-implementation-plan.md#scope-revision--full-frontier-in-v2).
 
-**In scope for V2:**
+**Shipped in V2 (Phases 0–9, all complete):**
 
-- **Transport foundation (landed):** WebSocket interceptor + fetch/XHR shim capturing subscriptions AND mutation templates. Content-script card + action + enrichment stream. Mutation-template replay supporting update AND create operations across any card. Verified end-to-end in a live adventure with persistence across reload.
+- **Transport foundation:** WebSocket interceptor + fetch/XHR shim capturing subscriptions AND mutation templates. Content-script card + action + enrichment stream. Mutation-template replay supporting update AND create operations across any card.
 - **Transport hardening (Phase 1):** write queue with per-card serialization, retry, optimistic echo; action-stream HTTP hydration; adventure-boundary state reset; robust `adventureShortId` resolver.
 - **Core + Module Registry (Phase 2):** router, heartbeat emitter, action-ID tracker, shared `ctx` API with `writeCard` + `respond` primitives. Module lifecycle: `onEnable` / `onDisable` / `onStateChange` / `onAdventureChange` / `onOp`.
 - **Scripture module (Phase 3):** widget functionality using live-count history. Pixel-identical to legacy BetterScripts. Undo / retry / edit / continue all correct from day one.
-- **Full Frontier envelope protocol (Phase 4):** `frontier:out` request queue, per-module `frontier:in:<module>` response cards, request-id scheme, idempotent replay, crash-safe session-storage mirror, script-driven ack + Core-side TTL GC. Full specification in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md).
-- **WebFetch module (Phase 5):** HTTP requests from the sandbox, per-origin consent flow, rate limits, scheme allowlist. The canonical two-way demo.
-- **Clock module (Phase 6):** real-world `now` / `tz` / `format` ops. Tiny, marketable, validates the ops shape on a minimal module.
-- **Feature manager + popup (Phase 7):** Frontier master toggle, per-module toggles, WebFetch allowlist panel, debug mode.
-- **Story Card DOM + GraphQL drift investigation (Phase 8):** AI Dungeon now groups Story Cards by native collapsible type categories, including custom types like `frontier`. Phase 8 verified no Story Card GraphQL drift and fixed duplicate heartbeat timing.
-- **Provider AI (Phase 9):** OpenRouter-backed hosted-model calls for sidecar script reasoning, with BetterDungeon-held API keys and bounded request shapes. Live validation passed on 2026-04-26.
-- **Guide + docs rewrite (Phase 10):** `FrontierGuide.vue`, `ScriptureGuide.vue`, `WebFetchGuide.vue`, `ClockGuide.vue`. Full-profile coverage including ops examples. No ZW / TagCipher / Context Modifier content.
-- **Multiplatform smoke test (Phase 11):** verify on Chromium, Gecko, AND Android WebView before shipping `2.0.0`.
+- **Full Frontier envelope protocol (Phase 4):** `frontier:out` request queue, per-module `frontier:in:<module>` response cards, request-id scheme, idempotent replay, crash-safe session-storage mirror, script-driven ack + Core-side TTL GC.
+- **WebFetch module (Phase 5):** HTTP requests from the sandbox, per-origin consent flow, rate limits, scheme allowlist.
+- **Clock module (Phase 6):** real-world `now` / `tz` / `format` ops.
+- **Geolocation module:** browser geolocation permission and current-location ops.
+- **Weather module:** Open-Meteo current-weather and forecast ops.
+- **Network module:** connection status and quality hints.
+- **System module:** device, browser, locale, display, hardware, and power hints.
+- **Feature manager + popup (Phase 7):** Frontier master toggle, per-module toggles, WebFetch allowlist panel, Provider AI credentials panel, debug mode.
+- **Story Card DOM + GraphQL drift investigation (Phase 8):** verified no GraphQL drift; fixed duplicate heartbeat timing.
+- **Provider AI (Phase 9):** OpenRouter-backed hosted-model calls for sidecar script reasoning, with BetterDungeon-held API keys and bounded request shapes.
 
-**Explicitly out of V2 (designed-for but not implemented):**
+**Still remaining before release:**
+
+- Module polish and per-module regression test scripts.
+- Planning documentation cleanup (this refresh pass).
+- Showcase scripts demonstrating each module.
+- Mobile port (Android WebView).
+- BetterRepository developer documentation (guides for each module).
+- Release prep: version bump, multiplatform smoke test, store pages.
+
+**Explicitly out of V2 (designed-for but deferred):**
 
 - **Invisible-text transport.** Dropped entirely. The undo/retry problem is solved by live-count history instead.
 - **Sandboxed user scripts.** Arbitrary JS modules in an iframe / Worker with a constrained Frontier SDK. Security-heavy; post-V2.
@@ -159,15 +171,18 @@ Six rounds of planning questions have produced the following commitments. Re-ope
 | Term | Definition |
 |------|------------|
 | **Frontier** | The platform. Transport + Core + modules. |
-| **Frontier Lite** | The MVP shape of Frontier — one-way (script → BD), cards-only, no ops. This is what Phase 1 ships. |
-| **Full Frontier** | The post-MVP extension adding two-way comms (requests/responses, ops, multi-turn). Planned; not designed in detail yet. |
-| **Frontier Core** | The routing layer. Lives in `services/frontier/core.js`. Module-agnostic. In Lite: reads card stream, tracks action id, dispatches to modules, emits heartbeat. |
-| **Module** | A capability that plugs into Frontier Core. Has an AI-Dungeon-side Library adapter + a BetterDungeon-side handler. In Lite: the handler only needs `onStateChange` + lifecycle hooks. |
-| **Scripture** | The first / reference module. Renders widget UI in the top bar above the story text. |
+| **Frontier Lite** | The original MVP shape of Frontier — one-way (script → BD), cards-only, no ops. Superseded by Full Frontier before V2 shipped. |
+| **Full Frontier** | The shipped two-way extension — requests/responses, ops, multi-turn. Implemented in Phase 4; V2 ships with `profile: "full"` active. |
+| **Frontier Core** | The routing layer. Lives in `services/frontier/core.js`. Module-agnostic. Reads card stream, tracks action id / live count, dispatches state changes to modules, emits heartbeat, and hosts the ops dispatcher. |
+| **Ops Dispatcher** | The `ops-dispatcher.js` component that consumes `frontier:out`, routes requests to module op handlers, and writes responses to `frontier:in:<module>` cards. |
+| **Envelope** | The request/response JSON schema used on the ops channel. Request envelopes live in `frontier:out`; response envelopes live in `frontier:in:<module>`. Specified in [06 — Full Frontier Protocol](./06-full-frontier-protocol.md). |
+| **Module** | A capability that plugs into Frontier Core. Has an AI-Dungeon-side Library adapter + a BetterDungeon-side handler. State-only modules declare `stateNames`; ops modules declare `ops`; modules may do both. |
+| **Scripture** | The first / reference module. Renders widget UI in the top bar above the story text. State-only (no ops). |
+| **Provider AI** | Frontier's core AI bridge. Exposes `chat`, `models`, and `testConnection` ops backed by OpenRouter. Keys held in BetterDungeon storage, never exposed to scripts. |
 | **State card** | A reserved `frontier:state:<name>` story card that a script uses to publish module-specific state. For Scripture, this is `frontier:state:scripture`. |
-| **Heartbeat card** | `frontier:heartbeat` — the card BD Core writes each turn to advertise its presence, protocol version, and enabled modules. |
-| **Action ID** | The stable identifier AI Dungeon assigns to each action (turn). Frontier scripts key their per-turn history by this id so BD can look up the correct values when the tail action changes (undo, retry, edit). |
-| **Action window** | AI Dungeon's subscription-pushed list of recent actions with ids. BD reads the tail (latest) id to know which history entry to display. |
-| **History map** | The `{ [actionId]: values }` object a script embeds in its state card alongside the manifest. |
+| **Heartbeat card** | `frontier:heartbeat` — the card BD Core writes each turn to advertise its presence, protocol version, and enabled modules (including their available ops). |
+| **Live count** | The count of non-undone actions in the current adventure. Used as the history map key. Script-side: `history.length + 1`. BD-side: `actions.filter(!undoneAt).length`. |
+| **Action ID** | The stable identifier AI Dungeon assigns to each action (turn). Frontier uses live-count ordinals rather than wire action IDs because scripts cannot access wire IDs. |
+| **History map** | The `{ [liveCount]: values }` object a script embeds in its state card alongside the manifest. |
 | **Manifest** | The schema half of a state card — widget definitions, types, labels, colors. Rarely changes. |
-| **Reserved card** | Any story card whose title begins with `frontier:*`. Hidden from BD's own card-listing UI; never from AI Dungeon's native one. |
+| **Reserved card** | Any story card whose title begins with `frontier:*`. Grouped under AI Dungeon's native `frontier` type category. |

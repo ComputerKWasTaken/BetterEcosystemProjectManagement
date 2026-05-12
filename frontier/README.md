@@ -1,6 +1,6 @@
-# Frontier - Planning Docs
+# Frontier — Planning Docs
 
-> Internal design + implementation plan for **Frontier**, the bidirectional message-channel platform replacing BetterScripts. Ships as part of **BetterDungeon V2**.
+> Internal design + implementation reference for **Frontier**, the bidirectional message-channel platform that replaced BetterScripts. Ships as part of **BetterDungeon V2**.
 
 ## Read order
 
@@ -8,52 +8,68 @@
 |---|------|----------------|
 | 00 | [Overview](./00-overview.md) | Vision, scope, relationship to BD V2, locked-in design decisions |
 | 01 | [Architecture](./01-architecture.md) | Three-layer model, file layout, component responsibilities |
-| 02 | [Protocol](./02-protocol.md) | Reserved card namespaces, state-card schema, action-ID history convention, heartbeat, availability detection |
-| 03 | [Modules](./03-modules.md) | Module API (Lite), Scripture reference, extensibility roadmap |
-| 04 | [Implementation Plan](./04-implementation-plan.md) | Phase order, file-by-file breakdown, V2 release coordination |
-| 05 | [Risks & Open Questions](./05-risks-and-open-questions.md) | Tracked risks, unresolved decisions, follow-up work |
-| 06 | [Full Frontier Protocol](./06-full-frontier-protocol.md) | Two-way envelope protocol, request/response schemas, GC, idempotency (Phase 4) |
+| 02 | [Protocol](./02-protocol.md) | Reserved card namespaces, state-card schema, live-count history convention, heartbeat, availability detection |
+| 03 | [Modules](./03-modules.md) | Module API (Full profile), Scripture reference, Library adapters for all 8 modules, extensibility roadmap |
+| 04 | [Implementation Plan](./04-implementation-plan.md) | Phase history, file-by-file breakdown, remaining roadmap |
+| 05 | [Risks & Open Questions](./05-risks-and-open-questions.md) | Tracked risks (mostly resolved), design decisions, follow-up work |
+| 06 | [Full Frontier Protocol](./06-full-frontier-protocol.md) | Two-way envelope protocol, request/response schemas, GC, idempotency |
 | 11 | [Frontier Test Suites](./11-test-suites.md) | Current regression suite, sign-off history, and cleanup policy |
-| 12 | [OS Capabilities Roadmap](./12-os-capabilities-roadmap.md) | Expanded capability map for OS-adjacent modules, AI bridges, and the future BD SDK surface |
-| 17 | [Provider AI Phase Plan](./17-provider-ai-phase-plan.md) | Completed plan for hosted-model AI bridge work |
-| 21 | [Provider AI AI Dungeon Test Suite](./21-provider-ai-ai-dungeon-test-suite.md) | Completed Phase 9 live validation suite |
-| 23 | [Phase 10 Documentation Plan](./23-phase-10-documentation-plan.md) | Private + public documentation rewrite scope, decisions, and execution order |
+| 12 | [OS Capabilities Roadmap](./12-os-capabilities-roadmap.md) | Capability map for OS-adjacent modules, AI bridges, and the future BD SDK surface |
+| 22 | [Scripture Interactive Widgets Test Suite](./22-scripture-interactive-widgets-test-suite.md) | Active regression suite for Scripture interactive widgets |
+| 23 | [Phase 10 Documentation Plan](./23-phase-10-documentation-plan.md) | BetterRepository public guide plan (sequenced after polish and showcase work) |
+
+### Archived
+
+Completed phase plans and test suites that are no longer actively referenced live in [`archive/`](./archive/):
+
+| File | What it was |
+|------|-------------|
+| [17 — Provider AI Phase Plan](./archive/17-provider-ai-phase-plan.md) | Completed Phase 9 design and scope |
+| [21 — Provider AI Test Suite](./archive/21-provider-ai-ai-dungeon-test-suite.md) | Completed Phase 9 live validation suite |
 
 ## One-paragraph summary
 
-**Frontier** is a standardized, cards-only communication channel between AI Dungeon scripts (sandboxed) and BetterDungeon (browser-privileged). Scripts publish module-specific state to reserved `frontier:state:*` story cards; BD reads them via a WebSocket interceptor and renders or acts on them. Modules may also declare ops - scripts enqueue requests on a `frontier:out` card and BD writes responses to per-module `frontier:in:<module>` cards. V2 ships the full two-way platform and a growing first-party module set: **Scripture** (widgets, state-only), **WebFetch** (safe web access), **Clock** (real-world time), **Geolocation**, **Weather**, **Network**, **System**, and **Provider AI**. Widget state uses a **live-count history** pattern so undo / retry / continue / edit all "just work" without the script doing anything special. The whole system rides on AI Dungeon's native story-card + subscription wire, including the write path - Core reuses captured GraphQL mutation templates via deep-override replay, sidestepping auth / endpoint / CSRF concerns entirely.
+**Frontier** is a standardized, cards-only communication channel between AI Dungeon scripts (sandboxed) and BetterDungeon (browser-privileged). Scripts publish module-specific state to reserved `frontier:state:*` story cards; BD reads them via a WebSocket interceptor and renders or acts on them. Modules may also declare ops — scripts enqueue requests on a `frontier:out` card and BD writes responses to per-module `frontier:in:<module>` cards. V2 ships the full two-way platform and 8 first-party modules: **Scripture** (widgets), **WebFetch** (safe web access), **Clock** (real-world time), **Geolocation**, **Weather**, **Network**, **System**, and **Provider AI**. Widget state uses a **live-count history** pattern so undo / retry / continue / edit all "just work" without the script doing anything special. The whole system rides on AI Dungeon's native story-card + subscription wire, including the write path — Core reuses captured GraphQL mutation templates via deep-override replay, sidestepping auth / endpoint / CSRF concerns entirely.
 
-## Status
+## Status — Core complete
 
-- [x] Architectural direction locked - cards-only, live-count history (see [Overview section Locked-in decisions](./00-overview.md#locked-in-decisions))
-- [x] Protocol v1 drafted - Lite (02) and Full (06)
+All foundational Frontier work (Phases 0–9) is done and live-tested:
+
+- [x] Architectural direction locked — cards-only, live-count history
+- [x] Protocol v1 shipped — Full profile with two-way ops channel
 - [x] Action-ID behavior verified across retry / continue / edit (Phase 0 closed)
-- [x] Transport foundation landed - WS + fetch/XHR capture, card + action stream, mutation-template replay. Writes and creates verified in a live adventure with persistence across reload.
-- [x] V2 rescoped to include Full Frontier and the first-party module suite alongside Scripture
-- [x] Phase 1 - transport hardening (write queue, adventure-boundary reset, shortId resolver). Action hydration retained as safety net; AID loads actions exclusively via WS.
-- [x] Phase 2 - Core dispatcher + Module Registry hardening (state-card dispatch, enable/disable persistence, ctx API, debug mode)
-- [x] Phase 3 - Scripture module (state-only reference). Live AI Dungeon Scripture suite passed 10/10 on 2026-04-22.
-- [x] Phase 4 - Full Frontier envelope protocol. Live AI Dungeon Full Frontier suite passed, including reload-mid-pending, on 2026-04-22.
-- [x] Phase 5 - WebFetch module. Live AI Dungeon suite passed, including denied-origin consent, on 2026-04-23.
-- [x] Phase 6 - Clock module. Live AI Dungeon suite passed on 2026-04-23.
-- [x] Geolocation module. Permission and current-location ops manually validated on 2026-04-23.
-- [x] Weather module. Live AI Dungeon suite passed on 2026-04-23.
-- [x] Network module. Live AI Dungeon suite passed on 2026-04-24.
-- [x] System module. Live AI Dungeon suite passed on 2026-04-24.
-- [x] Phase 7 - feature manager + popup integration
-- [x] Phase 8 - Story Card DOM + GraphQL drift investigation + heartbeat dedupe fix
-- [x] Phase 9 - Provider AI module. Live AI Dungeon suite passed on 2026-04-26 with run `provider-ai-mof04zzu`.
-- [ ] Phases 10-11 - guide rewrites, release
+- [x] Transport foundation landed — WS + fetch/XHR capture, card + action stream, mutation-template replay. Writes and creates verified in a live adventure with persistence across reload.
+- [x] Transport hardening (Phase 1) — write queue, adventure-boundary reset, shortId resolver
+- [x] Core dispatcher + Module Registry (Phase 2) — state-card dispatch, enable/disable persistence, ctx API, debug mode
+- [x] Scripture module (Phase 3) — live AI Dungeon suite passed 10/10 on 2026-04-22
+- [x] Full Frontier envelope protocol (Phase 4) — live suite passed, including reload-mid-pending, on 2026-04-22
+- [x] WebFetch module (Phase 5) — live suite passed, including denied-origin consent, on 2026-04-23
+- [x] Clock module (Phase 6) — live suite passed on 2026-04-23
+- [x] Geolocation module — permission and current-location ops validated on 2026-04-23
+- [x] Weather module — live suite passed on 2026-04-23
+- [x] Network module — live suite passed on 2026-04-24
+- [x] System module — live suite passed on 2026-04-24
+- [x] Feature manager + popup integration (Phase 7)
+- [x] Story Card DOM + GraphQL drift investigation + heartbeat dedupe fix (Phase 8)
+- [x] Provider AI module (Phase 9) — live suite passed on 2026-04-26 with run `provider-ai-mof04zzu`
 
-## Current focus
+## Remaining roadmap
 
-Phase 9 is complete. Provider AI now exposes `providerAI.chat`, `providerAI.models`, and `providerAI.testConnection`, with OpenRouter keys held in BetterDungeon local storage and requests routed through the background worker. Live validation confirmed key metadata, model discovery, validation failures, and one short chat completion through `frontier:in:providerAI`. Current focus moves to Phase 10 guide and docs rewrites. Provider AI is the canonical AI bridge for Frontier; future AI work should deepen hosted provider coverage, settings, safety, and examples instead of adding a local-model module.
+Five phases remain before BetterDungeon V2 ships:
+
+| Phase | Name | Scope |
+|:-----:|------|-------|
+| **10** | **Module Polish & Test Scripts** | Polish every module, create a per-module regression test script in `tests/aid-scripts/`, validate new behavior and catch regressions |
+| **11** | **Documentation Cleanup** | This refresh pass — clean up planning docs, remove stale planning language, align with production reality ← **current** |
+| **12** | **Showcase Scripts** | One useful script per module demonstrating Frontier's power. Aura Cards (AI module), Chronos V2 (Clock + Weather + Scripture), plus new demos for remaining modules. Some are tech demos, some are production-ready tools. |
+| **13** | **Mobile Port** | Port Frontier to the Android WebView build. Multiplatform smoke testing across Chromium, Gecko, and Android WebView. |
+| **14** | **BetterRepository Documentation** | Write proper developer documentation — core Frontier guide, per-module sub-guides, helper function reference, migration guide. Plan details in [23 — Phase 10 Documentation Plan](./23-phase-10-documentation-plan.md). |
 
 ## Test suites
 
-- Current live sign-off: none. Phase 10 is guide and docs rewrite work.
-- Latest completed live sign-off: [Provider AI](./21-provider-ai-ai-dungeon-test-suite.md).
-- Older live-suite scripts and phase kickoff notes were removed after sign-off. Canonical phase outcomes now live in this README, [Implementation Plan](./04-implementation-plan.md), and [Frontier Test Suites](./11-test-suites.md).
+- Current regression suites: [22 — Scripture Interactive Widgets](./22-scripture-interactive-widgets-test-suite.md) and [21 — Provider AI](./archive/21-provider-ai-ai-dungeon-test-suite.md) (archived, still valid for regression checks).
+- Per-module test scripts are the next testing milestone (Phase 10).
+- Older live-suite scripts and phase kickoff notes were removed after sign-off. Canonical phase outcomes live in this README and [Implementation Plan](./04-implementation-plan.md).
 
 ## Design principles
 

@@ -4,7 +4,7 @@
 
 ## Current Focus
 
-BetterDungeon V2 is in progress. Frontier is the largest V2 workstream and is now through Phase 9.
+BetterDungeon V2 is in progress. Frontier — the largest V2 workstream — is feature-complete through Phase 9. All 8 first-party modules are implemented and live-tested.
 
 Completed Frontier capability stack:
 
@@ -17,22 +17,24 @@ Completed Frontier capability stack:
 
 Current next step:
 
-- Phase 10 guide and documentation rewrite in BetterRepository.
+- Phase 10: Module polish and per-module regression test scripts.
 
 ## Roadmap
 
 ### Active
 
-- Write public Frontier documentation and module guides.
-- Keep Provider AI as the current regression suite while docs are updated.
-- Treat Provider AI as Frontier's core AI bridge and expand it through provider support, configuration, safety controls, and examples.
+- **Phase 10 — Module Polish & Test Scripts.** Polish every module, create a per-module regression test script in `tests/aid-scripts/`, validate new behavior and catch regressions.
+- **Phase 11 — Documentation Cleanup.** Refresh Frontier planning docs to reflect production status, remove stale planning language, update roadmap.
 
 ### Next
 
-- Phase 11 release prep: version bump, README/changelog polish, store-page updates, Chromium/Firefox/Android WebView smoke testing.
+- **Phase 12 — Showcase Scripts.** One useful script per module demonstrating Frontier's power. Aura Cards (AI module), Chronos V2 (Clock + Weather + Scripture), plus new demos for remaining modules.
+- **Phase 13 — Mobile Port.** Port Frontier to the Android WebView build. Multiplatform smoke testing across Chromium, Gecko, and Android WebView.
 
 ### Later
 
+- **Phase 14 — BetterRepository Documentation.** Write proper developer documentation — core Frontier guide, per-module sub-guides, helper function reference, BetterScripts migration guide.
+- Release prep: version bump, README/changelog polish, store-page updates.
 - `bd.sdk` helper surface for exposing safe BetterDungeon capabilities.
 - Third-party module registry and sandboxing.
 - NPM/TypeScript/bundler migration as a separate epic.
@@ -47,4 +49,5 @@ Current next step:
 
 - [Frontier planning index](./frontier/README.md)
 - [Implementation plan](./frontier/04-implementation-plan.md)
-- [Provider AI live suite](./frontier/21-provider-ai-ai-dungeon-test-suite.md)
+- [Scripture Interactive Widgets suite](./frontier/22-scripture-interactive-widgets-test-suite.md)
+- [Provider AI live suite](./frontier/archive/21-provider-ai-ai-dungeon-test-suite.md)

@@ -25,7 +25,7 @@ That unlocks the whole Full Frontier roadmap. Two-way comms becomes a ~40% scope
 
 ## Phase breakdown
 
-Eleven phases. Each has an acceptance criterion; "done" means criterion met, verified in a real browser, and committed with a passing build. Phases 1-3 deliver a superset of the original Lite plan; phases 4-6 deliver Full Frontier and its first ops modules; phases 7-8 close the V2 integration substrate; Phase 9 adds Provider AI; phases 10-11 are guides and release.
+Phases 0–9 are complete and delivered the full Frontier platform. Phases 10–14 cover polish, documentation, and release. Each completed phase met its acceptance criterion, was verified in a real browser, and was committed with a passing build.
 
 ### Phase 0 — Pre-work (closed)
 
@@ -307,58 +307,50 @@ Provider-backed sidecar model calls through Frontier. This is the core AI path f
 
 **Acceptance:** Heartbeat advertises `providerAI.chat`, `providerAI.models`, and `providerAI.testConnection`. Missing key fails with `not_configured`; invalid/oversized requests fail with `invalid_args`; mocked provider success/error paths normalize cleanly; live `testConnection` and one short `chat` call succeed through `frontier:in:providerAI`. **Met on 2026-04-26** with run `provider-ai-mof04zzu`.
 
-### Phase 10 — Guide + docs rewrite
+### Phase 10 — Module Polish & Test Scripts
 
-BetterRepository content overhaul for V2.
+**Work:** Polish every module, create a per-module regression test script in `tests/aid-scripts/`, validate new behavior and catch regressions. This is the current active phase.
 
-**Files:**
-- `BetterRepository/src/components/guides/BetterScriptsGuide.vue` → renamed `FrontierGuide.vue` + restructured
-- `BetterRepository/src/components/guides/ScriptureGuide.vue` (new)
-- `BetterRepository/src/components/guides/WebFetchGuide.vue` (new)
-- `BetterRepository/src/components/guides/ClockGuide.vue` (new)
-- `BetterRepository/src/components/guides/GeolocationGuide.vue` (new)
-- `BetterRepository/src/components/guides/WeatherGuide.vue` (new)
-- `BetterRepository/src/components/guides/NetworkGuide.vue` (new)
-- `BetterRepository/src/components/guides/SystemGuide.vue` (new)
-- `BetterRepository/src/components/guides/ProviderAIGuide.vue` (new)
-- `BetterRepository/src/router/*` (edit)
-- `Project Management/docs/01-scripting/api/story-cards-api.md` (edit)
+**Acceptance:** Every module has a dedicated test script. Running the suite for each module produces no regressions from Phase 9 behavior.
+
+### Phase 11 — Documentation Cleanup
+
+**Work:** Refresh planning docs to reflect production status. Remove stale planning language. Update roadmap. This pass.
+
+**Acceptance:** All planning docs in `Project Management/frontier/` reflect completed phases, resolved risks, and the forward roadmap. No future-tense references to shipped work.
+
+### Phase 12 — Showcase Scripts
+
+**Work:** Create one useful script per module demonstrating Frontier's power. Some are tech demos, some are production-ready tools for scenario authors.
+
+Known scripts:
+- Aura Cards (Provider AI + Scripture) — AI-powered character card generation
+- Chronos V2 (Clock + Weather + Scripture) — real-time environment dashboard
+- Per-module standalone demos for remaining modules
+
+**Acceptance:** Each module has at least one polished example script in `examples/aid-scripts/`. Scripts are well-commented and usable as teaching material.
+
+### Phase 13 — Mobile Port
+
+**Work:** Port Frontier to the Android WebView build. Multiplatform smoke testing across Chromium, Gecko, and Android WebView.
+
+**Acceptance:** The full manual verification checklist passes on Android WebView. Any platform-specific quirks are documented.
+
+### Phase 14 — BetterRepository Documentation & Release Prep
 
 **Work:**
-
-1. `FrontierGuide.vue`:
-   - Section 1: Introduction — what Frontier is, the script → BD channel, the BD → script response channel.
-   - Section 2: Availability detection — heartbeat card, `frontierIsAvailable` pattern, profile negotiation (`lite` vs `full`), graceful degradation.
-   - Section 3: Publishing state — `frontierWriteState` / `frontierReadState` / `frontierUpdateHistory`, the live-count history pattern.
-   - Section 4: Calling ops — `frontierCall` / `frontierPoll` / `frontierPollAll`, request-id semantics, multi-turn examples.
-   - Section 5: Included modules — Scripture, WebFetch, Clock, Geolocation, Weather, Network, System, and Provider AI (linked).
-   - Section 6: Roadmap.
-2. Per-module guides:
-   - `ScriptureGuide.vue` — 9 widget-type reference material, config options, HTML/CSS sanitization rules, undo/retry behavior.
-   - `WebFetchGuide.vue` — op reference, consent flow, rate limits, security caveats, worked examples (weather, wiki lookup, image fetch).
-   - `ClockGuide.vue` — op reference, format-string table, worked examples.
-   - `GeolocationGuide.vue` — permission posture, `permission`, `getCurrent`, privacy guidance, and graceful denial handling.
-   - `WeatherGuide.vue` — Open-Meteo current/forecast ops, place vs coordinates, units, and worked examples.
-   - `NetworkGuide.vue` — connection status hints and degraded-mode examples.
-   - `SystemGuide.vue` — device/environment/power hints and platform-sensitive examples.
-   - `ProviderAIGuide.vue` — OpenRouter key setup, `testConnection`, `models`, `chat`, request caps, unsafe replay behavior, provider expansion expectations, and sidecar reasoning examples.
+1. Write `FrontierGuide.vue` (core overview, full-profile architecture, base Library, heartbeat, availability detection).
+2. Write per-module guide components:
+   - `ScriptureGuide.vue`, `WebFetchGuide.vue`, `ClockGuide.vue`
+   - `GeolocationGuide.vue`, `WeatherGuide.vue`, `NetworkGuide.vue`
+   - `SystemGuide.vue`, `ProviderAIGuide.vue`
 3. Update router / nav.
 4. `story-cards-api.md` — new section documenting reserved `frontier:*`, `scripture:*`, `bd:*` prefixes.
 5. Drop ALL ZW / TagCipher / Context Modifier sections.
+6. Release prep: version bump (`1.2.x` → `2.0.0`), multiplatform smoke, store pages refreshed, changelog entry.
 
-**Acceptance:** BetterRepository site renders the Frontier guide and all first-party module guides with working TOC + code examples. No references to the legacy BetterScripts system remain.
+**Acceptance:** BetterRepository site renders the Frontier guide and all first-party module guides with working TOC + code examples. No references to the legacy BetterScripts system remain. Manifest bumped. Store pages live.
 
-### Phase 11 — Release prep
-
-**Files:**
-- `manifest.json` (version: `1.2.x` → `2.0.0`)
-- `README.md` (BetterDungeon + BetterRepository) — Frontier section
-- `CONTRIBUTING.md` (if it references BetterScripts) — update
-- Changelog
-
-**Work:** version bump, multiplatform smoke (Chromium + Gecko + Android WebView), store pages refreshed, changelog entry, coordinated with BD V2's broader release checklist.
-
-**Acceptance:** Manifest bumped. READMEs updated. Changelog entry written. Multiplatform smoke passes. Store pages live.
 
 ## Testing strategy
 
@@ -425,28 +417,29 @@ Optional but recommended: a minimal harness scenario committed to a private Bett
 | `modules/system/module.js` | post-Clock | Coarse device, browser, locale, display, hardware, and power hints |
 | `modules/provider-ai/module.js` | 9 | Hosted-model sidecar reasoning ops |
 | `06-full-frontier-protocol.md` | 4 | Envelope protocol, request-id scheme, GC, idempotency spec |
-| `BetterRepository/src/components/guides/ScriptureGuide.vue` | 10 | Scripture module guide |
-| `BetterRepository/src/components/guides/WebFetchGuide.vue` | 10 | WebFetch module guide |
-| `BetterRepository/src/components/guides/ClockGuide.vue` | 10 | Clock module guide |
+| `BetterRepository/src/components/guides/ScriptureGuide.vue` | 14 | Scripture module guide |
+| `BetterRepository/src/components/guides/WebFetchGuide.vue` | 14 | WebFetch module guide |
+| `BetterRepository/src/components/guides/ClockGuide.vue` | 14 | Clock module guide |
+| `BetterRepository/src/components/guides/GeolocationGuide.vue` | 14 | Geolocation module guide |
+| `BetterRepository/src/components/guides/WeatherGuide.vue` | 14 | Weather module guide |
+| `BetterRepository/src/components/guides/NetworkGuide.vue` | 14 | Network module guide |
+| `BetterRepository/src/components/guides/SystemGuide.vue` | 14 | System module guide |
+| `BetterRepository/src/components/guides/ProviderAIGuide.vue` | 14 | Provider AI module guide |
 | `Project Management/frontier/*` | ongoing | Planning docs |
 
 ### Modified files
 
 | Path | Phase(s) | Change |
 |------|:-:|--------|
-| `manifest.json` | 3, 10 | Drop `better_scripts_feature.js`; add Scripture + module files; bump version to 2.0.0 |
+| `manifest.json` | 3, 14 | Drop `better_scripts_feature.js`; add Scripture + module files; bump version to 2.0.0 |
 | `main.js` | 2, 3, 7 | Wire Frontier Core + register first-party modules; add Frontier message handlers; remove BetterScripts handlers |
 | `core/feature-manager.js` | 7 | Register Frontier as top-level feature |
-| `popup.html` / `popup.js` | 5, 7 | Frontier master toggle, per-module toggles, WebFetch allowlist panel, debug toggle |
+| `popup.html` / `popup.js` / `popup.css` | 5, 7, 9 | Frontier tab with module toggles, WebFetch allowlist, Provider AI config, debug toggle |
 | `services/ai-dungeon-service.js` | 1 | Write queue integration; optimistic echo reconciliation |
 | `services/story-card-cache.js` | optional | Hydrate from ws-stream (non-breaking) |
-| `features/story_card_modal_dock_feature.js` | audit | Ignore reserved-prefix cards if they would appear in BetterDungeon-owned lists |
-| `features/story_card_analytics_feature.js` | audit | Ignore reserved-prefix cards if they would skew analytics |
-| `features/trigger_highlight_feature.js` | audit | Ignore reserved-prefix cards if they would trigger highlights |
-| `features/auto_see_feature.js` | audit | Ignore reserved-prefix cards if they would affect automation |
-| `BetterRepository/src/components/guides/BetterScriptsGuide.vue` | 10 | Rename → `FrontierGuide.vue` + restructure for Full profile |
-| `BetterRepository/src/router/*` | 10 | Update routes for new guide set |
-| `Project Management/docs/01-scripting/api/story-cards-api.md` | 10 | Add reserved-prefix section |
+| `BetterRepository/src/components/guides/BetterScriptsGuide.vue` | 14 | Rename → `FrontierGuide.vue` + restructure for Full profile |
+| `BetterRepository/src/router/*` | 14 | Update routes for new guide set |
+| `Project Management/docs/01-scripting/api/story-cards-api.md` | 14 | Add reserved-prefix section |
 
 ### Deleted files
 
@@ -469,8 +462,10 @@ These were originally out-of-MVP; the write-path breakthrough moved them into sc
 3. **Registry UI** — browse + install vetted third-party modules. Architecturally unblocked by Full Frontier; UI and trust model are their own workstream.
 4. **Sandboxed user scripts** — arbitrary JS modules in an iframe / Worker with a constrained Frontier SDK. Security-heavy; long-term.
 5. **Inter-module calls** — modules invoking other module ops via Core. Shape mostly falls out of Phase 4; ergonomics pass is deferred.
-6. **Richer popup UI** — live state viewer, heartbeat inspector, request-log panel. Phase 7 ships the minimum; the rest waits for feedback.
+6. **Richer popup UI** — live state viewer, heartbeat inspector, request-log panel. Phase 7 shipped the minimum; the rest waits for feedback.
 7. **Mobile APK parity testing automation** — once the APK pipeline is in place, automate the Android WebView smoke tests.
-8. **Additional modules** — the future `bd.sdk` helper surface and the long tail tracked in [12 - OS Capabilities Roadmap](./12-os-capabilities-roadmap.md). Provider AI is now promoted into Phase 9 and is the AI bridge Frontier should deepen. Earlier brainstorm items such as Notify, LocalStorage, Clipboard, Filesystem, Downloads, Share, Presence, Speech, and local-model integration are currently deprioritized or rejected for the turn-based Frontier use case. Each kept module is still an incremental addition on the Full Frontier substrate; none require Core changes.
+8. **`bd.sdk` helper surface** — safe BetterDungeon capabilities exposed to scripts. See [12 — OS Capabilities Roadmap](./12-os-capabilities-roadmap.md).
+9. **Additional Provider AI providers** — expand beyond OpenRouter. Anthropic direct, OpenAI direct, Google AI, etc.
+10. **Earlier brainstorm items** — Notify, LocalStorage, Clipboard, Filesystem, Downloads, Share, Presence, Speech, and local-model integration are deprioritized or rejected for the turn-based Frontier use case.
 
 All of these slot into the existing architecture without refactoring Core.
