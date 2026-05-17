@@ -4,9 +4,9 @@
 
 ## Current State
 
-The active product track is **BetterDungeon V2**, centered on Frontier. Frontier Phases 1-9 are complete, including Scripture, Full Frontier, WebFetch, Clock, Geolocation, Weather, Network, System, popup integration, heartbeat dedupe, and Provider AI.
+The active product track is **BetterDungeon V2**, centered on Frontier. Frontier Phases 1-10 are complete, including Scripture, Full Frontier, WebFetch, Clock, Geolocation, Weather, Network, System, popup integration, heartbeat dedupe, Provider AI, BetterDungeon SDK, module polish, and per-module regression test suites.
 
-The next workstream is **Phase 10: guide and documentation rewrite**, mostly in BetterRepository. Phase 11 follows with release preparation, versioning, and multiplatform smoke testing.
+The current workstream is **Phase 11: Documentation Cleanup** — refreshing Frontier planning docs to reflect production status, removing stale planning language, and updating the roadmap.
 
 ## Projects
 

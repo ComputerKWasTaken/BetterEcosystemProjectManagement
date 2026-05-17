@@ -408,10 +408,9 @@ What remains is optional follow-through, not core justification work.
 
 ## Recommended next implementation order
 
-1. move into broader module polish and regression expansion across the remaining shipped modules
-2. add a tiny script-side `bd.sdk` helper snippet to the base Frontier library docs when we want to freeze that shape
-3. create one example script that uses heartbeat for graceful capability detection and `sdk.version` / `sdk.config` for BetterDungeon-aware branching
-4. only then consider extra convenience helpers
+1. add a tiny script-side `bd.sdk` helper snippet to the base Frontier library docs when we want to freeze that shape
+2. create one example script that uses heartbeat for graceful capability detection and `sdk.version` / `sdk.config` for BetterDungeon-aware branching
+3. only then consider extra convenience helpers
 
 ## How it should ship
 
@@ -530,12 +529,11 @@ That means the answer is restraint, not fear.
 
 ## Current recommendation
 
-The BetterDungeon SDK should now be treated as a completed shipped Frontier surface.
+The BetterDungeon SDK is a completed shipped Frontier surface. Module polish and per-module regression suites are also complete (Phase 10).
 
 Recommended priority:
 
 1. keep the SDK contract narrow and resist overlap with heartbeat
-2. move into broader module polish and regression-suite expansion with `sdk` included in that coverage story
-3. add author-facing helper/examples only when they clearly reduce script boilerplate without freezing a bad shape too early
+2. add author-facing helper/examples only when they clearly reduce script boilerplate without freezing a bad shape too early
 
 This keeps the architecture cleaner: heartbeat owns Frontier discovery, and the SDK only grows if it provides clearly BetterDungeon-specific value.

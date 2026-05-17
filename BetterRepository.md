@@ -4,9 +4,9 @@
 
 ## Current Focus
 
-BetterRepository is the next major work area because Frontier has reached Phase 10: guide and documentation rewrite.
+BetterRepository is the next major documentation work area after Frontier's internal docs are cleaned up (Phase 11). The public guide rewrite is Phase 14 in the current roadmap.
 
-## Phase 10 Guide Work
+## Planned Guide Work
 
 Create or update public-facing guides for:
 
@@ -16,6 +16,7 @@ Create or update public-facing guides for:
 - Scripture widgets.
 - WebFetch consent, safe fetch, search, rate limits, and blocked targets.
 - Clock, Geolocation, Weather, Network, and System modules.
+- BetterDungeon SDK version and config ops.
 - Provider AI setup, OpenRouter key configuration, safe usage, request caps, and examples.
 
 ## To Do
@@ -44,6 +45,6 @@ Create or update public-facing guides for:
 ## Canonical Inputs
 
 - [Frontier planning index](./frontier/README.md)
-- [Implementation plan](./frontier/04-implementation-plan.md)
-- [Full Frontier protocol](./frontier/06-full-frontier-protocol.md)
-- [Provider AI phase plan](./frontier/17-provider-ai-phase-plan.md)
+- [Implementation status](./frontier/03-implementation-status.md)
+- [Test suites](./frontier/04-test-suites.md)
+- [Provider AI phase plan](./frontier/archive/17-provider-ai-phase-plan.md)

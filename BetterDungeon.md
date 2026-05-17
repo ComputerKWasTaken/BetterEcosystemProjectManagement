@@ -4,26 +4,32 @@
 
 ## Current Focus
 
-BetterDungeon V2 is in progress. Frontier — the largest V2 workstream — is feature-complete through Phase 9. All 8 first-party modules are implemented and live-tested.
+BetterDungeon V2 is in progress. Frontier — the largest V2 workstream — is feature-complete through Phase 10. All 9 first-party modules are implemented, live-tested, and have dedicated regression test suites.
 
 Completed Frontier capability stack:
 
 - Transport, write queue, adventure-boundary handling, and heartbeat.
 - Full two-way request/response envelope over AI Dungeon Story Cards.
-- First-party modules: Scripture, WebFetch, Clock, Geolocation, Weather, Network, System, and Provider AI.
+- First-party modules: Scripture, WebFetch, Clock, SDK, Geolocation, Weather, Network, System, and Provider AI.
 - Popup integration with a dedicated Frontier tab and module settings.
 - Story Card UI / GraphQL drift investigation.
 - Heartbeat dedupe and safer unsafe-op replay behavior.
+- BetterDungeon SDK module with `version` and `config` ops.
+- Per-module regression test suites for all 9 modules in `tests/aid-scripts/`.
+- Consistent `Frontier` story card type across all production code.
 
 Current next step:
 
-- Phase 10: Module polish and per-module regression test scripts.
+- Phase 11: Documentation cleanup across internal Frontier planning docs.
 
 ## Roadmap
 
+### Completed
+
+- **Phase 10 — Module Polish & Test Scripts.** All modules polished, per-module regression test scripts created in `tests/aid-scripts/`, story card types normalized.
+
 ### Active
 
-- **Phase 10 — Module Polish & Test Scripts.** Polish every module, create a per-module regression test script in `tests/aid-scripts/`, validate new behavior and catch regressions.
 - **Phase 11 — Documentation Cleanup.** Refresh Frontier planning docs to reflect production status, remove stale planning language, update roadmap.
 
 ### Next
@@ -48,6 +54,6 @@ Current next step:
 ## Canonical Docs
 
 - [Frontier planning index](./frontier/README.md)
-- [Implementation plan](./frontier/04-implementation-plan.md)
-- [Scripture Interactive Widgets suite](./frontier/22-scripture-interactive-widgets-test-suite.md)
+- [Implementation status](./frontier/03-implementation-status.md)
+- [Test suites](./frontier/04-test-suites.md)
 - [Provider AI live suite](./frontier/archive/21-provider-ai-ai-dungeon-test-suite.md)

@@ -90,6 +90,6 @@ When documentation is updated, verify:
 
 ## Current priority
 
-The immediate priority remains documentation accuracy.
+Phase 11 (Documentation Cleanup) is now active. The immediate work is refreshing every internal Frontier doc to match production reality, removing stale planning language, and aligning phase references across all files.
 
-The next priority after that is making sure the public BetterRepository guide set tells a coherent story about Frontier as a real platform, with a clean place for the shipped BetterDungeon SDK surface to fit naturally.
+The next priority after that is making sure the public BetterRepository guide set tells a coherent story about Frontier as a real platform, with a clean place for the shipped BetterDungeon SDK surface to fit naturally. That work is Phase 14 in the current roadmap.
