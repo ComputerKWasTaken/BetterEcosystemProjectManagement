@@ -130,87 +130,74 @@ It should not describe Frontier as:
 
 ## Remaining work before Frontier is fully wrapped
 
-The remaining work is mostly SDK follow-through, polish, verification, examples, and public-facing documentation.
+The core runtime, all modules, and the regression test suite are shipped. What remains is documentation, showcase scripts, multiplatform follow-through, and public-facing guides.
 
-### Phase 10 - BetterDungeon SDK
+### Completed phases
 
-Completed:
+**Phase 9 — BetterDungeon SDK.**
 
-- shipped the `sdk` Frontier module
-- locked in the separation clearly: heartbeat owns Frontier discovery, SDK owns BetterDungeon-facing metadata
-- shipped `sdk.version` and `sdk.config`
-- added a dedicated `tests/aid-scripts/sdk-module/` regression script
-- validated the SDK live in AI Dungeon, including the background-authoritative config path for AI settings
+- Shipped the `sdk` Frontier module with `version` and `config` ops.
+- Locked in the separation: heartbeat owns Frontier discovery, SDK owns BetterDungeon-facing metadata.
+- Added and live-validated the dedicated `sdk-module` regression script.
+- Moved config reads through the background-authoritative path so the SDK reflects real saved AI settings.
 
-Result:
+**Phase 10 — Module Polish & Test Scripts.**
 
-- Frontier now has a real BetterDungeon-facing SDK surface without introducing a second discovery system
+- All 9 shipped modules polished and validated.
+- Dedicated regression test suites created for every module in `tests/aid-scripts/`: scripture, ai, sdk, clock, system, network, geolocation, weather, webfetch.
+- Story card types normalized to capitalized `Frontier` across all production code.
+- Every shipped module now has a dependable regression surface.
 
-### Phase 11 - Module polish and test coverage
+### Phase 11 — Documentation Cleanup (active)
 
-Still needed:
+In progress:
 
-- tighten module behavior where needed
-- create or finish per-module regression scripts in `tests/aid-scripts/`
-- make sure every shipped module has a dependable validation path
-- add the first reusable `bd.sdk` helper snippet once the helper shape is worth freezing
-
-Goal:
-
-- every shipped module has a dedicated regression surface and a clean confidence story
-
-### Phase 12 - Documentation cleanup
-
-This is the current pass.
-
-Still needed:
-
-- continue vetting internal Frontier docs file by file
-- remove stale planning residue
-- remove obsolete references to deleted or superseded concepts
+- Vetting internal Frontier docs file by file.
+- Removing stale planning residue and outdated phase references.
+- Aligning roadmap language with what is actually shipped.
 
 Goal:
 
-- every active file under `Project Management/frontier/` reflects the shipped Frontier system rather than the earlier build process
+- Every active file under `frontier/` reflects the shipped Frontier system rather than the earlier build process.
 
-### Phase 13 - Showcase scripts
-
-Still needed:
-
-- produce or polish example scripts for the shipped modules
-- keep examples useful as both demos and learning material
-
-Known examples already in the codebase include:
-
-- Aura Cards
-- Chronos V2
-
-Goal:
-
-- each important module has at least one strong example script
-
-### Phase 14 - Mobile/WebView follow-through
+### Phase 12 — Showcase Scripts
 
 Still needed:
 
-- carry Frontier through the Android WebView path
-- do multiplatform smoke testing where needed
+- Produce or polish example scripts for the shipped modules.
+- Keep examples useful as both demos and learning material.
+
+Known examples already in the codebase:
+
+- Aura Cards (AI + Scripture)
+- Chronos V2 (Clock + Weather + Scripture)
 
 Goal:
 
-- Frontier behavior is understood and documented across supported BetterDungeon targets
+- Each important module has at least one strong example script.
 
-### Phase 15 - BetterRepository documentation and release prep
+### Phase 13 — Mobile Port
 
 Still needed:
 
-- finish the public-facing BetterRepository Frontier/module docs
-- align public docs with the real shipped runtime
-- complete release-facing cleanup around the Frontier feature set
+- Carry Frontier through the Android WebView path.
+- Multiplatform smoke testing across Chromium, Gecko, and Android WebView.
 
 Goal:
 
-- public docs explain Frontier clearly without reintroducing outdated technical assumptions
+- Frontier behavior is understood and documented across supported BetterDungeon targets.
+
+### Phase 14 — BetterRepository Documentation
+
+Still needed:
+
+- Finish the public-facing BetterRepository Frontier/module docs.
+- Align public docs with the real shipped runtime.
+- Complete release-facing cleanup around the Frontier feature set.
+
+Goal:
+
+- Public docs explain Frontier clearly without reintroducing outdated technical assumptions.
 
 ## What is no longer an active implementation problem
 

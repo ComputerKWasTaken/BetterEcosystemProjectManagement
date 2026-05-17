@@ -10,7 +10,7 @@
 | 01 | [Architecture](./01-architecture.md) | Runtime layers, transport, Core, modules, and data flow |
 | 02 | [Modules](./02-modules.md) | Live module contract, shipped modules, and how to build new ones |
 | 03 | [Implementation Status](./03-implementation-status.md) | What is shipped, what remains, and current roadmap direction |
-| 04 | [Frontier Test Suites](./04-test-suites.md) | Active regression surfaces and current coverage gaps |
+| 04 | [Frontier Test Suites](./04-test-suites.md) | Active regression surfaces and per-module coverage |
 | 05 | [BetterDungeon SDK Roadmap](./05-betterdungeon-sdk-roadmap.md) | SDK direction, separation rules, and follow-through work |
 | 06 | [Documentation Plan](./06-documentation-plan.md) | Internal/public documentation alignment plan |
 
@@ -24,16 +24,14 @@ Frontier is BetterDungeon's cards-based runtime for AI Dungeon scripting. Script
 
 ## Current status
 
-The core Frontier runtime is shipped.
+The core Frontier runtime is shipped. All 9 first-party modules are implemented, live-tested, and covered by dedicated regression test suites in `tests/aid-scripts/`.
 
-What remains is mostly:
+What remains is:
 
-- module polish and broader regression coverage
-- documentation cleanup and public guide work
+- documentation cleanup (Phase 11 — in progress)
 - showcase scripts
 - multiplatform/mobile follow-through
-
-The BetterDungeon SDK itself is now shipped and validated. The next Frontier target is broader module polish and test coverage.
+- public BetterRepository guide work
 
 ## Doc rules
 
