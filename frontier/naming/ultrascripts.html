@@ -4,618 +4,782 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ultrascripts — Naming Proposal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <style>
     :root {
-      --us-bg-deep: #08050e;
-      --us-bg-panel: #0f0a1a;
-      --us-bg-card: #150f24;
-      --us-bg-elevated: #1c1530;
-      --us-text: #e0dce8;
-      --us-text-dim: #9088a8;
-      --us-text-muted: #5e5478;
-      --us-neon-purple: #b44dff;
-      --us-neon-blue: #4d9fff;
-      --us-neon-pink: #ff4da6;
-      --us-glow-purple: rgba(180,77,255,0.25);
-      --us-glow-blue: rgba(77,159,255,0.2);
-      --us-border: rgba(180,77,255,0.15);
-      --us-border-bright: rgba(180,77,255,0.4);
+      --us-bg: #09090b;
+      --us-bg-raised: #0f0f12;
+      --us-bg-card: #141418;
+      --us-bg-elevated: #1a1a20;
+      --us-bg-surface: #212128;
+      --us-text: #eae8e0;
+      --us-text-secondary: #a09a8a;
+      --us-text-muted: #605c50;
+      --us-gold: #c8a444;
+      --us-gold-light: #dcc070;
+      --us-gold-bright: #f0d478;
+      --us-gold-dim: #a08030;
+      --us-glow: rgba(200,164,68,0.08);
+      --us-glow-strong: rgba(200,164,68,0.15);
+      --us-border: rgba(200,164,68,0.08);
+      --us-border-visible: rgba(200,164,68,0.16);
+      --us-border-accent: rgba(200,164,68,0.3);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: var(--us-bg-deep);
+      background: var(--us-bg);
       color: var(--us-text);
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      line-height: 1.7;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      font-size: 15.5px;
+      line-height: 1.75;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Scanline overlay */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(180,77,255,0.015) 2px,
-        rgba(180,77,255,0.015) 4px
-      );
-      pointer-events: none;
-      z-index: 100;
-    }
+    .page { max-width: 840px; margin: 0 auto; padding: 0 32px; }
 
-    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
-
-    /* ── HERO ── */
+    /* ═══════════════════ HERO ═══════════════════ */
     .hero {
-      position: relative;
       text-align: center;
-      padding: 100px 24px 80px;
-      overflow: hidden;
+      padding: 140px 24px 100px;
+      position: relative;
     }
     .hero::before {
       content: '';
       position: absolute;
-      top: 50%; left: 50%;
-      width: 600px; height: 600px;
+      top: 30%; left: 50%;
+      width: 700px; height: 500px;
       transform: translate(-50%, -50%);
-      background: radial-gradient(circle, var(--us-glow-purple), transparent 70%);
-      opacity: 0.4;
+      background: radial-gradient(ellipse, rgba(200,164,68,0.06), transparent 70%);
       pointer-events: none;
     }
-    .hero-label {
-      display: inline-block;
-      font-family: 'Share Tech Mono', monospace;
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
       font-size: 11px;
+      font-weight: 400;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: var(--us-neon-purple);
-      border: 1px solid var(--us-border-bright);
-      padding: 6px 20px;
-      margin-bottom: 28px;
-      position: relative;
-      text-shadow: 0 0 8px var(--us-glow-purple);
+      color: var(--us-gold);
+      margin-bottom: 32px;
+      opacity: 0.7;
     }
     .hero h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 56px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 64px;
       font-weight: 800;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, var(--us-neon-purple), var(--us-neon-blue), var(--us-neon-pink));
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: gradientShift 6s ease infinite;
-      filter: drop-shadow(0 0 30px var(--us-glow-purple));
-      margin-bottom: 20px;
-      position: relative;
-    }
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
+      letter-spacing: -1px;
+      color: var(--us-gold-bright);
+      text-shadow: 0 0 80px rgba(200,164,68,0.2);
+      margin-bottom: 24px;
+      line-height: 1.05;
     }
     .hero .tagline {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 18px;
-      color: var(--us-text-dim);
-      letter-spacing: 1px;
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 22px;
+      color: var(--us-text-secondary);
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+    .hero-line {
+      width: 48px;
+      height: 1px;
+      background: var(--us-gold);
+      margin: 48px auto 0;
+      opacity: 0.3;
     }
 
-    /* ── SECTION HEADERS ── */
-    .section { padding: 60px 0; }
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 28px;
+    /* ═══════════════════ SECTIONS ═══════════════════ */
+    .section {
+      padding: 72px 0;
+      border-top: 1px solid var(--us-border);
     }
-    .section-header::before {
-      content: '';
-      width: 4px;
-      height: 28px;
-      background: linear-gradient(180deg, var(--us-neon-purple), transparent);
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-    .section-header h2 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: 2px;
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      color: var(--us-text);
-    }
-    .section-header .section-num {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 12px;
-      color: var(--us-neon-purple);
+      color: var(--us-gold);
+      margin-bottom: 24px;
       opacity: 0.6;
     }
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--us-text);
+      margin-bottom: 20px;
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--us-text);
+      margin: 36px 0 14px;
+    }
+    p {
+      margin-bottom: 18px;
+      color: var(--us-text-secondary);
+    }
+    strong { color: var(--us-text); font-weight: 600; }
+    em { color: var(--us-gold-light); font-style: italic; }
 
-    .divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--us-border-bright), transparent);
+    /* ═══════════════════ ACCENT QUOTE ═══════════════════ */
+    .accent-quote {
+      background: var(--us-bg-raised);
+      border-left: 2px solid var(--us-gold);
+      padding: 28px 32px;
+      margin: 32px 0;
+      border-radius: 0 6px 6px 0;
+    }
+    .accent-quote p {
+      font-size: 17px;
+      line-height: 1.85;
+      color: var(--us-text-secondary);
       margin: 0;
     }
 
-    p { margin-bottom: 16px; color: var(--us-text-dim); }
-    em { color: var(--us-neon-purple); font-style: normal; text-shadow: 0 0 6px var(--us-glow-purple); }
-    strong { color: var(--us-text); font-weight: 600; }
-
-    /* ── TERMINAL BLOCKQUOTE ── */
-    .terminal {
-      background: var(--us-bg-panel);
-      border: 1px solid var(--us-border);
-      border-radius: 8px;
-      margin: 24px 0;
-      overflow: hidden;
+    /* ═══════════════════ BEFORE / AFTER ═══════════════════ */
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 36px 0;
     }
-    .terminal-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
+    @media (max-width: 600px) { .compare { grid-template-columns: 1fr; } }
+    .compare-col {
       background: var(--us-bg-card);
+      border: 1px solid var(--us-border-visible);
+      border-radius: 8px;
+      padding: 28px;
+    }
+    .compare-col.before { border-color: var(--us-border); }
+    .compare-col.after { border-color: var(--us-border-accent); }
+    .compare-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .compare-col.before .compare-label { color: var(--us-text-muted); }
+    .compare-col.after .compare-label { color: var(--us-gold); }
+    .compare-item {
+      padding: 8px 0;
+      font-size: 14px;
+      color: var(--us-text-secondary);
       border-bottom: 1px solid var(--us-border);
     }
-    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .terminal-dot.r { background: #ff5f56; }
-    .terminal-dot.y { background: #ffbd2e; }
-    .terminal-dot.g { background: #27c93f; }
-    .terminal-title {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: var(--us-text-muted);
-      margin-left: 8px;
-    }
-    .terminal-body {
-      padding: 20px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 14px;
-      line-height: 1.8;
-      color: var(--us-text-dim);
-    }
-    .terminal-body .prompt { color: var(--us-neon-purple); }
-    .terminal-body .highlight { color: var(--us-neon-blue); }
+    .compare-item:last-child { border-bottom: none; }
+    .compare-col.before .compare-item { color: var(--us-text-muted); }
+    .compare-col.after .compare-item { color: var(--us-text-secondary); }
 
-    /* ── CAPABILITY GRID ── */
+    /* ═══════════════════ CAPABILITY GRID ═══════════════════ */
     .cap-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 16px;
-      margin: 24px 0;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin: 36px 0;
+      background: var(--us-border-visible);
+      border-radius: 8px;
+      overflow: hidden;
     }
-    .cap-card {
+    @media (max-width: 640px) { .cap-grid { grid-template-columns: 1fr 1fr; } }
+    .cap-cell {
+      background: var(--us-bg-card);
+      padding: 28px 24px;
+      transition: background 0.2s;
+    }
+    .cap-cell:hover { background: var(--us-bg-elevated); }
+    .cap-cell .cap-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--us-gold-light);
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+    .cap-cell .cap-desc {
+      font-size: 13px;
+      color: var(--us-text-muted);
+      line-height: 1.5;
+    }
+
+    /* ═══════════════════ STAT ROW ═══════════════════ */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 36px 0;
+    }
+    @media (max-width: 600px) { .stats { grid-template-columns: 1fr; } }
+    .stat {
+      text-align: center;
+      padding: 32px 16px;
       background: var(--us-bg-card);
       border: 1px solid var(--us-border);
       border-radius: 8px;
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-      transition: border-color 0.3s, box-shadow 0.3s;
     }
-    .cap-card:hover {
-      border-color: var(--us-border-bright);
-      box-shadow: 0 0 20px var(--us-glow-purple), inset 0 0 20px rgba(180,77,255,0.03);
-    }
-    .cap-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--us-neon-purple), var(--us-neon-blue));
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .cap-card:hover::before { opacity: 1; }
-    .cap-icon {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 28px;
-      margin-bottom: 12px;
-      display: block;
-    }
-    .cap-card h3 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--us-neon-purple);
+    .stat-value {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--us-gold-bright);
+      line-height: 1;
       margin-bottom: 8px;
     }
-    .cap-card p { font-size: 14px; margin: 0; }
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--us-text-muted);
+    }
 
-    /* ── TAGLINE TABLE ── */
-    .tag-table {
+    /* ═══════════════════ TABLES ═══════════════════ */
+    table {
       width: 100%;
       border-collapse: collapse;
-      margin: 24px 0;
+      margin: 28px 0;
     }
-    .tag-table th {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 11px;
+    th {
+      font-size: 10px;
       font-weight: 600;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       text-transform: uppercase;
       text-align: left;
       padding: 12px 16px;
-      background: var(--us-bg-card);
-      color: var(--us-neon-purple);
-      border-bottom: 1px solid var(--us-border-bright);
+      color: var(--us-gold);
+      border-bottom: 1px solid var(--us-border-accent);
     }
-    .tag-table td {
+    td {
       padding: 14px 16px;
       border-bottom: 1px solid var(--us-border);
-      color: var(--us-text-dim);
+      color: var(--us-text-secondary);
       font-size: 14px;
     }
-    .tag-table td:first-child {
-      font-weight: 600;
-      color: var(--us-text);
-      white-space: nowrap;
-    }
-    .tag-table tr:hover td { background: rgba(180,77,255,0.04); }
-
-    /* ── MAPPING TABLE ── */
-    .map-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 24px 0;
-    }
-    .map-table th {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      text-align: left;
-      padding: 12px 16px;
-      background: var(--us-bg-card);
-      color: var(--us-neon-purple);
-      border-bottom: 1px solid var(--us-border-bright);
-    }
-    .map-table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--us-border);
-      color: var(--us-text-dim);
-      font-size: 14px;
-      vertical-align: top;
-    }
-    .map-table td:first-child { color: var(--us-text); font-weight: 500; }
-    .map-table code {
-      font-family: 'Share Tech Mono', monospace;
+    td:first-child { color: var(--us-text); font-weight: 500; }
+    tr:hover td { background: var(--us-glow); }
+    code {
+      font-family: 'DM Mono', monospace;
       font-size: 13px;
-      background: var(--us-bg-elevated);
-      padding: 2px 7px;
+      background: var(--us-bg-surface);
+      padding: 2px 8px;
       border-radius: 4px;
-      color: var(--us-neon-blue);
+      color: var(--us-gold-light);
     }
 
-    /* ── MIGRATION BLOCK ── */
-    .migration {
-      background: var(--us-bg-panel);
-      border: 1px solid var(--us-border);
-      border-radius: 8px;
-      padding: 24px;
+    /* ═══════════════════ LIST ═══════════════════ */
+    .clean-list {
+      list-style: none;
       margin: 24px 0;
-      font-family: 'Share Tech Mono', monospace;
     }
-    .migration .label {
-      font-size: 11px;
+    .clean-list li {
+      padding: 12px 0 12px 20px;
+      position: relative;
+      color: var(--us-text-secondary);
+      border-bottom: 1px solid var(--us-border);
+    }
+    .clean-list li:last-child { border-bottom: none; }
+    .clean-list li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 20px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--us-gold);
+      opacity: 0.4;
+    }
+    .clean-list li strong { color: var(--us-text); }
+
+    /* ═══════════════════ MIGRATION ═══════════════════ */
+    .migration {
+      background: var(--us-bg-raised);
+      border: 1px solid var(--us-border-visible);
+      border-radius: 8px;
+      padding: 28px;
+      margin: 28px 0;
+    }
+    .migration-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
       letter-spacing: 2px;
       text-transform: uppercase;
       color: var(--us-text-muted);
       margin-bottom: 16px;
     }
-    .migration .card-title {
-      padding: 6px 0;
+    .migration-item {
+      font-family: 'DM Mono', monospace;
       font-size: 15px;
-      color: var(--us-neon-purple);
+      padding: 7px 0;
+      color: var(--us-gold-light);
     }
-    .migration .card-title .prefix { color: var(--us-neon-blue); }
 
-    /* ── AUDIENCE + VISUAL ── */
-    .info-list {
-      list-style: none;
-      margin: 20px 0;
-    }
-    .info-list li {
-      padding: 10px 0 10px 24px;
-      position: relative;
-      color: var(--us-text-dim);
-      border-bottom: 1px solid rgba(180,77,255,0.06);
-    }
-    .info-list li::before {
-      content: '//';
-      position: absolute;
-      left: 0;
-      font-family: 'Share Tech Mono', monospace;
-      color: var(--us-neon-purple);
-      opacity: 0.5;
-      font-size: 13px;
-    }
-    .info-list li strong { color: var(--us-text); }
-
-    /* ── STRENGTHS / RISKS ── */
-    .sr-grid {
+    /* ═══════════════════ STRENGTHS & RISKS ═══════════════════ */
+    .assess-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin: 24px 0;
+      gap: 20px;
+      margin: 32px 0;
     }
-    @media (max-width: 640px) { .sr-grid { grid-template-columns: 1fr; } }
-    .sr-col h3 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 12px;
+    @media (max-width: 640px) { .assess-grid { grid-template-columns: 1fr; } }
+    .assess-col h3 {
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       text-transform: uppercase;
+      padding-bottom: 12px;
       margin-bottom: 16px;
+      margin-top: 0;
+      border-bottom: 1px solid var(--us-border-visible);
     }
-    .sr-col.strengths h3 { color: #27c93f; }
-    .sr-col.risks h3 { color: #ff5f56; }
-    .sr-item {
+    .assess-col.s h3 { color: var(--us-gold); }
+    .assess-col.r h3 { color: var(--us-text-muted); }
+    .assess-item {
       background: var(--us-bg-card);
       border: 1px solid var(--us-border);
       border-radius: 6px;
-      padding: 14px 16px;
-      margin-bottom: 10px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+    }
+    .assess-item strong {
+      display: block;
+      margin-bottom: 6px;
       font-size: 14px;
-      color: var(--us-text-dim);
+      color: var(--us-text);
     }
-    .sr-item strong { color: var(--us-text); font-size: 13px; display: block; margin-bottom: 4px; }
+    .assess-item p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--us-text-secondary);
+    }
 
-    /* ── SUMMARY ── */
-    .summary {
-      position: relative;
-      background: var(--us-bg-panel);
-      border: 1px solid var(--us-border-bright);
-      border-radius: 12px;
-      padding: 40px;
+    /* ═══════════════════ PULL QUOTE ═══════════════════ */
+    .pull-quote {
+      text-align: center;
+      padding: 56px 40px;
       margin: 40px 0;
-      overflow: hidden;
+      position: relative;
     }
-    .summary::before {
+    .pull-quote::before, .pull-quote::after {
       content: '';
       position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: radial-gradient(circle at 30% 40%, var(--us-glow-purple), transparent 50%);
-      opacity: 0.15;
-      pointer-events: none;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 1px;
+      background: var(--us-gold);
+      opacity: 0.25;
     }
-    .summary p {
-      position: relative;
+    .pull-quote::before { top: 0; }
+    .pull-quote::after { bottom: 0; }
+    .pull-quote p {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 24px;
+      line-height: 1.6;
       color: var(--us-text);
-      font-size: 17px;
-      line-height: 1.9;
       margin: 0;
     }
-    .summary em { color: var(--us-neon-purple); }
+    .pull-quote .attr {
+      font-family: 'DM Mono', monospace;
+      font-style: normal;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--us-text-muted);
+      margin-top: 20px;
+      display: block;
+    }
 
-    /* ── BACK LINK ── */
+    /* ═══════════════════ SCENARIO ═══════════════════ */
+    .scenario {
+      background: var(--us-bg-card);
+      border: 1px solid var(--us-border-visible);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 32px 0;
+    }
+    .scenario-header {
+      background: var(--us-bg-elevated);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--us-border-visible);
+    }
+    .scenario-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--us-gold);
+      opacity: 0.5;
+    }
+    .scenario-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--us-text-muted);
+      letter-spacing: 0.5px;
+    }
+    .scenario-body {
+      padding: 24px;
+      font-size: 15px;
+      line-height: 1.9;
+      color: var(--us-text-secondary);
+    }
+    .scenario-body .scene {
+      margin-bottom: 20px;
+    }
+    .scenario-body .scene-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--us-gold);
+      opacity: 0.5;
+      margin-bottom: 6px;
+    }
+    .scenario-body em {
+      font-style: italic;
+      color: var(--us-gold-light);
+      text-shadow: none;
+    }
+
+    /* ═══════════════════ SUMMARY ═══════════════════ */
+    .summary-card {
+      background: var(--us-bg-raised);
+      border: 1px solid var(--us-border-accent);
+      border-radius: 10px;
+      padding: 48px 40px;
+      margin: 40px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 10%, var(--us-gold) 50%, transparent 90%);
+      opacity: 0.3;
+    }
+    .summary-card p {
+      font-size: 17px;
+      line-height: 1.95;
+      color: var(--us-text);
+      margin: 0;
+    }
+    .summary-card em { color: var(--us-gold-light); }
+
+    /* ═══════════════════ BACK LINK ═══════════════════ */
     .back-link {
       display: inline-block;
-      padding: 24px 0;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 12px;
-      letter-spacing: 1px;
+      padding: 28px 0;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1.5px;
       color: var(--us-text-muted);
       text-decoration: none;
+      transition: color 0.2s;
     }
-    .back-link:hover { color: var(--us-neon-purple); }
+    .back-link:hover { color: var(--us-gold); }
   </style>
 </head>
 <body>
-  <div class="container">
-    <a href="README.html" class="back-link">&lt;-- BACK TO INDEX</a>
+  <div class="page">
+    <a href="README.html" class="back-link">&larr; All proposals</a>
 
-    <!-- HERO -->
+    <!-- ═══════════════════ HERO ═══════════════════ -->
     <div class="hero">
-      <div class="hero-label">// NAMING PROPOSAL</div>
+      <div class="hero-eyebrow">Naming Proposal</div>
       <h1>Ultrascripts</h1>
-      <div class="tagline">scripts, upgraded.</div>
+      <div class="tagline">Yeah, you want this.</div>
+      <div class="hero-line"></div>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- NAME ANALYSIS -->
+    <!-- ═══════════════════ THE PITCH ═══════════════════ -->
     <div class="section">
-      <div class="section-header">
-        <h2>Name Analysis</h2>
-        <span class="section-num">01</span>
+      <div class="section-label">01 &mdash; The pitch</div>
+      <h2>Your scripts already run. Ultrascripts makes them <em>arrive.</em></h2>
+      <p>AI Dungeon scripts are powerful. They shape narrative, control pacing, react to player input. But they have always been one-directional &mdash; they run inside the dungeon and they stay there. They cannot see outside. They cannot ask questions and get answers. They cannot render a custom UI or call an AI model or check the weather.</p>
+      <p>Ultrascripts changes the deal.</p>
+      <p>With BetterDungeon installed, every script gains access to a two-way communication runtime backed by nine built-in capability modules. A script stops being a script. It becomes an <em>Ultrascript</em> &mdash; something that can talk back, reach out, and bring the full power of the browser into the story.</p>
+
+      <div class="accent-quote">
+        <p>Ultrascripts is not a feature you turn on. It is what your scripts become when BetterDungeon is present. Write a script. Reference a module. The runtime handles the rest. Your script just got a serious upgrade &mdash; and it did not have to change a line of code to earn it.</p>
       </div>
-      <p><strong>Ultra</strong> (beyond, supreme, the highest tier) + <strong>Scripts</strong> (the scripting layer that powers AI Dungeon scenarios).</p>
-      <p>The name owns the scripting identity. It tells scenario creators: <em>this is what your scripts become when BetterDungeon is installed.</em> Every script you write is already an AI Dungeon script &mdash; Ultrascripts is what happens when that script can talk back.</p>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- MARKETING FOCUS -->
+    <!-- ═══════════════════ BEFORE / AFTER ═══════════════════ -->
     <div class="section">
-      <div class="section-header">
-        <h2>Marketing Focus</h2>
-        <span class="section-num">02</span>
-      </div>
-      <p>Ultrascripts positions the system as a <strong>power upgrade for scenario creators</strong>. The core message is not about infrastructure or middleware &mdash; it is about what creators can now do that they could not do before.</p>
+      <div class="section-label">02 &mdash; The difference</div>
+      <h2>What changes</h2>
+      <p>The gap between a standard AI Dungeon script and an Ultrascript is not incremental. It is categorical.</p>
 
-      <div class="terminal">
-        <div class="terminal-bar">
-          <span class="terminal-dot r"></span>
-          <span class="terminal-dot y"></span>
-          <span class="terminal-dot g"></span>
-          <span class="terminal-title">positioning.txt</span>
+      <div class="compare">
+        <div class="compare-col before">
+          <div class="compare-label">Standard script</div>
+          <div class="compare-item">Runs on turn events</div>
+          <div class="compare-item">Modifies story text</div>
+          <div class="compare-item">Reads player input</div>
+          <div class="compare-item">No external data access</div>
+          <div class="compare-item">No custom UI</div>
+          <div class="compare-item">No AI model calls</div>
+          <div class="compare-item">One direction only</div>
         </div>
-        <div class="terminal-body">
-          <span class="prompt">&gt;</span> Ultrascripts turns AI Dungeon scripts into <span class="highlight">two-way programs</span>.<br>
-          <span class="prompt">&gt;</span> Your script can check the weather, fetch live data, render<br>
-          &nbsp;&nbsp;interactive UI, call hosted AI models, and read real device<br>
-          &nbsp;&nbsp;state &mdash; all without leaving the scenario scripting<br>
-          &nbsp;&nbsp;environment you already know.
+        <div class="compare-col after">
+          <div class="compare-label">Ultrascript</div>
+          <div class="compare-item">Everything a standard script does</div>
+          <div class="compare-item">+ Fetch live data from the web</div>
+          <div class="compare-item">+ Render interactive widget UI</div>
+          <div class="compare-item">+ Call hosted AI models</div>
+          <div class="compare-item">+ Read time, weather, location</div>
+          <div class="compare-item">+ Detect network &amp; device state</div>
+          <div class="compare-item">+ Full two-way communication</div>
         </div>
       </div>
 
-      <p>AI Dungeon scripts are powerful, but they have always been one-directional: the script runs, it modifies the story, and then it waits for the next turn. Ultrascripts breaks that boundary. With BetterDungeon installed, a script becomes something more &mdash; it becomes an <em>Ultrascript</em>.</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value">9</div>
+          <div class="stat-label">Capability modules</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">2</div>
+          <div class="stat-label">Way communication</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Config required</div>
+        </div>
+      </div>
+    </div>
 
-      <h3 style="font-family:'Orbitron',sans-serif; font-size:14px; letter-spacing:1.5px; text-transform:uppercase; color:var(--us-neon-purple); margin:32px 0 16px;">Capabilities</h3>
+    <!-- ═══════════════════ MODULES ═══════════════════ -->
+    <div class="section">
+      <div class="section-label">03 &mdash; Capabilities</div>
+      <h2>Nine modules. Every one of them yours.</h2>
+      <p>Each module is a capability that an Ultrascript can reach through the runtime. No installation steps, no API keys for the creator, no configuration files. If BetterDungeon is installed, every module is live.</p>
 
       <div class="cap-grid">
-        <div class="cap-card">
-          <span class="cap-icon">&gt;_</span>
-          <h3>Ask &amp; Receive</h3>
-          <p>Request data from 9 built-in capability modules and get structured responses back on the same turn cycle.</p>
+        <div class="cap-cell">
+          <div class="cap-name">Scripture</div>
+          <div class="cap-desc">Interactive widget layouts rendered natively alongside the story.</div>
         </div>
-        <div class="cap-card">
-          <span class="cap-icon">[&thinsp;]</span>
-          <h3>Render UI</h3>
-          <p>Push interactive widget layouts through Scripture that BetterDungeon renders natively alongside the story.</p>
+        <div class="cap-cell">
+          <div class="cap-name">WebFetch</div>
+          <div class="cap-desc">Fetch live data from approved external APIs with user consent.</div>
         </div>
-        <div class="cap-card">
-          <span class="cap-icon">&curren;</span>
-          <h3>Sense the World</h3>
-          <p>Read the player&rsquo;s time zone, weather, network state, locale, and device capabilities to adapt the narrative in real time.</p>
+        <div class="cap-cell">
+          <div class="cap-name">Clock</div>
+          <div class="cap-desc">Real time, timezone, elapsed time since session start.</div>
         </div>
-        <div class="cap-card">
-          <span class="cap-icon">&para;</span>
-          <h3>Think with AI</h3>
-          <p>Call hosted language models through Provider AI to power in-story NPCs, summarizers, translators, or creative assistants.</p>
+        <div class="cap-cell">
+          <div class="cap-name">Provider AI</div>
+          <div class="cap-desc">Call hosted language models through OpenRouter for in-story intelligence.</div>
         </div>
-        <div class="cap-card">
-          <span class="cap-icon">&oplus;</span>
-          <h3>Reach the Web</h3>
-          <p>Fetch live data from approved external APIs, with user consent, through the WebFetch module.</p>
+        <div class="cap-cell">
+          <div class="cap-name">Geolocation</div>
+          <div class="cap-desc">Coarse location data for contextual narrative adaptation.</div>
+        </div>
+        <div class="cap-cell">
+          <div class="cap-name">Weather</div>
+          <div class="cap-desc">Real weather conditions to mirror inside the story world.</div>
+        </div>
+        <div class="cap-cell">
+          <div class="cap-name">Network</div>
+          <div class="cap-desc">Online/offline state and connection quality detection.</div>
+        </div>
+        <div class="cap-cell">
+          <div class="cap-name">System</div>
+          <div class="cap-desc">Device capabilities, locale, and platform information.</div>
+        </div>
+        <div class="cap-cell">
+          <div class="cap-name">SDK</div>
+          <div class="cap-desc">Version, feature flags, and runtime metadata.</div>
         </div>
       </div>
-
-      <p>The promise is concrete: <em>write a script, get superpowers.</em></p>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- TAGLINES -->
+    <!-- ═══════════════════ SCENARIO ═══════════════════ -->
     <div class="section">
-      <div class="section-header">
-        <h2>Tagline Candidates</h2>
-        <span class="section-num">03</span>
+      <div class="section-label">04 &mdash; In practice</div>
+      <h2>What an Ultrascript looks like in the wild</h2>
+      <p>This is not theoretical. Here is what happens when a scenario creator uses Ultrascripts to build a weather-reactive horror story:</p>
+
+      <div class="scenario">
+        <div class="scenario-header">
+          <span class="scenario-dot"></span>
+          <span class="scenario-title">scenario: nightfall.js</span>
+        </div>
+        <div class="scenario-body">
+          <div class="scene">
+            <div class="scene-label">The script checks</div>
+            The script reads <em>Clock</em> for the player&rsquo;s local time. It is 11:47 PM.
+          </div>
+          <div class="scene">
+            <div class="scene-label">The script asks</div>
+            It sends a request to <em>Weather</em>. The response: overcast, 3&deg;C, wind advisory.
+          </div>
+          <div class="scene">
+            <div class="scene-label">The script adapts</div>
+            The narrative shifts. The dungeon corridor grows colder. Wind howls through cracks in the stone. The description mirrors what is happening outside the player&rsquo;s window &mdash; without the player knowing why it feels so real.
+          </div>
+          <div class="scene">
+            <div class="scene-label">The script renders</div>
+            <em>Scripture</em> pushes a flickering torch widget to the sidebar. The flame gutters when the wind description intensifies. The player reaches for a blanket.
+          </div>
+          <div class="scene">
+            <div class="scene-label">The script thinks</div>
+            An NPC speaks. The words come from <em>Provider AI</em> &mdash; a hosted model producing dialogue that accounts for the weather, the time, and three turns of context. The character feels alive.
+          </div>
+        </div>
       </div>
-      <table class="tag-table">
+
+      <p>None of this required the player to configure anything. None of it required the creator to manage API credentials. The script referenced modules. Ultrascripts handled the rest.</p>
+    </div>
+
+    <!-- ═══════════════════ PULL QUOTE ═══════════════════ -->
+    <div class="pull-quote">
+      <p>&ldquo;Write a script. Get superpowers.&rdquo;</p>
+      <span class="attr">The Ultrascripts promise</span>
+    </div>
+
+    <!-- ═══════════════════ NAME ANALYSIS ═══════════════════ -->
+    <div class="section">
+      <div class="section-label">05 &mdash; The name</div>
+      <h2>Why &ldquo;Ultrascripts&rdquo;</h2>
+      <p><strong>Ultra</strong> &mdash; beyond, supreme, the highest tier. Not loud about it. Just factual. These scripts do more than scripts.</p>
+      <p><strong>Scripts</strong> &mdash; the thing every AI Dungeon creator already knows. The word grounds the name in the ecosystem. It does not need to be explained.</p>
+      <p>The compound works because it upgrades a familiar concept. You do not learn a new system &mdash; you learn that the system you already know can now do dramatically more. The name is the value proposition: <em>your scripts, but ultra.</em></p>
+
+      <h3>Tagline candidates</h3>
+      <table>
         <thead><tr><th>Tagline</th><th>Angle</th></tr></thead>
         <tbody>
-          <tr><td>&ldquo;Scripts, upgraded.&rdquo;</td><td>Clean, direct. Positions Ultrascripts as the natural next step.</td></tr>
-          <tr><td>&ldquo;Your scripts can talk back now.&rdquo;</td><td>Emphasizes two-way communication &mdash; the key technical leap.</td></tr>
-          <tr><td>&ldquo;Write a script. Get superpowers.&rdquo;</td><td>Playful, creator-focused. Good for community-facing material.</td></tr>
-          <tr><td>&ldquo;Beyond scripting.&rdquo;</td><td>Mirrors the &ldquo;ultra&rdquo; prefix. Aspirational.</td></tr>
-          <tr><td>&ldquo;The scripting layer that listens.&rdquo;</td><td>Highlights the response/ops side that makes this different.</td></tr>
+          <tr><td>&ldquo;Scripts, upgraded.&rdquo;</td><td>Clean, direct. The obvious statement that happens to be exactly right.</td></tr>
+          <tr><td>&ldquo;Your scripts can talk back now.&rdquo;</td><td>Emphasizes two-way communication. A little playful, a lot powerful.</td></tr>
+          <tr><td>&ldquo;Write a script. Get superpowers.&rdquo;</td><td>The creator pitch in seven words. Good for community-facing material.</td></tr>
+          <tr><td>&ldquo;Beyond scripting.&rdquo;</td><td>Mirrors the &ldquo;ultra&rdquo; prefix. Short enough for a badge or icon.</td></tr>
+          <tr><td>&ldquo;The scripting layer that listens.&rdquo;</td><td>Highlights the response/ops side. Slightly technical, highly accurate.</td></tr>
         </tbody>
       </table>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- TARGET AUDIENCE -->
+    <!-- ═══════════════════ AUDIENCE ═══════════════════ -->
     <div class="section">
-      <div class="section-header">
-        <h2>Target Audience</h2>
-        <span class="section-num">04</span>
-      </div>
-      <ul class="info-list">
-        <li><strong>Primary:</strong> AI Dungeon scenario creators who already write scripts and want more capability.</li>
-        <li><strong>Secondary:</strong> Creators who do not script yet but would start if scripting could do dramatically more. Ultrascripts is the reason to learn.</li>
-        <li><strong>Tertiary:</strong> Players who encounter Ultrascripts-powered scenarios and want to understand why they feel more alive.</li>
+      <div class="section-label">06 &mdash; Audience</div>
+      <h2>Who this speaks to</h2>
+      <ul class="clean-list">
+        <li><strong>Scenario creators who already script.</strong> They know the limitations. They have wished for exactly this. Ultrascripts is the name that says &ldquo;it is here.&rdquo;</li>
+        <li><strong>Creators who don&rsquo;t script yet.</strong> The gap between &ldquo;I write stories&rdquo; and &ldquo;I write scripts&rdquo; shrinks when the payoff is this visible. Ultrascripts is the reason to learn.</li>
+        <li><strong>Players who notice the difference.</strong> They will not know the name. They will know the scenario felt different &mdash; richer, more alive, responsive in ways they cannot explain. And when they look into it, they will find: <em>Ultrascripts.</em></li>
       </ul>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- TECHNICAL MAPPING -->
+    <!-- ═══════════════════ TECHNICAL MAPPING ═══════════════════ -->
     <div class="section">
-      <div class="section-header">
-        <h2>Technical Mapping</h2>
-        <span class="section-num">05</span>
-      </div>
-      <table class="map-table">
-        <thead><tr><th>Ultrascripts Concept</th><th>Technical Reality</th></tr></thead>
+      <div class="section-label">07 &mdash; Technical mapping</div>
+      <h2>How the name maps to the system</h2>
+      <table>
+        <thead><tr><th>Ultrascripts concept</th><th>Technical reality</th></tr></thead>
         <tbody>
-          <tr><td>&ldquo;An Ultrascript&rdquo;</td><td>Any AI Dungeon scenario script that uses <code>frontier:*</code> reserved story cards to communicate with BetterDungeon</td></tr>
-          <tr><td>&ldquo;Ultrascripts runtime&rdquo;</td><td>The transport + core + module stack currently called Frontier</td></tr>
-          <tr><td>&ldquo;Ultrascripts modules&rdquo;</td><td>The 9 first-party modules: Scripture, WebFetch, Clock, SDK, Geolocation, Weather, Network, System, AI</td></tr>
-          <tr><td>&ldquo;Heartbeat&rdquo;</td><td>Still heartbeat &mdash; the discovery signal that tells a script Ultrascripts is available</td></tr>
-          <tr><td>&ldquo;Scripture&rdquo;</td><td>Unchanged &mdash; the widget/UI rendering module</td></tr>
-          <tr><td>&ldquo;Ops&rdquo;</td><td>The request/response path through <code>frontier:out</code> / <code>frontier:in:&lt;module&gt;</code> (card titles would update)</td></tr>
+          <tr><td>&ldquo;An Ultrascript&rdquo;</td><td>Any AI Dungeon scenario script that uses <code>ultrascripts:*</code> reserved story cards</td></tr>
+          <tr><td>&ldquo;The runtime&rdquo;</td><td>Transport + core + module stack (WebSocket interception, state dispatch, module lifecycle)</td></tr>
+          <tr><td>&ldquo;Modules&rdquo;</td><td>9 first-party capabilities: Scripture, WebFetch, Clock, SDK, Geolocation, Weather, Network, System, AI</td></tr>
+          <tr><td>&ldquo;Heartbeat&rdquo;</td><td><code>ultrascripts:heartbeat</code> &mdash; the discovery signal</td></tr>
+          <tr><td>&ldquo;Request&rdquo;</td><td>Writing an envelope to <code>ultrascripts:out</code></td></tr>
+          <tr><td>&ldquo;Response&rdquo;</td><td>Reading from <code>ultrascripts:in:&lt;module&gt;</code></td></tr>
+          <tr><td>&ldquo;Published state&rdquo;</td><td>State cards like <code>ultrascripts:state:scripture</code></td></tr>
         </tbody>
       </table>
 
       <div class="migration">
-        <div class="label">Card Title Migration</div>
-        <div class="card-title"><span class="prefix">ultrascripts</span>:heartbeat</div>
-        <div class="card-title"><span class="prefix">ultrascripts</span>:state:&lt;name&gt;</div>
-        <div class="card-title"><span class="prefix">ultrascripts</span>:out</div>
-        <div class="card-title"><span class="prefix">ultrascripts</span>:in:&lt;module&gt;</div>
+        <div class="migration-label">Card title migration</div>
+        <div class="migration-item">ultrascripts:heartbeat</div>
+        <div class="migration-item">ultrascripts:state:&lt;name&gt;</div>
+        <div class="migration-item">ultrascripts:out</div>
+        <div class="migration-item">ultrascripts:in:&lt;module&gt;</div>
       </div>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- VISUAL DIRECTION -->
+    <!-- ═══════════════════ VISUAL DIRECTION ═══════════════════ -->
     <div class="section">
-      <div class="section-header">
-        <h2>Visual Direction</h2>
-        <span class="section-num">06</span>
-      </div>
-      <ul class="info-list">
-        <li><strong>Tone:</strong> Bold, electric, high-energy. Think neon accent on dark background &mdash; exactly like this document.</li>
-        <li><strong>Iconography:</strong> Lightning bolt through a script bracket; or a glowing pen/quill transforming into a circuit.</li>
-        <li><strong>Color association:</strong> Electric violet and blue &mdash; something that says &ldquo;enhanced&rdquo; without clashing with BetterDungeon&rsquo;s existing palette.</li>
-        <li><strong>Typography:</strong> Geometric, techy sans-serif like Orbitron. &ldquo;ULTRASCRIPTS&rdquo; in all-caps works as a wordmark because the word has natural rhythm.</li>
+      <div class="section-label">08 &mdash; Visual identity</div>
+      <h2>Dark and gold. Confident, not loud.</h2>
+      <p>The Ultrascripts visual identity does not shout. It does not need to. It uses restraint to project confidence &mdash; the kind of design language that says <em>&ldquo;this is premium&rdquo;</em> without ever using the word.</p>
+      <ul class="clean-list">
+        <li><strong>Palette:</strong> Near-black backgrounds with warm gold accents. No neon. No gradients for the sake of gradients. Gold appears sparingly &mdash; on labels, accents, interactive states &mdash; and every appearance earns its place.</li>
+        <li><strong>Typography:</strong> Modern geometric sans-serif (Plus Jakarta Sans) for body. Monospace (DM Mono) for labels and technical content. Serif italics (Instrument Serif) for pull quotes and taglines. The combination is editorial, not startup.</li>
+        <li><strong>Iconography:</strong> A subtle glyph &mdash; a script bracket with a quiet gold highlight, or a minimal wordmark. No lightning bolts, no explosions. The icon should feel like a maker&rsquo;s mark.</li>
+        <li><strong>Motion:</strong> Minimal. Hover states that shift subtly. No animations that demand attention. The design rewards the observant.</li>
+        <li><strong>Tone:</strong> This document is the tone. Dark, warm, precise. It says &ldquo;yeah, you want this&rdquo; by making you realize you already do.</li>
       </ul>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- STRENGTHS & RISKS -->
+    <!-- ═══════════════════ ASSESSMENT ═══════════════════ -->
     <div class="section">
-      <div class="section-header">
-        <h2>Assessment</h2>
-        <span class="section-num">07</span>
-      </div>
-      <div class="sr-grid">
-        <div class="sr-col strengths">
-          <h3>+ Strengths</h3>
-          <div class="sr-item"><strong>Self-explanatory</strong>A new user can guess what Ultrascripts is about: scripts, but better.</div>
-          <div class="sr-item"><strong>Creator-facing</strong>The name speaks directly to the people who will build with it.</div>
-          <div class="sr-item"><strong>Scalable</strong>&ldquo;Ultrascripts module,&rdquo; &ldquo;Ultrascripts-powered scenario,&rdquo; &ldquo;Ultrascripts SDK&rdquo; &mdash; all read naturally.</div>
-          <div class="sr-item"><strong>Distinctive</strong>No collision with AI Dungeon&rsquo;s own naming.</div>
-          <div class="sr-item"><strong>Action-oriented</strong>The name implies doing, building, creating.</div>
+      <div class="section-label">09 &mdash; Assessment</div>
+      <h2>Strengths &amp; risks</h2>
+      <div class="assess-grid">
+        <div class="assess-col s">
+          <h3>Strengths</h3>
+          <div class="assess-item">
+            <strong>Self-explanatory</strong>
+            <p>A new user can guess what Ultrascripts is about: scripts, but better. The name is the value proposition.</p>
+          </div>
+          <div class="assess-item">
+            <strong>Creator-facing</strong>
+            <p>Speaks directly to the people who will build with it. Not infrastructure jargon &mdash; a name that says &ldquo;this is for you.&rdquo;</p>
+          </div>
+          <div class="assess-item">
+            <strong>Distinctive</strong>
+            <p>No collision with AI Dungeon&rsquo;s own naming. Zero search results for &ldquo;Ultrascripts&rdquo; in this space.</p>
+          </div>
+          <div class="assess-item">
+            <strong>Scalable vocabulary</strong>
+            <p>&ldquo;Ultrascripts module,&rdquo; &ldquo;Ultrascripts-powered scenario,&rdquo; &ldquo;Ultrascripts runtime,&rdquo; &ldquo;Ultrascripts SDK&rdquo; &mdash; all read naturally.</p>
+          </div>
+          <div class="assess-item">
+            <strong>Aspirational without being empty</strong>
+            <p>&ldquo;Ultra&rdquo; promises more. The system delivers more. The name is not a bluff.</p>
+          </div>
         </div>
-        <div class="sr-col risks">
-          <h3>- Risks</h3>
-          <div class="sr-item"><strong>Product tier confusion</strong>&ldquo;Ultra&rdquo; sometimes implies a paid/premium level. Messaging needs to clarify this is a capability, not a paywall.</div>
-          <div class="sr-item"><strong>Literal suffix</strong>If Ultrascripts extends to non-script integrations, the name becomes slightly narrow. Manageable with sub-branding.</div>
-          <div class="sr-item"><strong>Trademark overlap</strong>&ldquo;Ultra&rdquo; is a common prefix. The full compound is distinctive, but a search would be prudent.</div>
+        <div class="assess-col r">
+          <h3>Risks</h3>
+          <div class="assess-item">
+            <strong>Premium tier confusion</strong>
+            <p>&ldquo;Ultra&rdquo; can imply a paid/premium level (YouTube Premium was once &ldquo;YouTube Ultra&rdquo; in concept). Messaging should clarify this is a capability, not a paywall.</p>
+          </div>
+          <div class="assess-item">
+            <strong>Literal suffix</strong>
+            <p>If Ultrascripts extends to non-script integrations in the future, the &ldquo;scripts&rdquo; part becomes slightly narrow. Manageable with sub-branding.</p>
+          </div>
+          <div class="assess-item">
+            <strong>Prefix saturation</strong>
+            <p>&ldquo;Ultra&rdquo; is a common prefix in tech and gaming. The full compound is distinctive, but a trademark search would be prudent before committing.</p>
+          </div>
+          <div class="assess-item">
+            <strong>Card prefix length</strong>
+            <p>At 11 characters, <code>ultrascripts:heartbeat</code> is on the longer side. Functional, but worth noting for ergonomics.</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- SUMMARY -->
+    <!-- ═══════════════════ SUMMARY ═══════════════════ -->
     <div class="section">
-      <div class="section-header">
-        <h2>Summary</h2>
-        <span class="section-num">08</span>
-      </div>
-      <div class="summary">
-        <p>Ultrascripts is a power fantasy name for creators. It says: <em>the scripts you write are about to become something extraordinary.</em> The marketing focus is on capability, empowerment, and the tangible leap from one-way scripts to two-way programs. It works best if BetterDungeon&rsquo;s community messaging leans into the &ldquo;look what I built&rdquo; culture of scenario creators.</p>
+      <div class="section-label">10 &mdash; Summary</div>
+      <h2>The verdict</h2>
+      <div class="summary-card">
+        <p>Ultrascripts is the name that respects the creator. It does not explain infrastructure &mdash; it describes what happens to <em>your</em> work. Your scripts become something more. The marketing is not about the runtime or the transport layer or the WebSocket interception. It is about the moment a creator writes a script, references a module, and watches their story come alive in a way that was not possible yesterday.</p>
+        <p style="margin-top:20px;">The design language matches: dark, gold, restrained. Not a name that screams. A name that walks into the room and you just know.</p>
       </div>
     </div>
+
   </div>
 </body>
 </html>
