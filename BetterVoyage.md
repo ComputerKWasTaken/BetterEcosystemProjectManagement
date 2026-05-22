@@ -15,4 +15,4 @@ BetterVoyage is not in active development. Keep this parked until Voyage leaves 
 
 ## Current Priority
 
-None. BetterDungeon V2 and Frontier documentation remain the active work.
+None. BetterDungeon V2 and Ultrascripts documentation remain the active work.

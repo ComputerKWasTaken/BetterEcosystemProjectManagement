@@ -1,16 +1,16 @@
 # 05 - BetterDungeon SDK Roadmap
 
-> This document records the current SDK direction after a key architectural decision: heartbeat remains the one source of truth for Frontier availability, and the SDK only exists for BetterDungeon-facing metadata that should not become a second discovery system.
+> This document records the current SDK direction after a key architectural decision: heartbeat remains the one source of truth for Ultrascripts availability, and the SDK only exists for BetterDungeon-facing metadata that should not become a second discovery system.
 
 ## Why this matters
 
-Frontier already gives scripts a strong module model:
+Ultrascripts already gives scripts a strong module model:
 
 - publish state cards
 - call module ops
 - read responses back
 
-Heartbeat already tells scripts what Frontier modules and ops are available.
+Heartbeat already tells scripts what Ultrascripts modules and ops are available.
 
 What heartbeat should not have to become is a general BetterDungeon product metadata API.
 
@@ -27,7 +27,7 @@ That is clever in exactly the right way: useful, composable, and future-friendly
 
 ## The core rule
 
-The BetterDungeon SDK must expose BetterDungeon metadata, not Frontier availability.
+The BetterDungeon SDK must expose BetterDungeon metadata, not Ultrascripts availability.
 
 Bad version:
 
@@ -40,7 +40,7 @@ Good version:
 
 - a documented SDK module
 - a stable set of BetterDungeon-facing ops or helper surfaces
-- heartbeat as the only Frontier discovery contract
+- heartbeat as the only Ultrascripts discovery contract
 - versioned contracts that BetterDungeon can evolve intentionally
 
 This keeps BetterDungeon flexible while still giving script authors more power.
@@ -52,7 +52,7 @@ Heartbeat owns:
 - module availability
 - op availability
 - state-module discovery
-- live Frontier runtime advertisement
+- live Ultrascripts runtime advertisement
 
 The SDK owns:
 
@@ -62,7 +62,7 @@ The SDK owns:
 
 This keeps the architecture simple:
 
-- one discovery system for Frontier
+- one discovery system for Ultrascripts
 - one metadata/helper surface for BetterDungeon
 
 ## What the SDK should not be
@@ -72,7 +72,7 @@ It should not be:
 - a raw escape hatch into extension internals
 - a dumping ground for every convenient helper we can think of
 - an undocumented "just call this hidden thing" layer
-- a backdoor around Frontier's normal contracts
+- a backdoor around Ultrascripts's normal contracts
 
 If we make it sloppy, it will create exactly the maintenance problems we are trying to avoid.
 
@@ -85,15 +85,15 @@ Shipped op:
 - `bd.sdk.version()`
 - `bd.sdk.config()`
 
-For the actual Frontier module, the shipped v1 is:
+For the actual Ultrascripts module, the shipped v1 is:
 
 - module id: `sdk`
 - public script-side helper namespace: `bd.sdk`
-- transport shape: normal Frontier ops through `frontier:out` and `frontier:in:sdk`
+- transport shape: normal Ultrascripts ops through `ultrascripts:out` and `ultrascripts:in:sdk`
 
 That gives us a simple rule:
 
-- `sdk` is the Frontier module
+- `sdk` is the Ultrascripts module
 - `bd.sdk.*` is the author-friendly helper layer built on top of that module
 
 ## Current `sdk` module shape
@@ -101,11 +101,11 @@ That gives us a simple rule:
 The current module is ops-only and intentionally minimal:
 
 ```js
-const FrontierSdkModule = {
+const UltrascriptsSdkModule = {
   id: 'sdk',
   version: '1.0.0',
   label: 'BetterDungeon SDK',
-  description: 'Exposes stable BetterDungeon and Frontier capability metadata to scripts.',
+  description: 'Exposes stable BetterDungeon and Ultrascripts capability metadata to scripts.',
 
   ops: {
     version: {
@@ -143,7 +143,7 @@ Purpose:
 Expected return shape:
 
 - BetterDungeon version
-- Frontier protocol version
+- Ultrascripts protocol version
 - maybe a compact SDK version string
 
 Recommended v1 response:
@@ -152,8 +152,8 @@ Recommended v1 response:
 {
   "sdkVersion": "1.0.0",
   "betterDungeonVersion": "2.0.0",
-  "frontierProtocol": 1,
-  "frontierClient": "BetterDungeon"
+  "ultrascriptsProtocol": 1,
+  "ultrascriptsClient": "BetterDungeon"
 }
 ```
 
@@ -161,7 +161,7 @@ Recommended script helper:
 
 ```js
 bd.sdk.version = function () {
-  return frontierCall('sdk', 'version', {});
+  return ultrascriptsCall('sdk', 'version', {});
 };
 ```
 
@@ -176,7 +176,7 @@ Purpose:
 Expected return shape:
 
 - BetterDungeon feature toggles
-- Frontier module enablement preferences
+- Ultrascripts module enablement preferences
 - safe Scripture/WebFetch/AI configuration context
 - no secrets such as API keys
 
@@ -186,10 +186,10 @@ Current response shape:
 {
   "sdkVersion": "1.0.0",
   "betterDungeonVersion": "1.2.1",
-  "frontierProtocol": 1,
-  "frontierClient": "BetterDungeon",
+  "ultrascriptsProtocol": 1,
+  "ultrascriptsClient": "BetterDungeon",
   "features": {
-    "frontier": true,
+    "ultrascripts": true,
     "markdown": true,
     "command": true,
     "try": true,
@@ -204,7 +204,7 @@ Current response shape:
     "inputHistory": true,
     "textToSpeech": false
   },
-  "frontier": {
+  "ultrascripts": {
     "enabled": true,
     "runtimeEnabled": true,
     "debug": false,
@@ -250,7 +250,7 @@ Recommended script helper:
 
 ```js
 bd.sdk.config = function () {
-  return frontierCall('sdk', 'config', {});
+  return ultrascriptsCall('sdk', 'config', {});
 };
 ```
 
@@ -266,11 +266,11 @@ var bd = state.bd;
 bd.sdk = bd.sdk || {};
 
 bd.sdk.version = function () {
-  return frontierCall('sdk', 'version', {});
+  return ultrascriptsCall('sdk', 'version', {});
 };
 
 bd.sdk.config = function () {
-  return frontierCall('sdk', 'config', {});
+  return ultrascriptsCall('sdk', 'config', {});
 };
 ```
 
@@ -282,7 +282,7 @@ These are not required in the module itself, but they are high-value additions i
 
 ```js
 bd.sdk.hasModule = function (moduleId) {
-  var hb = frontierHeartbeat();
+  var hb = ultrascriptsHeartbeat();
   var mods = (hb && Array.isArray(hb.modules)) ? hb.modules : [];
   for (var i = 0; i < mods.length; i++) {
     if (mods[i] && mods[i].id === moduleId) return true;
@@ -295,7 +295,7 @@ bd.sdk.hasModule = function (moduleId) {
 
 ```js
 bd.sdk.hasOp = function (moduleId, opName) {
-  var hb = frontierHeartbeat();
+  var hb = ultrascriptsHeartbeat();
   var mods = (hb && Array.isArray(hb.modules)) ? hb.modules : [];
   for (var i = 0; i < mods.length; i++) {
     var mod = mods[i];
@@ -370,8 +370,8 @@ Realistically, the v1 SDK ops should almost never fail except for generic runtim
 So scripts can do things like:
 
 ```js
-frontierCall('sdk', 'version', {})
-frontierCall('sdk', 'config', {})
+ultrascriptsCall('sdk', 'version', {})
+ultrascriptsCall('sdk', 'config', {})
 ```
 
 and wrap heartbeat parsing helpers under:
@@ -387,9 +387,9 @@ That gives us both a clean protocol identity and a clean authoring identity with
 
 The shipped v1 already does these:
 
-1. adds the `sdk` Frontier module
+1. adds the `sdk` Ultrascripts module
 2. advertises it in heartbeat like any other ops module
-3. exposes a popup toggle like the other first-party Frontier modules
+3. exposes a popup toggle like the other first-party Ultrascripts modules
 4. returns safe BetterDungeon configuration context without duplicating heartbeat discovery
 
 ## Current completion state
@@ -399,7 +399,7 @@ The core SDK milestone is complete.
 Done:
 
 1. shipped the `sdk` module
-2. kept heartbeat as the only Frontier discovery surface
+2. kept heartbeat as the only Ultrascripts discovery surface
 3. shipped `sdk.version` and `sdk.config`
 4. added and live-validated the dedicated `sdk-module` regression script
 5. moved config reads through the background-authoritative path so the SDK reflects real saved AI settings instead of fallback-looking defaults
@@ -408,13 +408,13 @@ What remains is optional follow-through, not core justification work.
 
 ## Recommended next implementation order
 
-1. add a tiny script-side `bd.sdk` helper snippet to the base Frontier library docs when we want to freeze that shape
+1. add a tiny script-side `bd.sdk` helper snippet to the base Ultrascripts library docs when we want to freeze that shape
 2. create one example script that uses heartbeat for graceful capability detection and `sdk.version` / `sdk.config` for BetterDungeon-aware branching
 3. only then consider extra convenience helpers
 
 ## How it should ship
 
-The most natural version is a Frontier module or closely related SDK surface built on the same design principles as the rest of Frontier:
+The most natural version is a Ultrascripts module or closely related SDK surface built on the same design principles as the rest of Ultrascripts:
 
 - stable
 - documented
@@ -428,20 +428,20 @@ Two reasonable implementation shapes:
 Example:
 
 - module id like `sdk` or `bdsdk`
-- scripts call it through normal Frontier request/response patterns
+- scripts call it through normal Ultrascripts request/response patterns
 
 Pros:
 
-- fits the existing Frontier mental model
+- fits the existing Ultrascripts mental model
 - easy to advertise through heartbeat
 - easy to version explicitly
 
-### Option B - base Frontier helper surface plus optional SDK ops
+### Option B - base Ultrascripts helper surface plus optional SDK ops
 
 Example:
 
 - thin script-side helper for common checks
-- deeper information exposed through Frontier ops
+- deeper information exposed through Ultrascripts ops
 
 Pros:
 
@@ -465,7 +465,7 @@ This is valuable for both sides:
 
 - one official integration layer instead of hidden assumptions
 - less accidental coupling to internals
-- a safer path for expanding Frontier over time
+- a safer path for expanding Ultrascripts over time
 - a strong product story: BetterDungeon is not only "a set of modules," it is a scripting platform with a real SDK
 
 ## Relationship to shipped modules
@@ -493,7 +493,7 @@ That separation keeps the system understandable.
 
 Heartbeat already gives scripts raw runtime discovery.
 
-Heartbeat should stay the one source of truth for Frontier availability.
+Heartbeat should stay the one source of truth for Ultrascripts availability.
 
 The SDK should not duplicate heartbeat at all. Its job is to complement heartbeat, not reinterpret it as a second discovery surface.
 
@@ -523,17 +523,17 @@ That means the answer is restraint, not fear.
 
 1. Define the smallest official SDK contract we are willing to support.
 2. Keep the first version introspection-heavy and helper-light.
-3. Ship it through Frontier's existing capability model.
+3. Ship it through Ultrascripts's existing capability model.
 4. Write examples that show why it is better than ad hoc heartbeat parsing.
 5. Expand only after real script-author use cases appear.
 
 ## Current recommendation
 
-The BetterDungeon SDK is a completed shipped Frontier surface. Module polish and per-module regression suites are also complete (Phase 10).
+The BetterDungeon SDK is a completed shipped Ultrascripts surface. Module polish and per-module regression suites are also complete (Phase 10).
 
 Recommended priority:
 
 1. keep the SDK contract narrow and resist overlap with heartbeat
 2. add author-facing helper/examples only when they clearly reduce script boilerplate without freezing a bad shape too early
 
-This keeps the architecture cleaner: heartbeat owns Frontier discovery, and the SDK only grows if it provides clearly BetterDungeon-specific value.
+This keeps the architecture cleaner: heartbeat owns Ultrascripts discovery, and the SDK only grows if it provides clearly BetterDungeon-specific value.

@@ -11,24 +11,24 @@ Validated:
 - `providerAI.testConnection` with safe OpenRouter key metadata and model count.
 - `providerAI.models` with normalized model metadata.
 - `providerAI.chat` validation failures for empty messages and oversized content.
-- One real chat completion returning `"Frontier Provider AI is online."`.
-- Terminal response delivery through `frontier:in:providerAI` and script ack handling.
+- One real chat completion returning `"Ultrascripts Provider AI is online."`.
+- Terminal response delivery through `ultrascripts:in:providerAI` and script ack handling.
 
 Keep this page as the regression harness for future Provider AI changes.
 
-Run this after loading the extension, opening AI Dungeon, enabling Frontier, enabling Provider AI, and saving an OpenRouter key in the BetterDungeon Frontier tab.
+Run this after loading the extension, opening AI Dungeon, enabling Ultrascripts, enabling Provider AI, and saving an OpenRouter key in the BetterDungeon Ultrascripts tab.
 
 ## Before Running
 
-1. Open BetterDungeon -> Frontier -> AI Providers.
+1. Open BetterDungeon -> Ultrascripts -> AI Providers.
 2. Save an OpenRouter API key.
 3. Optionally save a default model.
-4. If you do not save a default model, edit `FRONTIER_PROVIDER_AI_TEST_MODEL` in the Library script before pasting.
+4. If you do not save a default model, edit `ULTRASCRIPTS_PROVIDER_AI_TEST_MODEL` in the Library script before pasting.
 
 The suite writes:
 
-- `frontier:out`
-- `frontier:test:providerAI`
+- `ultrascripts:out`
+- `ultrascripts:test:providerAI`
 
 Expected final result:
 
@@ -41,12 +41,12 @@ Expected final result:
 Paste this into the AI Dungeon scenario Library.
 
 ```js
-// Frontier Provider AI Test Suite - AI Dungeon Library
+// Ultrascripts Provider AI Test Suite - AI Dungeon Library
 // Pair with provider-ai-test-suite.output-modifier.js.
 
-var FRONTIER_PROVIDER_AI_TEST_MODEL = 'inclusionai/ling-2.6-1t:free';
+var ULTRASCRIPTS_PROVIDER_AI_TEST_MODEL = 'inclusionai/ling-2.6-1t:free';
 
-state.frontierProviderAiSuite = state.frontierProviderAiSuite || {
+state.ultrascriptsProviderAiSuite = state.ultrascriptsProviderAiSuite || {
   runId: null,
   turn: 0,
   seq: 0,
@@ -70,10 +70,10 @@ function paiNow() {
 }
 
 function paiRunId() {
-  if (!state.frontierProviderAiSuite.runId) {
-    state.frontierProviderAiSuite.runId = 'provider-ai-' + paiNow().toString(36);
+  if (!state.ultrascriptsProviderAiSuite.runId) {
+    state.ultrascriptsProviderAiSuite.runId = 'provider-ai-' + paiNow().toString(36);
   }
-  return state.frontierProviderAiSuite.runId;
+  return state.ultrascriptsProviderAiSuite.runId;
 }
 
 function paiCards() {
@@ -109,7 +109,7 @@ function paiReadJson(title) {
 
 function paiWriteCard(title, value, type) {
   var found = paiFindCard(title);
-  var cardType = type || 'Frontier';
+  var cardType = type || 'Ultrascripts';
 
   if (found.card && found.index >= 0 && typeof updateStoryCard === 'function') {
     var existing = found.card;
@@ -135,7 +135,7 @@ function paiLiveKey() {
 }
 
 function paiLog(event, detail) {
-  var suite = state.frontierProviderAiSuite;
+  var suite = state.ultrascriptsProviderAiSuite;
   suite.events = suite.events || [];
   suite.events.push({
     at: paiNow(),
@@ -148,13 +148,13 @@ function paiLog(event, detail) {
 }
 
 function paiHeartbeat() {
-  return paiReadJson('frontier:heartbeat');
+  return paiReadJson('ultrascripts:heartbeat');
 }
 
 function paiHasOp(moduleId, opName) {
   var heartbeat = paiHeartbeat();
-  var frontier = heartbeat && heartbeat.frontier;
-  if (!frontier || frontier.protocol !== 1 || frontier.profile !== 'full') return false;
+  var ultrascripts = heartbeat && heartbeat.ultrascripts;
+  if (!ultrascripts || ultrascripts.protocol !== 1 || ultrascripts.profile !== 'full') return false;
 
   var modules = heartbeat.modules;
   if (!Array.isArray(modules)) return false;
@@ -168,7 +168,7 @@ function paiHasOp(moduleId, opName) {
 }
 
 function paiPendingRequestsArray() {
-  var suite = state.frontierProviderAiSuite;
+  var suite = state.ultrascriptsProviderAiSuite;
   var out = [];
   for (var id in suite.pending) {
     if (Object.prototype.hasOwnProperty.call(suite.pending, id)) {
@@ -179,7 +179,7 @@ function paiPendingRequestsArray() {
 }
 
 function paiWriteOut() {
-  var suite = state.frontierProviderAiSuite;
+  var suite = state.ultrascriptsProviderAiSuite;
   var payload = {
     v: 1,
     requests: paiPendingRequestsArray(),
@@ -188,11 +188,11 @@ function paiWriteOut() {
     debugWrittenAt: paiNow()
   };
   suite._acks = [];
-  paiWriteCard('frontier:out', JSON.stringify(payload), 'Frontier');
+  paiWriteCard('ultrascripts:out', JSON.stringify(payload), 'Ultrascripts');
 }
 
 function paiQueueAck(requestId, reason) {
-  var suite = state.frontierProviderAiSuite;
+  var suite = state.ultrascriptsProviderAiSuite;
   suite._acks = suite._acks || [];
   suite.acked = suite.acked || {};
   suite.ackAttempts = suite.ackAttempts || {};
@@ -208,7 +208,7 @@ function paiQueueAck(requestId, reason) {
 }
 
 function paiQueueRequest(opName, args) {
-  var suite = state.frontierProviderAiSuite;
+  var suite = state.ultrascriptsProviderAiSuite;
   var id = paiLiveKey() + '-providerAI-' + (++suite.seq);
   if (suite.pending[id] || suite.completed[id]) return id;
 
@@ -229,8 +229,8 @@ function paiIsTerminal(response) {
 }
 
 function paiPollResponses() {
-  var suite = state.frontierProviderAiSuite;
-  var card = paiReadJson('frontier:in:providerAI');
+  var suite = state.ultrascriptsProviderAiSuite;
+  var card = paiReadJson('ultrascripts:in:providerAI');
   var foundTerminal = false;
   if (!card || !card.responses) return;
 
@@ -275,7 +275,7 @@ function paiTextIncludes(text, needles) {
 }
 
 function paiRecentSources(outputText) {
-  var sources = [{ id: 'output:' + state.frontierProviderAiSuite.turn, text: String(outputText || '') }];
+  var sources = [{ id: 'output:' + state.ultrascriptsProviderAiSuite.turn, text: String(outputText || '') }];
   var entries = Array.isArray(history) ? history : [];
   var start = Math.max(0, entries.length - 6);
   for (var i = start; i < entries.length; i++) {
@@ -290,7 +290,7 @@ function paiRecentSources(outputText) {
 }
 
 function paiConsumeCommand(kind, outputText, needles) {
-  var suite = state.frontierProviderAiSuite;
+  var suite = state.ultrascriptsProviderAiSuite;
   suite.consumedCommands = suite.consumedCommands || {};
   var sources = paiRecentSources(outputText);
 
@@ -306,7 +306,7 @@ function paiConsumeCommand(kind, outputText, needles) {
 }
 
 function paiResetSuite() {
-  state.frontierProviderAiSuite = {
+  state.ultrascriptsProviderAiSuite = {
     runId: 'provider-ai-' + paiNow().toString(36),
     turn: 0,
     seq: 0,
@@ -324,12 +324,12 @@ function paiResetSuite() {
     chatId: null,
     phase: 'reset'
   };
-  paiWriteCard('frontier:out', JSON.stringify({ v: 1, requests: [], acks: [] }), 'Frontier');
+  paiWriteCard('ultrascripts:out', JSON.stringify({ v: 1, requests: [], acks: [] }), 'Ultrascripts');
   paiWriteTrace();
 }
 
 function paiTestModel() {
-  return String(FRONTIER_PROVIDER_AI_TEST_MODEL || '').trim();
+  return String(ULTRASCRIPTS_PROVIDER_AI_TEST_MODEL || '').trim();
 }
 
 function paiChatArgs() {
@@ -337,7 +337,7 @@ function paiChatArgs() {
     provider: 'openrouter',
     messages: [
       { role: 'system', content: 'Reply with one short plain sentence.' },
-      { role: 'user', content: 'Say that Frontier Provider AI is online.' }
+      { role: 'user', content: 'Say that Ultrascripts Provider AI is online.' }
     ],
     maxTokens: 32,
     temperature: 0,
@@ -349,7 +349,7 @@ function paiChatArgs() {
 }
 
 function paiDrivePlan(outputText) {
-  var suite = state.frontierProviderAiSuite;
+  var suite = state.ultrascriptsProviderAiSuite;
 
   if (paiConsumeCommand('reset', outputText, ['provider ai reset', 'providerai reset', '[[providerai:reset]]'])) {
     paiResetSuite();
@@ -441,7 +441,7 @@ function paiValidChat(result) {
 }
 
 function paiAllChecksPass() {
-  var suite = state.frontierProviderAiSuite;
+  var suite = state.ultrascriptsProviderAiSuite;
   var testConnection = suite.testConnectionId && suite.completed[suite.testConnectionId];
   var models = suite.modelsId && suite.completed[suite.modelsId];
   var invalidMessages = suite.invalidMessagesId && suite.completed[suite.invalidMessagesId];
@@ -461,14 +461,14 @@ function paiAllChecksPass() {
 }
 
 function paiWriteTrace() {
-  var suite = state.frontierProviderAiSuite;
+  var suite = state.ultrascriptsProviderAiSuite;
   var trace = {
     v: 1,
     runId: paiRunId(),
     turn: suite.turn,
     liveKey: paiLiveKey(),
     phase: suite.phase,
-    heartbeatFull: !!(paiHeartbeat() && paiHeartbeat().frontier && paiHeartbeat().frontier.profile === 'full'),
+    heartbeatFull: !!(paiHeartbeat() && paiHeartbeat().ultrascripts && paiHeartbeat().ultrascripts.profile === 'full'),
     providerAiChatAdvertised: paiHasOp('providerAI', 'chat'),
     providerAiModelsAdvertised: paiHasOp('providerAI', 'models'),
     providerAiTestConnectionAdvertised: paiHasOp('providerAI', 'testConnection'),
@@ -480,11 +480,11 @@ function paiWriteTrace() {
     checksPass: paiAllChecksPass(),
     events: suite.events || []
   };
-  paiWriteCard('frontier:test:providerAI', JSON.stringify(trace, null, 2), 'Frontier Test');
+  paiWriteCard('ultrascripts:test:providerAI', JSON.stringify(trace, null, 2), 'Ultrascripts Test');
 }
 
-function frontierProviderAiStep(outputText) {
-  var suite = state.frontierProviderAiSuite;
+function ultrascriptsProviderAiStep(outputText) {
+  var suite = state.ultrascriptsProviderAiSuite;
   paiRunId();
   suite.turn += 1;
   paiPollResponses();
@@ -499,11 +499,11 @@ function frontierProviderAiStep(outputText) {
 Paste this into the AI Dungeon Output Modifier.
 
 ```js
-// Frontier Provider AI Test Suite - AI Dungeon Output Modifier
+// Ultrascripts Provider AI Test Suite - AI Dungeon Output Modifier
 // Pair with provider-ai-test-suite.library.js.
 
 var modifier = function (text) {
-  frontierProviderAiStep(text);
+  ultrascriptsProviderAiStep(text);
   return { text: text };
 };
 
@@ -515,7 +515,7 @@ modifier(text);
 The main suite assumes a configured key. To verify `not_configured`, clear the OpenRouter key in BetterDungeon, run one turn, and call:
 
 ```js
-frontierCall('providerAI', 'testConnection', { provider: 'openrouter' }).catch(console.log)
+ultrascriptsCall('providerAI', 'testConnection', { provider: 'openrouter' }).catch(console.log)
 ```
 
 Expected error code:

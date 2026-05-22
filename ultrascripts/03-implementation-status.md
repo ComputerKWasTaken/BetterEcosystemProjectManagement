@@ -1,10 +1,10 @@
 # 03 - Implementation Status
 
-> This document is the current implementation-status and roadmap summary for Frontier. It replaces the older phase-by-phase construction log. Frontier's core system is already built and working; this doc exists to show what is shipped, what remains, and what is intentionally out of scope for now.
+> This document is the current implementation-status and roadmap summary for Ultrascripts. It replaces the older phase-by-phase construction log. Ultrascripts's core system is already built and working; this doc exists to show what is shipped, what remains, and what is intentionally out of scope for now.
 
 ## Current state
 
-Frontier is no longer in the "plan the architecture" stage. The core runtime is implemented in BetterDungeon and already supports:
+Ultrascripts is no longer in the "plan the architecture" stage. The core runtime is implemented in BetterDungeon and already supports:
 
 - live story-card observation
 - mutation-template-based writeback
@@ -12,7 +12,7 @@ Frontier is no longer in the "plan the architecture" stage. The core runtime is 
 - module registration and lifecycle
 - heartbeat-based module discovery
 - state-card dispatch
-- request/response ops through `frontier:out` and `frontier:in:<module>`
+- request/response ops through `ultrascripts:out` and `ultrascripts:in:<module>`
 
 Shipped first-party modules:
 
@@ -43,7 +43,7 @@ Shipped:
 
 Result:
 
-- Frontier can observe AI Dungeon's story cards and actions reliably enough to drive the runtime.
+- Ultrascripts can observe AI Dungeon's story cards and actions reliably enough to drive the runtime.
 
 ### Write path
 
@@ -56,7 +56,7 @@ Shipped:
 
 Result:
 
-- BetterDungeon can write and update Frontier-owned cards without needing a separate GraphQL client implementation.
+- BetterDungeon can write and update Ultrascripts-owned cards without needing a separate GraphQL client implementation.
 
 ### Core runtime
 
@@ -84,36 +84,36 @@ Shipped:
 
 Result:
 
-- Frontier's module surface is stable enough to document and extend
+- Ultrascripts's module surface is stable enough to document and extend
 
 ### BetterDungeon integration
 
 Shipped:
 
-- `features/frontier_feature.js`
-- popup-side Frontier controls
+- `features/ultrascripts_feature.js`
+- popup-side Ultrascripts controls
 - per-module toggles
 - WebFetch consent management
 - AI module settings and connection testing
 
 Result:
 
-- Frontier is integrated as a real BetterDungeon feature, not a side experiment
+- Ultrascripts is integrated as a real BetterDungeon feature, not a side experiment
 
 ## What was especially important to resolve
 
 These were the big implementation questions that once mattered and are now settled:
 
 - live-count history won over action-id-keyed history
-- full two-way Frontier shipped; there is no meaningful Lite profile
+- full two-way Ultrascripts shipped; there is no meaningful Lite profile
 - mutation-template replay solved the write path
 - heartbeat lives in `core.js`, not a separate heartbeat subsystem
 - request/response ops are part of the same unified runtime as state cards
-- old BetterScripts-era assumptions are no longer the model Frontier should be documented around
+- old BetterScripts-era assumptions are no longer the model Ultrascripts should be documented around
 
 ## Current documentation position
 
-The active documentation set should describe Frontier as:
+The active documentation set should describe Ultrascripts as:
 
 - built
 - unified
@@ -121,14 +121,14 @@ The active documentation set should describe Frontier as:
 - live-count-aware
 - module-driven
 
-It should not describe Frontier as:
+It should not describe Ultrascripts as:
 
 - a speculative architecture
 - a Scripture-only prototype
 - a phased split between Lite and Full runtime profiles
 - a future possibility that still needs the core system invented
 
-## Remaining work before Frontier is fully wrapped
+## Remaining work before Ultrascripts is fully wrapped
 
 The core runtime, all modules, and the regression test suite are shipped. What remains is documentation, showcase scripts, multiplatform follow-through, and public-facing guides.
 
@@ -136,8 +136,8 @@ The core runtime, all modules, and the regression test suite are shipped. What r
 
 **Phase 9 — BetterDungeon SDK.**
 
-- Shipped the `sdk` Frontier module with `version` and `config` ops.
-- Locked in the separation: heartbeat owns Frontier discovery, SDK owns BetterDungeon-facing metadata.
+- Shipped the `sdk` Ultrascripts module with `version` and `config` ops.
+- Locked in the separation: heartbeat owns Ultrascripts discovery, SDK owns BetterDungeon-facing metadata.
 - Added and live-validated the dedicated `sdk-module` regression script.
 - Moved config reads through the background-authoritative path so the SDK reflects real saved AI settings.
 
@@ -145,20 +145,20 @@ The core runtime, all modules, and the regression test suite are shipped. What r
 
 - All 9 shipped modules polished and validated.
 - Dedicated regression test suites created for every module in `tests/aid-scripts/`: scripture, ai, sdk, clock, system, network, geolocation, weather, webfetch.
-- Story card types normalized to capitalized `Frontier` across all production code.
+- Story card types normalized to capitalized `Ultrascripts` across all production code.
 - Every shipped module now has a dependable regression surface.
 
 ### Phase 11 — Documentation Cleanup (active)
 
 In progress:
 
-- Vetting internal Frontier docs file by file.
+- Vetting internal Ultrascripts docs file by file.
 - Removing stale planning residue and outdated phase references.
 - Aligning roadmap language with what is actually shipped.
 
 Goal:
 
-- Every active file under `frontier/` reflects the shipped Frontier system rather than the earlier build process.
+- Every active file under `ultrascripts/` reflects the shipped Ultrascripts system rather than the earlier build process.
 
 ### Phase 12 — Showcase Scripts
 
@@ -180,59 +180,59 @@ Goal:
 
 Still needed:
 
-- Carry Frontier through the Android WebView path.
+- Carry Ultrascripts through the Android WebView path.
 - Multiplatform smoke testing across Chromium, Gecko, and Android WebView.
 
 Goal:
 
-- Frontier behavior is understood and documented across supported BetterDungeon targets.
+- Ultrascripts behavior is understood and documented across supported BetterDungeon targets.
 
 ### Phase 14 — BetterRepository Documentation
 
 Still needed:
 
-- Finish the public-facing BetterRepository Frontier/module docs.
+- Finish the public-facing BetterRepository Ultrascripts/module docs.
 - Align public docs with the real shipped runtime.
-- Complete release-facing cleanup around the Frontier feature set.
+- Complete release-facing cleanup around the Ultrascripts feature set.
 
 Goal:
 
-- Public docs explain Frontier clearly without reintroducing outdated technical assumptions.
+- Public docs explain Ultrascripts clearly without reintroducing outdated technical assumptions.
 
 ## What is no longer an active implementation problem
 
 These should not keep showing up in active planning docs as if they are still open:
 
-- whether Frontier can support two-way communication
+- whether Ultrascripts can support two-way communication
 - whether Lite is needed
 - whether heartbeat should use a profile split
 - whether Scripture should key its turn history around wire action ids
-- whether Frontier needs a separate heartbeat file
-- whether Frontier is still just a future V2 experiment
+- whether Ultrascripts needs a separate heartbeat file
+- whether Ultrascripts is still just a future V2 experiment
 
 Those questions were useful during construction, but they are settled now.
 
 ## What is intentionally out of scope for now
 
-These are still reasonable future ideas, but they are not required to describe Frontier's current working state:
+These are still reasonable future ideas, but they are not required to describe Ultrascripts's current working state:
 
 - third-party module registry UI
 - sandboxed user-authored modules
 - richer inspector/debugger UI
-- full migration of every older BetterDungeon card consumer to Frontier-native streams
+- full migration of every older BetterDungeon card consumer to Ultrascripts-native streams
 - additional AI provider expansion beyond the current shipped bridge
 
 ## Practical file references
 
 If someone needs the real implementation, these are the most useful places to start:
 
-- [00-overview.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/00-overview.md)
-- [01-architecture.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/01-architecture.md)
-- [02-modules.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/frontier/02-modules.md)
-- [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/core.js)
-- [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/module-registry.js)
-- [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/ops-dispatcher.js)
-- [ws-stream.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/ws-stream.js)
-- [ws-interceptor.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/ws-interceptor.js)
+- [00-overview.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/00-overview.md)
+- [01-architecture.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/01-architecture.md)
+- [02-modules.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/02-modules.md)
+- [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/core.js)
+- [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/module-registry.js)
+- [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ops-dispatcher.js)
+- [ws-stream.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ws-stream.js)
+- [ws-interceptor.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ws-interceptor.js)
 
 Those files are a better source of truth than the old construction diary ever was.

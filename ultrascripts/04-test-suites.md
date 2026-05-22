@@ -1,15 +1,15 @@
-# 04 - Frontier Test Suites
+# 04 - Ultrascripts Test Suites
 
-> This document tracks the Frontier regression surfaces that exist today and what each one covers. As of Phase 10, every shipped first-party module has a dedicated regression test suite.
+> This document tracks the Ultrascripts regression surfaces that exist today and what each one covers. As of Phase 10, every shipped first-party module has a dedicated regression test suite.
 
 ## Current test surfaces
 
-Frontier has two main testing surfaces in the repo:
+Ultrascripts has two main testing surfaces in the repo:
 
 - dedicated AI Dungeon regression scripts under `BetterDungeon/tests/aid-scripts/`
 - example scripts under `BetterDungeon/examples/aid-scripts/` that also serve as real-world integration checks
 
-This is important because Frontier is not validated only through unit-style local checks. A lot of the runtime depends on live AI Dungeon behavior, so scenario-driven regression scripts are still the most useful proof surface.
+This is important because Ultrascripts is not validated only through unit-style local checks. A lot of the runtime depends on live AI Dungeon behavior, so scenario-driven regression scripts are still the most useful proof surface.
 
 ## Active AI Dungeon regression suites
 
@@ -37,7 +37,7 @@ Files:
 
 Purpose:
 
-- end-to-end validation of the Frontier `ai` module
+- end-to-end validation of the Ultrascripts `ai` module
 - validation of alias compatibility through `providerAI`
 - request/response envelope behavior
 - pending to terminal response flow
@@ -48,8 +48,8 @@ Purpose:
 Use this suite when changing:
 
 - `modules/ai/module.js`
-- `services/frontier/ops-dispatcher.js`
-- `services/frontier/envelope.js`
+- `services/ultrascripts/ops-dispatcher.js`
+- `services/ultrascripts/envelope.js`
 - registry/heartbeat behavior that affects AI module discovery
 
 ### `tests/aid-scripts/scripture-module`
@@ -88,16 +88,16 @@ Files:
 
 Purpose:
 
-- end-to-end validation of the Frontier `sdk` module
+- end-to-end validation of the Ultrascripts `sdk` module
 - heartbeat discovery of the `sdk` module and its shipped op surface
-- request/response behavior on `frontier:in:sdk`
+- request/response behavior on `ultrascripts:in:sdk`
 - live inspection of returned SDK payloads directly in story text
 - trace-card capture of the same results for easier comparison
 
 Use this suite when changing:
 
 - `modules/sdk/module.js`
-- heartbeat payload structure in `services/frontier/core.js`
+- heartbeat payload structure in `services/ultrascripts/core.js`
 - version/runtime metadata surfaced through `sdk.version`
 - curated BetterDungeon configuration surfaced through `sdk.config`
 
@@ -111,7 +111,7 @@ Files:
 
 Purpose:
 
-- end-to-end validation of the Frontier `clock` module (10 test steps)
+- end-to-end validation of the Ultrascripts `clock` module (10 test steps)
 - `now` op with default and custom timezone arguments
 - `tz` op for timezone metadata
 - `format` op with ISO and custom pattern formatting
@@ -134,7 +134,7 @@ Files:
 
 Purpose:
 
-- end-to-end validation of the Frontier `system` module (7 test steps)
+- end-to-end validation of the Ultrascripts `system` module (7 test steps)
 - `info` op covering device, platform, browser, screen, locale, and memory sections
 - `power` op covering battery level, charging state, and time estimates
 - error paths: unknown op, unknown module
@@ -156,7 +156,7 @@ Files:
 
 Purpose:
 
-- end-to-end validation of the Frontier `network` module (5 test steps)
+- end-to-end validation of the Ultrascripts `network` module (5 test steps)
 - `status` op covering online boolean, quality classification, and connection detail
 - validates Navigator.connection API surface
 - error paths: unknown op, unknown module
@@ -178,7 +178,7 @@ Files:
 
 Purpose:
 
-- end-to-end validation of the Frontier `geolocation` module (5 test steps)
+- end-to-end validation of the Ultrascripts `geolocation` module (5 test steps)
 - `permission` op for checking geolocation permission state (granted/denied/prompt/unavailable)
 - `getCurrent` op for position retrieval (latitude, longitude, accuracy, timestamp)
 - high-accuracy variant of `getCurrent`
@@ -201,7 +201,7 @@ Files:
 
 Purpose:
 
-- end-to-end validation of the Frontier `weather` module (11 test steps)
+- end-to-end validation of the Ultrascripts `weather` module (11 test steps)
 - `current` op with coordinates, place name, and imperial units
 - `forecast` op with coordinates, place name, and imperial units
 - validates temperature, units, location, wind, humidity fields
@@ -226,7 +226,7 @@ Files:
 
 Purpose:
 
-- end-to-end validation of the Frontier `webfetch` module (11 test steps)
+- end-to-end validation of the Ultrascripts `webfetch` module (11 test steps)
 - `fetch` op with JSON response, HEAD method, and custom headers
 - `search` op for web search results
 - SSRF protection: localhost and private IP blocking (scheme_blocked/invalid_args)
@@ -242,7 +242,7 @@ Use this suite when changing:
 - rate limiting behavior
 - search provider integration
 
-Interactive Scripture coverage currently lives inside `tests/aid-scripts/scripture-module` rather than in a separate active Frontier doc file. That suite is still the place to verify widget event queue behavior, acknowledgement flow, optimistic interactions, and state round-tripping.
+Interactive Scripture coverage currently lives inside `tests/aid-scripts/scripture-module` rather than in a separate active Ultrascripts doc file. That suite is still the place to verify widget event queue behavior, acknowledgement flow, optimistic interactions, and state round-tripping.
 
 ## Example scripts as integration checks
 
@@ -251,7 +251,7 @@ The current `examples/aid-scripts/` directories are:
 - `aura-cards`
 - `chronos-v2`
 
-These are not formal regression suites, but they are still valuable integration checks because they exercise Frontier the way real scenario authors use it.
+These are not formal regression suites, but they are still valuable integration checks because they exercise Ultrascripts the way real scenario authors use it.
 
 ### `examples/aid-scripts/aura-cards`
 
@@ -290,7 +290,7 @@ Additional integration coverage through Aura Cards and Chronos V2 example script
 
 ## What this means in practice
 
-When changing Frontier today:
+When changing Ultrascripts today:
 
 - use the dedicated module suite for the module you are changing
 - use the Scripture module suite for widget/render/state work
@@ -300,12 +300,12 @@ When changing Frontier today:
 
 ## Current sign-off history
 
-The implementation sign-offs currently reflected across the Frontier docs are:
+The implementation sign-offs currently reflected across the Ultrascripts docs are:
 
 | Area | Date | Result |
 |---|---:|---|
 | Scripture | 2026-04-22 | Live AI Dungeon suite passed 10/10 |
-| Full Frontier | 2026-04-22 | Live suite passed, including reload-mid-pending |
+| Full Ultrascripts | 2026-04-22 | Live suite passed, including reload-mid-pending |
 | WebFetch | 2026-04-23 | Live suite passed, including denied-origin consent |
 | Clock | 2026-04-23 | Live suite passed |
 | Weather | 2026-04-23 | Live suite passed |
@@ -317,7 +317,7 @@ All modules now have dedicated regression suites in the repo to validate future 
 
 ## Cleanup policy
 
-- Keep active, high-value suites in the main Frontier doc set.
+- Keep active, high-value suites in the main Ultrascripts doc set.
 - Move completed one-off live sign-off artifacts to `archive/` when they stop being part of routine regression work.
 - Keep the current repo-facing truth in sync with what actually exists under `tests/aid-scripts/`.
 - Do not describe a suite as active or present unless the files are really still in the repo.
