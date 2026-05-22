@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frontier Naming Proposals</title>
+  <style>
+    /* BetterEcosystem Design Tokens */
+    :root {
+      --bd-bg-primary:    #0d0d0f;
+      --bd-bg-secondary:  #16161a;
+      --bd-bg-tertiary:   #1e1e24;
+      --bd-bg-elevated:   #252530;
+      --bd-text-primary:  #e8e8ec;
+      --bd-text-secondary:#a0a0a8;
+      --bd-text-muted:    #6b6b75;
+      --bd-accent-primary:#ff9500;
+      --bd-accent-light:  #ffb84d;
+      --bd-accent-glow:   rgba(255,149,0,0.12);
+      --bd-accent-muted:  rgba(255,149,0,0.15);
+      --bd-border-subtle: rgba(255,255,255,0.06);
+      --bd-border-default:rgba(255,255,255,0.10);
+      --bd-border-strong: rgba(255,255,255,0.15);
+      --bd-purple:        #a855f7;
+      --bd-purple-light:  #c084fc;
+      --bd-amber:         #fbbf24;
+      --bd-amber-light:   #fcd34d;
+      --bd-cyan:          #06b6d4;
+      --bd-cyan-light:    #22d3ee;
+      --bd-blue-light:    #60a5fa;
+      --bd-orange-light:  #fb923c;
+      --bd-slate:         #94a3b8;
+      --bd-radius-lg:     12px;
+      --bd-radius-md:     8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bd-bg-primary);
+      color: var(--bd-text-primary);
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      padding: 48px 24px;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 56px 24px;
+      margin-bottom: 48px;
+      background: var(--bd-bg-secondary);
+      border: 1px solid var(--bd-border-default);
+      border-radius: var(--bd-radius-lg);
+    }
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--bd-accent-primary), var(--bd-accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .hero .subtitle {
+      font-size: 17px;
+      color: var(--bd-text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Section headers */
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--bd-text-primary);
+      margin: 48px 0 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--bd-border-subtle);
+    }
+    p { margin-bottom: 16px; color: var(--bd-text-secondary); }
+
+    /* Candidate cards */
+    .candidates {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .candidate-card {
+      background: var(--bd-bg-secondary);
+      border: 1px solid var(--bd-border-default);
+      border-radius: var(--bd-radius-lg);
+      padding: 28px;
+      transition: border-color 0.2s;
+      text-decoration: none;
+      display: block;
+    }
+    .candidate-card:hover { border-color: var(--bd-border-strong); }
+
+    .candidate-card .card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .candidate-card .color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .candidate-card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0;
+    }
+    .candidate-card .focus {
+      font-size: 14px;
+      color: var(--bd-text-secondary);
+      margin: 0 0 14px;
+    }
+    .candidate-card .link {
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+    }
+
+    /* Per-candidate accent colors */
+    .card-ultrascripts .color-dot { background: var(--bd-purple-light); }
+    .card-ultrascripts h3 { color: var(--bd-purple-light); }
+    .card-ultrascripts .link { color: var(--bd-purple-light); }
+    .card-ultrascripts:hover { border-color: rgba(168,85,247,0.3); }
+
+    .card-dungeonwire .color-dot { background: var(--bd-amber-light); }
+    .card-dungeonwire h3 { color: var(--bd-amber-light); }
+    .card-dungeonwire .link { color: var(--bd-amber-light); }
+    .card-dungeonwire:hover { border-color: rgba(251,191,36,0.3); }
+
+    .card-conduit .color-dot { background: var(--bd-cyan-light); }
+    .card-conduit h3 { color: var(--bd-cyan-light); }
+    .card-conduit .link { color: var(--bd-cyan-light); }
+    .card-conduit:hover { border-color: rgba(6,182,212,0.3); }
+
+    /* Comparison table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--bd-bg-tertiary);
+      color: var(--bd-text-primary);
+      font-weight: 600;
+      border-bottom: 1px solid var(--bd-border-default);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--bd-border-subtle);
+      color: var(--bd-text-secondary);
+    }
+    td:first-child {
+      font-weight: 600;
+      color: var(--bd-text-primary);
+    }
+
+    /* Column accent highlights */
+    th:nth-child(2) { color: var(--bd-purple-light); }
+    th:nth-child(3) { color: var(--bd-amber-light); }
+    th:nth-child(4) { color: var(--bd-cyan-light); }
+
+    /* Context section */
+    .context-list {
+      list-style: none;
+      margin: 16px 0;
+    }
+    .context-list li {
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+      color: var(--bd-text-secondary);
+    }
+    .context-list li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--bd-accent-primary);
+      font-weight: 700;
+    }
+
+    /* Link back to frontier docs */
+    a.context-link {
+      color: var(--bd-accent-primary);
+      text-decoration: none;
+    }
+    a.context-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="hero">
+      <h1>Frontier Naming Proposals</h1>
+      <p class="subtitle">AI Dungeon&rsquo;s most recent update is also called &ldquo;Frontier,&rdquo; so BetterDungeon&rsquo;s two-way communication system needs a new name. These design docs explore three candidates, each with a distinct marketing focus.</p>
+    </div>
+
+    <!-- Candidate Cards -->
+    <h2>Candidates</h2>
+    <div class="candidates">
+      <a href="ultrascripts.html" class="candidate-card card-ultrascripts">
+        <div class="card-header">
+          <span class="color-dot"></span>
+          <h3>Ultrascripts</h3>
+        </div>
+        <p class="focus">Scriptwriter empowerment &mdash; &ldquo;your scripts can do more&rdquo;</p>
+        <span class="link">Read design doc &rarr;</span>
+      </a>
+      <a href="dungeonwire.html" class="candidate-card card-dungeonwire">
+        <div class="card-header">
+          <span class="color-dot"></span>
+          <h3>Dungeonwire</h3>
+        </div>
+        <p class="focus">The live connection &mdash; &ldquo;a direct line between your story and the world&rdquo;</p>
+        <span class="link">Read design doc &rarr;</span>
+      </a>
+      <a href="conduit.html" class="candidate-card card-conduit">
+        <div class="card-header">
+          <span class="color-dot"></span>
+          <h3>Conduit</h3>
+        </div>
+        <p class="focus">Seamless infrastructure &mdash; &ldquo;the channel is open&rdquo;</p>
+        <span class="link">Read design doc &rarr;</span>
+      </a>
+    </div>
+
+    <!-- Comparison Table -->
+    <h2>Quick Comparison</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>Ultrascripts</th>
+          <th>Dungeonwire</th>
+          <th>Conduit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Tone</td><td>Bold, energetic</td><td>Immersive, community-rooted</td><td>Clean, professional</td></tr>
+        <tr><td>Audience lean</td><td>Scenario creators</td><td>AI Dungeon community</td><td>Developers / platform thinkers</td></tr>
+        <tr><td>Card prefix length</td><td>11 chars</td><td>11 chars</td><td>7 chars</td></tr>
+        <tr><td>Platform-agnostic?</td><td>Mostly (scripts are AID-specific)</td><td>No (Dungeon is in the name)</td><td>Yes</td></tr>
+        <tr><td>Searchability</td><td>High (unique compound)</td><td>High (unique compound)</td><td>Medium (common English word)</td></tr>
+        <tr><td>Personality</td><td>High</td><td>High</td><td>Moderate</td></tr>
+        <tr><td>Extensibility</td><td>Good within scripting</td><td>Good within AI Dungeon</td><td>Good across any platform</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Context -->
+    <h2>Context</h2>
+    <p>The system being renamed is the cards-based two-way runtime described in the <a href="../README.md" class="context-link">Frontier planning docs</a>. It includes:</p>
+    <ul class="context-list">
+      <li>Transport layer (WebSocket interception, mutation replay, write queue)</li>
+      <li>Core runtime (adventure tracking, state dispatch, heartbeat, module lifecycle)</li>
+      <li>9 first-party modules (Scripture, WebFetch, Clock, SDK, Geolocation, Weather, Network, System, AI)</li>
+    </ul>
+    <p>Each design doc explains how the candidate name maps to these technical components and what card title migration would look like.</p>
+
+  </div>
+</body>
+</html>
