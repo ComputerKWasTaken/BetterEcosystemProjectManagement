@@ -148,21 +148,16 @@ The core runtime, all modules, and the regression test suite are shipped. What r
 - Story card types normalized to capitalized `Ultrascripts` across all production code.
 - Every shipped module now has a dependable regression surface.
 
-### Phase 11 — Documentation Cleanup (active)
+**Phase 11 — Documentation Cleanup.**
+
+- Vetted all active internal Ultrascripts documentation files under `ultrascripts/` to ensure perfect alignment with production reality.
+- Removed stale speculative planning language, deprecated profiles, and obsolete phase references.
+- Replaced the speculative SDK roadmap with a definitive production API specification.
+- Updated project-wide management hubs to reflect complete alignment.
+
+### Phase 12 — Showcase Scripts (active)
 
 In progress:
-
-- Vetting internal Ultrascripts docs file by file.
-- Removing stale planning residue and outdated phase references.
-- Aligning roadmap language with what is actually shipped.
-
-Goal:
-
-- Every active file under `ultrascripts/` reflects the shipped Ultrascripts system rather than the earlier build process.
-
-### Phase 12 — Showcase Scripts
-
-Still needed:
 
 - Produce or polish example scripts for the shipped modules.
 - Keep examples useful as both demos and learning material.
@@ -229,6 +224,7 @@ If someone needs the real implementation, these are the most useful places to st
 - [00-overview.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/00-overview.md)
 - [01-architecture.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/01-architecture.md)
 - [02-modules.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/02-modules.md)
+- [05-betterdungeon-sdk-spec.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/05-betterdungeon-sdk-spec.md)
 - [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/core.js)
 - [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/module-registry.js)
 - [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ops-dispatcher.js)

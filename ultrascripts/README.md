@@ -11,7 +11,7 @@
 | 02 | [Modules](./02-modules.md) | Live module contract, shipped modules, and how to build new ones |
 | 03 | [Implementation Status](./03-implementation-status.md) | What is shipped, what remains, and current roadmap direction |
 | 04 | [Ultrascripts Test Suites](./04-test-suites.md) | Active regression surfaces and per-module coverage |
-| 05 | [BetterDungeon SDK Roadmap](./05-betterdungeon-sdk-roadmap.md) | SDK direction, separation rules, and follow-through work |
+| 05 | [BetterDungeon SDK Spec](./05-betterdungeon-sdk-spec.md) | Complete SDK specification, ops schemas, and scripting patterns |
 | 06 | [Documentation Plan](./06-documentation-plan.md) | Internal/public documentation alignment plan |
 
 ### Archived
@@ -28,10 +28,9 @@ The core Ultrascripts runtime is shipped. All 9 first-party modules are implemen
 
 What remains is:
 
-- documentation cleanup (Phase 11 — in progress)
-- showcase scripts
-- multiplatform/mobile follow-through
-- public BetterRepository guide work
+- showcase scripts (Phase 12 — active)
+- multiplatform/mobile follow-through (Phase 13)
+- public BetterRepository guide work (Phase 14)
 
 ## Doc rules
 

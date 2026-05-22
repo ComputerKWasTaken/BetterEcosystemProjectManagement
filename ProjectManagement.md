@@ -4,19 +4,19 @@
 
 ## Current State
 
-The active product track is **BetterDungeon V2**, centered on Ultrascripts. Ultrascripts Phases 1-10 are complete, including Scripture, Full Ultrascripts, WebFetch, Clock, Geolocation, Weather, Network, System, popup integration, heartbeat dedupe, Provider AI, BetterDungeon SDK, module polish, and per-module regression test suites.
+The active product track is **BetterDungeon V2**, centered on Ultrascripts. All core Ultrascripts runtime features, the 9 first-party modules, their per-module regression test suites, and internal technical documentation are fully completed and verified (Phases 1-11).
 
-The current workstream is **Phase 11: Documentation Cleanup** — refreshing Ultrascripts planning docs to reflect production status, removing stale planning language, and updating the roadmap.
+The current active workstream is **Phase 12: Showcase Scripts** — producing and polishing high-quality demo scripts to show scenario authors the power of our shipped first-party modules (such as the Aura Cards AI demo and Chronos V2 dashboard).
 
 ## Projects
 
 - **[BetterDungeon](./BetterDungeon.md)** - AI Dungeon browser extension. Active project.
-- **[BetterRepository](./BetterRepository.md)** - Public guide/resource site. Next major work area for Ultrascripts V2 docs.
+- **[BetterRepository](./BetterRepository.md)** - Public guide/resource site. Active next focus for public developer guides.
 - **[BetterVoyage](./BetterVoyage.md)** - Future Voyage extension idea. Parked until Voyage is out of Early Access.
 
 ## Planning Areas
 
-- **[Ultrascripts planning](./ultrascripts/README.md)** - Canonical Ultrascripts implementation plan, protocol notes, module roadmap, and current test suite.
+- **[Ultrascripts planning](./ultrascripts/README.md)** - Canonical Ultrascripts technical specifications, architecture docs, module definitions, and regression suites.
 - **[AI Dungeon reference docs](./docs/index.md)** - RAG-oriented AI Dungeon platform, scripting, DOM, and GraphQL reference.
 - **[Design notes](./design/README.md)** - Shared product/design references.
 
