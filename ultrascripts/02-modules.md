@@ -1,15 +1,15 @@
 # 02 - Modules
 
-> This document describes how Frontier modules work in the current BetterDungeon implementation, what the live module contract looks like, and how to build a new module that fits the system cleanly.
+> This document describes how Ultrascripts modules work in the current BetterDungeon implementation, what the live module contract looks like, and how to build a new module that fits the system cleanly.
 
 ## What a module is
 
-A Frontier module is a BetterDungeon-side capability that plugs into the shared Frontier runtime.
+A Ultrascripts module is a BetterDungeon-side capability that plugs into the shared Ultrascripts runtime.
 
 A module can do one or both of these things:
 
-- read Frontier state cards such as `frontier:state:scripture`
-- expose callable ops that scripts can reach through the `frontier:out` / `frontier:in:<module>` request-response path
+- read Ultrascripts state cards such as `ultrascripts:state:scripture`
+- expose callable ops that scripts can reach through the `ultrascripts:out` / `ultrascripts:in:<module>` request-response path
 
 That is the core model. A module does not need a special profile, mode, or exception case.
 
@@ -20,7 +20,7 @@ In practice:
 
 ## Current shipped modules
 
-Frontier currently ships these first-party modules:
+Ultrascripts currently ships these first-party modules:
 
 - `scripture`
 - `webfetch`
@@ -45,18 +45,18 @@ Current ops exposed by those modules:
 
 The `ai` module also keeps the alias `providerAI` for compatibility.
 
-The `sdk` module is intentionally narrow. Frontier availability itself belongs to `frontier:heartbeat`, so the SDK should only expose BetterDungeon-facing metadata that complements heartbeat instead of mirroring it. The current useful direction is curated BetterDungeon configuration that affects script behavior without exposing secrets.
+The `sdk` module is intentionally narrow. Ultrascripts availability itself belongs to `ultrascripts:heartbeat`, so the SDK should only expose BetterDungeon-facing metadata that complements heartbeat instead of mirroring it. The current useful direction is curated BetterDungeon configuration that affects script behavior without exposing secrets.
 
-## How modules fit into Frontier
+## How modules fit into Ultrascripts
 
 The live flow is:
 
-1. A module registers with `window.Frontier.registry`.
+1. A module registers with `window.Ultrascripts.registry`.
 2. The registry decides whether it should be enabled.
 3. If enabled, the registry calls `mount(ctx)`.
 4. Core dispatches matching state-card updates to `onStateChange(...)`.
 5. Ops requests are routed to declared `ops` handlers by `ops-dispatcher.js`.
-6. Core advertises the mounted module in `frontier:heartbeat`.
+6. Core advertises the mounted module in `ultrascripts:heartbeat`.
 
 The important split is:
 
@@ -66,10 +66,10 @@ The important split is:
 
 ## The live module contract
 
-The current BetterDungeon-side contract is defined by how [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/module-registry.js) and [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/core.js) interact with modules.
+The current BetterDungeon-side contract is defined by how [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/module-registry.js) and [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/core.js) interact with modules.
 
 ```ts
-interface FrontierModule {
+interface UltrascriptsModule {
   id: string;
   version?: string;
   label?: string;
@@ -81,18 +81,18 @@ interface FrontierModule {
   tracksLiveCount?: boolean;
 
   ops?: Record<string, {
-    handler: (args: unknown, ctx: FrontierContext) => unknown | Promise<unknown>;
+    handler: (args: unknown, ctx: UltrascriptsContext) => unknown | Promise<unknown>;
     idempotent?: 'safe' | 'unsafe';
     timeoutMs?: number;
   }>;
 
-  mount(ctx: FrontierContext): void;
+  mount(ctx: UltrascriptsContext): void;
   unmount?(): void;
 
-  onEnable?(ctx: FrontierContext): void | Promise<void>;
-  onDisable?(ctx: FrontierContext): void | Promise<void>;
-  onStateChange?(name: string, parsed: unknown, ctx: FrontierContext): void;
-  onAdventureChange?(shortId: string | null, ctx: FrontierContext): void;
+  onEnable?(ctx: UltrascriptsContext): void | Promise<void>;
+  onDisable?(ctx: UltrascriptsContext): void | Promise<void>;
+  onStateChange?(name: string, parsed: unknown, ctx: UltrascriptsContext): void;
+  onAdventureChange?(shortId: string | null, ctx: UltrascriptsContext): void;
 }
 ```
 
@@ -100,7 +100,7 @@ Notes from the real implementation:
 
 - `mount(ctx)` is required.
 - `unmount()` is optional, but most real modules should have one.
-- `stateNames` is how a module subscribes to `frontier:state:<name>` cards.
+- `stateNames` is how a module subscribes to `ultrascripts:state:<name>` cards.
 - `tracksLiveCount` tells Core to re-run `onStateChange(...)` when live count changes.
 - `ops` is an object of named descriptors, not just raw functions.
 - Built-in modules default to enabled unless overridden.
@@ -111,7 +111,7 @@ Notes from the real implementation:
 Modules receive a scoped context from Core. The current live context includes:
 
 ```ts
-interface FrontierContext {
+interface UltrascriptsContext {
   id: string;
 
   on(eventName: string, handler: (detail: unknown) => void): () => void;
@@ -143,14 +143,14 @@ interface FrontierContext {
 
 What that means in practice:
 
-- use `ctx.writeCard(...)` for any Frontier-owned card writes
+- use `ctx.writeCard(...)` for any Ultrascripts-owned card writes
 - use `ctx.storage` for small persistent module preferences
 - use `ctx.log(...)` instead of ad hoc console noise
 - use `ctx.getLiveCount()` when your state is keyed by turn history rather than only by card content
 
 ## State modules
 
-A state module reads one or more `frontier:state:<name>` cards and reacts when those cards change.
+A state module reads one or more `ultrascripts:state:<name>` cards and reacts when those cards change.
 
 To build one:
 
@@ -205,7 +205,7 @@ someOp: {
 
 ### How ops are executed
 
-When a script writes a request into `frontier:out`:
+When a script writes a request into `ultrascripts:out`:
 
 1. `ops-dispatcher.js` parses the envelope.
 2. It finds the target module and op.
@@ -249,12 +249,12 @@ What each is best for:
 
 ## Registration
 
-In the current codebase, first-party modules register themselves from their own module files if the Frontier registry is already present.
+In the current codebase, first-party modules register themselves from their own module files if the Ultrascripts registry is already present.
 
 The registration call is simply:
 
 ```js
-window.Frontier.registry.register(MyModule);
+window.Ultrascripts.registry.register(MyModule);
 ```
 
 The registry then:
@@ -302,11 +302,11 @@ Examples:
 Minimal state-only example:
 
 ```js
-const FrontierExampleStateModule = {
+const UltrascriptsExampleStateModule = {
   id: 'exampleState',
   version: '1.0.0',
   label: 'Example State',
-  description: 'Reads and reacts to a Frontier state card.',
+  description: 'Reads and reacts to a Ultrascripts state card.',
   stateNames: ['exampleState'],
 
   mount(ctx) {
@@ -335,11 +335,11 @@ async function pingOp(args, ctx) {
   };
 }
 
-const FrontierExampleOpsModule = {
+const UltrascriptsExampleOpsModule = {
   id: 'exampleOps',
   version: '1.0.0',
   label: 'Example Ops',
-  description: 'Exposes a simple Frontier op.',
+  description: 'Exposes a simple Ultrascripts op.',
 
   ops: {
     ping: {
@@ -364,10 +364,10 @@ const FrontierExampleOpsModule = {
 At the end of the module file:
 
 ```js
-window.Frontier = window.Frontier || {};
+window.Ultrascripts = window.Ultrascripts || {};
 
-if (window.Frontier?.registry) {
-  window.Frontier.registry.register(FrontierExampleOpsModule);
+if (window.Ultrascripts?.registry) {
+  window.Ultrascripts.registry.register(UltrascriptsExampleOpsModule);
 }
 ```
 
@@ -387,7 +387,7 @@ Test according to module type:
 
 ### Keep responsibilities tight
 
-Good Frontier modules are narrow.
+Good Ultrascripts modules are narrow.
 
 - Scripture renders widget state.
 - WebFetch does controlled network access.
@@ -398,7 +398,7 @@ That is the right scale.
 
 ### Prefer explicit validation
 
-Frontier modules sit on a boundary:
+Ultrascripts modules sit on a boundary:
 
 - scripts can write malformed state
 - scripts can send malformed op args
@@ -440,7 +440,7 @@ Third-party-style dotted ids are supported by the registry's enablement rules, b
 ## What not to build into a module by default
 
 - do not invent a separate profile or capability tier
-- do not bypass `ctx.writeCard(...)` for Frontier-owned card writes
+- do not bypass `ctx.writeCard(...)` for Ultrascripts-owned card writes
 - do not make replay-sensitive ops look safe if they are not
 - do not tie history-sensitive rendering only to action id when live count is the real key
 - do not assume older planning docs reflect current loader or lifecycle behavior
@@ -449,12 +449,12 @@ Third-party-style dotted ids are supported by the registry's enablement rules, b
 
 When adding or revising a module, these are the best current references:
 
-- [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/module-registry.js)
-- [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/core.js)
-- [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/frontier/ops-dispatcher.js)
+- [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/module-registry.js)
+- [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/core.js)
+- [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ops-dispatcher.js)
 - [modules/scripture/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/scripture/module.js)
 - [modules/webfetch/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/webfetch/module.js)
 - [modules/sdk/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/sdk/module.js)
 - [modules/ai/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/ai/module.js)
 
-Those reflect the real Frontier module system better than the older planning-era script snippets.
+Those reflect the real Ultrascripts module system better than the older planning-era script snippets.

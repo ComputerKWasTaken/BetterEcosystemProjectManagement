@@ -4,15 +4,15 @@
 
 ## Current Focus
 
-BetterRepository is the next major documentation work area after Frontier's internal docs are cleaned up (Phase 11). The public guide rewrite is Phase 14 in the current roadmap.
+BetterRepository is the next major documentation work area after Ultrascripts's internal docs are cleaned up (Phase 11). The public guide rewrite is Phase 14 in the current roadmap.
 
 ## Planned Guide Work
 
 Create or update public-facing guides for:
 
-- Frontier overview and availability detection.
-- Frontier state publishing and live-count history.
-- Frontier ops calls, polling, acknowledgements, errors, and reload behavior.
+- Ultrascripts overview and availability detection.
+- Ultrascripts state publishing and live-count history.
+- Ultrascripts ops calls, polling, acknowledgements, errors, and reload behavior.
 - Scripture widgets.
 - WebFetch consent, safe fetch, search, rate limits, and blocked targets.
 - Clock, Geolocation, Weather, Network, and System modules.
@@ -23,7 +23,7 @@ Create or update public-facing guides for:
 
 ### High Priority
 
-- Replace legacy BetterScripts guide material with Frontier.
+- Replace legacy BetterScripts guide material with Ultrascripts.
 - Remove Zero-width / TagCipher / Context Modifier guidance where it only existed for old BetterScripts.
 - Add module reference pages with copyable AI Dungeon Library snippets.
 - Fix known navigation issues where buttons link to wrong pages.
@@ -44,7 +44,7 @@ Create or update public-facing guides for:
 
 ## Canonical Inputs
 
-- [Frontier planning index](./frontier/README.md)
-- [Implementation status](./frontier/03-implementation-status.md)
-- [Test suites](./frontier/04-test-suites.md)
-- [Provider AI phase plan](./frontier/archive/17-provider-ai-phase-plan.md)
+- [Ultrascripts planning index](./ultrascripts/README.md)
+- [Implementation status](./ultrascripts/03-implementation-status.md)
+- [Test suites](./ultrascripts/04-test-suites.md)
+- [Provider AI phase plan](./ultrascripts/archive/17-provider-ai-phase-plan.md)
