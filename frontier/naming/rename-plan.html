@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frontier → Ultrascripts — Rename Plan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --us-bg: #09090b;
+      --us-bg-raised: #0f0f12;
+      --us-bg-card: #141418;
+      --us-bg-elevated: #1a1a20;
+      --us-bg-surface: #212128;
+      --us-text: #eae8e0;
+      --us-text-secondary: #a09a8a;
+      --us-text-muted: #605c50;
+      --us-gold: #c8a444;
+      --us-gold-light: #dcc070;
+      --us-gold-bright: #f0d478;
+      --us-glow: rgba(200,164,68,0.08);
+      --us-border: rgba(200,164,68,0.08);
+      --us-border-visible: rgba(200,164,68,0.16);
+      --us-border-accent: rgba(200,164,68,0.3);
+      --us-green: #5c9a5c;
+      --us-red: #a05050;
+      --us-blue: #5080b0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--us-bg);
+      color: var(--us-text);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      font-size: 15.5px;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page { max-width: 880px; margin: 0 auto; padding: 0 32px; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 100px 24px 72px;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 30%; left: 50%;
+      width: 600px; height: 400px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse, rgba(200,164,68,0.05), transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--us-gold);
+      opacity: 0.6;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--us-text);
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
+    .hero h1 span { color: var(--us-gold-bright); }
+    .hero .sub {
+      font-size: 17px;
+      color: var(--us-text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    .hero-line {
+      width: 48px; height: 1px;
+      background: var(--us-gold);
+      margin: 40px auto 0;
+      opacity: 0.3;
+    }
+
+    /* Sections */
+    .section {
+      padding: 64px 0;
+      border-top: 1px solid var(--us-border);
+    }
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--us-gold);
+      margin-bottom: 20px;
+      opacity: 0.6;
+    }
+    h2 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--us-text);
+      margin-bottom: 18px;
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--us-text);
+      margin: 32px 0 12px;
+    }
+    p { margin-bottom: 16px; color: var(--us-text-secondary); }
+    strong { color: var(--us-text); font-weight: 600; }
+    em { color: var(--us-gold-light); font-style: italic; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+    }
+    th {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--us-gold);
+      border-bottom: 1px solid var(--us-border-accent);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--us-border);
+      color: var(--us-text-secondary);
+      font-size: 14px;
+      vertical-align: top;
+    }
+    td:first-child { color: var(--us-text); font-weight: 500; }
+    tr:hover td { background: var(--us-glow); }
+    code {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      background: var(--us-bg-surface);
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: var(--us-gold-light);
+    }
+
+    /* Phase cards */
+    .phase {
+      background: var(--us-bg-card);
+      border: 1px solid var(--us-border-visible);
+      border-radius: 8px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 24px;
+      background: var(--us-bg-elevated);
+      border-bottom: 1px solid var(--us-border);
+    }
+    .phase-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--us-gold);
+      letter-spacing: 1px;
+    }
+    .phase-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--us-text);
+    }
+    .phase-risk {
+      margin-left: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+    .phase-risk.low { color: var(--us-green); background: rgba(92,154,92,0.1); border: 1px solid rgba(92,154,92,0.2); }
+    .phase-risk.med { color: var(--us-gold); background: rgba(200,164,68,0.1); border: 1px solid rgba(200,164,68,0.2); }
+    .phase-risk.high { color: var(--us-red); background: rgba(160,80,80,0.1); border: 1px solid rgba(160,80,80,0.2); }
+    .phase-body { padding: 20px 24px; }
+    .phase-body p { font-size: 14px; }
+
+    /* Checklist */
+    .checklist {
+      list-style: none;
+      margin: 16px 0;
+    }
+    .checklist li {
+      padding: 8px 0 8px 28px;
+      position: relative;
+      color: var(--us-text-secondary);
+      font-size: 14px;
+      border-bottom: 1px solid var(--us-border);
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist li::before {
+      content: '';
+      position: absolute;
+      left: 4px; top: 14px;
+      width: 12px; height: 12px;
+      border: 1.5px solid var(--us-border-accent);
+      border-radius: 3px;
+    }
+    .checklist li strong { color: var(--us-text); }
+    .checklist li code { font-size: 12px; }
+
+    /* File list */
+    .file-list {
+      list-style: none;
+      margin: 16px 0;
+    }
+    .file-list li {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--us-border);
+      font-size: 14px;
+    }
+    .file-list li:last-child { border-bottom: none; }
+    .file-path {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--us-gold-light);
+      flex-shrink: 0;
+    }
+    .file-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--us-text-muted);
+      white-space: nowrap;
+    }
+
+    /* Callout */
+    .callout {
+      background: var(--us-bg-raised);
+      border-left: 2px solid var(--us-gold);
+      padding: 20px 24px;
+      margin: 24px 0;
+      border-radius: 0 6px 6px 0;
+    }
+    .callout p { font-size: 14px; margin: 0; }
+    .callout strong { color: var(--us-gold-light); }
+
+    /* Migration table (before → after) */
+    .migration-pair {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+      align-items: center;
+      margin: 20px 0;
+    }
+    .migration-col {
+      background: var(--us-bg-card);
+      border: 1px solid var(--us-border-visible);
+      padding: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+    }
+    .migration-col:first-child {
+      border-radius: 8px 0 0 8px;
+      color: var(--us-text-muted);
+      border-right: none;
+    }
+    .migration-col:last-child {
+      border-radius: 0 8px 8px 0;
+      color: var(--us-gold-light);
+      border-left: none;
+    }
+    .migration-arrow {
+      background: var(--us-bg-card);
+      border-top: 1px solid var(--us-border-visible);
+      border-bottom: 1px solid var(--us-border-visible);
+      padding: 20px 10px;
+      color: var(--us-gold);
+      font-size: 16px;
+      text-align: center;
+    }
+    .migration-col .mg-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .migration-col:first-child .mg-label { color: var(--us-text-muted); }
+    .migration-col:last-child .mg-label { color: var(--us-gold); }
+    .migration-col .mg-item { padding: 4px 0; }
+
+    /* Summary */
+    .summary-card {
+      background: var(--us-bg-raised);
+      border: 1px solid var(--us-border-accent);
+      border-radius: 10px;
+      padding: 40px;
+      margin: 32px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 10%, var(--us-gold) 50%, transparent 90%);
+      opacity: 0.3;
+    }
+    .summary-card p { font-size: 16px; line-height: 1.9; color: var(--us-text); margin-bottom: 12px; }
+    .summary-card p:last-child { margin-bottom: 0; }
+
+    /* Back link */
+    .back-link {
+      display: inline-block;
+      padding: 28px 0;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--us-text-muted);
+      text-decoration: none;
+    }
+    .back-link:hover { color: var(--us-gold); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <a href="ultrascripts.html" class="back-link">&larr; Ultrascripts design doc</a>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">Migration Plan</div>
+      <h1>Frontier &rarr; <span>Ultrascripts</span></h1>
+      <p class="sub">Comprehensive rename plan across the BetterDungeon extension, project management docs, public-facing guides, and test suites.</p>
+      <div class="hero-line"></div>
+    </div>
+
+    <!-- SCOPE -->
+    <div class="section">
+      <div class="section-label">01 &mdash; Scope</div>
+      <h2>What gets renamed</h2>
+      <p>The rename touches every reference to &ldquo;Frontier&rdquo; as BetterDungeon&rsquo;s two-way communication system. This includes documentation, source code, story card titles, UI strings, test suites, and public-facing guides. It does <strong>not</strong> touch AI Dungeon&rsquo;s own &ldquo;Frontier&rdquo; update &mdash; that is their name and stays as-is.</p>
+
+      <h3>Repositories affected</h3>
+      <table>
+        <thead><tr><th>Repository</th><th>Scope</th><th>Reference count</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>BetterEcosystemProjectManagement</td>
+            <td>Documentation, planning docs, archive test suites, naming docs</td>
+            <td>~390 references across 15 files</td>
+          </tr>
+          <tr>
+            <td>BetterDungeon (extension)</td>
+            <td>Source code, UI, feature files, service layer, popup, CSS</td>
+            <td>Pending audit (code references <code>services/frontier/</code>, <code>frontier_feature.js</code>, etc. per docs)</td>
+          </tr>
+          <tr>
+            <td>BetterDungeon-Mobile</td>
+            <td>Android wrapper &mdash; may reference Frontier if mobile Frontier support has begun</td>
+            <td>Pending audit</td>
+          </tr>
+          <tr>
+            <td>BetterRepository</td>
+            <td>Public-facing guides and Vue components (<code>FrontierGuide.vue</code>)</td>
+            <td>~9 references in project management; full audit needed in source</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CARD TITLE MIGRATION -->
+    <div class="section">
+      <div class="section-label">02 &mdash; Card titles</div>
+      <h2>Story card title migration</h2>
+      <p>The most critical rename surface. Story card titles are the protocol &mdash; they are how scripts and the extension communicate. Every script that uses Frontier cards will need to update these references.</p>
+
+      <div class="migration-pair">
+        <div class="migration-col">
+          <div class="mg-label">Before</div>
+          <div class="mg-item">frontier:heartbeat</div>
+          <div class="mg-item">frontier:state:&lt;name&gt;</div>
+          <div class="mg-item">frontier:out</div>
+          <div class="mg-item">frontier:in:&lt;module&gt;</div>
+          <div class="mg-item">frontier:test:&lt;module&gt;</div>
+        </div>
+        <div class="migration-arrow">&rarr;</div>
+        <div class="migration-col">
+          <div class="mg-label">After</div>
+          <div class="mg-item">ultrascripts:heartbeat</div>
+          <div class="mg-item">ultrascripts:state:&lt;name&gt;</div>
+          <div class="mg-item">ultrascripts:out</div>
+          <div class="mg-item">ultrascripts:in:&lt;module&gt;</div>
+          <div class="mg-item">ultrascripts:test:&lt;module&gt;</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <p><strong>Breaking change.</strong> Existing scripts that reference <code>frontier:*</code> card titles will stop working after the rename unless they are updated. Consider shipping a compatibility period where both prefixes are recognized, or provide a migration script/guide for scenario authors.</p>
+      </div>
+
+      <h3>Additional renames</h3>
+      <table>
+        <thead><tr><th>Before</th><th>After</th><th>Context</th></tr></thead>
+        <tbody>
+          <tr><td>Story card type <code>Frontier</code></td><td>Story card type <code>Ultrascripts</code></td><td>The card type string used when creating cards</td></tr>
+          <tr><td><code>Frontier Test</code> card type</td><td><code>Ultrascripts Test</code> card type</td><td>Used in test suite card writes</td></tr>
+          <tr><td>Heartbeat payload key <code>.frontier</code></td><td>Heartbeat payload key <code>.ultrascripts</code></td><td>The JSON key inside the heartbeat card body</td></tr>
+          <tr><td><code>frontierProtocol</code></td><td><code>ultrascriptsProtocol</code></td><td>Protocol version field in SDK responses</td></tr>
+          <tr><td><code>frontierClient</code></td><td><code>ultrascriptsClient</code></td><td>Client identifier in SDK responses</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PHASE PLAN -->
+    <div class="section">
+      <div class="section-label">03 &mdash; Phases</div>
+      <h2>Phased execution plan</h2>
+      <p>The rename should be executed in phases to minimize risk and allow for testing between each step. Each phase is independently deployable.</p>
+
+      <!-- Phase 1 -->
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">Phase 1</span>
+          <span class="phase-title">BetterDungeon extension source code</span>
+          <span class="phase-risk high">High risk</span>
+        </div>
+        <div class="phase-body">
+          <p>The core rename. This is where the runtime lives and where card titles are generated.</p>
+          <ul class="checklist">
+            <li>Rename <code>services/frontier/</code> directory &rarr; <code>services/ultrascripts/</code></li>
+            <li>Rename all source files: <code>core.js</code>, <code>module-registry.js</code>, <code>ops-dispatcher.js</code>, <code>ws-stream.js</code>, <code>ws-interceptor.js</code>, <code>envelope.js</code></li>
+            <li>Rename <code>features/frontier_feature.js</code> &rarr; <code>features/ultrascripts_feature.js</code></li>
+            <li>Update all <code>frontier:</code> string literals to <code>ultrascripts:</code> in card title generation</li>
+            <li>Update <code>window.Frontier</code> global &rarr; <code>window.Ultrascripts</code></li>
+            <li>Rename <code>FrontierModule</code> interface &rarr; <code>UltrascriptsModule</code></li>
+            <li>Rename <code>FrontierContext</code> interface &rarr; <code>UltrascriptsContext</code></li>
+            <li>Update heartbeat payload: <code>.frontier</code> key &rarr; <code>.ultrascripts</code></li>
+            <li>Update <code>frontierCall()</code> helper &rarr; <code>ultrascriptsCall()</code></li>
+            <li>Update <code>frontierHeartbeat()</code> &rarr; <code>ultrascriptsHeartbeat()</code></li>
+            <li>Update all import paths referencing <code>services/frontier/</code></li>
+            <li>Update <code>manifest.json</code> if it references frontier files</li>
+            <li>Update popup UI: &ldquo;Frontier&rdquo; tab/section &rarr; &ldquo;Ultrascripts&rdquo;</li>
+            <li>Update popup CSS classes if namespaced to frontier</li>
+          </ul>
+          <div class="callout">
+            <p><strong>Test gate:</strong> After this phase, run the full extension locally and verify heartbeat writes <code>ultrascripts:heartbeat</code>, modules register correctly, and request/response cycle works end-to-end.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">Phase 2</span>
+          <span class="phase-title">Test suites</span>
+          <span class="phase-risk med">Medium risk</span>
+        </div>
+        <div class="phase-body">
+          <p>Update all AI Dungeon test scripts to reference the new card titles and variable names.</p>
+          <ul class="checklist">
+            <li>Update Provider AI test suite: all <code>frontier:*</code> card references &rarr; <code>ultrascripts:*</code></li>
+            <li>Update <code>state.frontierProviderAiSuite</code> &rarr; <code>state.ultrascriptsProviderAiSuite</code></li>
+            <li>Update <code>frontierProviderAiStep()</code> &rarr; <code>ultrascriptsProviderAiStep()</code></li>
+            <li>Update SDK test suite card references</li>
+            <li>Update Clock, System, Network, Geolocation, Weather, WebFetch test suites</li>
+            <li>Update Scripture module test suite</li>
+            <li>Update any <code>frontierCall()</code> references in test code</li>
+            <li>Verify all 9 module regression suites pass with new naming</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">Phase 3</span>
+          <span class="phase-title">Project management documentation</span>
+          <span class="phase-risk low">Low risk</span>
+        </div>
+        <div class="phase-body">
+          <p>Rename all Frontier references in the BetterEcosystemProjectManagement repo. ~390 references across 15 files.</p>
+          <ul class="checklist">
+            <li>Rename <code>frontier/</code> directory &rarr; <code>ultrascripts/</code></li>
+            <li>Update <code>frontier/README.md</code> &mdash; 8 references</li>
+            <li>Update <code>frontier/00-overview.md</code> &mdash; 43 references</li>
+            <li>Update <code>frontier/01-architecture.md</code> &mdash; 56 references</li>
+            <li>Update <code>frontier/02-modules.md</code> &mdash; 38 references</li>
+            <li>Update <code>frontier/03-implementation-status.md</code> &mdash; 37 references</li>
+            <li>Update <code>frontier/04-test-suites.md</code> &mdash; 22 references</li>
+            <li>Update <code>frontier/05-betterdungeon-sdk-roadmap.md</code> &mdash; 43 references</li>
+            <li>Update <code>frontier/06-documentation-plan.md</code> &mdash; 19 references</li>
+            <li>Update archive files (Provider AI test suite doc, phase plan) &mdash; 45 references</li>
+            <li>Update <code>BetterDungeon.md</code> &mdash; 14 references</li>
+            <li>Update <code>BetterRepository.md</code> &mdash; 9 references</li>
+            <li>Update <code>ProjectManagement.md</code> &mdash; 4 references</li>
+            <li>Update <code>BetterVoyage.md</code> &mdash; 1 reference</li>
+            <li>Update naming docs (<code>README.html</code>, <code>ultrascripts.html</code>) to reflect finalized name</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">Phase 4</span>
+          <span class="phase-title">BetterRepository public guides</span>
+          <span class="phase-risk low">Low risk</span>
+        </div>
+        <div class="phase-body">
+          <p>Update public-facing documentation on the BetterRepository website.</p>
+          <ul class="checklist">
+            <li>Rename <code>FrontierGuide.vue</code> &rarr; <code>UltrascriptsGuide.vue</code></li>
+            <li>Update all public guide content referencing Frontier</li>
+            <li>Update navigation, routing, and any URL slugs</li>
+            <li>Update SEO metadata and page titles</li>
+            <li>Review and update any community-facing messaging</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Phase 5 -->
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">Phase 5</span>
+          <span class="phase-title">BetterDungeon Mobile (if applicable)</span>
+          <span class="phase-risk low">Low risk</span>
+        </div>
+        <div class="phase-body">
+          <p>If mobile Frontier support has been started, update references in the Android wrapper.</p>
+          <ul class="checklist">
+            <li>Audit BetterDungeon-Mobile for Frontier references</li>
+            <li>Update any injected JS/CSS that references Frontier card titles</li>
+            <li>Update any Kotlin-side bridge code referencing Frontier</li>
+            <li>Verify mobile extension works with Ultrascripts naming</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Phase 6 -->
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">Phase 6</span>
+          <span class="phase-title">Community migration support</span>
+          <span class="phase-risk med">Medium risk</span>
+        </div>
+        <div class="phase-body">
+          <p>Help existing scenario creators migrate their scripts from <code>frontier:*</code> to <code>ultrascripts:*</code> card titles.</p>
+          <ul class="checklist">
+            <li>Publish a migration guide explaining what changed and why</li>
+            <li>Provide find-and-replace instructions for common patterns</li>
+            <li>Consider a temporary compatibility layer that recognizes both prefixes during transition</li>
+            <li>Announce the rename in community channels with timeline</li>
+            <li>Set a deprecation date for the <code>frontier:*</code> prefix</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CODE PATTERNS -->
+    <div class="section">
+      <div class="section-label">04 &mdash; Patterns</div>
+      <h2>Key code patterns to find and replace</h2>
+      <p>These are the most common string patterns that need updating across the codebase. A systematic search-and-replace covering these patterns will catch the majority of references.</p>
+
+      <table>
+        <thead><tr><th>Pattern (before)</th><th>Pattern (after)</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td><code>frontier:</code></td><td><code>ultrascripts:</code></td><td>Card title strings (heartbeat, state, out, in)</td></tr>
+          <tr><td><code>Frontier</code> (card type)</td><td><code>Ultrascripts</code></td><td>Story card type parameter</td></tr>
+          <tr><td><code>window.Frontier</code></td><td><code>window.Ultrascripts</code></td><td>Global runtime object</td></tr>
+          <tr><td><code>FrontierModule</code></td><td><code>UltrascriptsModule</code></td><td>Module interface/type</td></tr>
+          <tr><td><code>FrontierContext</code></td><td><code>UltrascriptsContext</code></td><td>Context interface/type</td></tr>
+          <tr><td><code>FrontierSdkModule</code></td><td><code>UltrascriptsSdkModule</code></td><td>SDK module definition</td></tr>
+          <tr><td><code>frontierCall(</code></td><td><code>ultrascriptsCall(</code></td><td>Script-side helper function</td></tr>
+          <tr><td><code>frontierHeartbeat(</code></td><td><code>ultrascriptsHeartbeat(</code></td><td>Script-side heartbeat reader</td></tr>
+          <tr><td><code>frontierProtocol</code></td><td><code>ultrascriptsProtocol</code></td><td>SDK response payload</td></tr>
+          <tr><td><code>frontierClient</code></td><td><code>ultrascriptsClient</code></td><td>SDK response payload</td></tr>
+          <tr><td><code>services/frontier/</code></td><td><code>services/ultrascripts/</code></td><td>Import paths</td></tr>
+          <tr><td><code>frontier_feature</code></td><td><code>ultrascripts_feature</code></td><td>Feature file name and references</td></tr>
+          <tr><td><code>state.frontier</code></td><td><code>state.ultrascripts</code></td><td>State variable names in test suites</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FILE INVENTORY -->
+    <div class="section">
+      <div class="section-label">05 &mdash; File inventory</div>
+      <h2>Files requiring changes (Project Management)</h2>
+      <p>Complete inventory of files in BetterEcosystemProjectManagement that reference Frontier. BetterDungeon extension source requires a separate audit once the private code is accessible.</p>
+
+      <ul class="file-list">
+        <li><span class="file-path">frontier/00-overview.md</span> <span class="file-count">43 refs</span></li>
+        <li><span class="file-path">frontier/01-architecture.md</span> <span class="file-count">56 refs</span></li>
+        <li><span class="file-path">frontier/02-modules.md</span> <span class="file-count">38 refs</span></li>
+        <li><span class="file-path">frontier/03-implementation-status.md</span> <span class="file-count">37 refs</span></li>
+        <li><span class="file-path">frontier/04-test-suites.md</span> <span class="file-count">22 refs</span></li>
+        <li><span class="file-path">frontier/05-betterdungeon-sdk-roadmap.md</span> <span class="file-count">43 refs</span></li>
+        <li><span class="file-path">frontier/06-documentation-plan.md</span> <span class="file-count">19 refs</span></li>
+        <li><span class="file-path">frontier/README.md</span> <span class="file-count">8 refs</span></li>
+        <li><span class="file-path">frontier/archive/17-provider-ai-phase-plan.md</span> <span class="file-count">7 refs</span></li>
+        <li><span class="file-path">frontier/archive/21-provider-ai-ai-dungeon-test-suite.md</span> <span class="file-count">38 refs</span></li>
+        <li><span class="file-path">BetterDungeon.md</span> <span class="file-count">14 refs</span></li>
+        <li><span class="file-path">BetterRepository.md</span> <span class="file-count">9 refs</span></li>
+        <li><span class="file-path">ProjectManagement.md</span> <span class="file-count">4 refs</span></li>
+        <li><span class="file-path">BetterVoyage.md</span> <span class="file-count">1 ref</span></li>
+        <li><span class="file-path">frontier/naming/README.html</span> <span class="file-count">4 refs</span></li>
+      </ul>
+
+      <h3>BetterDungeon extension files (from docs references)</h3>
+      <p>These files are referenced in the project management docs as containing Frontier code. They will need a full audit:</p>
+      <ul class="file-list">
+        <li><span class="file-path">services/frontier/core.js</span> <span class="file-count">Core runtime</span></li>
+        <li><span class="file-path">services/frontier/module-registry.js</span> <span class="file-count">Module registration</span></li>
+        <li><span class="file-path">services/frontier/ops-dispatcher.js</span> <span class="file-count">Request/response routing</span></li>
+        <li><span class="file-path">services/frontier/ws-stream.js</span> <span class="file-count">WebSocket stream</span></li>
+        <li><span class="file-path">services/frontier/ws-interceptor.js</span> <span class="file-count">WebSocket interception</span></li>
+        <li><span class="file-path">services/frontier/envelope.js</span> <span class="file-count">Message envelope</span></li>
+        <li><span class="file-path">features/frontier_feature.js</span> <span class="file-count">Feature controller</span></li>
+        <li><span class="file-path">popup.html / popup.js / popup.css</span> <span class="file-count">UI references</span></li>
+      </ul>
+    </div>
+
+    <!-- RISKS -->
+    <div class="section">
+      <div class="section-label">06 &mdash; Risks</div>
+      <h2>Risks and mitigations</h2>
+      <table>
+        <thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Existing scripts break</td>
+            <td>Any published scenario using <code>frontier:*</code> cards stops working</td>
+            <td>Ship a compatibility period where both prefixes are recognized. Document migration clearly.</td>
+          </tr>
+          <tr>
+            <td>Missed references</td>
+            <td>Runtime errors from leftover <code>frontier</code> strings in code</td>
+            <td>Run exhaustive grep across all repos after each phase. Automated CI check for the old prefix.</td>
+          </tr>
+          <tr>
+            <td>Heartbeat payload key change</td>
+            <td>Scripts reading <code>.frontier</code> from heartbeat will get <code>undefined</code></td>
+            <td>Include both keys (<code>.frontier</code> and <code>.ultrascripts</code>) during transition, then deprecate the old key.</td>
+          </tr>
+          <tr>
+            <td>Test suite drift</td>
+            <td>Renamed test scripts no longer match live AI Dungeon scenarios</td>
+            <td>Run full regression suite on live AI Dungeon after each rename phase.</td>
+          </tr>
+          <tr>
+            <td>Mobile sync</td>
+            <td>Mobile and desktop extensions use different prefixes during rollout</td>
+            <td>Coordinate mobile rename in Phase 5 before any public announcement.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="section">
+      <div class="section-label">07 &mdash; Summary</div>
+      <h2>Execution summary</h2>
+      <div class="summary-card">
+        <p>The rename from Frontier to Ultrascripts is a <em>6-phase migration</em> touching two primary repositories, one mobile wrapper, one public website, and an unknown number of community-authored scenario scripts.</p>
+        <p>Phase 1 (extension source) is the critical path. Phases 2&ndash;5 are lower risk and can proceed in parallel. Phase 6 (community migration) should begin as soon as Phase 1 ships to a release.</p>
+        <p>The recommended approach is to <strong>ship the rename in a single coordinated release</strong> rather than rolling it out incrementally. This avoids a period where the extension uses one name and the docs use another. Plan for a compatibility layer in the card title parsing to gracefully handle scripts that have not yet migrated.</p>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
