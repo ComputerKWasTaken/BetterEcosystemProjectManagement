@@ -21,7 +21,7 @@ Completed Ultrascripts capability stack:
 
 Current next step:
 
-- Phase 12: Produce showcase scripts for all 9 shipped first-party modules.
+- Phase 12: Port Ultrascripts to the Android WebView build of BetterDungeon, making it effectively multiplatform.
 
 ## Roadmap
 
@@ -32,15 +32,15 @@ Current next step:
 
 ### Active
 
-- **Phase 12 — Showcase Scripts.** One useful script per module demonstrating Ultrascripts's power. Aura Cards (AI module), Chronos V2 (Clock + Weather + Scripture) are shipped; producing new demos for remaining modules.
+- **Phase 12 — Mobile Port.** Port Ultrascripts to the Android WebView build of BetterDungeon, making it effectively multiplatform. Multiplatform smoke testing across Chromium, Gecko, and Android WebView.
 
 ### Next
 
-- **Phase 13 — Mobile Port.** Port Ultrascripts to the Android WebView build. Multiplatform smoke testing across Chromium, Gecko, and Android WebView.
+- **Phase 13 — BetterRepository Documentation.** Write proper developer documentation — core Ultrascripts guide, per-module sub-guides, helper function reference, BetterScripts migration guide.
 
 ### Later
 
-- **Phase 14 — BetterRepository Documentation.** Write proper developer documentation — core Ultrascripts guide, per-module sub-guides, helper function reference, BetterScripts migration guide.
+- **Phase 14 — Showcase Scripts.** One useful script per module demonstrating Ultrascripts's power. Aura Cards (AI module) and Chronos V2 (Clock + Weather + Scripture) are already shipped; remaining module demos are deferred until after the mobile port and BetterRepository docs land.
 - Release prep: version bump, README/changelog polish, store-page updates.
 - `bd.sdk` helper surface for exposing safe BetterDungeon capabilities.
 - Third-party module registry and sandboxing.

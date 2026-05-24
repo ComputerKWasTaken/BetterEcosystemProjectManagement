@@ -4,7 +4,7 @@
 
 ## Current Focus
 
-BetterRepository is the next major documentation work area. With the Ultrascripts internal documentation cleanup successfully completed (Phase 11), the active roadmap focus has transitioned to Phase 12 (Showcase Scripts). The comprehensive public developer guide rewrite for BetterRepository will be addressed under Phase 14.
+BetterRepository is the next major documentation work area. With the Ultrascripts internal documentation cleanup successfully completed (Phase 11), the active roadmap focus has transitioned to Phase 12 (Mobile Port), making Ultrascripts effectively multiplatform on the Android WebView build of BetterDungeon. The comprehensive public developer guide rewrite for BetterRepository will be addressed under Phase 13, with showcase scripts deferred to Phase 14.
 
 ## Planned Guide Work
 

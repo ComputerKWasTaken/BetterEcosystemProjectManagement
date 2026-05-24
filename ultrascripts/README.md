@@ -28,9 +28,9 @@ The core Ultrascripts runtime is shipped. All 9 first-party modules are implemen
 
 What remains is:
 
-- showcase scripts (Phase 12 — active)
-- multiplatform/mobile follow-through (Phase 13)
-- public BetterRepository guide work (Phase 14)
+- multiplatform/mobile follow-through (Phase 12 — active)
+- public BetterRepository guide work (Phase 13)
+- showcase scripts (Phase 14 — deferred)
 
 ## Doc rules
 

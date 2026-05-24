@@ -6,7 +6,7 @@
 
 The active product track is **BetterDungeon V2**, centered on Ultrascripts. All core Ultrascripts runtime features, the 9 first-party modules, their per-module regression test suites, and internal technical documentation are fully completed and verified (Phases 1-11).
 
-The current active workstream is **Phase 12: Showcase Scripts** — producing and polishing high-quality demo scripts to show scenario authors the power of our shipped first-party modules (such as the Aura Cards AI demo and Chronos V2 dashboard).
+The current active workstream is **Phase 12: Mobile Port** — porting Ultrascripts to the Android WebView build of BetterDungeon so the platform is effectively multiplatform, with multiplatform smoke testing across Chromium, Gecko, and Android WebView. Showcase scripts (Aura Cards, Chronos V2, and additional per-module demos) are deferred to Phase 14, after BetterRepository public documentation (Phase 13).
 
 ## Projects
 

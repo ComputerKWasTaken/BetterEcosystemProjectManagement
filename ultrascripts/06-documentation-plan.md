@@ -92,4 +92,4 @@ When documentation is updated, verify:
 
 Phase 11 (Documentation Cleanup) is now successfully completed. All internal docs perfectly match our production codebase and reflect real shipped architecture.
 
-The active priority now is developing showcase scripts under Phase 12. After that, the next documentation focus will be Phase 14 (BetterRepository Public Docs), ensuring our public guide set tells a coherent story about Ultrascripts as a real platform, with a clean place for the shipped BetterDungeon SDK surface to fit naturally.
+The active priority now is the mobile port under Phase 12, getting Ultrascripts running on the Android WebView build of BetterDungeon so it becomes effectively multiplatform. After that, the next documentation focus will be Phase 13 (BetterRepository Public Docs), ensuring our public guide set tells a coherent story about Ultrascripts as a real platform, with a clean place for the shipped BetterDungeon SDK surface to fit naturally. Showcase scripts are deferred to Phase 14.

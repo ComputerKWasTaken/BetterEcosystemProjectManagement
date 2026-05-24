@@ -155,9 +155,32 @@ The core runtime, all modules, and the regression test suite are shipped. What r
 - Replaced the speculative SDK roadmap with a definitive production API specification.
 - Updated project-wide management hubs to reflect complete alignment.
 
-### Phase 12 — Showcase Scripts (active)
+### Phase 12 — Mobile Port (active)
 
 In progress:
+
+- Carry Ultrascripts through the Android WebView path.
+- Multiplatform smoke testing across Chromium, Gecko, and Android WebView.
+
+Goal:
+
+- Ultrascripts behavior is understood and documented across supported BetterDungeon targets.
+
+### Phase 13 — BetterRepository Documentation
+
+Still needed:
+
+- Finish the public-facing BetterRepository Ultrascripts/module docs.
+- Align public docs with the real shipped runtime.
+- Complete release-facing cleanup around the Ultrascripts feature set.
+
+Goal:
+
+- Public docs explain Ultrascripts clearly without reintroducing outdated technical assumptions.
+
+### Phase 14 — Showcase Scripts
+
+Deferred until after the mobile port and BetterRepository docs land:
 
 - Produce or polish example scripts for the shipped modules.
 - Keep examples useful as both demos and learning material.
@@ -170,29 +193,6 @@ Known examples already in the codebase:
 Goal:
 
 - Each important module has at least one strong example script.
-
-### Phase 13 — Mobile Port
-
-Still needed:
-
-- Carry Ultrascripts through the Android WebView path.
-- Multiplatform smoke testing across Chromium, Gecko, and Android WebView.
-
-Goal:
-
-- Ultrascripts behavior is understood and documented across supported BetterDungeon targets.
-
-### Phase 14 — BetterRepository Documentation
-
-Still needed:
-
-- Finish the public-facing BetterRepository Ultrascripts/module docs.
-- Align public docs with the real shipped runtime.
-- Complete release-facing cleanup around the Ultrascripts feature set.
-
-Goal:
-
-- Public docs explain Ultrascripts clearly without reintroducing outdated technical assumptions.
 
 ## What is no longer an active implementation problem
 
