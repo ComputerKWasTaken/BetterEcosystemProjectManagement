@@ -8,7 +8,7 @@ On the script side, Ultrascripts is represented by reserved `ultrascripts:*` sto
 
 Ultrascripts is not a single feature toggle in the product sense. It is a small platform made of:
 
-- A transport layer that watches AI Dungeon's WebSocket and captured GraphQL mutation traffic.
+- A transport layer that watches AI Dungeon's WebSocket and snoops the first successful GraphQL request to capture session credentials (Firebase `Authorization` token + endpoint URL).
 - A Core runtime that tracks adventure state, card state, and module lifecycle.
 - A module registry containing the shipped Ultrascripts modules.
 
@@ -29,8 +29,8 @@ Ultrascripts currently provides all of the following:
 
 - Reads full story-card snapshots and diffs from AI Dungeon's live data stream.
 - Tracks the current adventure, current tail action, and current live action count.
-- Writes reserved Ultrascripts cards back through captured AI Dungeon mutation templates via a serialized write queue.
-- Emits a `ultrascripts:heartbeat` card that advertises protocol information and the currently mounted modules.
+- Writes reserved Ultrascripts cards back via direct, hardcoded GraphQL `SaveQueueStoryCard` mutations authenticated with the captured session token, all funneled through a serialized write queue.
+- Emits a `ultrascripts:heartbeat` card the moment an adventure or scenario loads (turn-0 included), advertising protocol information and the currently mounted modules.
 - Routes `ultrascripts:state:<name>` cards to the modules that declared those state names.
 - Processes a two-way request/response channel using `ultrascripts:out` and `ultrascripts:in:<module>` cards.
 - Persists module enabled state in extension storage and replays cached state to freshly mounted modules.
@@ -51,8 +51,8 @@ This is a live two-way runtime, not a one-way widget-only prototype. In `core.js
 +--------------------------------------------------------------+
 | TRANSPORT                                                    |
 |   ws-interceptor -> ws-stream -> DOM events                  |
-|   mutation template capture -> write queue -> story-card     |
-|   writes back into AI Dungeon                                |
+|   session credentials capture -> direct SaveQueueStoryCard   |
+|   GraphQL writes -> write queue -> AI Dungeon backend        |
 +--------------------------------------------------------------+
 ```
 
@@ -161,7 +161,8 @@ At the same time, Ultrascripts does **not** replace every legacy BetterDungeon s
 | Term | Definition |
 |---|---|
 | **Ultrascripts** | BetterDungeon's script-to-extension bridge built on reserved story cards plus transport/runtime helpers. |
-| **Transport** | The `ws-interceptor` + `ws-stream` + write-queue path that observes AI Dungeon traffic and writes cards back safely. |
+| **Transport** | The `ws-interceptor` + `ws-stream` + write-queue path that observes AI Dungeon traffic, captures session credentials, and writes cards back through direct GraphQL mutations. |
+| **Base credentials** | The session `{ url, method, headers, capturedAt }` payload (Firebase `Authorization` + GraphQL endpoint) captured by `ws-interceptor.js` from the first successful GraphQL request and broadcast via `ultrascripts:baseCredentials:change`. |
 | **Ultrascripts Core** | The runtime in `services/ultrascripts/core.js` that tracks adventure state, parses state cards, emits heartbeats, and provides module context. |
 | **Module Registry** | The lifecycle manager in `services/ultrascripts/module-registry.js` that registers, mounts, enables, disables, and lists modules. |
 | **Ops Dispatcher** | The runtime in `services/ultrascripts/ops-dispatcher.js` that consumes `ultrascripts:out` requests and writes `ultrascripts:in:<module>` responses. |

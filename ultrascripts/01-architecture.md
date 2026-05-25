@@ -27,11 +27,11 @@ The transport layer is spread across three files:
 This is the page-side interception layer.
 
 - It shims `WebSocket` so BetterDungeon can observe AI Dungeon's GraphQL-over-WebSocket traffic without breaking the app's own checks.
-- It also watches `fetch` and `XMLHttpRequest` so Ultrascripts can capture mutation templates and initial hydration data.
+- It also watches `fetch` and `XMLHttpRequest` so Ultrascripts can read initial hydration data and snoop the first successful GraphQL request to capture session `baseCredentials` (Firebase `Authorization` header + endpoint URL + method).
 - It forwards normalized payloads into the content-script side with `window.postMessage`.
-- The important payload families are story cards, actions, context, and captured mutation templates.
+- The important payload families are story cards, actions, context, and the `baseCredentials` handshake.
 
-This file does not know Ultrascripts module semantics. Its job is observation and normalization.
+This file does not know Ultrascripts module semantics. Its job is observation, normalization, and credentials capture. It does **not** snoop user-initiated mutations or build mutation templates.
 
 ### `services/ultrascripts/ws-stream.js`
 
@@ -49,7 +49,7 @@ This is the content-script-side stream service.
   - `ultrascripts:tail:change`
   - `ultrascripts:livecount:change`
   - `ultrascripts:adventure:change`
-  - `ultrascripts:mutation:template`
+  - `ultrascripts:baseCredentials:change`
 
 This live-count model is the important historical correction: Ultrascripts's current state is keyed around live count, not around an older action-id-keyed history model.
 
@@ -61,8 +61,57 @@ This is the shared write coordinator.
 - It coalesces rapid repeat writes.
 - It handles optimistic local updates.
 - It retries transient failures.
+- It calls into `AIDungeonService.upsertStoryCard()`, which issues a direct, hardcoded `SaveQueueStoryCard` GraphQL mutation authenticated with the captured `baseCredentials`.
 
 Core writes through it, ops responses write through it, and module code reaches it through `ctx.writeCard`.
+
+### The production write mutation
+
+Ultrascripts no longer snoops or caches a mutation template. Every write uses the same hardcoded production query in `services/ai-dungeon-service.js`:
+
+- **Operation name:** `SaveQueueStoryCard`
+- **Resolver field:** `updateStoryCard`
+- **Variable input type:** `UpdateStoryCardInput!`
+
+```graphql
+mutation SaveQueueStoryCard($input: UpdateStoryCardInput!) {
+  updateStoryCard(input: $input) {
+    success
+    message
+    storyCard {
+      id
+      type
+      title
+      description
+      keys
+      value
+      useForCharacterCreation
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+```
+
+The write path is:
+
+1. `ws-interceptor.js` captures `baseCredentials` from the first successful GraphQL request on the page.
+2. The credentials payload is delivered to the isolated world via a single `window.postMessage` handshake and re-emitted as `ultrascripts:baseCredentials:change`.
+3. `core.js` calls `AIDungeonService.upsertStoryCard(title, value, opts)` through the write queue.
+4. `_replayMutation` issues a direct `fetch` against the captured GraphQL endpoint, attaching the captured `Authorization` header and the hardcoded query above.
+
+There is no template priming step. The isolated world can write the turn-0 heartbeat card as soon as credentials arrive, with no dependency on a prior user-initiated card edit.
+
+#### Deprecated: the legacy snoop-and-replay path
+
+Earlier Ultrascripts builds used a passive **snoop-and-replay template cache**: the MAIN-world shim would watch outbound user-initiated card mutations, store the query structure as an in-memory template, and the isolated world would wait for that template to be primed before any write could go out. That model caused:
+
+- a turn-0 cold start (no manual card action meant no heartbeat could ever be written),
+- silent failure loops, and
+- a mobile-only validation trap, where a malformed fallback query (guessing the field `saveQueueStoryCard` with input type `StoryCardInput`) returned HTTP 200 OK with GraphQL validation errors and was cached as a "valid" template, locking mobile into an infinite failure loop.
+
+That entire path has been removed. Do not reintroduce template caching, fallback query guessing, or any write path that depends on prior user-initiated mutation traffic.
 
 ## Core
 
@@ -93,7 +142,7 @@ Its current responsibilities are:
   - structured logging
   - advanced response helpers for ops modules
 
-Important correction: the heartbeat writer lives in `core.js`. There is no separate runtime file named `heartbeat.js` in the current architecture.
+Important correction: the heartbeat writer lives in `core.js`. There is no separate runtime file named `heartbeat.js` in the current architecture. `runHeartbeat()` fires on adventure/scenario load (gated only on cards being hydrated and `baseCredentials` being present) and is debounced so adventure-enter and credential-arrival triggers cannot produce duplicate cards.
 
 The heartbeat currently advertises:
 
@@ -268,12 +317,15 @@ That is why Ultrascripts tracks both tail and live count.
 ### 3. Heartbeat
 
 ```text
-Ultrascripts starts or module state changes
--> core.js writes ultrascripts:heartbeat
--> scripts can inspect heartbeat to see protocol version and available modules
+ws-interceptor.js captures session baseCredentials
+-> postMessage -> ws-stream.js -> ultrascripts:baseCredentials:change
+-> core.js runHeartbeat() (debounced, single-flight)
+-> AIDungeonService.upsertStoryCard()
+-> direct SaveQueueStoryCard GraphQL mutation
+-> ultrascripts:heartbeat card created on the server
 ```
 
-The heartbeat is the discovery surface for the unified runtime. It is not a profile selector.
+This path runs immediately on adventure or scenario load, including turn-0, with no dependency on a user having previously edited a story card. The heartbeat is the discovery surface for the unified runtime. It is not a profile selector.
 
 ### 4. Ops request/response
 

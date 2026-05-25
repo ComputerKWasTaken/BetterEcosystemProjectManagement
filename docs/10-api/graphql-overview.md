@@ -108,11 +108,95 @@ API usage is subject to AI Dungeon's terms:
 - API may change without notice
 - Intended for platform clients, not third-party apps
 
+## BetterDungeon Ultrascripts Write Path
+
+BetterDungeon's Ultrascripts runtime writes its reserved `ultrascripts:*` story cards (heartbeat, state, response cards) by issuing a direct GraphQL mutation against AI Dungeon's production endpoint. The query is hardcoded in `BetterDungeon/services/ai-dungeon-service.js` and is authenticated with session credentials captured at runtime by the page-world `ws-interceptor.js` shim.
+
+### Credentials capture (`baseCredentials`)
+
+`ws-interceptor.js` runs at `document_start` in the MAIN world and shims `WebSocket`, `fetch`, and `XMLHttpRequest`. On the first successful GraphQL request of the page session it records:
+
+```json
+{
+  "url": "<GraphQL endpoint>",
+  "method": "POST",
+  "headers": {
+    "authorization": "Firebase <token>",
+    "...": "other request headers"
+  },
+  "capturedAt": 1700000000000
+}
+```
+
+That payload is forwarded once via `window.postMessage` to the isolated content-script world (`ws-stream.js`), which re-emits it as the `ultrascripts:baseCredentials:change` DOM event. The token is then re-applied to every Ultrascripts-owned write.
+
+### Production mutation
+
+Every Ultrascripts card write uses this exact production query:
+
+- **Operation name:** `SaveQueueStoryCard`
+- **Resolver field:** `updateStoryCard`
+- **Variable input type:** `UpdateStoryCardInput!`
+
+```graphql
+mutation SaveQueueStoryCard($input: UpdateStoryCardInput!) {
+  updateStoryCard(input: $input) {
+    success
+    message
+    storyCard {
+      id
+      type
+      title
+      description
+      keys
+      value
+      useForCharacterCreation
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+```
+
+Variables shape (see also `12-graphql-schema/input-objects/UpdateStoryCardInput.json`):
+
+```json
+{
+  "input": {
+    "id": "<storyCardId or null for create>",
+    "type": "Ultrascripts",
+    "title": "ultrascripts:heartbeat",
+    "description": "",
+    "keys": "",
+    "value": "<JSON string>",
+    "useForCharacterCreation": false
+  }
+}
+```
+
+The fetch is issued from the isolated world directly against the captured GraphQL endpoint with the captured `Authorization` header. There is no separate GraphQL client; the body is a plain `JSON.stringify({ operationName, variables, query })`.
+
+### Deprecated: legacy snoop-and-replay template cache
+
+Earlier BetterDungeon builds used a passive **mutation-template cache**: the MAIN-world shim would snoop outbound user-initiated card mutations to learn the query shape, store it in memory, and the isolated world would wait for that template before any write could go out. That model is now fully removed because it:
+
+- could not write the turn-0 heartbeat (no manual card action meant no template was ever captured),
+- silently failed in loops, and
+- on mobile, cached a malformed fallback query (which incorrectly guessed the field `saveQueueStoryCard` and the input type `StoryCardInput`) as a "valid" template, because GraphQL validation errors return HTTP 200 OK. That trapped mobile in an infinite failure loop.
+
+Do not reintroduce template caching, fallback query guessing, or any write path that depends on prior user-initiated mutation traffic. Always use the hardcoded `SaveQueueStoryCard` query above plus captured `baseCredentials`.
+
 ## Related Documentation
 
 - [API Entities](api-entities.md)
 - [Card Import/Export](../04-story-cards/card-import-export.md)
+- [Ultrascripts Architecture](../../ultrascripts/01-architecture.md)
 
 ## Source References
 
 - https://help.aidungeon.com/scripting
+- `BetterDungeon/services/ai-dungeon-service.js` (`_replayMutation`, `upsertStoryCard`)
+- `BetterDungeon/services/ultrascripts/ws-interceptor.js` (`updateBaseCredentials`)
+- `BetterDungeon/services/ultrascripts/ws-stream.js` (`baseCredentials` handshake)
+- `BetterDungeon/services/ultrascripts/core.js` (`runHeartbeat`)

@@ -7,7 +7,7 @@
 Ultrascripts is no longer in the "plan the architecture" stage. The core runtime is implemented in BetterDungeon and already supports:
 
 - live story-card observation
-- mutation-template-based writeback
+- direct GraphQL `SaveQueueStoryCard` writeback authenticated with captured session `baseCredentials`
 - per-card write queuing
 - module registration and lifecycle
 - heartbeat-based module discovery
@@ -34,9 +34,9 @@ These implementation areas are already real and should be treated as current pro
 
 Shipped:
 
-- `ws-interceptor.js`
+- `ws-interceptor.js` (page-world `WebSocket` / `fetch` / `XHR` shim)
 - `ws-stream.js`
-- mutation-template capture
+- session `baseCredentials` capture and `ultrascripts:baseCredentials:change` broadcast
 - adventure-boundary handling
 - live-count tracking
 - tail tracking
@@ -49,14 +49,15 @@ Result:
 
 Shipped:
 
-- mutation-template replay through `ai-dungeon-service.js`
+- direct hardcoded `SaveQueueStoryCard` GraphQL mutation in `ai-dungeon-service.js` (resolver `updateStoryCard`, input `UpdateStoryCardInput!`)
+- session `baseCredentials` handshake from MAIN world to isolated world
 - shared `write-queue.js`
 - optimistic local updates
 - retry/coalescing behavior
 
 Result:
 
-- BetterDungeon can write and update Ultrascripts-owned cards without needing a separate GraphQL client implementation.
+- BetterDungeon can write and update Ultrascripts-owned cards from turn-0 onward with no template-priming step and no dependency on prior user-initiated card edits.
 
 ### Core runtime
 
@@ -106,7 +107,7 @@ These were the big implementation questions that once mattered and are now settl
 
 - live-count history won over action-id-keyed history
 - full two-way Ultrascripts shipped; there is no meaningful Lite profile
-- mutation-template replay solved the write path
+- direct credentials-driven `SaveQueueStoryCard` writes replaced the legacy snoop-and-replay template cache; turn-0 cold start, silent failure loops, and the mobile `StoryCardInput` validation trap are all gone
 - heartbeat lives in `core.js`, not a separate heartbeat subsystem
 - request/response ops are part of the same unified runtime as state cards
 - old BetterScripts-era assumptions are no longer the model Ultrascripts should be documented around
