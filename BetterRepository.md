@@ -4,7 +4,26 @@
 
 ## Current Focus
 
-BetterRepository is the next major documentation work area. With the Ultrascripts internal documentation cleanup successfully completed (Phase 11), the active roadmap focus has transitioned to Phase 12 (Mobile Port), making Ultrascripts effectively multiplatform on the Android WebView build of BetterDungeon. The comprehensive public developer guide rewrite for BetterRepository will be addressed under Phase 13, with showcase scripts deferred to Phase 14.
+With Ultrascripts now multiplatform (Phase 12 complete on Chromium, Gecko,
+and Android WebView), focus shifts to the BetterRepository **Guides
+Foundation** — the docs-system work that must land before the Phase 13
+public developer-guide rewrite for Ultrascripts.
+
+Guides Foundation deliverables (in progress):
+
+- **Standardized Guide Format** — authoring contract for every guide in
+  `src/components/guides/`. Lives at `BetterRepository/docs/guides/format-spec.md`.
+- **Per-topic Info Dumps** — one kitchen-sink reference per guide tab in
+  `BetterRepository/docs/guides/info-dumps/`. Source of truth so guide
+  rewrites never lose information. Story Cards dump is fully populated;
+  the other six are scaffolded and will fill in as work proceeds.
+- **Story Card Command Presets** — new repository data type
+  `STORY_CARD_COMMAND_PRESETS` in `src/data/storyCards.js`, parallel to
+  `STORY_CARDS` and `STORY_CARD_TEMPLATES`. Seeded with the default
+  *Basic List Prompt* preset. Story Cards guide expanded with a new
+  *Command Presets* section explaining the `{{title}}` token, entry
+  formatting modes, additional generation context, and the
+  log-in-notes / speed-create toggles.
 
 ## Planned Guide Work
 
@@ -23,6 +42,13 @@ Create or update public-facing guides for:
 
 ### High Priority
 
+- Finish populating the six scaffolded info dumps (AI Instructions, Plot
+  Components, Scripts, Ultrascripts, Symbols & Commands, Advanced
+  Settings). Pull verified facts from existing guide content, Discord,
+  and contributor notes.
+- Refactor existing guides (`AIInstructionsGuide.vue`, `PlotComponentsGuide.vue`,
+  `ScriptsGuide.vue`, `UltrascriptsGuide.vue`, `SymbolsCommandsGuide.vue`,
+  `AdvancedSettingsGuide.vue`) to fully conform to `docs/guides/format-spec.md`.
 - Replace legacy BetterScripts guide material with Ultrascripts.
 - Remove Zero-width / TagCipher / Context Modifier guidance where it only existed for old BetterScripts.
 - Add module reference pages with copyable AI Dungeon Library snippets.
@@ -44,6 +70,9 @@ Create or update public-facing guides for:
 
 ## Canonical Inputs
 
+- [BetterRepository docs index](../BetterRepository/docs/README.md)
+- [Standardized Guide Format spec](../BetterRepository/docs/guides/format-spec.md)
+- [Story Cards info dump](../BetterRepository/docs/guides/info-dumps/story-cards.md)
 - [Ultrascripts planning index](./ultrascripts/README.md)
 - [Implementation status](./ultrascripts/03-implementation-status.md)
 - [Test suites](./ultrascripts/04-test-suites.md)

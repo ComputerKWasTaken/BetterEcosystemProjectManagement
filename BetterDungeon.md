@@ -4,7 +4,7 @@
 
 ## Current Focus
 
-BetterDungeon V2 is in progress. Ultrascripts — the largest V2 workstream — is feature-complete through Phase 11. All 9 first-party modules are implemented, live-tested, have dedicated regression test suites, and internal technical documentation is fully updated.
+BetterDungeon V2 is in progress. Ultrascripts — the largest V2 workstream — is feature-complete through Phase 12. Ultrascripts is now multiplatform: smoke-tested on Chromium, Gecko (Firefox), and Android WebView. All 9 first-party modules are implemented, live-tested, have dedicated regression test suites, and internal technical documentation is fully updated.
 
 Completed Ultrascripts capability stack:
 
@@ -21,7 +21,8 @@ Completed Ultrascripts capability stack:
 
 Current next step:
 
-- Phase 12: Port Ultrascripts to the Android WebView build of BetterDungeon, making it effectively multiplatform.
+- Guides Foundation (BetterRepository): standardized guide format, per-topic info dumps, and the new Story Card Command Presets data type. Done before Phase 13 so the Ultrascripts public guide rewrite lands on a stable docs scaffold.
+- Phase 13: BetterRepository public developer documentation for Ultrascripts.
 
 ## Roadmap
 
@@ -29,10 +30,11 @@ Current next step:
 
 - **Phase 10 — Module Polish & Test Scripts.** All modules polished, per-module regression test scripts created in `tests/aid-scripts/`, story card types normalized.
 - **Phase 11 — Documentation Cleanup.** Refreshed Ultrascripts technical docs to perfectly match production codebase, removed speculative planning language, and locked in the BetterDungeon SDK spec.
+- **Phase 12 — Mobile Port.** Ultrascripts ported to the Android WebView build of BetterDungeon. Multiplatform smoke testing passed on Chromium, Gecko (Firefox), and Android WebView. Ultrascripts is now effectively multiplatform.
 
 ### Active
 
-- **Phase 12 — Mobile Port.** Port Ultrascripts to the Android WebView build of BetterDungeon, making it effectively multiplatform. Multiplatform smoke testing across Chromium, Gecko, and Android WebView.
+- **Guides Foundation (BetterRepository).** Standardized Guide Format spec, per-topic info dumps for every guide tab, and the new Story Card Command Presets data type landed. Prerequisite for the Phase 13 documentation rewrite. See `BetterRepository/docs/` and `Project Management/BetterRepository.md`.
 
 ### Next
 
@@ -49,7 +51,6 @@ Current next step:
 ## Bugs And Risks
 
 - Release docs still need to catch up to the completed Ultrascripts module set.
-- Firefox and Android WebView parity need final V2 smoke testing.
 - Provider AI depends on user-supplied OpenRouter configuration and should remain bounded, opt-in, and clearly documented.
 
 ## Canonical Docs
