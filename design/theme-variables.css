@@ -21,12 +21,12 @@
      1. COLORS — BACKGROUNDS
      Dark-first surface hierarchy, deepest to lightest.
      ============================================================= */
-  --bd-bg-primary:    #0d0d0f;                    /* Page / canvas              */
-  --bd-bg-secondary:  #16161a;                    /* Cards, panels, sidebar     */
-  --bd-bg-tertiary:   #1e1e24;                    /* Nested cards, hover fills  */
-  --bd-bg-elevated:   #252530;                    /* Inputs, raised surfaces    */
-  --bd-bg-active:     #2c2c36;                    /* Pressed / active states    */
-  --bd-bg-overlay:    rgba(0, 0, 0, 0.85);        /* Modal / sheet backdrop     */
+  --bd-bg-primary:    #0f0e11;                    /* Page / canvas              */
+  --bd-bg-secondary:  #17161b;                    /* Cards, panels, sidebar     */
+  --bd-bg-tertiary:   #1e1d23;                    /* Nested cards, hover fills  */
+  --bd-bg-elevated:   #26252c;                    /* Inputs, raised surfaces    */
+  --bd-bg-active:     #2e2d35;                    /* Pressed / active states    */
+  --bd-bg-overlay:    rgba(15, 14, 17, 0.85);     /* Modal / sheet backdrop     */
 
   /* =============================================================
      2. COLORS — TEXT
@@ -34,19 +34,19 @@
   --bd-text-primary:   #e8e8ec;                   /* Body copy                  */
   --bd-text-secondary: #a0a0a8;                   /* Labels, supporting copy    */
   --bd-text-muted:     #6b6b75;                   /* Hints, placeholders        */
-  --bd-text-inverse:   #0d0d0f;                   /* On colored backgrounds     */
+  --bd-text-inverse:   #0f0e11;                   /* On colored backgrounds     */
   --bd-text-on-accent: #ffffff;                   /* On accent fills            */
 
   /* =============================================================
      3. COLORS — BRAND / ACCENT
      Orange is the ecosystem signature color.
      ============================================================= */
-  --bd-accent-primary:   #ff9500;                 /* Primary brand orange       */
-  --bd-accent-secondary: #e07800;                 /* Darker orange (gradients)  */
-  --bd-accent-light:     #ffb84d;                 /* Hover / highlight state    */
-  --bd-accent-glow:      rgba(255, 149, 0, 0.12); /* Ambient glow              */
-  --bd-accent-muted:     rgba(255, 149, 0, 0.15); /* Tinted backgrounds        */
-  --bd-accent-strong:    rgba(255, 149, 0, 0.25); /* Hover tint / emphasis     */
+  --bd-accent-primary:   #e8850a;                 /* Primary brand orange       */
+  --bd-accent-secondary: #c06a00;                 /* Darker orange (gradients)  */
+  --bd-accent-light:     #f29520;                 /* Hover / highlight state    */
+  --bd-accent-glow:      rgba(232, 133, 10, 0.10); /* Ambient glow              */
+  --bd-accent-muted:     rgba(232, 133, 10, 0.12); /* Tinted backgrounds        */
+  --bd-accent-strong:    rgba(232, 133, 10, 0.22); /* Hover tint / emphasis     */
 
   /* =============================================================
      4. COLORS — STATUS
@@ -103,10 +103,10 @@
      6. COLORS — BORDERS
      White-alpha for dark backgrounds.
      ============================================================= */
-  --bd-border-subtle:  rgba(255, 255, 255, 0.06); /* Faintest dividers         */
-  --bd-border-default: rgba(255, 255, 255, 0.10); /* Standard card borders     */
+  --bd-border-subtle:  rgba(255, 255, 255, 0.05); /* Faintest dividers         */
+  --bd-border-default: rgba(255, 255, 255, 0.09); /* Standard card borders     */
   --bd-border-strong:  rgba(255, 255, 255, 0.15); /* Hover / emphasis          */
-  --bd-border-accent:  rgba(255, 149, 0, 0.25);   /* Brand-tinted borders      */
+  --bd-border-accent:  rgba(232, 133, 10, 0.22);   /* Brand-tinted borders      */
   --bd-border-focus:   var(--bd-accent-primary);   /* Focus rings               */
 
   /* =============================================================
@@ -282,9 +282,8 @@
                             var(--bd-accent-light) 0%,
                             var(--bd-accent-primary) 100%);
   --bd-gradient-accent-bar: linear-gradient(to right,
-                            var(--bd-accent-primary),
-                            var(--bd-purple),
-                            var(--bd-cyan));
+                            var(--bd-accent-primary) 0%,
+                            rgba(232, 133, 10, 0) 100%);
   --bd-gradient-shimmer:   linear-gradient(90deg,
                             var(--bd-accent-primary) 0%,
                             var(--bd-accent-light) 50%,

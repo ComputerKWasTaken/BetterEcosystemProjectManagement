@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BetterEcosystem V2 — "Ember" Design Specification</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       DESIGN SYSTEM TOKENS (EMBER V2)
+       ============================================================ */
+    :root {
+      /* Colors - Backgrounds (Warm Charcoal) */
+      --bd-bg-primary: #0f0e11;
+      --bd-bg-secondary: #17161b;
+      --bd-bg-tertiary: #1e1d23;
+      --bd-bg-elevated: #26252c;
+      --bd-bg-active: #2e2d35;
+      --bd-bg-overlay: rgba(15, 14, 17, 0.85);
+
+      /* Colors - Text Scale */
+      --bd-text-primary: #eae8ed;
+      --bd-text-secondary: #a09daa;
+      --bd-text-muted: #6b6875;
+      --bd-text-inverse: #0f0e11;
+      --bd-text-on-accent: #ffffff;
+
+      /* Colors - Accent Evolved */
+      --bd-accent-primary: #e8850a;
+      --bd-accent-hover: #f29520;
+      --bd-accent-light: #ffa63d;
+      --bd-accent-glow: rgba(232, 133, 10, 0.10);
+      --bd-accent-border: rgba(232, 133, 10, 0.22);
+      
+      /* Colors - Cool Counterpoint (Slate) */
+      --bd-cool-primary: #64748b;
+      --bd-cool-hover: #94a3b8;
+      --bd-cool-glow: rgba(100, 116, 139, 0.10);
+      --bd-cool-border: rgba(100, 116, 139, 0.20);
+
+      /* Colors - Semantic Status */
+      --bd-success: #22c55e;
+      --bd-success-glow: rgba(34, 197, 94, 0.10);
+      --bd-error: #ef4444;
+      --bd-error-glow: rgba(239, 68, 68, 0.10);
+      --bd-warning: #f59e0b;
+      --bd-info: #3b82f6;
+
+      /* Borders */
+      --bd-border-subtle: rgba(255, 255, 255, 0.05);
+      --bd-border-default: rgba(255, 255, 255, 0.09);
+      --bd-border-strong: rgba(255, 255, 255, 0.15);
+      --bd-border-warm: rgba(232, 133, 10, 0.15);
+
+      /* Typography */
+      --bd-font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --bd-font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+      /* Radii */
+      --bd-radius-sm: 4px;
+      --bd-radius-md: 6px;
+      --bd-radius-lg: 8px;
+      --bd-radius-xl: 10px;
+      --bd-radius-2xl: 14px;
+      --bd-radius-full: 9999px;
+
+      /* Shadows */
+      --bd-shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --bd-shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --bd-shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+      --bd-shadow-glow: 0 0 16px rgba(232, 133, 10, 0.08);
+
+      /* Spacing Scale */
+      --bd-space-1: 4px;
+      --bd-space-2: 8px;
+      --bd-space-3: 12px;
+      --bd-space-4: 16px;
+      --bd-space-5: 20px;
+      --bd-space-6: 24px;
+      --bd-space-8: 32px;
+      --bd-space-12: 48px;
+
+      /* Fading Glow Accent Bar Default */
+      --bd-accent-bar: linear-gradient(90deg, var(--bd-accent-primary) 0%, rgba(232, 133, 10, 0) 100%);
+    }
+
+    /* ============================================================
+       BASE STYLE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body {
+      font-family: var(--bd-font-sans);
+      background: var(--bd-bg-primary);
+      color: var(--bd-text-primary);
+      line-height: 1.5;
+      overflow-x: hidden;
+      padding-bottom: 120px;
+    }
+
+    /* ============================================================
+       NAVIGATION / CONTAINER
+       ============================================================ */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(15, 14, 17, 0.94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--bd-border-subtle);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .top-nav__logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+    }
+    .top-nav__logo-icon {
+      width: 24px; height: 24px;
+      border-radius: var(--bd-radius-md);
+      background: var(--bd-accent-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff;
+    }
+    .top-nav__badge {
+      font-family: var(--bd-font-mono);
+      font-size: 10px;
+      background: var(--bd-accent-glow);
+      color: var(--bd-accent-hover);
+      border: 1px solid var(--bd-accent-border);
+      padding: 4px 10px;
+      border-radius: var(--bd-radius-full);
+      font-weight: 600;
+    }
+
+    .main-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 48px 40px;
+    }
+
+    /* ============================================================
+       INTRO / HEADER
+       ============================================================ */
+    .intro {
+      margin-bottom: 56px;
+      max-width: 800px;
+    }
+    .intro__badge {
+      display: inline-block;
+      font-family: var(--bd-font-mono);
+      font-size: 11px;
+      color: var(--bd-accent-primary);
+      background: var(--bd-accent-glow);
+      border: 1px solid var(--bd-accent-border);
+      padding: 4px 10px;
+      border-radius: var(--bd-radius-full);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+    .intro__title {
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
+    .intro__desc {
+      font-size: 16px;
+      color: var(--bd-text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       VISUAL SECTIONS
+       ============================================================ */
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--bd-border-subtle);
+    }
+
+    .deck-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+      margin-bottom: 64px;
+    }
+    .deck-card {
+      grid-column: span 12;
+      background: var(--bd-bg-secondary);
+      border: 1px solid var(--bd-border-subtle);
+      border-radius: var(--bd-radius-2xl);
+      padding: 28px;
+    }
+    @media (min-width: 768px) {
+      .deck-card--half { grid-column: span 6; }
+      .deck-card--third { grid-column: span 4; }
+      .deck-card--two-thirds { grid-column: span 8; }
+    }
+
+    .deck-card__label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--bd-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    /* ============================================================
+       EMBER SPECIFIC ACCENT BAR
+       ============================================================ */
+    .ember-accent-bar {
+      height: 3px;
+      border-radius: var(--bd-radius-full);
+      background: var(--bd-accent-bar);
+      margin: 16px 0 24px;
+    }
+
+    /* ============================================================
+       PALETTE AND TOKENS
+       ============================================================ */
+    .color-swatch-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+    }
+    .swatch-box {
+      background: var(--bd-bg-tertiary);
+      border: 1px solid var(--bd-border-subtle);
+      border-radius: var(--bd-radius-lg);
+      padding: 10px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .swatch-box:hover {
+      transform: translateY(-2px);
+    }
+    .swatch-box__color {
+      height: 60px;
+      border-radius: var(--bd-radius-md);
+      margin-bottom: 8px;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .swatch-box__name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--bd-text-primary);
+      margin-bottom: 2px;
+    }
+    .swatch-box__hex {
+      font-size: 10px;
+      font-family: var(--bd-font-mono);
+      color: var(--bd-text-muted);
+    }
+
+    /* Typography specimen */
+    .specimen-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .specimen-table td {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--bd-border-subtle);
+      vertical-align: middle;
+    }
+    .specimen-table tr:last-child td {
+      border-bottom: none;
+    }
+    .specimen-meta {
+      font-family: var(--bd-font-mono);
+      font-size: 11px;
+      color: var(--bd-text-muted);
+      width: 120px;
+    }
+
+    /* ============================================================
+       COMPONENTS PLAYGROUND
+       ============================================================ */
+    .interactive-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .interactive-row:last-child { margin-bottom: 0; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      font-family: var(--bd-font-sans);
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--bd-radius-lg);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+    .btn--primary {
+      background: var(--bd-accent-primary);
+      color: var(--bd-text-on-accent);
+      box-shadow: var(--bd-shadow-sm);
+    }
+    .btn--primary:hover {
+      background: var(--bd-accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(232, 133, 10, 0.2);
+    }
+    .btn--primary:active {
+      transform: translateY(0);
+    }
+    .btn--secondary {
+      background: var(--bd-bg-tertiary);
+      color: var(--bd-text-primary);
+      border-color: var(--bd-border-default);
+    }
+    .btn--secondary:hover {
+      background: var(--bd-bg-elevated);
+      border-color: var(--bd-border-strong);
+    }
+    .btn--cool {
+      background: var(--bd-cool-glow);
+      color: var(--bd-cool-hover);
+      border-color: var(--bd-cool-border);
+    }
+    .btn--cool:hover {
+      background: rgba(100, 116, 139, 0.18);
+      color: var(--bd-text-primary);
+      border-color: var(--bd-cool-hover);
+    }
+    .btn--ghost {
+      background: transparent;
+      color: var(--bd-text-secondary);
+    }
+    .btn--ghost:hover {
+      background: var(--bd-bg-tertiary);
+      color: var(--bd-text-primary);
+    }
+    .btn--disabled {
+      background: var(--bd-bg-tertiary);
+      color: var(--bd-text-muted);
+      border-color: var(--bd-border-subtle);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    /* Inputs */
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+    }
+    .input-field {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bd-bg-tertiary);
+      border: 1px solid var(--bd-border-default);
+      border-radius: var(--bd-radius-lg);
+      color: var(--bd-text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .input-field:focus {
+      border-color: var(--bd-accent-primary);
+      box-shadow: 0 0 0 3px var(--bd-accent-glow);
+    }
+    .input-field::placeholder {
+      color: var(--bd-text-muted);
+    }
+
+    /* Toggles */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .toggle-switch {
+      width: 38px; height: 20px;
+      border-radius: var(--bd-radius-full);
+      background: var(--bd-bg-elevated);
+      position: relative;
+      transition: background 0.2s ease;
+    }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--bd-text-muted);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+    }
+    .toggle-container.active .toggle-switch {
+      background: var(--bd-accent-primary);
+    }
+    .toggle-container.active .toggle-switch::after {
+      transform: translateX(18px);
+      background: #fff;
+    }
+
+    /* Tags & Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: var(--bd-radius-full);
+      font-size: 11px;
+      font-weight: 500;
+      background: var(--bd-bg-elevated);
+      color: var(--bd-text-secondary);
+      border: 1px solid var(--bd-border-subtle);
+    }
+    .badge--accent {
+      background: var(--bd-accent-glow);
+      color: var(--bd-accent-hover);
+      border-color: var(--bd-accent-border);
+    }
+    .badge--cool {
+      background: var(--bd-cool-glow);
+      color: var(--bd-cool-hover);
+      border-color: var(--bd-cool-border);
+    }
+
+    /* Toast triggerable */
+    .toast-box {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      pointer-events: none;
+      gap: 10px;
+    }
+    .toast {
+      padding: 12px 18px;
+      border-radius: var(--bd-radius-xl);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--bd-shadow-lg);
+      border: 1px solid var(--bd-border-strong);
+      background: var(--bd-bg-secondary);
+      color: var(--bd-text-primary);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .toast--success { border-color: rgba(34,197,94,0.25); border-left: 3px solid var(--bd-success); }
+    .toast--error { border-color: rgba(239,68,68,0.25); border-left: 3px solid var(--bd-error); }
+    .toast--info { border-color: rgba(59,130,246,0.25); border-left: 3px solid var(--bd-info); }
+
+    /* Live Modal Trigger demo */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bd-bg-overlay);
+      backdrop-filter: blur(8px);
+      z-index: 5000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal {
+      background: var(--bd-bg-secondary);
+      border: 1px solid var(--bd-border-strong);
+      border-radius: var(--bd-radius-2xl);
+      width: 420px;
+      max-width: 90%;
+      padding: 28px;
+      box-shadow: var(--bd-shadow-lg);
+      transform: scale(0.95) translateY(12px);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-backdrop.active .modal {
+      transform: scale(1) translateY(0);
+    }
+    .modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .modal__title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .modal__desc {
+      font-size: 13px;
+      color: var(--bd-text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+       INTEGRATED LIVE LAYOUT PROTOTYPES
+       ============================================================ */
+    .platform-tabs {
+      display: flex;
+      background: var(--bd-bg-tertiary);
+      padding: 4px;
+      border-radius: var(--bd-radius-xl);
+      margin-bottom: 24px;
+      border: 1px solid var(--bd-border-subtle);
+    }
+    .platform-tab-btn {
+      flex: 1;
+      padding: 10px 14px;
+      border: none;
+      background: transparent;
+      border-radius: var(--bd-radius-lg);
+      color: var(--bd-text-secondary);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    .platform-tab-btn.active {
+      background: var(--bd-bg-elevated);
+      color: var(--bd-text-primary);
+      font-weight: 600;
+      box-shadow: var(--bd-shadow-sm);
+    }
+
+    .platform-preview {
+      display: none;
+      min-height: 480px;
+    }
+    .platform-preview.active {
+      display: block;
+    }
+
+    /* 1. EXTENSION POPUP FRAME */
+    .popup-frame {
+      width: 380px;
+      background: var(--bd-bg-secondary);
+      border: 1px solid var(--bd-border-strong);
+      border-radius: var(--bd-radius-2xl);
+      overflow: hidden;
+      box-shadow: var(--bd-shadow-lg);
+      margin: 0 auto;
+    }
+    .popup-head {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--bd-border-subtle);
+    }
+    .popup-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .popup-logo__icon {
+      width: 22px; height: 22px;
+      border-radius: var(--bd-radius-md);
+      background: var(--bd-accent-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff;
+    }
+    .popup-tabs {
+      display: flex;
+      background: var(--bd-bg-tertiary);
+      border-bottom: 1px solid var(--bd-border-subtle);
+      padding: 4px 12px;
+    }
+    .popup-tab-btn {
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--bd-text-muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      border-radius: var(--bd-radius-md);
+      transition: color 0.15s;
+    }
+    .popup-tab-btn:hover { color: var(--bd-text-secondary); }
+    .popup-tab-btn.active {
+      color: var(--bd-text-primary);
+      background: var(--bd-bg-elevated);
+      font-weight: 600;
+    }
+    .popup-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .popup-card {
+      background: var(--bd-bg-tertiary);
+      border: 1px solid var(--bd-border-subtle);
+      border-radius: var(--bd-radius-xl);
+      padding: 14px;
+    }
+    .popup-card__title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--bd-text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .toggle-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .toggle-row__label {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--bd-text-primary);
+    }
+
+    /* 2. WEB APP LAYOUT */
+    .webapp-frame {
+      display: flex;
+      border: 1px solid var(--bd-border-strong);
+      border-radius: var(--bd-radius-2xl);
+      overflow: hidden;
+      height: 520px;
+      background: var(--bd-bg-primary);
+    }
+    .webapp-sidebar {
+      width: 230px;
+      background: var(--bd-bg-secondary);
+      border-right: 1px solid var(--bd-border-subtle);
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .webapp-sidebar__logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 0 10px 20px;
+      border-bottom: 1px solid var(--bd-border-subtle);
+      margin-bottom: 16px;
+    }
+    .webapp-sidebar__item {
+      padding: 8px 12px;
+      border-radius: var(--bd-radius-lg);
+      font-size: 13px;
+      color: var(--bd-text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .webapp-sidebar__item:hover {
+      background: var(--bd-bg-tertiary);
+      color: var(--bd-text-primary);
+    }
+    .webapp-sidebar__item.active {
+      background: var(--bd-accent-glow);
+      color: var(--bd-accent-hover);
+      border: 1px solid var(--bd-accent-border);
+      font-weight: 600;
+    }
+    .webapp-main {
+      flex: 1;
+      padding: 28px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .webapp-header {
+      margin-bottom: 24px;
+    }
+    .webapp-header__title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .repo-card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .repo-card {
+      background: var(--bd-bg-secondary);
+      border: 1px solid var(--bd-border-subtle);
+      border-radius: var(--bd-radius-xl);
+      padding: 20px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .repo-card:hover {
+      border-color: var(--bd-border-default);
+      transform: translateY(-2px);
+      box-shadow: var(--bd-shadow-md);
+    }
+    .repo-card__header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .repo-card__icon {
+      width: 28px; height: 28px;
+      border-radius: var(--bd-radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+    }
+    .repo-card__title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--bd-text-primary);
+    }
+    .repo-card__desc {
+      font-size: 11.5px;
+      color: var(--bd-text-secondary);
+      line-height: 1.5;
+    }
+
+    /* 3. MOBILE DEVICE FRAME */
+    .mobile-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 0;
+    }
+    .mobile-device {
+      width: 290px;
+      height: 540px;
+      border: 6px solid #2f2e35;
+      border-radius: 36px;
+      background: var(--bd-bg-primary);
+      overflow: hidden;
+      box-shadow: var(--bd-shadow-lg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .mobile-notch {
+      width: 120px;
+      height: 16px;
+      background: #2f2e35;
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      z-index: 100;
+    }
+    .mobile-status-bar {
+      height: 28px;
+      background: var(--bd-bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 9px;
+      color: var(--bd-text-muted);
+      font-family: var(--bd-font-mono);
+      font-weight: 600;
+      z-index: 10;
+    }
+    .mobile-app-bar {
+      height: 48px;
+      background: var(--bd-bg-secondary);
+      border-bottom: 1px solid var(--bd-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 10;
+    }
+    .mobile-app-bar__title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--bd-text-primary);
+    }
+    .mobile-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mobile-game-card {
+      background: var(--bd-bg-secondary);
+      border: 1px solid var(--bd-border-subtle);
+      border-radius: var(--bd-radius-xl);
+      padding: 14px;
+    }
+    .mobile-game-card__text {
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: var(--bd-text-secondary);
+    }
+    .mobile-game-card__action {
+      font-family: var(--bd-font-mono);
+      font-size: 11px;
+      color: var(--bd-accent-primary);
+      margin-top: 8px;
+      font-weight: 600;
+    }
+    .mobile-input-bar {
+      padding: 10px 14px;
+      background: var(--bd-bg-secondary);
+      border-top: 1px solid var(--bd-border-subtle);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       TOP NAV / LOGO
+       ============================================================ -->
+  <nav class="top-nav">
+    <div class="top-nav__logo">
+      <div class="top-nav__logo-icon">E</div>
+      <span>Ember V2 Specification</span>
+    </div>
+    <div class="top-nav__badge">FADING GLOW ACTIVE</div>
+  </nav>
+
+  <!-- ============================================================
+       MAIN SPEC CONTAINER
+       ============================================================ -->
+  <div class="main-container">
+    
+    <!-- Intro Header -->
+    <header class="intro">
+      <div class="intro__badge">OFFICIAL V2 SPEC: EMBER + FADING GLOW</div>
+      <h1 class="intro__title">Sleek, dual-temperature visual system with a premium fading accent glow.</h1>
+      <p class="intro__desc">
+        BetterEcosystem V2 standardizes all web, extension, and mobile assets around the <strong>Ember</strong> color palette and the **Fading Glow** accent bar treatment. We have retired legacy rainbow elements for a quiet, professional visual hierarchy utilizing warm dark charcoal backgrounds (`#0f0e11`), rich ember accents (`#e8850a`), and cool slate highlights (`#64748b`).
+      </p>
+    </header>
+
+    <!-- 1. COLOR SPEC & TOKENS -->
+    <h2 class="section-title">1. Color Palette & Design Tokens</h2>
+    <div class="deck-grid">
+      
+      <!-- Primary Core Backgrounds -->
+      <div class="deck-card deck-card--two-thirds">
+        <span class="deck-card__label">Warm Charcoal Surfaces (Base → Elevated)</span>
+        <div class="ember-accent-bar"></div>
+        <div class="color-swatch-list">
+          <div class="swatch-box">
+            <div class="swatch-box__color" style="background: #0f0e11;"></div>
+            <div class="swatch-box__name">Primary Canvas</div>
+            <div class="swatch-box__hex">#0f0e11</div>
+          </div>
+          <div class="swatch-box">
+            <div class="swatch-box__color" style="background: #17161b;"></div>
+            <div class="swatch-box__name">Secondary Card</div>
+            <div class="swatch-box__hex">#17161b</div>
+          </div>
+          <div class="swatch-box">
+            <div class="swatch-box__color" style="background: #1e1d23;"></div>
+            <div class="swatch-box__name">Tertiary Field</div>
+            <div class="swatch-box__hex">#1e1d23</div>
+          </div>
+          <div class="swatch-box">
+            <div class="swatch-box__color" style="background: #26252c;"></div>
+            <div class="swatch-box__name">Elevated Control</div>
+            <div class="swatch-box__hex">#26252c</div>
+          </div>
+          <div class="swatch-box">
+            <div class="swatch-box__color" style="background: #2e2d35;"></div>
+            <div class="swatch-box__name">Active Press</div>
+            <div class="swatch-box__hex">#2e2d35</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accent Swatches -->
+      <div class="deck-card deck-card--third">
+        <span class="deck-card__label">Brand Core Colors</span>
+        <div class="ember-accent-bar"></div>
+        <div class="color-swatch-list" style="grid-template-columns: 1fr 1fr;">
+          <div class="swatch-box">
+            <div class="swatch-box__color" style="background: #e8850a;"></div>
+            <div class="swatch-box__name">Ember Orange</div>
+            <div class="swatch-box__hex">#e8850a</div>
+          </div>
+          <div class="swatch-box">
+            <div class="swatch-box__color" style="background: #64748b;"></div>
+            <div class="swatch-box__name">Slate Blue</div>
+            <div class="swatch-box__hex">#64748b</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 2. TYPOGRAPHY SPECIMEN -->
+    <h2 class="section-title">2. Typography System (IBM Plex)</h2>
+    <div class="deck-grid">
+      <div class="deck-card deck-card--half">
+        <span class="deck-card__label">IBM Plex Sans (UI Specimen)</span>
+        <table class="specimen-table">
+          <tr>
+            <td class="specimen-meta">Title 1<br>24px · SemiBold</td>
+            <td style="font-size: 24px; font-weight: 600; color: var(--bd-text-primary); letter-spacing: -0.4px;">Gothic Dark Adventure</td>
+          </tr>
+          <tr>
+            <td class="specimen-meta">Subtitle<br>14px · Medium</td>
+            <td style="font-size: 14px; font-weight: 500; color: var(--bd-accent-hover);">A curated AI instruction set</td>
+          </tr>
+          <tr>
+            <td class="specimen-meta">UI / Button<br>13px · SemiBold</td>
+            <td style="font-size: 13px; font-weight: 600; color: var(--bd-text-primary);">Save Changes</td>
+          </tr>
+          <tr>
+            <td class="specimen-meta">Body Text<br>13px · Regular</td>
+            <td style="font-size: 13px; color: var(--bd-text-secondary); line-height: 1.5;">This instruction preset styles the context layout using soft warm hues and clean borders.</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="deck-card deck-card--half">
+        <span class="deck-card__label">IBM Plex Mono (Code & Meta Specimen)</span>
+        <table class="specimen-table">
+          <tr>
+            <td class="specimen-meta">Code Tag<br>11px · Regular</td>
+            <td><span style="font-family: var(--bd-font-mono); font-size: 11px; background: var(--bd-bg-tertiary); padding: 4px 8px; border-radius: var(--bd-radius-sm); border: 1px solid var(--bd-border-default); color: var(--bd-accent-light)">preset.dark_fantasy</span></td>
+          </tr>
+          <tr>
+            <td class="specimen-meta">Timestamp<br>10px · Regular</td>
+            <td style="font-family: var(--bd-font-mono); font-size: 10px; color: var(--bd-text-muted);">UPDATED 2026-05-27 // 14:47</td>
+          </tr>
+          <tr>
+            <td class="specimen-meta">Block Code<br>12px · Regular</td>
+            <td>
+              <pre style="font-family: var(--bd-font-mono); font-size: 11.5px; background: var(--bd-bg-tertiary); padding: 12px; border-radius: var(--bd-radius-lg); border: 1px solid var(--bd-border-subtle); color: #94a3b8;"><span style="color: #e8850a;">const</span> barStyle = <span style="color: #eae8ed;">'fading-glow'</span>;</pre>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. COMPONENT PLAYGROUND -->
+    <h2 class="section-title">3. Component Playground & Interactive States</h2>
+    <div class="deck-grid">
+      
+      <!-- Interactive Sandbox -->
+      <div class="deck-card deck-card--two-thirds">
+        <span class="deck-card__label">Interactive Playground (Test Handoff Feel)</span>
+        <div class="ember-accent-bar"></div>
+        
+        <div class="interactive-row">
+          <button class="btn btn--primary" onclick="showToast('success', 'Changes updated successfully!')">Primary Button</button>
+          <button class="btn btn--secondary" onclick="showToast('info', 'Viewing minor parameters...')">Secondary Button</button>
+          <button class="btn btn--cool" onclick="showToast('info', 'Loaded cool slate assets')">Cool Accent</button>
+          <button class="btn btn--ghost" onclick="openModal()">Open Live Modal</button>
+          <button class="btn btn--disabled">Disabled State</button>
+        </div>
+
+        <div class="interactive-row" style="margin-top: 24px;">
+          <div class="input-wrapper">
+            <input type="text" class="input-field" placeholder="Focus me to see glowing focus ring..." />
+          </div>
+          
+          <div class="toggle-container" onclick="toggleOption(this)">
+            <div class="toggle-switch"></div>
+            <span style="font-size: 13px; font-weight: 500;">Toggle Control</span>
+          </div>
+        </div>
+
+        <div class="interactive-row" style="margin-top: 24px;">
+          <span class="badge">AI Instructions</span>
+          <span class="badge badge--accent">Featured Badge</span>
+          <span class="badge badge--cool">Slate Evolved</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions / Toast Controls -->
+      <div class="deck-card deck-card--third">
+        <span class="deck-card__label">Toast & Event Triggers</span>
+        <div class="ember-accent-bar"></div>
+        <p style="font-size: 12.5px; color: var(--bd-text-secondary); margin-bottom: 16px;">Trigger instant, non-blocking alert banners to inspect semantic border highlights.</p>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="btn btn--secondary" style="justify-content: flex-start;" onclick="showToast('success', 'Adventure instruction successfully compiled.')">
+            <span style="color:var(--bd-success)">●</span> Trigger Success Toast
+          </button>
+          <button class="btn btn--secondary" style="justify-content: flex-start;" onclick="showToast('error', 'Conflict detected with script parameter.')">
+            <span style="color:var(--bd-error)">●</span> Trigger Error Toast
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 4. MULTI-PLATFORM PREVIEW -->
+    <h2 class="section-title">4. Multi-Platform Sync Preview</h2>
+    <div class="platform-tabs">
+      <button class="platform-tab-btn active" onclick="switchPlatform('popup')">1. PC Extension Popup</button>
+      <button class="platform-tab-btn" onclick="switchPlatform('webapp')">2. BetterRepository Web App</button>
+      <button class="platform-tab-btn" onclick="switchPlatform('mobile')">3. Android Mobile Wrapper</button>
+    </div>
+
+    <!-- 1. POPUP -->
+    <div id="preview-popup" class="platform-preview active">
+      <div class="popup-frame">
+        <div class="popup-head">
+          <div class="popup-logo">
+            <div class="popup-logo__icon">B</div>
+            <span>BetterDungeon</span>
+          </div>
+          <span style="font-size: 11px; font-family: var(--bd-font-mono); color: var(--bd-accent-primary);">v2.0</span>
+        </div>
+        
+        <div class="ember-accent-bar" style="margin: 0;"></div>
+        
+        <div class="popup-tabs">
+          <div class="popup-tab-btn active">Settings</div>
+          <div class="popup-tab-btn">Layout</div>
+          <div class="popup-tab-btn">Prescripts</div>
+        </div>
+
+        <div class="popup-body">
+          <div class="popup-card">
+            <div class="popup-card__title">Format Options</div>
+            
+            <div class="toggle-row">
+              <span class="toggle-row__label">Markdown Formatting</span>
+              <div class="toggle-container active" onclick="toggleOption(this)">
+                <div class="toggle-switch"></div>
+              </div>
+            </div>
+
+            <div class="toggle-row">
+              <span class="toggle-row__label">Compact Whitespace</span>
+              <div class="toggle-container" onclick="toggleOption(this)">
+                <div class="toggle-switch"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="popup-card">
+            <div class="popup-card__title">Adventure Presets</div>
+            <div style="display:flex; gap: 8px; margin-top: 4px;">
+              <span class="badge badge--accent">RPG Mode</span>
+              <span class="badge">Standard AI</span>
+            </div>
+          </div>
+          
+          <button class="btn btn--primary" style="width: 100%;" onclick="showToast('success', 'Settings applied to tab!')">Apply Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. WEB APP -->
+    <div id="preview-webapp" class="platform-preview">
+      <div class="webapp-frame">
+        <div class="webapp-sidebar">
+          <div class="webapp-sidebar__logo">
+            <span style="background:var(--bd-accent-primary);color:#fff;width:20px;height:20px;border-radius:var(--bd-radius-sm);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">B</span>
+            BetterRepo
+          </div>
+          <div class="webapp-sidebar__item active">📋 All Resources</div>
+          <div class="webapp-sidebar__item">⚡ Instructions</div>
+          <div class="webapp-sidebar__item">🧩 Plot Comps</div>
+          <div class="webapp-sidebar__item">📜 Story Cards</div>
+          <div class="webapp-sidebar__item">💻 Scripts</div>
+        </div>
+        
+        <div class="webapp-main">
+          <header class="webapp-header">
+            <h1 class="webapp-header__title">All Resources</h1>
+            <div class="ember-accent-bar"></div>
+          </header>
+          
+          <div class="repo-card-grid">
+            <div class="repo-card">
+              <div class="repo-card__header">
+                <div class="repo-card__icon" style="background:var(--bd-accent-glow); color:var(--bd-accent-hover)">⚡</div>
+                <div class="repo-card__title">Gothic Narrative Core</div>
+              </div>
+              <div class="repo-card__desc">A comprehensive Instruction set for dark-fantasy scenarios. Evolved for high coherence.</div>
+            </div>
+            
+            <div class="repo-card">
+              <div class="repo-card__header">
+                <div class="repo-card__icon" style="background:var(--bd-cool-glow); color:var(--bd-cool-hover)">💻</div>
+                <div class="repo-card__title">State Tracker Script</div>
+              </div>
+              <div class="repo-card__desc">Tracks character attributes and inventory parameters in a compact glassmorphic layout.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. MOBILE DEVICE -->
+    <div id="preview-mobile" class="platform-preview">
+      <div class="mobile-wrapper">
+        <div class="mobile-device">
+          <div class="mobile-notch"></div>
+          
+          <div class="mobile-status-bar">
+            <span>14:47</span>
+            <span>LTE ■■ 92%</span>
+          </div>
+
+          <div class="mobile-app-bar">
+            <span class="mobile-app-bar__title">BetterDungeon Wrapper</span>
+            <div style="width:16px;height:16px;background:var(--bd-accent-primary);border-radius:50%"></div>
+          </div>
+
+          <div class="ember-accent-bar" style="margin: 0;"></div>
+
+          <div class="mobile-body">
+            <div class="mobile-game-card">
+              <p class="mobile-game-card__text">The dark woods stretch indefinitely. An orange ember-colored lantern hangs from the heavy branch above your path.</p>
+              <div class="mobile-game-card__action">> You pick up the lantern.</div>
+            </div>
+
+            <div class="mobile-game-card" style="opacity: 0.85;">
+              <p class="mobile-game-card__text">The warm light reveals a hidden door marked with ancient slate runes.</p>
+            </div>
+          </div>
+
+          <div class="mobile-input-bar">
+            <input type="text" class="input-field" style="padding: 6px 12px; font-size:11px;" placeholder="What do you do next?" />
+            <button class="btn btn--primary" style="padding: 6px 12px; font-size:11px;">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       TOAST ALERTS BOX
+       ============================================================ -->
+  <div class="toast-box" id="toastBox"></div>
+
+  <!-- ============================================================
+       LIVE MODAL BACKDROP
+       ============================================================ -->
+  <div class="modal-backdrop" id="modalBackdrop" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal__header">
+        <h3 class="modal__title">Confirm Active Updates</h3>
+        <button class="btn btn--ghost" style="padding: 4px;" onclick="closeModal()">✕</button>
+      </div>
+      <p class="modal__desc">
+        Applying this action will immediately synchronize the newly selected "Ember" design language variables across all connected local workspaces.
+      </p>
+      <div style="display:flex; justify-content: flex-end; gap: 8px;">
+        <button class="btn btn--secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn--primary" onclick="confirmModal()">Apply System Sync</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       INTERACTIVE SCRIPTS
+       ============================================================ -->
+  <script>
+    // 1. Tab Switcher (Platform previews)
+    function switchPlatform(platformId) {
+      document.querySelectorAll('.platform-preview').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.platform-tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById('preview-' + platformId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // 2. Interactive Toggles
+    function toggleOption(el) {
+      el.classList.toggle('active');
+      const label = el.querySelector('.toggle-row__label') ? el.querySelector('.toggle-row__label').innerText : 'Toggle Control';
+      const isActive = el.classList.contains('active');
+      showToast(isActive ? 'success' : 'info', (isActive ? 'Enabled: ' : 'Disabled: ') + 'Feature parameter');
+    }
+
+    // 3. Live Toast Engine
+    function showToast(type, text) {
+      const toastBox = document.getElementById('toastBox');
+      const toast = document.createElement('div');
+      toast.className = 'toast toast--' + type;
+      
+      let icon = 'ℹ';
+      if (type === 'success') icon = '✓';
+      if (type === 'error') icon = '✕';
+      
+      toast.innerHTML = `<span>${icon}</span> ${text}`;
+      toastBox.appendChild(toast);
+      
+      // Trigger animations
+      setTimeout(() => toast.classList.add('show'), 10);
+      
+      // Auto destroy
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // 4. Live Modal Engine
+    function openModal() {
+      document.getElementById('modalBackdrop').classList.add('active');
+    }
+    function closeModal() {
+      document.getElementById('modalBackdrop').classList.remove('active');
+    }
+    function confirmModal() {
+      closeModal();
+      showToast('success', 'Workspace synchronized with Ember specifications!');
+    }
+  </script>
+</body>
+</html>
