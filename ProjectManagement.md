@@ -4,19 +4,25 @@
 
 ## Current State
 
-The active product track is **BetterDungeon V2**, centered on Ultrascripts. All core Ultrascripts runtime features, the 9 first-party modules, their per-module regression test suites, and internal technical documentation are fully completed and verified (Phases 1-11).
+The active product track is **BetterDungeon V2**, centered on Ultrascripts. The
+core runtime, 9 first-party modules, per-module regression suites,
+multiplatform follow-through, internal technical docs, and BetterRepository
+public Ultrascripts docs are completed and verified.
 
-The current active workstream is **Phase 12: Mobile Port** — porting Ultrascripts to the Android WebView build of BetterDungeon so the platform is effectively multiplatform, with multiplatform smoke testing across Chromium, Gecko, and Android WebView. Showcase scripts (Aura Cards, Chronos V2, and additional per-module demos) are deferred to Phase 14, after BetterRepository public documentation (Phase 13).
+The current active workstream is the Ultrascripts module review and complete
+script foundation: the old examples have been replaced with a standardized
+SDK-based starter template, and the next step is to review modules one at a
+time before producing complete scripts.
 
 ## Projects
 
 - **[BetterDungeon](./BetterDungeon.md)** - AI Dungeon browser extension. Active project.
-- **[BetterRepository](./BetterRepository.md)** - Public guide/resource site. Active next focus for public developer guides.
+- **[BetterRepository](./BetterRepository.md)** - Public guide/resource site. Active project.
 - **[BetterVoyage](./BetterVoyage.md)** - Future Voyage extension idea. Parked until Voyage is out of Early Access.
 
 ## Planning Areas
 
-- **[Ultrascripts planning](./ultrascripts/README.md)** - Canonical Ultrascripts technical specifications, architecture docs, module definitions, and regression suites.
+- **[Ultrascripts planning](./ultrascripts/README.md)** - Canonical Ultrascripts technical specifications, architecture docs, module definitions, regression suites, and example contract notes.
 - **[AI Dungeon reference docs](./docs/index.md)** - RAG-oriented AI Dungeon platform, scripting, DOM, and GraphQL reference.
 - **[Design notes](./design/README.md)** - Shared product/design references.
 

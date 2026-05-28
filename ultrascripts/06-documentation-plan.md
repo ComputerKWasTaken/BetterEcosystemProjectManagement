@@ -22,6 +22,7 @@ The active internal Ultrascripts doc set is now:
 - [04-test-suites.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/04-test-suites.md)
 - [05-betterdungeon-sdk-spec.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/05-betterdungeon-sdk-spec.md)
 - [06-documentation-plan.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/06-documentation-plan.md)
+- [07-example-contract-reference.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/07-example-contract-reference.md)
 
 ## Internal documentation goals
 
@@ -48,35 +49,42 @@ The BetterRepository side should do different work:
 - give each major module a clear home
 - keep the technical depth in the right places
 
-The public guide split should remain:
+The public guide split is now:
 
 - `UltrascriptsGuide.vue` as the "why/use it" overview
+- `UltrascriptsQuickStartGuide.vue` as the standard SDK-helper onboarding path
+- `UltrascriptsCookbookGuide.vue` as the recipe collection
+- `UltrascriptsArchitectureGuide.vue` for runtime architecture
+- `UltrascriptsAuthoringGuide.vue` for BetterDungeon-side module authors
 - module-specific guides where deeper usage belongs
 - migration/help pages separated from the main pitch
 
-## Planned BetterRepository guide inventory
+## Completed BetterRepository guide inventory
 
-Core public guide areas should include:
+Core public guide areas now include:
 
 - Ultrascripts overview
+- Quick Start
+- Cookbook
+- Architecture
+- Building Modules
 - Scripture
 - WebFetch
+- AI
+- BetterDungeon SDK
 - Clock
 - Geolocation
 - Weather
 - Network
 - System
-- AI
-- migration/help material as needed
-
-Now that the BetterDungeon SDK module ships, it should get its own guide or a clearly defined section rather than being buried as a footnote.
+- migration/help material as needed later
 
 ## Recommended execution order
 
-1. keep the internal Ultrascripts docs accurate first (Completed - Phase 11)
-2. keep the high-level Ultrascripts public guide clear and compelling
-3. expand or polish per-module guides as the shipped module surfaces stabilize
-4. add dedicated BetterDungeon SDK documentation now that the first public contract exists
+1. keep the internal Ultrascripts docs accurate first (completed in Phase 11)
+2. complete the high-level public guide, quick start, cookbook, architecture, and authoring docs (completed in Phase 13)
+3. complete per-module guides for all shipped first-party modules (completed in Phase 13)
+4. keep the example contract reference current as the starter template and complete scripts evolve
 
 ## Verification
 
@@ -90,6 +98,6 @@ When documentation is updated, verify:
 
 ## Current priority
 
-Phase 11 (Documentation Cleanup) is now successfully completed. All internal docs perfectly match our production codebase and reflect real shipped architecture.
+Phase 13 (BetterRepository Public Docs) is now completed for the shipped Ultrascripts surface. BetterRepository has a coherent public guide set, dedicated module pages, a Quick Start, a Cookbook, and a public SDK guide that matches the live runtime contract.
 
-The active priority now is the mobile port under Phase 12, getting Ultrascripts running on the Android WebView build of BetterDungeon so it becomes effectively multiplatform. After that, the next documentation focus will be Phase 13 (BetterRepository Public Docs), ensuring our public guide set tells a coherent story about Ultrascripts as a real platform, with a clean place for the shipped BetterDungeon SDK surface to fit naturally. Showcase scripts are deferred to Phase 14.
+The example/template foundation is now in place: the current active priority is to review each shipped module for conceptual improvements before producing complete scripts from the standard SDK-based starter template.

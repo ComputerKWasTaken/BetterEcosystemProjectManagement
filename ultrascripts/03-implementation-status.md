@@ -131,7 +131,7 @@ It should not describe Ultrascripts as:
 
 ## Remaining work before Ultrascripts is fully wrapped
 
-The core runtime, all modules, and the regression test suite are shipped. What remains is documentation, showcase scripts, multiplatform follow-through, and public-facing guides.
+The core runtime, all modules, the regression test suite, multiplatform follow-through, the public BetterRepository guide set, and the standard SDK-based script template foundation are shipped. What remains is module-by-module conceptual review and then complete production-quality scripts.
 
 ### Completed phases
 
@@ -156,44 +156,34 @@ The core runtime, all modules, and the regression test suite are shipped. What r
 - Replaced the speculative SDK roadmap with a definitive production API specification.
 - Updated project-wide management hubs to reflect complete alignment.
 
-### Phase 12 — Mobile Port (active)
+**Phase 12 — Mobile Port.**
 
-In progress:
+- Carried Ultrascripts through the Android WebView path.
+- Completed multiplatform support across Chromium, Gecko/Firefox, and Android WebView.
+- Documented the supported platform set in BetterRepository.
 
-- Carry Ultrascripts through the Android WebView path.
-- Multiplatform smoke testing across Chromium, Gecko, and Android WebView.
+**Phase 13 — BetterRepository Documentation.**
 
-Goal:
+- Completed the public-facing BetterRepository Ultrascripts guide set.
+- Added/polished the overview, Quick Start, Cookbook, Architecture, Building Modules, and all shipped module guides.
+- Aligned public examples with the live `ai`, `sdk`, heartbeat, and envelope contracts.
+- Cleaned the Ultrascripts info dump so it no longer carries Phase 12/13 TODOs.
 
-- Ultrascripts behavior is understood and documented across supported BetterDungeon targets.
+### Phase 14 — Example Cleanup, Template Foundation, and Complete Scripts
 
-### Phase 13 — BetterRepository Documentation
+Active next:
 
-Still needed:
+- Maintain the standard SDK-based starter template that all future Ultrascripts scripts can start from.
+- Review each shipped module for conceptual improvements before using it as a foundation for complete scripts.
+- Produce polished scripts only after the template and module reviews land.
 
-- Finish the public-facing BetterRepository Ultrascripts/module docs.
-- Align public docs with the real shipped runtime.
-- Complete release-facing cleanup around the Ultrascripts feature set.
+Current example foundation:
 
-Goal:
-
-- Public docs explain Ultrascripts clearly without reintroducing outdated technical assumptions.
-
-### Phase 14 — Showcase Scripts
-
-Deferred until after the mobile port and BetterRepository docs land:
-
-- Produce or polish example scripts for the shipped modules.
-- Keep examples useful as both demos and learning material.
-
-Known examples already in the codebase:
-
-- Aura Cards (AI + Scripture)
-- Chronos V2 (Clock + Weather + Scripture)
+- `ultrascripts-starter-template`
 
 Goal:
 
-- Each important module has at least one strong example script.
+- Complete scripts should be based on the standardized helper/template and should demonstrate finalized module behavior rather than old transitional examples.
 
 ## What is no longer an active implementation problem
 

@@ -13,6 +13,7 @@
 | 04 | [Ultrascripts Test Suites](./04-test-suites.md) | Active regression surfaces and per-module coverage |
 | 05 | [BetterDungeon SDK Spec](./05-betterdungeon-sdk-spec.md) | Complete SDK specification, ops schemas, and scripting patterns |
 | 06 | [Documentation Plan](./06-documentation-plan.md) | Internal/public documentation alignment plan |
+| 07 | [Example Contract Reference](./07-example-contract-reference.md) | Public example guardrails and live module contract quick checks |
 
 ### Archived
 
@@ -24,13 +25,13 @@ Ultrascripts is BetterDungeon's cards-based runtime for AI Dungeon scripting. Sc
 
 ## Current status
 
-The core Ultrascripts runtime is shipped. All 9 first-party modules are implemented, live-tested, and covered by dedicated regression test suites in `tests/aid-scripts/`.
+The core Ultrascripts runtime is shipped. All 9 first-party modules are implemented, live-tested, documented publicly in BetterRepository, and covered by dedicated regression test suites in `tests/aid-scripts/`.
 
 What remains is:
 
-- multiplatform/mobile follow-through (Phase 12 — active)
-- public BetterRepository guide work (Phase 13)
-- showcase scripts (Phase 14 — deferred)
+- keep the standard SDK-based template foundation aligned with implementation changes
+- review the current modules one at a time for conceptual polish
+- produce proper complete scripts after the template and module reviews land
 
 ## Doc rules
 

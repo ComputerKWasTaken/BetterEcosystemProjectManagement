@@ -1,8 +1,9 @@
 # Ultrascripts Example Contract Reference
 
-Temporary working reference for fixing public BetterRepository examples and
-author-facing sample scripts. Source of truth is the live BetterDungeon runtime
-under `BetterDungeon/modules/*` and `BetterDungeon/services/ultrascripts/*`.
+Living reference for public BetterRepository examples, the SDK-based starter
+template, and author-facing sample scripts. Source of truth is the live
+BetterDungeon runtime under `BetterDungeon/modules/*` and
+`BetterDungeon/services/ultrascripts/*`.
 
 ## Rules for public examples
 
@@ -20,7 +21,7 @@ under `BetterDungeon/modules/*` and `BetterDungeon/services/ultrascripts/*`.
 
 - Runtime discovery lives on `ultrascripts:heartbeat`.
 - Scripts should treat heartbeat presence as "Ultrascripts is available".
-- Module discovery comes from `heartbeat.modules[moduleId].ops`.
+- Module discovery comes from the `modules` array on `ultrascripts:heartbeat`.
 
 ### Request envelope
 
@@ -32,7 +33,7 @@ under `BetterDungeon/modules/*` and `BetterDungeon/services/ultrascripts/*`.
   "requests": [
     {
       "id": "turn-12-clock-1",
-      "moduleId": "clock",
+      "module": "clock",
       "op": "now",
       "args": {}
     }
@@ -48,15 +49,13 @@ under `BetterDungeon/modules/*` and `BetterDungeon/services/ultrascripts/*`.
 ```json
 {
   "v": 1,
-  "responses": [
-    {
-      "requestId": "turn-12-clock-1",
-      "moduleId": "clock",
-      "op": "now",
+  "responses": {
+    "turn-12-clock-1": {
       "status": "ok",
-      "data": {}
+      "data": {},
+      "completedLiveCount": 12
     }
-  ]
+  }
 }
 ```
 
@@ -76,6 +75,9 @@ Canonical module id: `ai`
 
 Supported alias:
 - `providerAI`
+
+Public docs should teach `ai`. The alias only exists so older examples and
+saved scenarios can keep working.
 
 Canonical request args for `chat`:
 

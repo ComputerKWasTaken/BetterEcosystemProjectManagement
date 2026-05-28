@@ -7,7 +7,7 @@
 Ultrascripts has two main testing surfaces in the repo:
 
 - dedicated AI Dungeon regression scripts under `BetterDungeon/tests/aid-scripts/`
-- example scripts under `BetterDungeon/examples/aid-scripts/` that also serve as real-world integration checks
+- the starter template under `BetterDungeon/examples/aid-scripts/`, which serves as the author-facing contract smoke check
 
 This is important because Ultrascripts is not validated only through unit-style local checks. A lot of the runtime depends on live AI Dungeon behavior, so scenario-driven regression scripts are still the most useful proof surface.
 
@@ -38,7 +38,7 @@ Files:
 Purpose:
 
 - end-to-end validation of the Ultrascripts `ai` module
-- validation of alias compatibility through `providerAI`
+- validation of legacy alias compatibility through `providerAI`
 - request/response envelope behavior
 - pending to terminal response flow
 - ack cleanup
@@ -244,31 +244,25 @@ Use this suite when changing:
 
 Interactive Scripture coverage currently lives inside `tests/aid-scripts/scripture-module` rather than in a separate active Ultrascripts doc file. That suite is still the place to verify widget event queue behavior, acknowledgement flow, optimistic interactions, and state round-tripping.
 
-## Example scripts as integration checks
+## Starter template as an integration check
 
-The current `examples/aid-scripts/` directories are:
+The current `examples/aid-scripts/` directory is:
 
-- `aura-cards`
-- `chronos-v2`
+- `ultrascripts-starter-template`
 
-These are not formal regression suites, but they are still valuable integration checks because they exercise Ultrascripts the way real scenario authors use it.
+This is not a formal regression suite, but it is a valuable integration check because it exercises Ultrascripts the way real scenario authors should start using it.
 
-### `examples/aid-scripts/aura-cards`
-
-Useful as a live integration check for:
-
-- `ai`
-- Scripture-backed UI/state publishing
-- mixed state plus ops workflows
-
-### `examples/aid-scripts/chronos-v2`
+### `examples/aid-scripts/ultrascripts-starter-template`
 
 Useful as a live integration check for:
 
+- heartbeat and module discovery
+- request/response envelopes
+- response acknowledgement
+- `sdk`
 - `clock`
-- `weather`
-- Scripture-backed dashboard behavior
-- heartbeat/module detection from a real author-style script
+- Scripture-backed dashboard publishing
+- degraded behavior when Ultrascripts is unavailable
 
 ## Current coverage picture
 
@@ -286,7 +280,7 @@ Coverage is now comprehensive across all shipped modules:
 | weather | `weather-module` | 11 | `current`, `forecast` + coords/place/units |
 | webfetch | `webfetch-module` | 11 | `fetch`, `search` + SSRF guards + consent |
 
-Additional integration coverage through Aura Cards and Chronos V2 example scripts.
+Additional integration coverage comes from the Ultrascripts starter template.
 
 ## What this means in practice
 
@@ -295,7 +289,7 @@ When changing Ultrascripts today:
 - use the dedicated module suite for the module you are changing
 - use the Scripture module suite for widget/render/state work
 - use the AI module suite for envelope/dispatcher changes
-- use Aura Cards and Chronos V2 as realistic integration smoke checks
+- use the starter template as the realistic author-script smoke check
 - run the full suite set when changing core runtime files (core.js, ops-dispatcher.js, envelope.js, write-queue.js)
 
 ## Current sign-off history
@@ -311,7 +305,7 @@ The implementation sign-offs currently reflected across the Ultrascripts docs ar
 | Weather | 2026-04-23 | Live suite passed |
 | Network | 2026-04-24 | Live suite passed |
 | System | 2026-04-24 | Live suite passed |
-| Provider AI / AI module | 2026-04-26 | Live suite passed |
+| AI module (legacy Provider AI alias) | 2026-04-26 | Live suite passed |
 
 All modules now have dedicated regression suites in the repo to validate future changes.
 
