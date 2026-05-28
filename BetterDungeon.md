@@ -32,8 +32,8 @@ Current next step:
 
 - Review each shipped module one at a time for conceptual improvements before
   creating complete scripts.
-- Keep the standardized SDK-based Ultrascripts starter template aligned with
-  BetterRepository while module reviews are underway.
+- Keep the standardized SDK-based Enhanced and Required Ultrascripts templates
+  aligned with BetterRepository while module reviews are underway.
 
 ## Roadmap
 
@@ -55,9 +55,9 @@ Current next step:
 ### Active
 
 - **Phase 14 - Example Cleanup / Template Foundation / Complete Scripts.**
-  Transitional examples have been removed and replaced by the public `bd.us`
-  helper template. Next: review modules conceptually, then produce proper
-  complete scripts.
+  Transitional examples have been removed and replaced by public `bd.us`
+  helper templates for Enhanced and Required scripts. Next: review modules
+  conceptually, then produce proper complete scripts.
 
 ### Later
 

@@ -7,7 +7,7 @@
 Ultrascripts has two main testing surfaces in the repo:
 
 - dedicated AI Dungeon regression scripts under `BetterDungeon/tests/aid-scripts/`
-- the starter template under `BetterDungeon/examples/aid-scripts/`, which serves as the author-facing contract smoke check
+- the Enhanced and Required templates under `BetterDungeon/examples/aid-scripts/`, which serve as author-facing contract smoke checks
 
 This is important because Ultrascripts is not validated only through unit-style local checks. A lot of the runtime depends on live AI Dungeon behavior, so scenario-driven regression scripts are still the most useful proof surface.
 
@@ -244,13 +244,14 @@ Use this suite when changing:
 
 Interactive Scripture coverage currently lives inside `tests/aid-scripts/scripture-module` rather than in a separate active Ultrascripts doc file. That suite is still the place to verify widget event queue behavior, acknowledgement flow, optimistic interactions, and state round-tripping.
 
-## Starter template as an integration check
+## Starter templates as integration checks
 
-The current `examples/aid-scripts/` directory is:
+The current `examples/aid-scripts/` directories are:
 
 - `ultrascripts-starter-template`
+- `ultrascripts-required-template`
 
-This is not a formal regression suite, but it is a valuable integration check because it exercises Ultrascripts the way real scenario authors should start using it.
+These are not formal regression suites, but they are valuable integration checks because they exercise Ultrascripts the way real scenario authors should start using it.
 
 ### `examples/aid-scripts/ultrascripts-starter-template`
 
@@ -263,6 +264,18 @@ Useful as a live integration check for:
 - `clock`
 - Scripture-backed dashboard publishing
 - degraded behavior when Ultrascripts is unavailable
+
+### `examples/aid-scripts/ultrascripts-required-template`
+
+Useful as a live integration check for:
+
+- heartbeat and module discovery
+- hard runtime/capability gating
+- player-facing requirement messages
+- request/response envelopes
+- response acknowledgement
+- `sdk.config`
+- Scripture-backed dashboard publishing
 
 ## Current coverage picture
 
@@ -280,7 +293,7 @@ Coverage is now comprehensive across all shipped modules:
 | weather | `weather-module` | 11 | `current`, `forecast` + coords/place/units |
 | webfetch | `webfetch-module` | 11 | `fetch`, `search` + SSRF guards + consent |
 
-Additional integration coverage comes from the Ultrascripts starter template.
+Additional integration coverage comes from the Ultrascripts starter templates.
 
 ## What this means in practice
 
@@ -289,7 +302,7 @@ When changing Ultrascripts today:
 - use the dedicated module suite for the module you are changing
 - use the Scripture module suite for widget/render/state work
 - use the AI module suite for envelope/dispatcher changes
-- use the starter template as the realistic author-script smoke check
+- use the starter templates as realistic author-script smoke checks
 - run the full suite set when changing core runtime files (core.js, ops-dispatcher.js, envelope.js, write-queue.js)
 
 ## Current sign-off history

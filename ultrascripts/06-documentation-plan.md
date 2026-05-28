@@ -84,7 +84,7 @@ Core public guide areas now include:
 1. keep the internal Ultrascripts docs accurate first (completed in Phase 11)
 2. complete the high-level public guide, quick start, cookbook, architecture, and authoring docs (completed in Phase 13)
 3. complete per-module guides for all shipped first-party modules (completed in Phase 13)
-4. keep the example contract reference current as the starter template and complete scripts evolve
+4. keep the example contract reference current as the starter templates and complete scripts evolve
 
 ## Verification
 
@@ -100,4 +100,4 @@ When documentation is updated, verify:
 
 Phase 13 (BetterRepository Public Docs) is now completed for the shipped Ultrascripts surface. BetterRepository has a coherent public guide set, dedicated module pages, a Quick Start, a Cookbook, and a public SDK guide that matches the live runtime contract.
 
-The example/template foundation is now in place: the current active priority is to review each shipped module for conceptual improvements before producing complete scripts from the standard SDK-based starter template.
+The example/template foundation is now in place: the current active priority is to review each shipped module for conceptual improvements before producing complete scripts from the standard SDK-based Enhanced and Required templates.

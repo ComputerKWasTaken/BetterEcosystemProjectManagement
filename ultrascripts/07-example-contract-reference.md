@@ -1,7 +1,7 @@
 # Ultrascripts Example Contract Reference
 
 Living reference for public BetterRepository examples, the SDK-based starter
-template, and author-facing sample scripts. Source of truth is the live
+templates, and author-facing sample scripts. Source of truth is the live
 BetterDungeon runtime under `BetterDungeon/modules/*` and
 `BetterDungeon/services/ultrascripts/*`.
 

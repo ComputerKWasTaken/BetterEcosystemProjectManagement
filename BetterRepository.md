@@ -57,8 +57,8 @@ The public docs now cover:
 
 ### Medium Priority
 
-- Keep the `Ultrascripts Starter Template` aligned between BetterRepository and
-  BetterDungeon as the scripting contract evolves.
+- Keep the Enhanced and Required Ultrascripts templates aligned between
+  BetterRepository and BetterDungeon as the scripting contract evolves.
 - Add scenario-author examples that combine modules, such as weather grounded by geolocation or NPC reasoning through the AI module.
 - Cross-link BetterDungeon popup setup steps with each module guide.
 

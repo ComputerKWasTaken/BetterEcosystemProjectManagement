@@ -29,7 +29,7 @@ The core Ultrascripts runtime is shipped. All 9 first-party modules are implemen
 
 What remains is:
 
-- keep the standard SDK-based template foundation aligned with implementation changes
+- keep the standard SDK-based Enhanced and Required template foundation aligned with implementation changes
 - review the current modules one at a time for conceptual polish
 - produce proper complete scripts after the template and module reviews land
 

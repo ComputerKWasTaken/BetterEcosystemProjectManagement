@@ -131,7 +131,7 @@ It should not describe Ultrascripts as:
 
 ## Remaining work before Ultrascripts is fully wrapped
 
-The core runtime, all modules, the regression test suite, multiplatform follow-through, the public BetterRepository guide set, and the standard SDK-based script template foundation are shipped. What remains is module-by-module conceptual review and then complete production-quality scripts.
+The core runtime, all modules, the regression test suite, multiplatform follow-through, the public BetterRepository guide set, and the standard SDK-based Enhanced/Required script template foundation are shipped. What remains is module-by-module conceptual review and then complete production-quality scripts.
 
 ### Completed phases
 
@@ -173,17 +173,18 @@ The core runtime, all modules, the regression test suite, multiplatform follow-t
 
 Active next:
 
-- Maintain the standard SDK-based starter template that all future Ultrascripts scripts can start from.
+- Maintain the standard SDK-based Enhanced and Required templates that future Ultrascripts scripts can start from.
 - Review each shipped module for conceptual improvements before using it as a foundation for complete scripts.
 - Produce polished scripts only after the template and module reviews land.
 
 Current example foundation:
 
 - `ultrascripts-starter-template`
+- `ultrascripts-required-template`
 
 Goal:
 
-- Complete scripts should be based on the standardized helper/template and should demonstrate finalized module behavior rather than old transitional examples.
+- Complete scripts should be based on the standardized helper/templates and should demonstrate finalized module behavior rather than old transitional examples.
 
 ## What is no longer an active implementation problem
 

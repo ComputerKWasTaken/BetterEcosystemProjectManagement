@@ -11,8 +11,8 @@ public Ultrascripts docs are completed and verified.
 
 The current active workstream is the Ultrascripts module review and complete
 script foundation: the old examples have been replaced with a standardized
-SDK-based starter template, and the next step is to review modules one at a
-time before producing complete scripts.
+SDK-based Enhanced and Required templates, and the next step is to review
+modules one at a time before producing complete scripts.
 
 ## Projects
 
