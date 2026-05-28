@@ -23,6 +23,7 @@ The active internal Ultrascripts doc set is now:
 - [05-betterdungeon-sdk-spec.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/05-betterdungeon-sdk-spec.md)
 - [06-documentation-plan.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/06-documentation-plan.md)
 - [07-example-contract-reference.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/07-example-contract-reference.md)
+- [08-snippet-review-checklist.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/08-snippet-review-checklist.md)
 
 ## Internal documentation goals
 
@@ -85,6 +86,7 @@ Core public guide areas now include:
 2. complete the high-level public guide, quick start, cookbook, architecture, and authoring docs (completed in Phase 13)
 3. complete per-module guides for all shipped first-party modules (completed in Phase 13)
 4. keep the example contract reference current as the starter templates and complete scripts evolve
+5. use the snippet review checklist for any public Ultrascripts code-block change
 
 ## Verification
 
@@ -95,6 +97,7 @@ When documentation is updated, verify:
 - guide claims match the actual codebase
 - public-facing language matches what users should care about
 - technical detail lives in the right guide, not everywhere at once
+- public code snippets pass the snippet review checklist before sign-off
 
 ## Current priority
 
