@@ -15,6 +15,24 @@ BetterDungeon runtime under `BetterDungeon/modules/*` and
 - If a module supports legacy aliases internally, document the canonical modern
   field names unless authors truly need the alias.
 
+## AI Dungeon scripting constraints
+
+Public AI Dungeon snippets must also respect the platform sandbox:
+
+- Non-library snippets are pasted into a modifier body and the editor keeps
+  `modifier(text)` as the final line. Do not use top-level early `return` in
+  modifier-body snippets.
+- The modifier wrapper should return `{ text }`. Do not teach empty string
+  returns or `stop: true` in public snippets.
+- The sandbox exposes story cards as `id`, `keys`, `entry`, and `type`.
+  Helpers may support BetterDungeon's `title`/`value` naming as compatibility,
+  but public snippets must work with `keys`/`entry`.
+- Use `addStoryCard(keys, entry, type)` and
+  `updateStoryCard(index, keys, entry, type)` for writes. Do not rely on direct
+  mutation of `storyCards` objects.
+- Avoid `async`, `await`, timers, promises, and same-turn assumptions in AI
+  Dungeon snippets. Module responses arrive on a later turn.
+
 ## Shared transport
 
 ### Heartbeat
@@ -102,6 +120,32 @@ Notes:
 - Do not teach `top_p`; the live module does not normalize it.
 - Valid `responseFormat.type` values are `text`, `json_object`,
   and `json_schema`.
+- Read chat text from `data.text` or `data.message.content`, not top-level
+  `data.content`.
+
+Canonical `chat` result on success:
+
+```json
+{
+  "provider": "openrouter",
+  "model": "google/gemini-2.0-flash-exp:free",
+  "id": "gen-...",
+  "created": 1736992200,
+  "object": "chat.completion",
+  "text": "Assistant reply text",
+  "message": {
+    "role": "assistant",
+    "content": "Assistant reply text"
+  },
+  "finishReason": "stop",
+  "nativeFinishReason": "stop",
+  "usage": {
+    "promptTokens": 245,
+    "completionTokens": 87,
+    "totalTokens": 332
+  }
+}
+```
 
 ## Clock module
 
@@ -195,12 +239,7 @@ Optional args:
     "timezone": "America/Chicago",
     "elevation": 181
   },
-  "units": {
-    "kind": "metric",
-    "temperature": "celsius",
-    "windSpeed": "km/h",
-    "precipitation": "mm"
-  },
+  "units": "metric",
   "source": "open-meteo",
   "current": {
     "observedAt": "2025-01-15T14:30",
@@ -211,7 +250,7 @@ Optional args:
     "windDirection": 280,
     "isDay": true,
     "weatherCode": 63,
-    "weather": "Rain"
+    "weather": "Moderate rain"
   }
 }
 ```
@@ -221,13 +260,13 @@ Optional args:
 ```json
 {
   "location": {},
-  "units": {},
+  "units": "metric",
   "source": "open-meteo",
   "days": [
     {
       "date": "2025-01-16",
       "weatherCode": 71,
-      "weather": "Snow fall",
+      "weather": "Slight snow",
       "temperatureMax": 6,
       "temperatureMin": -1,
       "precipitationSum": 2.3,
@@ -244,6 +283,118 @@ Notes:
 - Use `latitude` / `longitude`, not `lat` / `lon`.
 - Read `data.current.weatherCode`, not top-level `data.weatherCode`.
 - Read `data.current.temperature`, not top-level `data.temperature`.
+
+## WebFetch module
+
+Module id: `webfetch`
+
+Ops:
+- `fetch`
+- `search`
+
+`webfetch.fetch` supports safe HTTP methods only:
+- `GET`
+- `HEAD`
+- `OPTIONS`
+
+Canonical args:
+
+```json
+{
+  "url": "https://api.example.com/data",
+  "method": "GET",
+  "headers": { "Accept": "application/json" },
+  "timeoutMs": 15000,
+  "maxBodyBytes": 50000
+}
+```
+
+Notes:
+- Do not teach `POST` or request bodies in WebFetch v1.
+- Response data includes `status`, `headers`, `bodyEncoding`, `body`,
+  `truncated`, and `request.strippedHeaders`.
+- `webfetch.search` returns `query`, `provider`, `status`, `heading`,
+  `answer`, `abstractText`, `abstractUrl`, `related`, `source`, and
+  `truncated`.
+
+## Network module
+
+Module id: `network`
+
+Op:
+- `status`
+
+`network.status` result:
+
+```json
+{
+  "online": true,
+  "quality": "good",
+  "checkedAt": 1736992200000,
+  "checkedAtIso": "2025-01-15T20:30:00.000Z",
+  "connectionSupported": true,
+  "effectiveType": "4g",
+  "type": null,
+  "downlinkMbps": 10.2,
+  "downlinkMaxMbps": null,
+  "rttMs": 50,
+  "saveData": false
+}
+```
+
+Notes:
+- Treat every field beyond `online` and `quality` as best-effort.
+- Browsers without Network Information API support may report mostly `null`
+  hints.
+
+## SDK module
+
+Module id: `sdk`
+
+Ops:
+- `version`
+- `config`
+
+`sdk.version` result:
+
+```json
+{
+  "sdkVersion": "1.0.0",
+  "betterDungeonVersion": "2.0.0",
+  "ultrascriptsProtocol": 1,
+  "ultrascriptsClient": "BetterDungeon"
+}
+```
+
+`sdk.config` result includes sanitized feature/config state:
+
+```json
+{
+  "sdkVersion": "1.0.0",
+  "betterDungeonVersion": "2.0.0",
+  "ultrascriptsProtocol": 1,
+  "ultrascriptsClient": "BetterDungeon",
+  "features": {},
+  "ultrascripts": {
+    "enabled": true,
+    "runtimeEnabled": true,
+    "debug": false,
+    "modulePreferences": {},
+    "scriptureDisplay": { "size": "normal", "maxHeight": "medium", "layout": "balanced" },
+    "webfetch": { "savedOriginCount": 0, "allowCount": 0, "denyCount": 0 },
+    "ai": {
+      "configured": true,
+      "defaultModel": "google/gemini-2.0-flash-exp:free",
+      "costControls": {}
+    }
+  }
+}
+```
+
+Notes:
+- Use `sdk.config` before calling `ai.chat` in public examples.
+- The AI key itself is never exposed; only `ultrascripts.ai.configured` and
+  sanitized cost controls are visible.
 
 ## System module
 
@@ -408,9 +559,11 @@ Notes:
 ```
 
 Script-side handling:
-- Read `card.widgetEvents.events`.
-- Advance your own `interactions.ackSeq` in `ultrascripts:state:scripture`
-  after consuming events.
+- Public helper-based examples should use `bd.us.scriptureEvents()` and
+  `bd.us.ackScripture(seq)`.
+- Low-level raw protocol examples may read `card.widgetEvents.events` and
+  advance `interactions.ackSeq` in `ultrascripts:state:scripture` after
+  consuming events.
 - Do not teach widget-event acks through `ultrascripts:out.acks`.
 
 ## Quick grep targets while patching
@@ -428,5 +581,7 @@ Script-side handling:
 - `lat`
 - `lon`
 - `accuracyMeters`
+- AI examples reading top-level `data.content`
+- WebFetch examples that teach `POST` or request bodies
 - Scripture examples with top-level `events`
 - Scripture examples that ack via `ultrascripts:out`

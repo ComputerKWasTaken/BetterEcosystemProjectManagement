@@ -7,13 +7,14 @@
 Use this checklist whenever we add or change:
 
 - `UltrascriptsQuickStartGuide.vue`
-- `UltrascriptsCookbookGuide.vue`
+- `UltrascriptsCookbookGuide.vue` pattern guidance
 - `UltrascriptsSdkGuide.vue`
-- module guide snippets under `BetterRepository/src/components/guides/Ultrascripts*.vue`
+- module guide contract blocks under `BetterRepository/src/components/guides/Ultrascripts*.vue`
 - starter template code in BetterRepository or BetterDungeon
 
-The goal is simple: every public snippet should be copy-paste-safe, conceptually
-correct, and aligned with the shipped runtime.
+The goal is simple: every public snippet should be copy-paste-safe, and every
+non-snippet contract example should be conceptually correct and aligned with
+the shipped runtime.
 
 ## Walkthrough
 
@@ -59,7 +60,21 @@ Examples:
 - good: `state.questTracker = state.questTracker || {};`
 - bad: `state.bd.sendOpRequest = function () { ... }`
 
-### 4. Check the live transport contract
+### 4. Check AI Dungeon sandbox rules
+
+Public AI Dungeon snippets must fit the real scripting editor:
+
+- Library snippets may define helpers; modifier snippets are pasted inside the
+  editor's `modifier(text)` wrapper.
+- Modifier-body snippets must not use top-level early `return`.
+- Non-library snippets should let the wrapper return `{ text }`.
+- Do not teach empty string returns or `stop: true` for public examples.
+- Do not use `async`, `await`, timers, or promises inside AI Dungeon snippets.
+- Story cards in the sandbox expose `id`, `keys`, `entry`, and `type`.
+- Writes should use `addStoryCard(keys, entry, type)` and
+  `updateStoryCard(index, keys, entry, type)`, not direct object mutation.
+
+### 5. Check the live transport contract
 
 Review against the current runtime contract:
 
@@ -74,7 +89,7 @@ Review against the current runtime contract:
 If any snippet disagrees with the live card/envelope shape, fix it before
 publication.
 
-### 5. Check helper semantics
+### 6. Check helper semantics
 
 For `bd.us` snippets, verify the documented behavior matches the shipped helper
 contract:
@@ -89,7 +104,7 @@ contract:
 Do not describe `latest()` as undo-proof by itself. When freshness matters,
 snippets should mention or check `completedLiveCount`.
 
-### 6. Check module truth
+### 7. Check module truth
 
 For module-specific snippets:
 
@@ -104,9 +119,11 @@ Examples:
 - teach `ai`, not `providerAI`
 - teach `maxTokens`, not `max_tokens`
 - teach `responseFormat`, not `response_format`
+- read AI chat text from `data.text` or `data.message.content`, not `data.content`
+- teach WebFetch v1 as `GET` / `HEAD` / `OPTIONS` without request bodies
 - read `clock.now.data.local` / `data.iso` / `data.time`, not invented fields
 
-### 7. Check capability gating
+### 8. Check capability gating
 
 Every snippet should communicate the right gating model:
 
@@ -120,7 +137,7 @@ Examples:
 - geolocation snippets should account for permission state
 - WebFetch snippets should respect consent and blocked-target constraints
 
-### 8. Check turn timing
+### 9. Check turn timing
 
 Snippets must respect the one-turn request/response rhythm:
 
@@ -131,7 +148,7 @@ Snippets must respect the one-turn request/response rhythm:
 If the snippet consumes a response in the same turn it queues it, that is
 usually wrong unless the example is explicitly synthetic.
 
-### 9. Check Scripture correctness
+### 10. Check Scripture correctness
 
 If the snippet publishes widgets:
 
@@ -141,7 +158,7 @@ If the snippet publishes widgets:
 - event handling uses `scriptureEvents()` / ack flow correctly if shown
 - the snippet does not imply widgets are command calls
 
-### 10. Check public teaching quality
+### 11. Check public teaching quality
 
 Public snippets should teach the paved path, not clever-but-fragile shortcuts.
 
@@ -180,6 +197,8 @@ These deserve an explicit final look before calling snippet work done:
 - functions being attached to `state`
 - stale field names from older planning docs
 - wrong request/response envelope shape
+- direct story-card mutation instead of AI Dungeon helper functions
+- top-level early returns in modifier-body snippets
 - snippets that skip capability/setup checks
 - snippets that imply same-turn request completion
 - code blocks that render correctly but copy incorrectly

@@ -1,147 +1,107 @@
 # 09 - Snippet Verification Checklist
 
-> Literal walkthrough checklist for manually verifying public Ultrascripts code snippets.
+> Reduced checklist for public Ultrascripts examples after the snippet diet.
 
 ## How to use this
 
-Work from top to bottom.
+The docs now have one main copy-paste surface: Quick Start.
 
-For each item, verify:
+Manual AI Dungeon testing is reserved for snippets that authors are expected to
+paste into Library, Context, Input, or Output. Module pages should mostly teach
+contracts, result shapes, and patterns in prose.
+
+For each kept snippet, verify:
 
 - copy/paste produces literal code
-- logic matches the shipped runtime
+- the snippet works inside the intended AI Dungeon hook
 - no functions are stored on serializable `state`
+- no top-level early `return` is used
 - turn timing is correct
-- enhanced vs required posture is correct
+- enhanced vs required posture is clear
 
-Mark each item as you go:
+Mark each item:
 
-- `[ ]` not checked yet
-- `[x]` verified
+- `[ ]` not checked after latest edit
+- `[x]` verified after latest edit
 - `[!]` needs cleanup
 
-## Priority 1 - Real AI Dungeon script logic
+## Manual AI Dungeon Tests
 
-These are the highest priority because they teach live scenario scripting
-patterns people are likely to paste directly into AI Dungeon.
+These are the only snippets that should currently require manual play-test
+verification.
 
 ### Quick Start
 
 - [x] [UltrascriptsQuickStartGuide.vue:211](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:211>) - SDK helper copy block
 - [x] [UltrascriptsQuickStartGuide.vue:275](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:275>) - Enhanced fallback pattern
-- [x] [UltrascriptsQuickStartGuide.vue:318](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:318>) - Required guard pattern
-- [ ] [UltrascriptsQuickStartGuide.vue:375](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:375>) - HP bar library snippet
-- [ ] [UltrascriptsQuickStartGuide.vue:385](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:385>) - HP bar context snippet
-- [ ] [UltrascriptsQuickStartGuide.vue:418](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:418>) - Clock context snippet
-- [ ] [UltrascriptsQuickStartGuide.vue:469](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:469>) - AI Co-GM context snippet
-- [ ] [UltrascriptsQuickStartGuide.vue:525](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:525>) - Complete scenario library snippet
-- [ ] [UltrascriptsQuickStartGuide.vue:536](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:536>) - Complete scenario context snippet
+- [ ] [UltrascriptsQuickStartGuide.vue:323](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:323>) - Required guard pattern after no-early-return rewrite
+- [ ] [UltrascriptsQuickStartGuide.vue:379](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:379>) - HP bar library snippet
+- [ ] [UltrascriptsQuickStartGuide.vue:389](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:389>) - HP bar context snippet
+- [ ] [UltrascriptsQuickStartGuide.vue:422](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:422>) - Clock context snippet
+- [ ] [UltrascriptsQuickStartGuide.vue:473](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:473>) - AI Co-GM context snippet
+- [ ] [UltrascriptsQuickStartGuide.vue:532](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:532>) - Complete scenario library snippet
+- [ ] [UltrascriptsQuickStartGuide.vue:543](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:543>) - Complete scenario context snippet
 
-### Cookbook
+## Static Review Items
 
-- [ ] [UltrascriptsCookbookGuide.vue:45](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:45>) - Universal recipe shape
-- [ ] [UltrascriptsCookbookGuide.vue:73](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:73>) - Recipe 1 library snippet
-- [ ] [UltrascriptsCookbookGuide.vue:84](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:84>) - Recipe 1 context snippet
-- [ ] [UltrascriptsCookbookGuide.vue:111](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:111>) - Recipe 2 library snippet
-- [ ] [UltrascriptsCookbookGuide.vue:130](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:130>) - Recipe 2 context snippet
-- [ ] [UltrascriptsCookbookGuide.vue:153](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:153>) - Recipe 3 context snippet
-- [ ] [UltrascriptsCookbookGuide.vue:182](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:182>) - Recipe 4 context snippet
-- [ ] [UltrascriptsCookbookGuide.vue:221](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:221>) - Recipe 5 context snippet
-- [ ] [UltrascriptsCookbookGuide.vue:273](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:273>) - Recipe 6 library snippet
-- [ ] [UltrascriptsCookbookGuide.vue:284](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:284>) - Recipe 6 output snippet
-- [ ] [UltrascriptsCookbookGuide.vue:332](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:332>) - Recipe 7 context snippet
-- [ ] [UltrascriptsCookbookGuide.vue:371](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsCookbookGuide.vue:371>) - Recipe 8 context snippet
+These should not require manual AI Dungeon testing unless they become executable
+copy-paste snippets again.
 
-### Module guide recipes
+### Module Contract Blocks
 
-- [ ] [UltrascriptsAiGuide.vue:383](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAiGuide.vue:383>) - AI request-side context snippet
-- [ ] [UltrascriptsAiGuide.vue:411](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAiGuide.vue:411>) - AI input consume snippet
-- [ ] [UltrascriptsAiGuide.vue:435](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAiGuide.vue:435>) - AI output snippet
-- [ ] [UltrascriptsAiGuide.vue:476](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAiGuide.vue:476>) - AI library helper snippet
-- [ ] [UltrascriptsClockGuide.vue:133](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsClockGuide.vue:133>) - Clock context snippet
-- [ ] [UltrascriptsGeolocationGuide.vue:117](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsGeolocationGuide.vue:117>) - Geolocation regional awareness recipe
-- [ ] [UltrascriptsNetworkGuide.vue:95](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsNetworkGuide.vue:95>) - Network context snippet
-- [ ] [UltrascriptsScriptureGuide.vue:316](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsScriptureGuide.vue:316>) - Scripture library snippet
-- [ ] [UltrascriptsScriptureGuide.vue:371](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsScriptureGuide.vue:371>) - Scripture context snippet
-- [ ] [UltrascriptsScriptureGuide.vue:393](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsScriptureGuide.vue:393>) - Scripture manifest override snippet A
-- [ ] [UltrascriptsScriptureGuide.vue:415](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsScriptureGuide.vue:415>) - Scripture manifest override snippet B
-- [ ] [UltrascriptsScriptureGuide.vue:457](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsScriptureGuide.vue:457>) - Scripture manifest snippet C
-- [ ] [UltrascriptsScriptureGuide.vue:534](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsScriptureGuide.vue:534>) - Scripture input snippet
-- [ ] [UltrascriptsSystemGuide.vue:116](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsSystemGuide.vue:116>) - System context snippet
-- [ ] [UltrascriptsWeatherGuide.vue:141](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsWeatherGuide.vue:141>) - Weather context snippet
-- [ ] [UltrascriptsWebFetchGuide.vue:253](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsWebFetchGuide.vue:253>) - WebFetch context snippet
-- [ ] [UltrascriptsWebFetchGuide.vue:286](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsWebFetchGuide.vue:286>) - WebFetch input snippet
+- [x] AI guide request/response/payload JSON examples
+- [x] Clock guide args/result examples
+- [x] Geolocation guide args/result examples
+- [x] Network guide args/result examples
+- [x] SDK guide result-shape examples
+- [x] Scripture guide payload, widget, and event examples
+- [x] System guide args/result examples
+- [x] Weather guide args/result examples
+- [x] WebFetch guide args/payload examples
 
-## Priority 2 - Helper, payload, and contract snippets
+### Architecture / BetterDungeon Authoring
 
-These are not always pasted straight into AI Dungeon, but they define how
-authors understand the runtime contract.
+- [x] Architecture transport and JSON examples
+- [x] Authoring interfaces and BetterDungeon-side module examples
 
-### SDK / helper contract
+## Scrapped From Manual Queue
 
-- [ ] [UltrascriptsSdkGuide.vue:282](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsSdkGuide.vue:282>) - SDK library helper snippet
-- [ ] [UltrascriptsSdkGuide.vue:341](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsSdkGuide.vue:341>) - SDK creator bootstrap snippet
-- [ ] [UltrascriptsSdkGuide.vue:396](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsSdkGuide.vue:396>) - SDK context snippet
-- [ ] [UltrascriptsSdkGuide.vue:417](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsSdkGuide.vue:417>) - SDK generic ops helper snippet
+These areas no longer publish independent copy-paste snippets and do not need
+manual AI Dungeon testing:
 
-### Payload / envelope examples
+- Cookbook recipe snippets, now replaced with a pattern matrix
+- AI module raw-card recipes
+- Clock module raw-card recipe
+- Geolocation module raw-card recipe
+- Network module raw-card recipe
+- System module raw-card recipe
+- Weather module raw-card recipe
+- WebFetch module raw-card recipes
+- SDK guide duplicate helper and generic raw ops helper
+- Scripture guide duplicate helper and raw event-consume snippet
 
-- [ ] [UltrascriptsAiGuide.vue:173](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAiGuide.vue:173>) - AI request args block A
-- [ ] [UltrascriptsAiGuide.vue:186](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAiGuide.vue:186>) - AI request args block B
-- [ ] [UltrascriptsAiGuide.vue:214](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAiGuide.vue:214>) - AI response format block A
-- [ ] [UltrascriptsAiGuide.vue:238](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAiGuide.vue:238>) - AI response format block B
-- [ ] [UltrascriptsAiGuide.vue:325](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAiGuide.vue:325>) - AI `ultrascripts:out` envelope example
-- [ ] [UltrascriptsArchitectureGuide.vue:404](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsArchitectureGuide.vue:404>) - Architecture JSON block A
-- [ ] [UltrascriptsArchitectureGuide.vue:465](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsArchitectureGuide.vue:465>) - Architecture JSON block B
-- [ ] [UltrascriptsArchitectureGuide.vue:489](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsArchitectureGuide.vue:489>) - Architecture JSON block C
-- [ ] [UltrascriptsScriptureGuide.vue:104](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsScriptureGuide.vue:104>) - `ultrascripts:state:scripture` payload
-- [ ] [UltrascriptsScriptureGuide.vue:502](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsScriptureGuide.vue:502>) - `ultrascripts:in:scripture` event payload
-- [ ] [UltrascriptsWebFetchGuide.vue:199](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsWebFetchGuide.vue:199>) - WebFetch `ultrascripts:out` example
+## High-Risk Grep Targets
 
-### Args / result-shape snippets
+Run these before considering snippet work done:
 
-- [ ] [UltrascriptsClockGuide.vue:72](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsClockGuide.vue:72>) - `clock.now` args
-- [ ] [UltrascriptsClockGuide.vue:92](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsClockGuide.vue:92>) - `clock.tz` args
-- [ ] [UltrascriptsClockGuide.vue:111](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsClockGuide.vue:111>) - `clock.format` args
-- [ ] [UltrascriptsGeolocationGuide.vue:77](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsGeolocationGuide.vue:77>) - `geolocation.permission` args
-- [ ] [UltrascriptsGeolocationGuide.vue:89](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsGeolocationGuide.vue:89>) - `geolocation.getCurrent` args
-- [ ] [UltrascriptsNetworkGuide.vue:71](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsNetworkGuide.vue:71>) - `network.status` args
-- [ ] [UltrascriptsSdkGuide.vue:184](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsSdkGuide.vue:184>) - `sdk.version` result shape
-- [ ] [UltrascriptsSdkGuide.vue:203](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsSdkGuide.vue:203>) - `sdk.config` result shape
-- [ ] [UltrascriptsSystemGuide.vue:69](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsSystemGuide.vue:69>) - `system.info` args
-- [ ] [UltrascriptsSystemGuide.vue:88](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsSystemGuide.vue:88>) - `system.power` args
-- [ ] [UltrascriptsWeatherGuide.vue:76](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsWeatherGuide.vue:76>) - `weather.current` args
-- [ ] [UltrascriptsWeatherGuide.vue:102](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsWeatherGuide.vue:102>) - `weather.forecast` args
-- [ ] [UltrascriptsWebFetchGuide.vue:122](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsWebFetchGuide.vue:122>) - WebFetch args block A
-- [ ] [UltrascriptsWebFetchGuide.vue:132](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsWebFetchGuide.vue:132>) - WebFetch args block B
-- [ ] [UltrascriptsWebFetchGuide.vue:160](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsWebFetchGuide.vue:160>) - WebFetch args block C
-- [ ] [UltrascriptsWebFetchGuide.vue:167](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsWebFetchGuide.vue:167>) - WebFetch args block D
+- `state.bd`
+- `return text`
+- `return { text`
+- `storyCards.find(function (c) { return c.title`
+- `card.value =`
+- `data.content`
+- `moduleId`
+- `max_tokens`
+- `response_format`
+- `top_p`
+- WebFetch examples teaching `POST` or request bodies
+- `platformType`
+- `preferredLocale`
+- `viewport`
+- `data.now`
+- `lat`
+- `lon`
+- `accuracyMeters`
 
-## Priority 3 - Architecture / BetterDungeon-side authoring reference
-
-These are lower priority for temporary manual verification because they are not
-the main AI Dungeon author copy-paste path, but they still matter.
-
-- [ ] [UltrascriptsArchitectureGuide.vue:164](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsArchitectureGuide.vue:164>) - GraphQL mutation example
-- [ ] [UltrascriptsArchitectureGuide.vue:272](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsArchitectureGuide.vue:272>) - Transport flow block A
-- [ ] [UltrascriptsArchitectureGuide.vue:285](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsArchitectureGuide.vue:285>) - Transport flow block B
-- [ ] [UltrascriptsArchitectureGuide.vue:298](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsArchitectureGuide.vue:298>) - Transport flow block C
-- [ ] [UltrascriptsArchitectureGuide.vue:310](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsArchitectureGuide.vue:310>) - Transport flow block D
-- [ ] [UltrascriptsAuthoringGuide.vue:133](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAuthoringGuide.vue:133>) - `UltrascriptsModule` interface
-- [ ] [UltrascriptsAuthoringGuide.vue:213](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAuthoringGuide.vue:213>) - `UltrascriptsContext` interface
-- [ ] [UltrascriptsAuthoringGuide.vue:354](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAuthoringGuide.vue:354>) - Example state module
-- [ ] [UltrascriptsAuthoringGuide.vue:425](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAuthoringGuide.vue:425>) - Example op
-- [ ] [UltrascriptsAuthoringGuide.vue:511](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsAuthoringGuide.vue:511>) - Module registration snippet
-
-## High-risk flags
-
-Start with these if you want the shortest path to catching real issues:
-
-- [ ] Quick Start SDK helper
-- [ ] Quick Start required guard pattern
-- [ ] Cookbook AI / WebFetch / structured output recipes
-- [ ] SDK guide helper/bootstrap snippets
-- [ ] Scripture payload + event snippets
-- [ ] Geolocation regional awareness recipe
-- [ ] Network context recipe
-
+Expected: no hits in public AI Dungeon copy-paste snippets except legitimate
+helper internals such as `moduleId` parameter names inside `bd.us`.

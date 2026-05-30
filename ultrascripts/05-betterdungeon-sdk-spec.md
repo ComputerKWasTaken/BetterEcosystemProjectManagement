@@ -206,20 +206,32 @@ AI Dungeon Script                                  BetterDungeon Extension
 
 ## Script-Side Authoring Pattern
 
-Scenario authors are encouraged to wrap raw SDK card lookups in clean, reusable library helpers. Below is the reference author pattern for progressive capability checking:
+Scenario authors are encouraged to wrap raw SDK card lookups in clean, reusable
+library helpers. The public reference helper now lives in Quick Start; this
+spec keeps only the minimal progressive capability shape.
 
 ```js
 // Scenario Script Library Initializer
-state.bd = state.bd || {};
-var bd = state.bd;
+globalThis.bd = globalThis.bd || {};
+var bd = globalThis.bd;
 bd.sdk = bd.sdk || {};
 
 // Helper to inspect the current live heartbeat
 function getHeartbeat() {
   var cards = Array.isArray(storyCards) ? storyCards : [];
   for (var i = 0; i < cards.length; i++) {
-    if (cards[i] && cards[i].title === 'ultrascripts:heartbeat') {
-      try { return JSON.parse(cards[i].value || '{}'); } catch(e) { return null; }
+    var card = cards[i];
+    var matches = card && (
+      card.title === 'ultrascripts:heartbeat' ||
+      card.key === 'ultrascripts:heartbeat' ||
+      card.keys === 'ultrascripts:heartbeat' ||
+      (Array.isArray(card.keys) && card.keys.indexOf('ultrascripts:heartbeat') !== -1)
+    );
+    if (matches) {
+      var raw = card.value !== undefined ? card.value
+        : card.entry !== undefined ? card.entry
+          : card.description || '{}';
+      try { return JSON.parse(raw || '{}'); } catch(e) { return null; }
     }
   }
   return null;
