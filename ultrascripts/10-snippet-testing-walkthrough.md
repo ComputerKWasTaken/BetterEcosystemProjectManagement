@@ -101,6 +101,7 @@ Then test with this minimal Context body:
 ```js
 bd.us.tick();
 log('US available: ' + bd.us.available());
+log('Story card keys: ' + (storyCards || []).map(function (c) { return c.title || c.keys || c.key || '?'; }).join(', '));
 log('Heartbeat modules: ' + JSON.stringify((bd.us.heartbeat() || {}).modules || []));
 log('Has clock.now: ' + bd.us.has('clock', 'now'));
 bd.us.commit();
@@ -110,6 +111,7 @@ Expected:
 
 - No script error.
 - Console Log prints `US available: true` when BetterDungeon is active.
+- Console Log includes `ultrascripts:heartbeat` in the story card keys list.
 - Console Log shows the heartbeat's module list.
 - `bd.us.has(...)` returns true or false without throwing.
 
