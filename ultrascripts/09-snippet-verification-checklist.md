@@ -28,7 +28,7 @@ patterns people are likely to paste directly into AI Dungeon.
 ### Quick Start
 
 - [x] [UltrascriptsQuickStartGuide.vue:211](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:211>) - SDK helper copy block
-- [ ] [UltrascriptsQuickStartGuide.vue:275](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:275>) - Enhanced fallback pattern
+- [x] [UltrascriptsQuickStartGuide.vue:275](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:275>) - Enhanced fallback pattern
 - [ ] [UltrascriptsQuickStartGuide.vue:318](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:318>) - Required guard pattern
 - [ ] [UltrascriptsQuickStartGuide.vue:375](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:375>) - HP bar library snippet
 - [ ] [UltrascriptsQuickStartGuide.vue:385](</C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web Dev/BetterEcosystem/BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue:385>) - HP bar context snippet
