@@ -14,8 +14,6 @@
 | 05 | [BetterDungeon SDK Spec](./05-betterdungeon-sdk-spec.md) | Complete SDK specification, ops schemas, and scripting patterns |
 | 06 | [Documentation Plan](./06-documentation-plan.md) | Internal/public documentation alignment plan |
 | 07 | [Example Contract Reference](./07-example-contract-reference.md) | Public example guardrails and live module contract quick checks |
-| 08 | [Snippet Review Checklist](./08-snippet-review-checklist.md) | Review walkthrough for copy-paste snippets, starter examples, and code blocks |
-| 09 | [Snippet Verification Checklist](./09-snippet-verification-checklist.md) | Priority-sorted manual checklist of public Ultrascripts snippets to verify |
 
 ### Archived
 
