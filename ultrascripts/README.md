@@ -14,6 +14,7 @@
 | 05 | [BetterDungeon SDK Spec](./05-betterdungeon-sdk-spec.md) | Complete SDK specification, ops schemas, and scripting patterns |
 | 06 | [Documentation Plan](./06-documentation-plan.md) | Internal/public documentation alignment plan |
 | 07 | [Example Contract Reference](./07-example-contract-reference.md) | Public example guardrails and live module contract quick checks |
+| 08 | [Module Quality Pass](./08-module-quality-pass.md) | Final module-by-module polish checklist before production example scripts |
 
 ### Archived
 
@@ -30,7 +31,7 @@ The core Ultrascripts runtime is shipped. All 9 first-party modules are implemen
 What remains is:
 
 - keep the standard SDK-based Enhanced and Required template foundation aligned with implementation changes
-- review the current modules one at a time for conceptual polish
+- complete the module quality pass, starting with Scripture and WebFetch
 - produce proper complete scripts after the template and module reviews land
 
 ## Doc rules

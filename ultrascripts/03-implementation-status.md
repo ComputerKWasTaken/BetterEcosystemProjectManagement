@@ -169,13 +169,13 @@ The core runtime, all modules, the regression test suite, multiplatform follow-t
 - Aligned public examples with the live `ai`, `sdk`, heartbeat, and envelope contracts.
 - Cleaned the Ultrascripts info dump so it no longer carries Phase 12/13 TODOs.
 
-### Phase 14 — Example Cleanup, Template Foundation, and Complete Scripts
+### Phase 14 - Module Quality Pass and Complete Scripts
 
 Active next:
 
-- Maintain the standard SDK-based Enhanced and Required templates that future Ultrascripts scripts can start from.
-- Review each shipped module for conceptual improvements before using it as a foundation for complete scripts.
-- Produce polished scripts only after the template and module reviews land.
+- Keep the standard SDK-based Enhanced and Required templates aligned with the live AI Dungeon scripting sandbox.
+- Run the final module quality pass, starting with Scripture widget/mobile polish and WebFetch consent/error ergonomics.
+- Produce polished complete scripts only after the module pass lands.
 
 Current example foundation:
 
@@ -185,6 +185,10 @@ Current example foundation:
 Goal:
 
 - Complete scripts should be based on the standardized helper/templates and should demonstrate finalized module behavior rather than old transitional examples.
+
+Quality-pass reference:
+
+- [08-module-quality-pass.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/08-module-quality-pass.md)
 
 ## What is no longer an active implementation problem
 

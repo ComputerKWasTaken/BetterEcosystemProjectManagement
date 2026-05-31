@@ -23,6 +23,7 @@ The active internal Ultrascripts doc set is now:
 - [05-betterdungeon-sdk-spec.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/05-betterdungeon-sdk-spec.md)
 - [06-documentation-plan.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/06-documentation-plan.md)
 - [07-example-contract-reference.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/07-example-contract-reference.md)
+- [08-module-quality-pass.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/08-module-quality-pass.md)
 
 ## Internal documentation goals
 
@@ -84,7 +85,8 @@ Core public guide areas now include:
 1. keep the internal Ultrascripts docs accurate first (completed in Phase 11)
 2. complete the high-level public guide, quick start, cookbook, architecture, and authoring docs (completed in Phase 13)
 3. complete per-module guides for all shipped first-party modules (completed in Phase 13)
-4. keep the example contract reference current as the starter templates and complete scripts evolve
+4. run the module quality pass before building showcase scripts
+5. keep the example contract reference current as the starter templates and complete scripts evolve
 
 ## Verification
 
@@ -101,4 +103,4 @@ When documentation is updated, verify:
 
 Phase 13 (BetterRepository Public Docs) is now completed for the shipped Ultrascripts surface. BetterRepository has a coherent public guide set, dedicated module pages, a Quick Start, a Cookbook, and a public SDK guide that matches the live runtime contract.
 
-The example/template foundation is now in place: the current active priority is to review each shipped module for conceptual improvements before producing complete scripts from the standard SDK-based Enhanced and Required templates.
+The example/template foundation is now in place: the current active priority is the final module quality pass, starting with Scripture mobile/widget polish and WebFetch consent/error ergonomics. Complete example scripts should come after that pass, using the standard SDK-based Enhanced and Required templates.
