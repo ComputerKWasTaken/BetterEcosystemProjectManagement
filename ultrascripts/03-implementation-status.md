@@ -175,7 +175,7 @@ Active next:
 
 - Keep the standard SDK-based Enhanced and Required templates aligned with the live AI Dungeon scripting sandbox.
 - Run the final module quality pass, starting with Scripture widget/mobile polish and WebFetch consent/error ergonomics.
-- Produce polished complete scripts only after the module pass lands.
+- Produce the three target showcase scripts only after the module pass lands.
 
 Current example foundation:
 
@@ -185,6 +185,17 @@ Current example foundation:
 Goal:
 
 - Complete scripts should be based on the standardized helper/templates and should demonstrate finalized module behavior rather than old transitional examples.
+
+Showcase script targets after module polish:
+
+1. **Brainiac** - Requires Ultrascripts. Repurpose Auto Cards' automatic story-card generation flow, remove its memory system, and use the AI module plus Inner Self-style brain cards for high-quality story card and brain management.
+2. **Statboy** - Requires Ultrascripts. Build a seamless stat-management script where authors define stat schemas and the AI module proposes structured state updates, with validation and Scripture widgets.
+3. **Chronos V2** - Enhanced with Ultrascripts. Rework the existing Chronos concept so the base time system still works without BetterDungeon, while Ultrascripts adds real time/weather sync and proper widgets.
+
+Follow-up after showcase scripts:
+
+- Sync the BetterDungeon mobile codebase with the PC codebase so both are on the same Ultrascripts/runtime behavior.
+- Move into launch prep once module polish, showcase scripts, and mobile/PC sync are complete.
 
 Quality-pass reference:
 

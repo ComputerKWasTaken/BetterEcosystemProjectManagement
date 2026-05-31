@@ -86,7 +86,9 @@ Core public guide areas now include:
 2. complete the high-level public guide, quick start, cookbook, architecture, and authoring docs (completed in Phase 13)
 3. complete per-module guides for all shipped first-party modules (completed in Phase 13)
 4. run the module quality pass before building showcase scripts
-5. keep the example contract reference current as the starter templates and complete scripts evolve
+5. build the three showcase scripts: Brainiac, Statboy, and Chronos V2
+6. sync BetterDungeon mobile with the PC codebase
+7. keep the example contract reference current as the starter templates and complete scripts evolve
 
 ## Verification
 
@@ -103,4 +105,12 @@ When documentation is updated, verify:
 
 Phase 13 (BetterRepository Public Docs) is now completed for the shipped Ultrascripts surface. BetterRepository has a coherent public guide set, dedicated module pages, a Quick Start, a Cookbook, and a public SDK guide that matches the live runtime contract.
 
-The example/template foundation is now in place: the current active priority is the final module quality pass, starting with Scripture mobile/widget polish and WebFetch consent/error ergonomics. Complete example scripts should come after that pass, using the standard SDK-based Enhanced and Required templates.
+The example/template foundation is now in place: the current active priority is the final module quality pass, starting with Scripture mobile/widget polish and WebFetch consent/error ergonomics.
+
+After that pass, the next target is the showcase script set:
+
+- **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card management, derived from Auto Cards plus Inner Self patterns.
+- **Statboy** - Requires Ultrascripts. Schema-based stat management where the AI module proposes structured updates and Scripture renders the state.
+- **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps vanilla timekeeping viable while adding real time/weather sync and widgets for BetterDungeon players.
+
+Once those scripts are built and polished, sync BetterDungeon mobile with the PC codebase and move into launch prep.

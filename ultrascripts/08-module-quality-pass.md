@@ -1,6 +1,6 @@
 # 08 - Module Quality Pass
 
-> Final module-by-module polish pass before building production example scripts.
+> Final module-by-module polish pass before building the Brainiac, Statboy, and Chronos V2 showcase scripts.
 
 ## Purpose
 
@@ -9,8 +9,29 @@ works from scratch again; it is about making each first-party module feel good
 enough to showcase in real scripts.
 
 The output of this pass should be a short list of focused fixes or refinements
-per module, followed by complete example scripts that demonstrate the polished
-behavior.
+per module, followed by showcase scripts that demonstrate the polished behavior.
+
+## Next Target After This Pass
+
+When the module pass is done, move directly into three production showcase
+scripts. These are meant to be useful scripts in their own right and also the
+best demonstration of what Ultrascripts makes possible.
+
+1. **Brainiac** - Requires Ultrascripts.
+   Repurpose Auto Cards' automatic story-card generation system, remove its
+   older memory system, and use the AI module with Inner Self-style brain cards
+   for high-quality story card and brain management.
+2. **Statboy** - Requires Ultrascripts.
+   Provide schema-based stat management where authors define stats, the AI
+   module proposes structured updates, script logic validates/clamps them, and
+   Scripture widgets render the current state.
+3. **Chronos V2** - Enhanced with Ultrascripts.
+   Rework the existing Chronos concept so vanilla timekeeping remains usable
+   without BetterDungeon, while Ultrascripts adds real time/weather sync and
+   proper widgets.
+
+After the showcase scripts, sync the BetterDungeon mobile codebase with the PC
+codebase, then move into launch preparation.
 
 ## Working Order
 
@@ -107,5 +128,4 @@ This pass is done when:
 - any accepted fixes are implemented and regression-checked
 - BetterRepository guides still match the implementation
 - the Enhanced and Required templates remain aligned with the SDK helper contract
-- the next task can cleanly move into polished example-script creation
-
+- the next task can cleanly move into Brainiac, Statboy, and Chronos V2
