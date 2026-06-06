@@ -41,7 +41,7 @@ Current priority:
 
 Tracking doc:
 
-- [Module Quality Pass](./ultrascripts/08-module-quality-pass.md)
+- [Module Quality Pass](./ultrascripts/planning/module-quality-pass.md)
 
 ### Showcase Scripts
 
@@ -75,8 +75,8 @@ Planned after module polish:
 ## Canonical Docs
 
 - [Ultrascripts internal docs](./ultrascripts/README.md)
-- [Implementation status](./ultrascripts/03-implementation-status.md)
-- [Verification and test suites](./ultrascripts/04-test-suites.md)
-- [BetterDungeon SDK Spec](./ultrascripts/05-betterdungeon-sdk-spec.md)
-- [Example contract reference](./ultrascripts/07-example-contract-reference.md)
-- [Module quality pass](./ultrascripts/08-module-quality-pass.md)
+- [Current roadmap](./ultrascripts/planning/current-roadmap.md)
+- [Verification reference](./ultrascripts/reference/verification.md)
+- [BetterDungeon SDK reference](./ultrascripts/reference/sdk.md)
+- [Script contract reference](./ultrascripts/reference/script-contract.md)
+- [Module quality pass](./ultrascripts/planning/module-quality-pass.md)

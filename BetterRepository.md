@@ -80,5 +80,5 @@ High priority:
 - [BetterRepository docs index](../BetterRepository/docs/README.md)
 - [Standardized Guide Format spec](../BetterRepository/docs/guides/format-spec.md)
 - [Ultrascripts internal docs](./ultrascripts/README.md)
-- [Documentation sync](./ultrascripts/06-documentation-plan.md)
-- [Example contract reference](./ultrascripts/07-example-contract-reference.md)
+- [Documentation sync](./ultrascripts/planning/docs-sync.md)
+- [Script contract reference](./ultrascripts/reference/script-contract.md)

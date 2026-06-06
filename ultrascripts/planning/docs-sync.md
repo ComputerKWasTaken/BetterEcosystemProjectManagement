@@ -1,4 +1,4 @@
-# 06 - Documentation Sync
+# Documentation Sync Plan
 
 ## Purpose
 
@@ -19,26 +19,25 @@ that contract must be checked.
 | Track | Audience | Location | Job |
 |---|---|---|---|
 | Private Ultrascripts docs | BetterEcosystem maintainers | `./` | Current architecture, status, module contracts, roadmap, verification |
-| Public BetterRepository guides | Scenario authors and developers | `../../BetterRepository/src/components/guides/Ultrascripts*.vue` | Teach what to build and how to use it |
-| BetterRepository info dump | Guide authors/RAG/source notes | `../../BetterRepository/docs/guides/info-dumps/ultrascripts.md` | Full public knowledge base backing Vue guide pages |
-| BetterDungeon examples | Maintainers testing live script foundations | `../../BetterDungeon/examples/aid-scripts/` | Enhanced and Required template foundations |
-| BetterRepository raw scripts | Public downloadable script entries | `../../BetterRepository/src/data/raw-scripts/` | Public copies of templates/scripts |
-| Module suites | Maintainers validating behavior | `../../BetterDungeon/tests/aid-scripts/` | Live AI Dungeon regression checks |
+| Public BetterRepository guides | Scenario authors and developers | `../../../BetterRepository/src/components/guides/Ultrascripts*.vue` | Teach what to build and how to use it |
+| BetterRepository info dump | Guide authors/RAG/source notes | `../../../BetterRepository/docs/guides/info-dumps/ultrascripts.md` | Full public knowledge base backing Vue guide pages |
+| BetterDungeon examples | Maintainers testing live script foundations | `../../../BetterDungeon/examples/aid-scripts/` | Enhanced and Required template foundations |
+| BetterRepository raw scripts | Public downloadable script entries | `../../../BetterRepository/src/data/raw-scripts/` | Public copies of templates/scripts |
+| Module suites | Maintainers validating behavior | `../../../BetterDungeon/tests/aid-scripts/` | Live AI Dungeon regression checks |
 
 ## Private Docs Inventory
 
 | File | Keep focused on |
 |---|---|
-| [README.md](./README.md) | source-of-truth map and read order |
-| [00-overview.md](./00-overview.md) | product-level state and mental model |
-| [01-architecture.md](./01-architecture.md) | runtime layers and data flows |
-| [02-modules.md](./02-modules.md) | module inventory and contract |
-| [03-implementation-status.md](./03-implementation-status.md) | active roadmap and release path |
-| [04-test-suites.md](./04-test-suites.md) | verification surfaces |
-| [05-betterdungeon-sdk-spec.md](./05-betterdungeon-sdk-spec.md) | SDK module contract |
-| [06-documentation-plan.md](./06-documentation-plan.md) | this sync plan |
-| [07-example-contract-reference.md](./07-example-contract-reference.md) | example/template/showcase rules |
-| [08-module-quality-pass.md](./08-module-quality-pass.md) | active module polish checklist |
+| [README.md](../README.md) | entry point, source-of-truth map, and doc rules |
+| [reference/runtime.md](../reference/runtime.md) | runtime layers and data flows |
+| [reference/modules.md](../reference/modules.md) | module inventory and contract |
+| [reference/script-contract.md](../reference/script-contract.md) | script, helper, example, and showcase contracts |
+| [reference/sdk.md](../reference/sdk.md) | SDK module contract |
+| [reference/verification.md](../reference/verification.md) | verification surfaces |
+| [planning/current-roadmap.md](./current-roadmap.md) | active roadmap and release path |
+| [planning/docs-sync.md](./docs-sync.md) | this sync plan |
+| [planning/module-quality-pass.md](./module-quality-pass.md) | active module polish checklist |
 
 ## Public Guide Inventory
 
@@ -91,19 +90,19 @@ or long explanations of retired approaches unless authors need the warning.
 
 Canonical helper/template surfaces:
 
-- `../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/`
-- `../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/`
-- `../../BetterRepository/src/data/raw-scripts/library/ultrascripts-starter-template.js`
-- `../../BetterRepository/src/data/raw-scripts/library/ultrascripts-required-template.js`
+- `../../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/`
+- `../../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/`
+- `../../../BetterRepository/src/data/raw-scripts/library/ultrascripts-starter-template.js`
+- `../../../BetterRepository/src/data/raw-scripts/library/ultrascripts-required-template.js`
 - matching `input`, `context`, and `output` files in both repos
-- `../../BetterRepository/src/data/scripts.js`
+- `../../../BetterRepository/src/data/scripts.js`
 
 Sync rules:
 
 - BetterDungeon examples and BetterRepository raw-script copies should teach the
   same `bd.us` helper contract.
 - If helper method names change, update Quick Start, module guides, and
-  [07-example-contract-reference.md](./07-example-contract-reference.md).
+  [Script Contract Reference](../reference/script-contract.md).
 - If Required gating changes, update the public SDK guide and script catalog
   metadata.
 - If Enhanced fallback behavior changes, update Quick Start and the starter
@@ -115,13 +114,13 @@ When a module API changes:
 
 1. Update the module implementation.
 2. Update its regression suite.
-3. Update [02-modules.md](./02-modules.md) if the inventory/contract changed.
-4. Update [07-example-contract-reference.md](./07-example-contract-reference.md)
+3. Update [Module System Reference](../reference/modules.md) if the inventory/contract changed.
+4. Update [Script Contract Reference](../reference/script-contract.md)
    if public examples need a new pattern.
 5. Update the BetterRepository module guide.
 6. Update the Ultrascripts info dump if it contains the changed contract.
 7. Update templates/showcase scripts if they depend on the field/op.
-8. Run the relevant verification from [04-test-suites.md](./04-test-suites.md).
+8. Run the relevant verification from [Verification Reference](../reference/verification.md).
 
 When the helper/template contract changes:
 
@@ -134,11 +133,11 @@ When the helper/template contract changes:
 
 When roadmap/status changes:
 
-1. Update [03-implementation-status.md](./03-implementation-status.md).
-2. Update [08-module-quality-pass.md](./08-module-quality-pass.md) if module
+1. Update [Current Roadmap](./current-roadmap.md).
+2. Update [Module Quality Pass](./module-quality-pass.md) if module
    polish status changed.
-3. Update `../ProjectManagement.md`, `../BetterDungeon.md`, or
-   `../BetterRepository.md` only if project-level focus changed.
+3. Update `../../ProjectManagement.md`, `../../BetterDungeon.md`, or
+   `../../BetterRepository.md` only if project-level focus changed.
 
 ## Example Quality Rules
 
@@ -177,7 +176,7 @@ When Brainiac, Statboy, and Chronos V2 are built:
 1. Add or update their BetterRepository script entries.
 2. Add public guide links where the scripts demonstrate module patterns.
 3. Update Cookbook recipes if they introduce a reusable pattern.
-4. Update [07-example-contract-reference.md](./07-example-contract-reference.md)
+4. Update [Script Contract Reference](../reference/script-contract.md)
    if a showcase reveals a better canonical example.
 5. Update project-level docs to move from "showcase scripts next" to release
    prep.

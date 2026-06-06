@@ -1,4 +1,4 @@
-# 08 - Module Quality Pass
+# Module Quality Pass
 
 ## Purpose
 
@@ -55,7 +55,7 @@ This order can shift if a showcase script exposes a concrete need.
 For each module:
 
 - Does the live API match the public guide?
-- Does the live API match [07-example-contract-reference.md](./07-example-contract-reference.md)?
+- Does the live API match [Script Contract Reference](../reference/script-contract.md)?
 - Does the module degrade cleanly when disabled?
 - Does it degrade cleanly when unsupported, denied, unconfigured, offline, or
   rate-limited?
@@ -252,7 +252,7 @@ For accepted fixes, capture:
 - what changed
 - why it matters for real scripts
 - which suite/template/public guide was checked
-- whether [07-example-contract-reference.md](./07-example-contract-reference.md)
+- whether [Script Contract Reference](../reference/script-contract.md)
   needs an update
 
 ## Exit Criteria

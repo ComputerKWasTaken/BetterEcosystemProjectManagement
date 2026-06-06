@@ -1,4 +1,4 @@
-# 07 - Example Contract Reference
+# Script Contract Reference
 
 ## Purpose
 

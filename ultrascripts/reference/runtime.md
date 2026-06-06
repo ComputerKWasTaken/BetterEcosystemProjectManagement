@@ -1,4 +1,4 @@
-# 01 - Architecture
+# Runtime Reference
 
 ## Architectural Shape
 
@@ -18,7 +18,7 @@ two-way runtime. A script can use only state publishing, only ops, or both.
 ## File Map
 
 ```text
-../../BetterDungeon/
+../../../BetterDungeon/
 |-- services/
 |   |-- ai-dungeon-service.js
 |   |-- ultrascripts/

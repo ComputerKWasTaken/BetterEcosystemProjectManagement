@@ -1,4 +1,4 @@
-# 04 - Verification And Test Suites
+# Verification Reference
 
 ## Purpose
 
@@ -10,12 +10,12 @@ the verification surfaces that currently exist and when to use each one.
 
 | Surface | Location | Use |
 |---|---|---|
-| Module regression suites | `../../BetterDungeon/tests/aid-scripts/` | Live AI Dungeon scripts for each shipped module |
-| Enhanced template | `../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/` | Smoke check for optional/fallback Ultrascripts usage |
-| Required template | `../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/` | Smoke check for hard runtime/capability gating |
-| Public template copies | `../../BetterRepository/src/data/raw-scripts/` | Ensure BetterRepository ships the same helper contract |
-| Public guide pages | `../../BetterRepository/src/components/guides/Ultrascripts*.vue` | Ensure author-facing claims match the runtime |
-| Popup/background settings | `../../BetterDungeon/popup.js`, `../../BetterDungeon/background.js` | Verify player configuration, consent, SDK, and AI setup |
+| Module regression suites | `../../../BetterDungeon/tests/aid-scripts/` | Live AI Dungeon scripts for each shipped module |
+| Enhanced template | `../../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/` | Smoke check for optional/fallback Ultrascripts usage |
+| Required template | `../../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/` | Smoke check for hard runtime/capability gating |
+| Public template copies | `../../../BetterRepository/src/data/raw-scripts/` | Ensure BetterRepository ships the same helper contract |
+| Public guide pages | `../../../BetterRepository/src/components/guides/Ultrascripts*.vue` | Ensure author-facing claims match the runtime |
+| Popup/background settings | `../../../BetterDungeon/popup.js`, `../../../BetterDungeon/background.js` | Verify player configuration, consent, SDK, and AI setup |
 
 ## Module Suite Inventory
 
@@ -39,9 +39,9 @@ Every shipped first-party module has a dedicated suite.
 
 Use when changing:
 
-- `../../BetterDungeon/modules/scripture/module.js`
-- `../../BetterDungeon/modules/scripture/renderer.js`
-- `../../BetterDungeon/modules/scripture/validators.js`
+- `../../../BetterDungeon/modules/scripture/module.js`
+- `../../../BetterDungeon/modules/scripture/renderer.js`
+- `../../../BetterDungeon/modules/scripture/validators.js`
 - Scripture CSS or widget layout
 - widget event queue or `ackSeq` behavior
 - public Scripture widget examples
@@ -58,7 +58,7 @@ Special attention:
 
 Use when changing:
 
-- `../../BetterDungeon/modules/ai/module.js`
+- `../../../BetterDungeon/modules/ai/module.js`
 - AI settings in `popup.js` or `background.js`
 - OpenRouter request/response handling
 - unsafe replay handling
@@ -75,7 +75,7 @@ Special attention:
 
 Use when changing:
 
-- `../../BetterDungeon/modules/sdk/module.js`
+- `../../../BetterDungeon/modules/sdk/module.js`
 - SDK config snapshots in `background.js`
 - heartbeat fields used for discovery
 - public SDK/config examples
@@ -90,7 +90,7 @@ Special attention:
 
 Use when changing:
 
-- `../../BetterDungeon/modules/clock/module.js`
+- `../../../BetterDungeon/modules/clock/module.js`
 - timezone normalization
 - date/time formatting
 - Chronos V2 time helpers
@@ -119,8 +119,8 @@ Special attention:
 
 Use when changing:
 
-- `../../BetterDungeon/modules/webfetch/module.js`
-- `../../BetterDungeon/modules/webfetch/consent.js`
+- `../../../BetterDungeon/modules/webfetch/module.js`
+- `../../../BetterDungeon/modules/webfetch/consent.js`
 - consent prompts or saved decisions
 - blocked target rules
 - public fetch/search examples
@@ -153,7 +153,7 @@ best smoke checks for the author-facing helper contract.
 
 Location:
 
-- `../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/`
+- `../../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/`
 
 Verifies:
 
@@ -170,7 +170,7 @@ Verifies:
 
 Location:
 
-- `../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/`
+- `../../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/`
 
 Verifies:
 
@@ -249,4 +249,4 @@ Useful grep targets:
 - Do not claim a public guide is complete unless the BetterRepository component
   exists and matches the implementation.
 - If a regression suite changes because the public helper contract changed,
-  update [07-example-contract-reference.md](./07-example-contract-reference.md).
+  update [script-contract.md](./script-contract.md).

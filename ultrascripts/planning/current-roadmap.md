@@ -1,4 +1,4 @@
-# 03 - Implementation Status
+# Current Roadmap
 
 ## Status Snapshot
 
@@ -33,8 +33,8 @@ Not done:
 
 Shipped files:
 
-- `../../BetterDungeon/services/ultrascripts/ws-interceptor.js`
-- `../../BetterDungeon/services/ultrascripts/ws-stream.js`
+- `../../../BetterDungeon/services/ultrascripts/ws-interceptor.js`
+- `../../../BetterDungeon/services/ultrascripts/ws-stream.js`
 
 Current capabilities:
 
@@ -48,8 +48,8 @@ Current capabilities:
 
 Shipped files:
 
-- `../../BetterDungeon/services/ultrascripts/write-queue.js`
-- `../../BetterDungeon/services/ai-dungeon-service.js`
+- `../../../BetterDungeon/services/ultrascripts/write-queue.js`
+- `../../../BetterDungeon/services/ai-dungeon-service.js`
 
 Current capabilities:
 
@@ -64,10 +64,10 @@ Current capabilities:
 
 Shipped files:
 
-- `../../BetterDungeon/services/ultrascripts/core.js`
-- `../../BetterDungeon/services/ultrascripts/module-registry.js`
-- `../../BetterDungeon/services/ultrascripts/ops-dispatcher.js`
-- `../../BetterDungeon/services/ultrascripts/envelope.js`
+- `../../../BetterDungeon/services/ultrascripts/core.js`
+- `../../../BetterDungeon/services/ultrascripts/module-registry.js`
+- `../../../BetterDungeon/services/ultrascripts/ops-dispatcher.js`
+- `../../../BetterDungeon/services/ultrascripts/envelope.js`
 
 Current capabilities:
 
@@ -85,10 +85,10 @@ Current capabilities:
 
 Shipped files:
 
-- `../../BetterDungeon/features/ultrascripts_feature.js`
-- `../../BetterDungeon/popup.js`
-- `../../BetterDungeon/background.js`
-- `../../BetterDungeon/manifest.json`
+- `../../../BetterDungeon/features/ultrascripts_feature.js`
+- `../../../BetterDungeon/popup.js`
+- `../../../BetterDungeon/background.js`
+- `../../../BetterDungeon/manifest.json`
 
 Current capabilities:
 
@@ -152,7 +152,7 @@ Current priority:
 - avoid reopening architecture unless a concrete showcase requirement exposes a
   real gap
 
-Tracked in [08-module-quality-pass.md](./08-module-quality-pass.md).
+Tracked in [Module Quality Pass](./module-quality-pass.md).
 
 ### 2. Template Alignment
 
@@ -161,11 +161,11 @@ script-side helper pattern.
 
 Watch:
 
-- `../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/`
-- `../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/`
-- `../../BetterRepository/src/data/raw-scripts/*/ultrascripts-starter-template.js`
-- `../../BetterRepository/src/data/raw-scripts/*/ultrascripts-required-template.js`
-- `../../BetterRepository/src/data/scripts.js`
+- `../../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/`
+- `../../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/`
+- `../../../BetterRepository/src/data/raw-scripts/*/ultrascripts-starter-template.js`
+- `../../../BetterRepository/src/data/raw-scripts/*/ultrascripts-required-template.js`
+- `../../../BetterRepository/src/data/scripts.js`
 
 ### 3. Showcase Scripts
 

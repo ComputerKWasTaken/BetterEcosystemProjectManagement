@@ -1,4 +1,4 @@
-# 05 - BetterDungeon SDK Specification
+# BetterDungeon SDK Reference
 
 ## Purpose
 
@@ -9,14 +9,14 @@ AI Dungeon scripts. It complements heartbeat discovery; it does not replace it.
 
 Implementation source:
 
-- `../../BetterDungeon/modules/sdk/module.js`
-- `../../BetterDungeon/background.js`
-- `../../BetterDungeon/tests/aid-scripts/sdk-module/`
+- `../../../BetterDungeon/modules/sdk/module.js`
+- `../../../BetterDungeon/background.js`
+- `../../../BetterDungeon/tests/aid-scripts/sdk-module/`
 
 Public docs:
 
-- `../../BetterRepository/src/components/guides/UltrascriptsSdkGuide.vue`
-- `../../BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue`
+- `../../../BetterRepository/src/components/guides/UltrascriptsSdkGuide.vue`
+- `../../../BetterRepository/src/components/guides/UltrascriptsQuickStartGuide.vue`
 
 ## Separation Of Responsibilities
 
@@ -387,7 +387,7 @@ summary instead of the raw value.
 
 Suite:
 
-- `../../BetterDungeon/tests/aid-scripts/sdk-module/`
+- `../../../BetterDungeon/tests/aid-scripts/sdk-module/`
 
 Coverage expectations:
 

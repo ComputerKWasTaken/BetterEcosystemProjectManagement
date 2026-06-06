@@ -1,4 +1,4 @@
-# 02 - Modules
+# Module System Reference
 
 ## Purpose
 
@@ -25,15 +25,15 @@ heartbeat advertise?
 
 | Module | Kind | State or ops | Main files | Public guide | Regression suite |
 |---|---|---|---|---|---|
-| `scripture` | state | `ultrascripts:state:scripture` | `../../BetterDungeon/modules/scripture/` | `UltrascriptsScriptureGuide.vue` | `scripture-module` |
-| `webfetch` | ops | `fetch`, `search` | `../../BetterDungeon/modules/webfetch/` | `UltrascriptsWebFetchGuide.vue` | `webfetch-module` |
-| `clock` | ops | `now`, `tz`, `format` | `../../BetterDungeon/modules/clock/` | `UltrascriptsClockGuide.vue` | `clock-module` |
-| `sdk` | ops | `version`, `config` | `../../BetterDungeon/modules/sdk/` | `UltrascriptsSdkGuide.vue` | `sdk-module` |
-| `geolocation` | ops | `permission`, `getCurrent` | `../../BetterDungeon/modules/geolocation/` | `UltrascriptsGeolocationGuide.vue` | `geolocation-module` |
-| `weather` | ops | `current`, `forecast` | `../../BetterDungeon/modules/weather/` | `UltrascriptsWeatherGuide.vue` | `weather-module` |
-| `network` | ops | `status` | `../../BetterDungeon/modules/network/` | `UltrascriptsNetworkGuide.vue` | `network-module` |
-| `system` | ops | `info`, `power` | `../../BetterDungeon/modules/system/` | `UltrascriptsSystemGuide.vue` | `system-module` |
-| `ai` | ops | `chat`, `models`, `testConnection` | `../../BetterDungeon/modules/ai/` | `UltrascriptsAiGuide.vue` | `ai-module` |
+| `scripture` | state | `ultrascripts:state:scripture` | `../../../BetterDungeon/modules/scripture/` | `UltrascriptsScriptureGuide.vue` | `scripture-module` |
+| `webfetch` | ops | `fetch`, `search` | `../../../BetterDungeon/modules/webfetch/` | `UltrascriptsWebFetchGuide.vue` | `webfetch-module` |
+| `clock` | ops | `now`, `tz`, `format` | `../../../BetterDungeon/modules/clock/` | `UltrascriptsClockGuide.vue` | `clock-module` |
+| `sdk` | ops | `version`, `config` | `../../../BetterDungeon/modules/sdk/` | `UltrascriptsSdkGuide.vue` | `sdk-module` |
+| `geolocation` | ops | `permission`, `getCurrent` | `../../../BetterDungeon/modules/geolocation/` | `UltrascriptsGeolocationGuide.vue` | `geolocation-module` |
+| `weather` | ops | `current`, `forecast` | `../../../BetterDungeon/modules/weather/` | `UltrascriptsWeatherGuide.vue` | `weather-module` |
+| `network` | ops | `status` | `../../../BetterDungeon/modules/network/` | `UltrascriptsNetworkGuide.vue` | `network-module` |
+| `system` | ops | `info`, `power` | `../../../BetterDungeon/modules/system/` | `UltrascriptsSystemGuide.vue` | `system-module` |
+| `ai` | ops | `chat`, `models`, `testConnection` | `../../../BetterDungeon/modules/ai/` | `UltrascriptsAiGuide.vue` | `ai-module` |
 
 Compatibility note: `ai` accepts alias `providerAI`. Public examples should use
 `ai`.
@@ -71,8 +71,8 @@ path and registered.
 ## Live Module Contract
 
 The implementation source of truth is
-`../../BetterDungeon/services/ultrascripts/module-registry.js` plus
-`../../BetterDungeon/services/ultrascripts/core.js`.
+`../../../BetterDungeon/services/ultrascripts/module-registry.js` plus
+`../../../BetterDungeon/services/ultrascripts/core.js`.
 
 ```ts
 interface UltrascriptsModule {
@@ -281,13 +281,13 @@ Use this checklist:
 2. Confirm the capability belongs in BetterDungeon rather than in a scenario
    helper.
 3. Define the smallest stable state/ops contract.
-4. Add the module under `../../BetterDungeon/modules/<module-id>/`.
+4. Add the module under `../../../BetterDungeon/modules/<module-id>/`.
 5. Register the module with the registry.
 6. Load the module in the extension path.
 7. Add or update the module regression suite under
-   `../../BetterDungeon/tests/aid-scripts/`.
+   `../../../BetterDungeon/tests/aid-scripts/`.
 8. Update BetterRepository public docs if the author-facing contract changed.
-9. Update [07-example-contract-reference.md](./07-example-contract-reference.md)
+9. Update [script-contract.md](./script-contract.md)
    if examples/templates need new canonical patterns.
 10. Re-check heartbeat output so module state names and ops are discoverable.
 
@@ -307,7 +307,7 @@ Review questions:
 - Is the regression script still representative?
 - Would the module be comfortable to show in Brainiac, Statboy, or Chronos V2?
 
-Current order is tracked in [08-module-quality-pass.md](./08-module-quality-pass.md).
+Current order is tracked in [Module Quality Pass](../planning/module-quality-pass.md).
 
 ## Do Not Build By Default
 
@@ -321,11 +321,11 @@ Current order is tracked in [08-module-quality-pass.md](./08-module-quality-pass
 
 ## Best Reference Files
 
-- `../../BetterDungeon/services/ultrascripts/module-registry.js`
-- `../../BetterDungeon/services/ultrascripts/core.js`
-- `../../BetterDungeon/services/ultrascripts/ops-dispatcher.js`
-- `../../BetterDungeon/services/ultrascripts/envelope.js`
-- `../../BetterDungeon/modules/scripture/module.js`
-- `../../BetterDungeon/modules/webfetch/module.js`
-- `../../BetterDungeon/modules/sdk/module.js`
-- `../../BetterDungeon/modules/ai/module.js`
+- `../../../BetterDungeon/services/ultrascripts/module-registry.js`
+- `../../../BetterDungeon/services/ultrascripts/core.js`
+- `../../../BetterDungeon/services/ultrascripts/ops-dispatcher.js`
+- `../../../BetterDungeon/services/ultrascripts/envelope.js`
+- `../../../BetterDungeon/modules/scripture/module.js`
+- `../../../BetterDungeon/modules/webfetch/module.js`
+- `../../../BetterDungeon/modules/sdk/module.js`
+- `../../../BetterDungeon/modules/ai/module.js`
