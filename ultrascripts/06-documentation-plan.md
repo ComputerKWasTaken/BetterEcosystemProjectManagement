@@ -85,10 +85,12 @@ Core public guide areas now include:
 1. keep the internal Ultrascripts docs accurate first (completed in Phase 11)
 2. complete the high-level public guide, quick start, cookbook, architecture, and authoring docs (completed in Phase 13)
 3. complete per-module guides for all shipped first-party modules (completed in Phase 13)
-4. run the module quality pass before building showcase scripts
-5. build the three showcase scripts: Brainiac, Statboy, and Chronos V2
-6. sync BetterDungeon mobile with the PC codebase
-7. keep the example contract reference current as the starter templates and complete scripts evolve
+4. temporarily reopen the module quality pass before building showcase scripts
+5. finish the Scripture pass first
+6. build the three showcase scripts: Brainiac, Statboy, and Chronos V2
+7. plan the BetterDungeon V2 release
+8. sync BetterDungeon mobile with the PC codebase during launch prep as needed
+9. keep the example contract reference current as the starter templates and complete scripts evolve
 
 ## Verification
 
@@ -105,7 +107,12 @@ When documentation is updated, verify:
 
 Phase 13 (BetterRepository Public Docs) is now completed for the shipped Ultrascripts surface. BetterRepository has a coherent public guide set, dedicated module pages, a Quick Start, a Cookbook, and a public SDK guide that matches the live runtime contract.
 
-The example/template foundation is now in place: the current active priority is the final module quality pass, starting with Scripture mobile/widget polish and WebFetch consent/error ergonomics.
+The example/template foundation is now in place. The current active priority is a temporarily reopened module quality pass so the shipped modules are as useful and showcase-ready as possible.
+
+Immediate focus:
+
+- finish the Scripture module pass
+- use any follow-up module review to support real showcase-script quality, not to reopen speculative design work
 
 After that pass, the next target is the showcase script set:
 
@@ -113,4 +120,4 @@ After that pass, the next target is the showcase script set:
 - **Statboy** - Requires Ultrascripts. Schema-based stat management where the AI module proposes structured updates and Scripture renders the state.
 - **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps vanilla timekeeping viable while adding real time/weather sync and widgets for BetterDungeon players.
 
-Once those scripts are built and polished, sync BetterDungeon mobile with the PC codebase and move into launch prep.
+Once those scripts are built and polished, plan the BetterDungeon V2 release, then fold any needed mobile/PC sync into launch prep.

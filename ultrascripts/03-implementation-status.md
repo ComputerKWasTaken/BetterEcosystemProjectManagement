@@ -169,13 +169,15 @@ The core runtime, all modules, the regression test suite, multiplatform follow-t
 - Aligned public examples with the live `ai`, `sdk`, heartbeat, and envelope contracts.
 - Cleaned the Ultrascripts info dump so it no longer carries Phase 12/13 TODOs.
 
-### Phase 14 - Module Quality Pass and Complete Scripts
+### Phase 14 - Reopened Module Quality Pass and Complete Scripts
 
 Active next:
 
 - Keep the standard SDK-based Enhanced and Required templates aligned with the live AI Dungeon scripting sandbox.
-- Run the final module quality pass, starting with Scripture widget/mobile polish and WebFetch consent/error ergonomics.
-- Produce the three target showcase scripts only after the module pass lands.
+- Temporarily reopen the module quality pass so the shipped module set can be pushed from "working" to "maximally useful" for real authors.
+- Finish the Scripture pass first, especially widget/mobile polish and the remaining helper-alignment work.
+- Continue module review after Scripture only where it materially improves showcase-script quality.
+- Produce the three target showcase scripts only after the Scripture-first quality pass lands.
 
 Current example foundation:
 
@@ -194,8 +196,9 @@ Showcase script targets after module polish:
 
 Follow-up after showcase scripts:
 
-- Sync the BetterDungeon mobile codebase with the PC codebase so both are on the same Ultrascripts/runtime behavior.
-- Move into launch prep once module polish, showcase scripts, and mobile/PC sync are complete.
+- Plan the BetterDungeon V2 release while the showcase-script results are still fresh and concrete.
+- Sync the BetterDungeon mobile codebase with the PC codebase as part of launch prep so both are on the same Ultrascripts/runtime behavior.
+- Move into launch prep once module polish, showcase scripts, release planning, and any required mobile/PC sync are complete.
 
 Quality-pass reference:
 

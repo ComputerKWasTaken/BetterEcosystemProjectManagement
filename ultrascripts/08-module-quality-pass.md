@@ -1,6 +1,6 @@
 # 08 - Module Quality Pass
 
-> Final module-by-module polish pass before building the Brainiac, Statboy, and Chronos V2 showcase scripts.
+> Temporarily reopened module-by-module polish pass before building the Brainiac, Statboy, and Chronos V2 showcase scripts.
 
 ## Purpose
 
@@ -10,6 +10,10 @@ enough to showcase in real scripts.
 
 The output of this pass should be a short list of focused fixes or refinements
 per module, followed by showcase scripts that demonstrate the polished behavior.
+
+This pass is reopened temporarily. The goal is not to spin Ultrascripts back
+into a broad redesign cycle; it is to finish the last high-value usefulness work
+before the showcase-script push.
 
 ## Next Target After This Pass
 
@@ -30,8 +34,8 @@ best demonstration of what Ultrascripts makes possible.
    without BetterDungeon, while Ultrascripts adds real time/weather sync and
    proper widgets.
 
-After the showcase scripts, sync the BetterDungeon mobile codebase with the PC
-codebase, then move into launch preparation.
+After the showcase scripts, move into BetterDungeon V2 release planning, then
+handle any required mobile/PC sync as part of launch preparation.
 
 ## Working Order
 
@@ -48,6 +52,12 @@ codebase, then move into launch preparation.
 Scripture and WebFetch go first because they have the most user-facing surface:
 Scripture is what players see, and WebFetch is the most consent/error-prone ops
 module.
+
+Current emphasis:
+
+- Finish Scripture before treating the broader module pass as active again.
+- Only pull other modules forward when that work clearly improves Brainiac,
+  Statboy, or Chronos V2.
 
 ## Review Questions
 
@@ -67,6 +77,7 @@ For each module, answer these before writing example scripts:
 
 ### Scripture
 
+- Finish the remaining Scripture pass before moving on.
 - Review mobile and narrow-sidebar widget layout.
 - Confirm widget density, scrolling, compact mode, and long labels behave well.
 - Improve any awkward default styling before using Scripture in showcase scripts.
@@ -129,3 +140,4 @@ This pass is done when:
 - BetterRepository guides still match the implementation
 - the Enhanced and Required templates remain aligned with the SDK helper contract
 - the next task can cleanly move into Brainiac, Statboy, and Chronos V2
+- the outcome is concrete enough to support BetterDungeon V2 release planning

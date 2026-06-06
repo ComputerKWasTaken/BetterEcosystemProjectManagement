@@ -14,7 +14,7 @@
 | 05 | [BetterDungeon SDK Spec](./05-betterdungeon-sdk-spec.md) | Complete SDK specification, ops schemas, and scripting patterns |
 | 06 | [Documentation Plan](./06-documentation-plan.md) | Internal/public documentation alignment plan |
 | 07 | [Example Contract Reference](./07-example-contract-reference.md) | Public example guardrails and live module contract quick checks |
-| 08 | [Module Quality Pass](./08-module-quality-pass.md) | Final module-by-module polish checklist before Brainiac, Statboy, and Chronos V2 |
+| 08 | [Module Quality Pass](./08-module-quality-pass.md) | Temporarily reopened module-by-module polish checklist before Brainiac, Statboy, and Chronos V2 |
 
 ### Archived
 
@@ -31,9 +31,11 @@ The core Ultrascripts runtime is shipped. All 9 first-party modules are implemen
 What remains is:
 
 - keep the standard SDK-based Enhanced and Required template foundation aligned with implementation changes
-- complete the module quality pass, starting with Scripture and WebFetch
+- temporarily reopen the module quality pass so each shipped module is maximally useful in real scripts
+- finish the Scripture module pass first
 - build the three showcase scripts after module polish: Brainiac, Statboy, and Chronos V2
-- sync BetterDungeon mobile with the PC codebase before launch prep
+- move into BetterDungeon V2 release planning after the showcase scripts
+- sync BetterDungeon mobile with the PC codebase during launch prep as needed
 
 ## Doc rules
 
