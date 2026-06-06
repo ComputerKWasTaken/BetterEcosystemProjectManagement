@@ -123,7 +123,8 @@ Exposes player-configured preferences and extension toggles that directly influe
     },
     "ai": {
       "configured": true,
-      "defaultModel": "google/gemini-2.0-flash-exp:free",
+      "defaultModel": "openrouter/free",
+      "dummyModel": false,
       "costControls": {
         "freeModelsOnly": true,
         "advancedOpen": false,
@@ -150,8 +151,9 @@ Exposes player-configured preferences and extension toggles that directly influe
   - `layout`: `"balanced"` | `"stacked"`
 - **`ultrascripts.webfetch`**: Quantitative metrics representing WebFetch consent settings (`savedOriginCount`, `allowCount`, `denyCount`) without leaking specific allowed domains.
 - **`ultrascripts.ai`**: Curated OpenRouter metadata:
-  - `configured`: Boolean showing if the player has entered a valid OpenRouter API key. **The key itself is NEVER exposed.**
-  - `defaultModel`: String name of the default configured provider model.
+  - `configured`: Boolean showing if hosted AI is ready for use. In normal operation this means the player has saved an OpenRouter API key or selected the local dummy model for no-network testing. **The key itself is NEVER exposed.**
+  - `defaultModel`: String id of the player's saved default model.
+  - `dummyModel`: Boolean showing whether the saved default model is BetterDungeon's local dummy test model.
   - `costControls`: User-specified usage safety metrics to protect OpenRouter accounts.
 
 ---

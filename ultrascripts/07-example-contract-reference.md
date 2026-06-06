@@ -102,7 +102,6 @@ Canonical request args for `chat`:
 ```json
 {
   "provider": "openrouter",
-  "model": "openrouter/auto",
   "messages": [
     { "role": "system", "content": "Reply with compact JSON only." },
     { "role": "user", "content": "Return a status object." }
@@ -118,6 +117,7 @@ Notes:
 - Use `maxTokens`, not `max_tokens`.
 - Use `responseFormat`, not `response_format`.
 - Do not teach `top_p`; the live module does not normalize it.
+- Do not teach a `model` request arg; `ai.chat` always uses the player's saved default model.
 - Valid `responseFormat.type` values are `text`, `json_object`,
   and `json_schema`.
 - Read chat text from `data.text` or `data.message.content`, not top-level
@@ -128,7 +128,7 @@ Canonical `chat` result on success:
 ```json
 {
   "provider": "openrouter",
-  "model": "google/gemini-2.0-flash-exp:free",
+  "model": "openrouter/free",
   "id": "gen-...",
   "created": 1736992200,
   "object": "chat.completion",
@@ -384,7 +384,8 @@ Ops:
     "webfetch": { "savedOriginCount": 0, "allowCount": 0, "denyCount": 0 },
     "ai": {
       "configured": true,
-      "defaultModel": "google/gemini-2.0-flash-exp:free",
+      "defaultModel": "openrouter/free",
+      "dummyModel": false,
       "costControls": {}
     }
   }
