@@ -4,68 +4,72 @@
 
 ## Current Focus
 
-With Ultrascripts now multiplatform and the Phase 13 public guide rewrite
-completed, BetterRepository has the public documentation foundation for the
-current Ultrascripts platform.
+BetterRepository already has the public Ultrascripts documentation foundation
+for the shipped platform. The current responsibility is keeping public docs,
+script entries, raw-script templates, and future showcase scripts synchronized
+with BetterDungeon.
 
-Completed Ultrascripts documentation deliverables:
+Completed Ultrascripts public docs:
 
-- **Standardized Guide Format** — authoring contract for every guide in
-  `src/components/guides/`. Lives at `BetterRepository/docs/guides/format-spec.md`.
-- **Ultrascripts Info Dump** — fully populated reference at
-  `BetterRepository/docs/guides/info-dumps/ultrascripts.md`, aligned to the
-  live BetterDungeon runtime.
-- **Public Ultrascripts Guide Set** — overview, Quick Start, Cookbook,
-  Architecture, Building Modules, and module pages for Scripture, WebFetch, AI,
-  SDK, Clock, Geolocation, Weather, Network, and System.
-- **Story Card Command Presets** — new repository data type
-  `STORY_CARD_COMMAND_PRESETS` in `src/data/storyCards.js`, parallel to
-  `STORY_CARDS` and `STORY_CARD_TEMPLATES`. Seeded with the default
-  *Basic List Prompt* preset. Story Cards guide expanded with a new
-  *Command Presets* section explaining the `{{title}}` token, entry
-  formatting modes, additional generation context, and the
-  log-in-notes / speed-create toggles.
+- overview
+- Quick Start
+- Cookbook
+- Architecture
+- Building Modules
+- Scripture
+- WebFetch
+- AI
+- BetterDungeon SDK
+- Clock
+- Geolocation
+- Weather
+- Network
+- System
 
-## Completed Ultrascripts Guide Work
+Other completed public documentation pieces:
 
-The public docs now cover:
+- standardized guide format at `../BetterRepository/docs/guides/format-spec.md`
+- Ultrascripts info dump at
+  `../BetterRepository/docs/guides/info-dumps/ultrascripts.md`
+- Enhanced and Required Ultrascripts template entries
+- Story Card command preset documentation and seed data
 
-- Ultrascripts overview and availability detection.
-- Ultrascripts state publishing and live-count history.
-- Ultrascripts ops calls, polling, acknowledgements, errors, and reload behavior.
-- Scripture widgets.
-- WebFetch consent, safe fetch, search, rate limits, and blocked targets.
-- Clock, Geolocation, Weather, Network, and System modules.
-- BetterDungeon SDK version and config ops.
-- AI setup, OpenRouter key configuration, safe usage, request caps, and examples.
+## Active Work
 
-## To Do
+### Ultrascripts Sync
 
-### High Priority
+- Keep BetterRepository raw-script template copies aligned with BetterDungeon
+  examples.
+- Update public guides only when module contracts, helper behavior, or showcase
+  examples change.
+- Add or update public script entries for Brainiac, Statboy, and Chronos V2
+  once they are built.
 
-- Review each shipped Ultrascripts module one at a time for conceptual
-  improvements before producing complete scripts.
-- Finish populating the six scaffolded info dumps (AI Instructions, Plot
-  Components, Scripts, Symbols & Commands, Advanced
-  Settings). Pull verified facts from existing guide content, Discord,
-  and contributor notes.
-- Refactor existing guides (`AIInstructionsGuide.vue`, `PlotComponentsGuide.vue`,
-  `ScriptsGuide.vue`, `SymbolsCommandsGuide.vue`,
-  `AdvancedSettingsGuide.vue`) to fully conform to `docs/guides/format-spec.md`.
-- Replace legacy BetterScripts guide material with Ultrascripts.
-- Remove Zero-width / TagCipher / Context Modifier guidance where it only existed for old BetterScripts.
+### Non-Ultrascripts Guide Cleanup
 
-### Medium Priority
+High priority:
 
-- Keep the Enhanced and Required Ultrascripts templates aligned between
-  BetterRepository and BetterDungeon as the scripting contract evolves.
-- Add scenario-author examples that combine modules, such as weather grounded by geolocation or NPC reasoning through the AI module.
-- Cross-link BetterDungeon popup setup steps with each module guide.
+- Finish populating scaffolded info dumps for AI Instructions, Plot Components,
+  Scripts, Symbols & Commands, and Advanced Settings.
+- Refactor existing non-Ultrascripts guides to fully match
+  `docs/guides/format-spec.md`.
+- Replace legacy BetterScripts guide material with current Ultrascripts framing
+  where relevant.
+- Remove Zero-width, TagCipher, and Context Modifier guidance where it only
+  existed for old BetterScripts workflows.
 
-### Later
+## Medium Priority
 
-- Add deeper AI recipes once additional providers, presets, or recommended models are available.
-- Add Voyage resources when Voyage leaves Early Access and the product direction is clear.
+- Add scenario-author examples that combine modules, such as geolocation-backed
+  weather or AI-assisted state management.
+- Cross-link BetterDungeon popup setup steps with relevant module guides.
+- Add deeper AI recipes once additional providers, presets, or recommended
+  models are available.
+
+## Later
+
+- Add Voyage resources when Voyage leaves Early Access and the product direction
+  is clear.
 
 ## Known Issues
 
@@ -75,8 +79,6 @@ The public docs now cover:
 
 - [BetterRepository docs index](../BetterRepository/docs/README.md)
 - [Standardized Guide Format spec](../BetterRepository/docs/guides/format-spec.md)
-- [Story Cards info dump](../BetterRepository/docs/guides/info-dumps/story-cards.md)
-- [Ultrascripts planning index](./ultrascripts/README.md)
-- [Implementation status](./ultrascripts/03-implementation-status.md)
-- [Test suites](./ultrascripts/04-test-suites.md)
+- [Ultrascripts internal docs](./ultrascripts/README.md)
+- [Documentation sync](./ultrascripts/06-documentation-plan.md)
 - [Example contract reference](./ultrascripts/07-example-contract-reference.md)

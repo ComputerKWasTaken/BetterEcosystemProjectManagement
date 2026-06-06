@@ -1,123 +1,203 @@
-# 06 - Documentation Plan
-
-> This is the active plan for Ultrascripts-facing documentation work across the internal docs and BetterRepository public guides.
+# 06 - Documentation Sync
 
 ## Purpose
 
-This plan exists to keep two documentation tracks aligned:
+This document keeps the private Ultrascripts docs, public BetterRepository
+guides, starter templates, and showcase scripts aligned.
 
-- private/internal Ultrascripts documentation for maintenance and implementation work
-- public BetterRepository documentation for scenario authors and developers
+The rule is:
 
-The important rule is simple: both tracks must describe the Ultrascripts that actually ships, not an earlier planning snapshot.
+```text
+Implementation truth -> private maintenance docs -> public author docs -> templates/examples
+```
 
-## Current documentation shape
+When the implementation changes, all downstream surfaces that teach or depend on
+that contract must be checked.
 
-The active internal Ultrascripts doc set is now:
+## Documentation Tracks
 
-- [00-overview.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/00-overview.md)
-- [01-architecture.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/01-architecture.md)
-- [02-modules.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/02-modules.md)
-- [03-implementation-status.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/03-implementation-status.md)
-- [04-test-suites.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/04-test-suites.md)
-- [05-betterdungeon-sdk-spec.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/05-betterdungeon-sdk-spec.md)
-- [06-documentation-plan.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/06-documentation-plan.md)
-- [07-example-contract-reference.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/07-example-contract-reference.md)
-- [08-module-quality-pass.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/08-module-quality-pass.md)
+| Track | Audience | Location | Job |
+|---|---|---|---|
+| Private Ultrascripts docs | BetterEcosystem maintainers | `./` | Current architecture, status, module contracts, roadmap, verification |
+| Public BetterRepository guides | Scenario authors and developers | `../../BetterRepository/src/components/guides/Ultrascripts*.vue` | Teach what to build and how to use it |
+| BetterRepository info dump | Guide authors/RAG/source notes | `../../BetterRepository/docs/guides/info-dumps/ultrascripts.md` | Full public knowledge base backing Vue guide pages |
+| BetterDungeon examples | Maintainers testing live script foundations | `../../BetterDungeon/examples/aid-scripts/` | Enhanced and Required template foundations |
+| BetterRepository raw scripts | Public downloadable script entries | `../../BetterRepository/src/data/raw-scripts/` | Public copies of templates/scripts |
+| Module suites | Maintainers validating behavior | `../../BetterDungeon/tests/aid-scripts/` | Live AI Dungeon regression checks |
 
-## Internal documentation goals
+## Private Docs Inventory
 
-The internal docs should do four jobs well:
+| File | Keep focused on |
+|---|---|
+| [README.md](./README.md) | source-of-truth map and read order |
+| [00-overview.md](./00-overview.md) | product-level state and mental model |
+| [01-architecture.md](./01-architecture.md) | runtime layers and data flows |
+| [02-modules.md](./02-modules.md) | module inventory and contract |
+| [03-implementation-status.md](./03-implementation-status.md) | active roadmap and release path |
+| [04-test-suites.md](./04-test-suites.md) | verification surfaces |
+| [05-betterdungeon-sdk-spec.md](./05-betterdungeon-sdk-spec.md) | SDK module contract |
+| [06-documentation-plan.md](./06-documentation-plan.md) | this sync plan |
+| [07-example-contract-reference.md](./07-example-contract-reference.md) | example/template/showcase rules |
+| [08-module-quality-pass.md](./08-module-quality-pass.md) | active module polish checklist |
 
-1. explain how Ultrascripts works now
-2. point clearly to the real source-of-truth files
-3. document the parts most likely to confuse future maintainers
-4. avoid keeping dead planning baggage alive
+## Public Guide Inventory
 
-That means:
+Current BetterRepository Ultrascripts guide pages:
 
-- no Lite/full profile framing
-- no future-tense descriptions of already shipped runtime pieces
-- no references to files that no longer exist
-- no pretending planned tests or guides already exist when they do not
+| Guide | File |
+|---|---|
+| Overview | `UltrascriptsGuide.vue` |
+| Quick Start | `UltrascriptsQuickStartGuide.vue` |
+| Cookbook | `UltrascriptsCookbookGuide.vue` |
+| Architecture | `UltrascriptsArchitectureGuide.vue` |
+| Building Modules | `UltrascriptsAuthoringGuide.vue` |
+| Scripture | `UltrascriptsScriptureGuide.vue` |
+| WebFetch | `UltrascriptsWebFetchGuide.vue` |
+| AI | `UltrascriptsAiGuide.vue` |
+| BetterDungeon SDK | `UltrascriptsSdkGuide.vue` |
+| Clock | `UltrascriptsClockGuide.vue` |
+| Geolocation | `UltrascriptsGeolocationGuide.vue` |
+| Weather | `UltrascriptsWeatherGuide.vue` |
+| Network | `UltrascriptsNetworkGuide.vue` |
+| System | `UltrascriptsSystemGuide.vue` |
 
-## Public documentation goals
+The public guide set exists and covers the shipped first-party surface. Future
+work should keep it current, not restart it.
 
-The BetterRepository side should do different work:
+## Current Public/Private Split
 
-- explain why Ultrascripts matters
-- show how to use it without overwhelming people
-- give each major module a clear home
-- keep the technical depth in the right places
+Private docs should include:
 
-The public guide split is now:
+- implementation file maps
+- settled decisions
+- internal release sequencing
+- module quality-pass notes
+- exact regression surfaces
+- risks and maintenance rules
 
-- `UltrascriptsGuide.vue` as the "why/use it" overview
-- `UltrascriptsQuickStartGuide.vue` as the standard SDK-helper onboarding path
-- `UltrascriptsCookbookGuide.vue` as the recipe collection
-- `UltrascriptsArchitectureGuide.vue` for runtime architecture
-- `UltrascriptsAuthoringGuide.vue` for BetterDungeon-side module authors
-- module-specific guides where deeper usage belongs
-- migration/help pages separated from the main pitch
+Public docs should include:
 
-## Completed BetterRepository guide inventory
+- what Ultrascripts lets authors build
+- how to install/use the helper
+- Enhanced versus Required script framing
+- module-specific recipes
+- permission/config/fallback guidance
+- safe copyable examples
 
-Core public guide areas now include:
+Public docs should not include private release anxiety, internal phase history,
+or long explanations of retired approaches unless authors need the warning.
 
-- Ultrascripts overview
-- Quick Start
-- Cookbook
-- Architecture
-- Building Modules
-- Scripture
-- WebFetch
-- AI
-- BetterDungeon SDK
-- Clock
-- Geolocation
-- Weather
-- Network
-- System
-- migration/help material as needed later
+## Template Sync
 
-## Recommended execution order
+Canonical helper/template surfaces:
 
-1. keep the internal Ultrascripts docs accurate first (completed in Phase 11)
-2. complete the high-level public guide, quick start, cookbook, architecture, and authoring docs (completed in Phase 13)
-3. complete per-module guides for all shipped first-party modules (completed in Phase 13)
-4. temporarily reopen the module quality pass before building showcase scripts
-5. finish the Scripture pass first
-6. build the three showcase scripts: Brainiac, Statboy, and Chronos V2
-7. plan the BetterDungeon V2 release
-8. sync BetterDungeon mobile with the PC codebase during launch prep as needed
-9. keep the example contract reference current as the starter templates and complete scripts evolve
+- `../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/`
+- `../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/`
+- `../../BetterRepository/src/data/raw-scripts/library/ultrascripts-starter-template.js`
+- `../../BetterRepository/src/data/raw-scripts/library/ultrascripts-required-template.js`
+- matching `input`, `context`, and `output` files in both repos
+- `../../BetterRepository/src/data/scripts.js`
 
-## Verification
+Sync rules:
 
-When documentation is updated, verify:
+- BetterDungeon examples and BetterRepository raw-script copies should teach the
+  same `bd.us` helper contract.
+- If helper method names change, update Quick Start, module guides, and
+  [07-example-contract-reference.md](./07-example-contract-reference.md).
+- If Required gating changes, update the public SDK guide and script catalog
+  metadata.
+- If Enhanced fallback behavior changes, update Quick Start and the starter
+  template description.
 
-- file names and numbers are correct
-- internal links still resolve
-- guide claims match the actual codebase
-- public-facing language matches what users should care about
-- technical detail lives in the right guide, not everywhere at once
-- public examples stay aligned with the live AI Dungeon scripting sandbox and module contracts
+## Contract Change Checklist
 
-## Current priority
+When a module API changes:
 
-Phase 13 (BetterRepository Public Docs) is now completed for the shipped Ultrascripts surface. BetterRepository has a coherent public guide set, dedicated module pages, a Quick Start, a Cookbook, and a public SDK guide that matches the live runtime contract.
+1. Update the module implementation.
+2. Update its regression suite.
+3. Update [02-modules.md](./02-modules.md) if the inventory/contract changed.
+4. Update [07-example-contract-reference.md](./07-example-contract-reference.md)
+   if public examples need a new pattern.
+5. Update the BetterRepository module guide.
+6. Update the Ultrascripts info dump if it contains the changed contract.
+7. Update templates/showcase scripts if they depend on the field/op.
+8. Run the relevant verification from [04-test-suites.md](./04-test-suites.md).
 
-The example/template foundation is now in place. The current active priority is a temporarily reopened module quality pass so the shipped modules are as useful and showcase-ready as possible.
+When the helper/template contract changes:
+
+1. Update BetterDungeon examples.
+2. Update BetterRepository raw-script copies.
+3. Update Quick Start.
+4. Update Cookbook/module examples if they call helper methods directly.
+5. Update Required/Enhanced script catalog metadata if needed.
+6. Smoke-check both template flows.
+
+When roadmap/status changes:
+
+1. Update [03-implementation-status.md](./03-implementation-status.md).
+2. Update [08-module-quality-pass.md](./08-module-quality-pass.md) if module
+   polish status changed.
+3. Update `../ProjectManagement.md`, `../BetterDungeon.md`, or
+   `../BetterRepository.md` only if project-level focus changed.
+
+## Example Quality Rules
+
+All public AI Dungeon snippets should:
+
+- work inside AI Dungeon's script tabs
+- avoid top-level early returns in modifier-body snippets
+- return `{ text }` from modifiers
+- use `storyCards` with `keys`/`entry` compatibility
+- use `addStoryCard(keys, entry, type)` and
+  `updateStoryCard(index, keys, entry, type)` for writes
+- expect module responses on later turns
+- avoid `async`, `await`, timers, promises, and same-turn assumptions
+- use the canonical module id `ai`, not `providerAI`, except in legacy notes
+- use Story Card type `Ultrascripts` for Ultrascripts-owned cards
+
+## Active Sync Priority
+
+The public docs are complete for the shipped module set. The current sync
+priority is keeping docs and templates stable while module polish and showcase
+scripts happen.
 
 Immediate focus:
 
-- finish the Scripture module pass
-- use any follow-up module review to support real showcase-script quality, not to reopen speculative design work
+- Scripture module pass
+- helper alignment for Scripture interactions and widget state
+- any AI/SDK guidance needed for Brainiac and Statboy
+- any Clock/Weather/Geolocation guidance needed for Chronos V2
+- keeping Enhanced and Required templates identical across BetterDungeon and
+  BetterRepository after any helper changes
 
-After that pass, the next target is the showcase script set:
+## Showcase Script Documentation Path
 
-- **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card management, derived from Auto Cards plus Inner Self patterns.
-- **Statboy** - Requires Ultrascripts. Schema-based stat management where the AI module proposes structured updates and Scripture renders the state.
-- **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps vanilla timekeeping viable while adding real time/weather sync and widgets for BetterDungeon players.
+When Brainiac, Statboy, and Chronos V2 are built:
 
-Once those scripts are built and polished, plan the BetterDungeon V2 release, then fold any needed mobile/PC sync into launch prep.
+1. Add or update their BetterRepository script entries.
+2. Add public guide links where the scripts demonstrate module patterns.
+3. Update Cookbook recipes if they introduce a reusable pattern.
+4. Update [07-example-contract-reference.md](./07-example-contract-reference.md)
+   if a showcase reveals a better canonical example.
+5. Update project-level docs to move from "showcase scripts next" to release
+   prep.
+
+## Verification Before Calling Docs Synced
+
+Check:
+
+- private docs mention all 9 shipped modules consistently
+- public guide list still matches actual `Ultrascripts*.vue` files
+- test suite list still matches actual `tests/aid-scripts/` directories
+- template names match BetterDungeon examples and BetterRepository script data
+- no active doc claims Lite/full profiles, mutation-template priming, or
+  action-id-keyed Scripture history as current behavior
+- no public example teaches retired widget names or stale module field names
+
+Useful command patterns:
+
+```powershell
+rg -n "Lite|profile|mutation template|providerAI|stat-bar|badge-list|checklist|max_tokens|response_format|data.now|accuracyMeters" "Project Management\ultrascripts" BetterRepository
+rg --files BetterDungeon\tests\aid-scripts
+rg --files BetterRepository\src\components\guides | rg "Ultrascripts.*\.vue$"
+```

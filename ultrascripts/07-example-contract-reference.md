@@ -1,103 +1,258 @@
-# Ultrascripts Example Contract Reference
+# 07 - Example Contract Reference
 
-Living reference for public BetterRepository examples, the SDK-based starter
-templates, and author-facing sample scripts. Source of truth is the live
-BetterDungeon runtime under `BetterDungeon/modules/*` and
-`BetterDungeon/services/ultrascripts/*`.
+## Purpose
 
-## Rules for public examples
+This is the private reference for public BetterRepository examples, the
+Enhanced/Required starter templates, and the three upcoming showcase scripts.
 
-- Treat the live module implementations as authoritative over older docs and
-  older AI Dungeon test scripts.
-- Prefer the `bd.us.*` helper style in public docs unless the example is
-  intentionally teaching the raw card protocol.
-- Keep request args and response reads aligned to the live module contract.
-- If a module supports legacy aliases internally, document the canonical modern
-  field names unless authors truly need the alias.
+Use it when writing or reviewing:
 
-## AI Dungeon scripting constraints
+- BetterRepository guide snippets
+- `bd.us` helper examples
+- BetterDungeon example templates
+- BetterRepository raw-script template copies
+- Brainiac
+- Statboy
+- Chronos V2
 
-Public AI Dungeon snippets must also respect the platform sandbox:
+Implementation remains the source of truth. This file exists so examples do not
+quietly diverge from the live runtime.
 
-- Non-library snippets are pasted into a modifier body and the editor keeps
-  `modifier(text)` as the final line. Do not use top-level early `return` in
-  modifier-body snippets.
-- The modifier wrapper should return `{ text }`. Do not teach empty string
-  returns or `stop: true` in public snippets.
-- The sandbox exposes story cards as `id`, `keys`, `entry`, and `type`.
-  Helpers may support BetterDungeon's `title`/`value` naming as compatibility,
-  but public snippets must work with `keys`/`entry`.
+## Public Example Rules
+
+- Prefer the `bd.us` helper style unless the example intentionally teaches raw
+  Story Card protocol.
+- Teach canonical module ids and field names.
+- Mention legacy aliases only when compatibility matters.
+- Keep examples turn-safe: requests now, responses later.
+- Use Story Card type `Ultrascripts` for Ultrascripts-owned cards.
+- Read heartbeat for runtime/module/op discovery.
+- Use `sdk.config` for safe player settings, not for discovery.
+- Use module-specific permission/status/config ops before assuming browser or
+  player capability.
+
+## AI Dungeon Script Constraints
+
+Public snippets must respect AI Dungeon's script sandbox:
+
+- Non-library snippets are pasted into modifier bodies.
+- Do not use top-level early `return` in modifier-body snippets.
+- Modifier snippets should return `{ text }`.
+- Do not teach `stop: true` as a default Ultrascripts pattern.
+- Helpers should support Story Card `keys`/`entry` fields.
+- Helpers may also support BetterDungeon-style `title`/`value` compatibility.
 - Use `addStoryCard(keys, entry, type)` and
-  `updateStoryCard(index, keys, entry, type)` for writes. Do not rely on direct
-  mutation of `storyCards` objects.
-- Avoid `async`, `await`, timers, promises, and same-turn assumptions in AI
-  Dungeon snippets. Module responses arrive on a later turn.
+  `updateStoryCard(index, keys, entry, type)` for script-side writes.
+- Avoid `async`, `await`, timers, promises, and same-turn response assumptions.
 
-## Shared transport
+## Shared Cards
 
-### Heartbeat
+| Card | Direction | Purpose |
+|---|---|---|
+| `ultrascripts:heartbeat` | BetterDungeon -> script | Runtime/module/op discovery |
+| `ultrascripts:out` | script -> BetterDungeon | Request batch plus response acks |
+| `ultrascripts:in:<module>` | BetterDungeon -> script | Module responses |
+| `ultrascripts:state:scripture` | script -> BetterDungeon | Scripture widget state |
+| `ultrascripts:in:scripture` | BetterDungeon -> script | Scripture widget interaction events plus optional response envelope |
 
-- Runtime discovery lives on `ultrascripts:heartbeat`.
-- Scripts should treat heartbeat presence as "Ultrascripts is available".
-- Module discovery comes from the `modules` array on `ultrascripts:heartbeat`.
+## Heartbeat Contract
 
-### Request envelope
+Scripts should treat heartbeat presence as "Ultrascripts is available on this
+turn." The heartbeat advertises mounted modules and ops.
 
-`ultrascripts:out`
+Example:
+
+```json
+{
+  "ultrascripts": {
+    "protocol": 1,
+    "enabled": true,
+    "client": "BetterDungeon",
+    "clientVersion": "2.0.0"
+  },
+  "turn": 12,
+  "modules": [
+    {
+      "id": "sdk",
+      "version": "1.0.0",
+      "stateNames": [],
+      "ops": ["version", "config"]
+    }
+  ],
+  "writtenAt": "2026-06-06T20:00:00.000Z"
+}
+```
+
+Do not teach:
+
+- `ultrascripts.profile`
+- Lite/full profile checks
+- `providerAI` as the canonical AI module id
+
+## Request Envelope
+
+Card: `ultrascripts:out`
 
 ```json
 {
   "v": 1,
   "requests": [
     {
-      "id": "turn-12-clock-1",
+      "id": "turn-12-clock-now-1",
       "module": "clock",
       "op": "now",
       "args": {}
     }
   ],
-  "acks": ["turn-11-clock-1"]
+  "acks": ["turn-11-clock-now-1"]
 }
 ```
 
-### Response envelope
+Rules:
 
-`ultrascripts:in:<module>`
+- `v` must be `1`.
+- `requests` is an array.
+- `acks` is an array of consumed response ids.
+- request ids should be unique enough for the adventure/session.
+- `args` should be an object unless the op contract explicitly says otherwise.
+
+## Response Envelope
+
+Card: `ultrascripts:in:<module>`
 
 ```json
 {
   "v": 1,
   "responses": {
-    "turn-12-clock-1": {
+    "turn-12-clock-now-1": {
       "status": "ok",
-      "data": {},
+      "data": {
+        "iso": "2026-06-06T20:00:00.000Z"
+      },
+      "completedAt": 1780776000000,
       "completedLiveCount": 12
     }
   }
 }
 ```
 
-## SDK helper expectations
+Statuses:
 
-- `bd.us.tick()` reads response cards and queues response acks.
-- `bd.us.call(moduleId, op, args)` queues a request.
-- `bd.us.latest(moduleId, op)` returns the newest cached response for that
-  module/op pair. It is convenient, but not a full undo-safe freshness proof by
-  itself.
-- `bd.us.commit()` writes queued requests and acks to `ultrascripts:out`.
-- `bd.us.available()` should mean heartbeat is present.
+- `pending`
+- `ok`
+- `err`
+- `timeout`
 
-## AI module
+Scripts should branch on `status` first, then read `data` or `error`.
+
+## `bd.us` Helper Expectations
+
+Public examples should assume the Quick Start helper shape:
+
+| Helper | Expected meaning |
+|---|---|
+| `bd.us.tick()` | read heartbeat/responses and queue cleanup acks |
+| `bd.us.available()` | heartbeat is present |
+| `bd.us.hasModule(id)` | heartbeat lists the module |
+| `bd.us.hasOp(id, op)` | heartbeat lists the op on that module |
+| `bd.us.call(moduleId, op, args)` | queue a request |
+| `bd.us.latest(moduleId, op)` | read newest cached response for a module/op |
+| `bd.us.commit()` | write queued requests and acks to `ultrascripts:out` |
+| `bd.us.publishScripture(state)` | write `ultrascripts:state:scripture` |
+| `bd.us.scriptureEvents()` | read pending Scripture widget events |
+| `bd.us.ackScripture(seq)` | advance Scripture interaction ack state |
+
+`latest()` is convenient, but it is not a complete undo-safe freshness proof by
+itself. Use request ids/state if a script needs stricter freshness.
+
+## Showcase Script Contracts
+
+### Brainiac
+
+Mode: Requires Ultrascripts.
+
+Required capabilities:
+
+- heartbeat
+- `sdk.config`
+- `ai.chat`
+- Scripture if the script surfaces dashboard/status widgets
+
+Design contract:
+
+- derive from Auto Cards plus Inner Self style card-management patterns
+- remove the old standalone memory-system framing
+- use story/brain cards as the persistent author-facing substrate
+- use `ai.chat` only after `sdk.config.ultrascripts.ai.configured`
+- never assume paid models
+- validate AI JSON before writing cards
+- avoid same-turn AI assumptions
+- expose clear player-facing setup messages when AI is unavailable
+
+### Statboy
+
+Mode: Requires Ultrascripts.
+
+Required capabilities:
+
+- heartbeat
+- `sdk.config`
+- `ai.chat`
+- `scripture`
+
+Design contract:
+
+- authors define stat schemas
+- `ai.chat` proposes structured stat updates
+- script code validates, clamps, and applies updates
+- Scripture renders the current state
+- invalid AI output must fail closed
+- stat schema/card state must remain understandable without inspecting console
+
+### Chronos V2
+
+Mode: Enhanced with Ultrascripts.
+
+Optional capabilities:
+
+- `clock.now`
+- `clock.tz`
+- `clock.format`
+- `weather.current`
+- `weather.forecast`
+- `geolocation.permission`
+- `geolocation.getCurrent`
+- `scripture`
+- `system.info` where layout/device hints matter
+
+Design contract:
+
+- base timekeeping works without BetterDungeon
+- Ultrascripts adds real time/weather sync and widgets
+- geolocation is permission-first and optional
+- fixed-place weather should work without geolocation
+- do not block the core scenario if weather/location ops fail
+- Scripture widgets should be additive, not required for vanilla play
+
+## Module Contracts For Examples
+
+### AI
 
 Canonical module id: `ai`
 
-Supported alias:
+Legacy alias:
+
 - `providerAI`
 
-Public docs should teach `ai`. The alias only exists so older examples and
-saved scenarios can keep working.
+Public docs should teach `ai`.
 
-Canonical request args for `chat`:
+Ops:
+
+- `chat`
+- `models`
+- `testConnection`
+
+`ai.chat` canonical args:
 
 ```json
 {
@@ -113,17 +268,19 @@ Canonical request args for `chat`:
 }
 ```
 
-Notes:
+Rules:
+
 - Use `maxTokens`, not `max_tokens`.
 - Use `responseFormat`, not `response_format`.
 - Do not teach `top_p`; the live module does not normalize it.
-- Do not teach a `model` request arg; `ai.chat` always uses the player's saved default model.
-- Valid `responseFormat.type` values are `text`, `json_object`,
-  and `json_schema`.
-- Read chat text from `data.text` or `data.message.content`, not top-level
-  `data.content`.
+- Do not teach a `model` request arg; `ai.chat` uses the player's saved default
+  model.
+- Valid `responseFormat.type` values: `text`, `json_object`, `json_schema`.
+- Read text from `data.text` or `data.message.content`.
+- Do not read top-level `data.content`.
+- Check `sdk.config.ultrascripts.ai.configured` before first use.
 
-Canonical `chat` result on success:
+Canonical `chat` success shape:
 
 ```json
 {
@@ -147,23 +304,23 @@ Canonical `chat` result on success:
 }
 ```
 
-## Clock module
+### Clock
 
 Module id: `clock`
 
 Ops:
+
 - `now`
 - `tz`
 - `format`
 
 Canonical args:
+
 - `now`: `{ timeZone?: string, tz?: string, ts?: number|string|Date }`
 - `tz`: `{ timeZone?: string, tz?: string, ts?: number|string|Date }`
 - `format`: `{ ts?: number|string|Date, timeZone?: string, tz?: string, format: string }`
 
-Canonical result shapes:
-
-`clock.now`
+`clock.now` result:
 
 ```json
 {
@@ -180,7 +337,7 @@ Canonical result shapes:
 }
 ```
 
-`clock.tz`
+`clock.tz` result:
 
 ```json
 {
@@ -198,30 +355,273 @@ Canonical result shapes:
 }
 ```
 
-`clock.format`
+`clock.format` result:
 
 ```json
 "2025-01-15 14:30:00"
 ```
 
-Notes:
+Rules:
+
 - Read `data.ts`, `data.iso`, `data.local`, `data.date`, or `data.time`.
 - Do not read `data.now`.
-- The format op returns a plain string, not an object wrapper.
+- `format` returns a plain string.
 
-## Weather module
+### SDK
+
+Module id: `sdk`
+
+Ops:
+
+- `version`
+- `config`
+
+Use heartbeat for:
+
+- runtime present/missing
+- module present/missing
+- op present/missing
+
+Use `sdk.config` for:
+
+- safe BetterDungeon feature settings
+- module preferences
+- Scripture display preferences
+- WebFetch consent counts
+- AI configured/default/cost-control summary
+
+`sdk.version` result:
+
+```json
+{
+  "sdkVersion": "1.0.0",
+  "betterDungeonVersion": "2.0.0",
+  "ultrascriptsProtocol": 1,
+  "ultrascriptsClient": "BetterDungeon"
+}
+```
+
+`sdk.config` AI summary:
+
+```json
+{
+  "configured": true,
+  "defaultModel": "openrouter/free",
+  "costControls": {
+    "freeModelsOnly": true,
+    "advancedOpen": false,
+    "maxPromptPricePerMillion": 0,
+    "maxCompletionPricePerMillion": 0,
+    "perCallEstimateCap": 0,
+    "dailySpendCap": 0,
+    "monthlySpendCap": 0
+  },
+  "dummyModel": false
+}
+```
+
+Rules:
+
+- API keys are never exposed.
+- `dummyModel` may be present through the background-authoritative path.
+- Public examples should branch on `configured`, not on private setup details.
+
+### Scripture
+
+State card:
+
+- `ultrascripts:state:scripture`
+
+Script-published shape:
+
+```json
+{
+  "v": 1,
+  "manifest": {
+    "widgets": [
+      { "id": "hp", "type": "bar", "label": "Health", "max": 100, "color": "green" },
+      { "id": "status", "type": "taggroup", "label": "Status" }
+    ]
+  },
+  "history": {
+    "12": {
+      "hp": { "value": 87 },
+      "status": { "items": ["Focused", "Blessed"] }
+    }
+  },
+  "interactions": {
+    "ackSeq": 4
+  }
+}
+```
+
+Allowed widget types:
+
+- `stat`
+- `bar`
+- `text`
+- `panel`
+- `custom`
+- `badge`
+- `list`
+- `icon`
+- `counter`
+- `button`
+- `toggle`
+- `select`
+- `slider`
+- `input`
+- `textarea`
+- `progress`
+- `taggroup`
+- `divider`
+- `radio`
+- `stepper`
+- `confirm`
+- `chipselect`
+- `accordion`
+- `tabs`
+- `dropdown`
+- `sortable`
+
+Rules:
+
+- Widget ids are required.
+- History keys are live-count strings.
+- Public examples should not use retired names like `stat-bar`, `badge-list`,
+  or `checklist`.
+- Widget events are acknowledged through `interactions.ackSeq` in the Scripture
+  state card.
+
+Scripture interaction inbox:
+
+```json
+{
+  "widgetEvents": {
+    "v": 1,
+    "module": "scripture",
+    "source": "BetterDungeon",
+    "latestSeq": 7,
+    "ackSeq": 4,
+    "liveCount": 12,
+    "actionId": "abc123",
+    "writtenAt": "2026-06-06T20:00:00.000Z",
+    "events": [
+      {
+        "seq": 7,
+        "widgetId": "mode",
+        "widgetType": "select",
+        "action": "change",
+        "value": "stealth"
+      }
+    ]
+  }
+}
+```
+
+Rules:
+
+- Use `bd.us.scriptureEvents()` and `bd.us.ackScripture(seq)` in helper-based
+  examples.
+- Raw examples may read `widgetEvents.events` and advance
+  `interactions.ackSeq`.
+- Do not teach Scripture widget-event acks through `ultrascripts:out.acks`.
+
+### WebFetch
+
+Module id: `webfetch`
+
+Ops:
+
+- `fetch`
+- `search`
+
+`webfetch.fetch` supports safe HTTP methods only:
+
+- `GET`
+- `HEAD`
+- `OPTIONS`
+
+Canonical `fetch` args:
+
+```json
+{
+  "url": "https://api.example.com/data",
+  "method": "GET",
+  "headers": { "Accept": "application/json" },
+  "timeoutMs": 15000,
+  "maxBodyBytes": 50000
+}
+```
+
+Rules:
+
+- Do not teach `POST` or request bodies in WebFetch v1.
+- Response data includes `status`, `headers`, `bodyEncoding`, `body`,
+  `truncated`, and `request.strippedHeaders`.
+- `search` returns `query`, `provider`, `status`, `heading`, `answer`,
+  `abstractText`, `abstractUrl`, `related`, `source`, and `truncated`.
+- Consent-denied, blocked-target, timeout, and rate-limit paths must be treated
+  as normal branchable outcomes.
+
+### Geolocation
+
+Module id: `geolocation`
+
+Ops:
+
+- `permission`
+- `getCurrent`
+
+`permission` result:
+
+```json
+{
+  "supported": true,
+  "permissionState": "granted"
+}
+```
+
+`getCurrent` result:
+
+```json
+{
+  "latitude": 41.88,
+  "longitude": -87.62,
+  "accuracy": 35,
+  "altitude": null,
+  "altitudeAccuracy": null,
+  "heading": null,
+  "speed": null,
+  "timestamp": 1736992200000,
+  "iso": "2025-01-15T20:30:00.000Z",
+  "permissionState": "granted"
+}
+```
+
+Rules:
+
+- Read `permissionState`, not `state`.
+- Read `accuracy`, not `accuracyMeters`.
+- Use permission-first flows in public examples.
+- Chronos V2 should support fixed-place weather without requiring geolocation.
+
+### Weather
 
 Module id: `weather`
 
 Ops:
+
 - `current`
 - `forecast`
 
 Canonical location args:
+
 - coordinates: `{ latitude: number, longitude: number }`
 - place lookup: `{ place: "Chicago" }`
 
 Optional args:
+
 - `units`: `metric` or `imperial`
 - `days` for forecast
 - `timeoutMs`
@@ -279,49 +679,18 @@ Optional args:
 }
 ```
 
-Notes:
-- Use `latitude` / `longitude`, not `lat` / `lon`.
+Rules:
+
+- Use `latitude` and `longitude`, not `lat`/`lon`.
 - Read `data.current.weatherCode`, not top-level `data.weatherCode`.
 - Read `data.current.temperature`, not top-level `data.temperature`.
 
-## WebFetch module
-
-Module id: `webfetch`
-
-Ops:
-- `fetch`
-- `search`
-
-`webfetch.fetch` supports safe HTTP methods only:
-- `GET`
-- `HEAD`
-- `OPTIONS`
-
-Canonical args:
-
-```json
-{
-  "url": "https://api.example.com/data",
-  "method": "GET",
-  "headers": { "Accept": "application/json" },
-  "timeoutMs": 15000,
-  "maxBodyBytes": 50000
-}
-```
-
-Notes:
-- Do not teach `POST` or request bodies in WebFetch v1.
-- Response data includes `status`, `headers`, `bodyEncoding`, `body`,
-  `truncated`, and `request.strippedHeaders`.
-- `webfetch.search` returns `query`, `provider`, `status`, `heading`,
-  `answer`, `abstractText`, `abstractUrl`, `related`, `source`, and
-  `truncated`.
-
-## Network module
+### Network
 
 Module id: `network`
 
 Op:
+
 - `status`
 
 `network.status` result:
@@ -342,66 +711,17 @@ Op:
 }
 ```
 
-Notes:
-- Treat every field beyond `online` and `quality` as best-effort.
-- Browsers without Network Information API support may report mostly `null`
-  hints.
+Rules:
 
-## SDK module
+- Treat fields beyond `online` and `quality` as best-effort.
+- Use Network for fallback hints, not brittle hard gating.
 
-Module id: `sdk`
-
-Ops:
-- `version`
-- `config`
-
-`sdk.version` result:
-
-```json
-{
-  "sdkVersion": "1.0.0",
-  "betterDungeonVersion": "2.0.0",
-  "ultrascriptsProtocol": 1,
-  "ultrascriptsClient": "BetterDungeon"
-}
-```
-
-`sdk.config` result includes sanitized feature/config state:
-
-```json
-{
-  "sdkVersion": "1.0.0",
-  "betterDungeonVersion": "2.0.0",
-  "ultrascriptsProtocol": 1,
-  "ultrascriptsClient": "BetterDungeon",
-  "features": {},
-  "ultrascripts": {
-    "enabled": true,
-    "runtimeEnabled": true,
-    "debug": false,
-    "modulePreferences": {},
-    "scriptureDisplay": { "size": "normal", "maxHeight": "medium", "layout": "balanced" },
-    "webfetch": { "savedOriginCount": 0, "allowCount": 0, "denyCount": 0 },
-    "ai": {
-      "configured": true,
-      "defaultModel": "openrouter/free",
-      "dummyModel": false,
-      "costControls": {}
-    }
-  }
-}
-```
-
-Notes:
-- Use `sdk.config` before calling `ai.chat` in public examples.
-- The AI key itself is never exposed; only `ultrascripts.ai.configured` and
-  sanitized cost controls are visible.
-
-## System module
+### System
 
 Module id: `system`
 
 Ops:
+
 - `info`
 - `power`
 
@@ -428,161 +748,46 @@ Ops:
 }
 ```
 
-Notes:
+Rules:
+
 - Prefer `deviceClass` for layout decisions.
 - Do not teach `platformType`, `preferredLocale`, or `viewport` as top-level
   fields.
 - Screen details live inside `data.screen`.
 
-## Geolocation module
+## Retired Public Patterns
 
-Module id: `geolocation`
-
-Ops:
-- `permission`
-- `getCurrent`
-
-`geolocation.permission` result:
-
-```json
-{
-  "supported": true,
-  "permissionState": "granted"
-}
-```
-
-`geolocation.getCurrent` result:
-
-```json
-{
-  "latitude": 41.88,
-  "longitude": -87.62,
-  "accuracy": 35,
-  "altitude": null,
-  "altitudeAccuracy": null,
-  "heading": null,
-  "speed": null,
-  "timestamp": 1736992200000,
-  "iso": "2025-01-15T20:30:00.000Z",
-  "permissionState": "granted"
-}
-```
-
-Notes:
-- Read `permissionState`, not `state`.
-- Read `accuracy`, not `accuracyMeters`.
-
-## Scripture module
-
-State card: `ultrascripts:state:scripture`
-
-Script-published envelope:
-
-```json
-{
-  "v": 1,
-  "manifest": {
-    "widgets": [
-      { "id": "hp", "type": "bar", "label": "Health", "max": 100, "color": "#22c55e" },
-      { "id": "status", "type": "taggroup", "label": "Status" }
-    ]
-  },
-  "history": {
-    "12": {
-      "hp": { "value": 87 },
-      "status": { "items": ["Focused", "Blessed"] }
-    }
-  },
-  "interactions": {
-    "ackSeq": 4
-  }
-}
-```
-
-Allowed widget types:
-- `stat`
-- `bar`
-- `text`
-- `panel`
-- `custom`
-- `badge`
-- `list`
-- `icon`
-- `counter`
-- `button`
-- `toggle`
-- `select`
-- `slider`
-- `input`
-- `textarea`
-- `progress`
-- `taggroup`
-- `divider`
-- `radio`
-- `stepper`
-- `confirm`
-- `chipselect`
-- `accordion`
-- `tabs`
-- `dropdown`
-- `sortable`
-
-Notes:
-- Public examples must not use retired names like `stat-bar`, `badge-list`,
-  or `checklist`.
-- Widget ids are required in author-facing examples.
-
-### Scripture interaction inbox
-
-`ultrascripts:in:scripture`
-
-```json
-{
-  "widgetEvents": {
-    "v": 1,
-    "module": "scripture",
-    "source": "BetterDungeon",
-    "latestSeq": 7,
-    "ackSeq": 4,
-    "liveCount": 12,
-    "writtenAt": 1736992200000,
-    "events": [
-      {
-        "seq": 7,
-        "widgetId": "mode",
-        "widgetType": "select",
-        "action": "change",
-        "value": "stealth"
-      }
-    ]
-  }
-}
-```
-
-Script-side handling:
-- Public helper-based examples should use `bd.us.scriptureEvents()` and
-  `bd.us.ackScripture(seq)`.
-- Low-level raw protocol examples may read `card.widgetEvents.events` and
-  advance `interactions.ackSeq` in `ultrascripts:state:scripture` after
-  consuming events.
-- Do not teach widget-event acks through `ultrascripts:out.acks`.
-
-## Quick grep targets while patching
+Do not introduce these in current examples:
 
 - `stat-bar`
 - `badge-list`
 - `checklist`
+- `providerAI` as canonical module id
 - `max_tokens`
 - `response_format`
 - `top_p`
+- AI examples reading top-level `data.content`
+- WebFetch examples using `POST` or request bodies
+- `data.now`
+- `lat`/`lon`
+- `accuracyMeters`
 - `platformType`
 - `preferredLocale`
-- `viewport`
-- `data.now`
-- `lat`
-- `lon`
-- `accuracyMeters`
-- AI examples reading top-level `data.content`
-- WebFetch examples that teach `POST` or request bodies
-- Scripture examples with top-level `events`
-- Scripture examples that ack via `ultrascripts:out`
+- top-level `viewport`
+- Scripture events acknowledged through `ultrascripts:out.acks`
+- same-turn response logic
+
+## Review Checklist
+
+Before publishing an example or showcase script, check:
+
+- Does it classify itself as Enhanced or Required correctly?
+- Does it read heartbeat before assuming module availability?
+- Does it call `sdk.config` only where later-turn config is acceptable?
+- Does it handle missing/disabled/unconfigured modules?
+- Does it validate AI JSON before using it?
+- Does it avoid exposing secrets or encouraging credential workarounds?
+- Does it use live-count Scripture history?
+- Does it ack ops responses and Scripture widget events through the correct
+  mechanisms?
+- Does it remain understandable to an author reading only BetterRepository?

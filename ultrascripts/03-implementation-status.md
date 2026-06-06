@@ -1,244 +1,249 @@
 # 03 - Implementation Status
 
-> This document is the current implementation-status and roadmap summary for Ultrascripts. It replaces the older phase-by-phase construction log. Ultrascripts's core system is already built and working; this doc exists to show what is shipped, what remains, and what is intentionally out of scope for now.
+## Status Snapshot
 
-## Current state
+Ultrascripts is in final polish. Treat the runtime as shipped infrastructure.
 
-Ultrascripts is no longer in the "plan the architecture" stage. The core runtime is implemented in BetterDungeon and already supports:
+Done:
 
-- live story-card observation
-- direct GraphQL `SaveQueueStoryCard` writeback authenticated with captured session `baseCredentials`
-- per-card write queuing
-- module registration and lifecycle
-- heartbeat-based module discovery
+- core runtime
+- transport and write path
+- heartbeat discovery
 - state-card dispatch
-- request/response ops through `ultrascripts:out` and `ultrascripts:in:<module>`
+- request/response ops
+- module registry
+- popup integration
+- 9 first-party modules
+- 9 dedicated module regression suites
+- Enhanced and Required starter templates
+- BetterRepository public Ultrascripts guide set
+- Chromium, Gecko/Firefox, and Android WebView support
 
-Shipped first-party modules:
+Not done:
 
-- `scripture`
-- `webfetch`
-- `clock`
-- `sdk`
-- `geolocation`
-- `weather`
-- `network`
-- `system`
-- `ai`
+- final module quality pass, led by Scripture
+- three production showcase scripts
+- BetterDungeon V2 release prep
+- BetterRepository V2 release prep
+- any final PC/mobile sync needed after showcase-script fallout
 
-## What is shipped
-
-These implementation areas are already real and should be treated as current production reality, not future planning:
+## Shipped Runtime Capabilities
 
 ### Transport
 
-Shipped:
+Shipped files:
 
-- `ws-interceptor.js` (page-world `WebSocket` / `fetch` / `XHR` shim)
-- `ws-stream.js`
-- session `baseCredentials` capture and `ultrascripts:baseCredentials:change` broadcast
-- adventure-boundary handling
-- live-count tracking
-- tail tracking
+- `../../BetterDungeon/services/ultrascripts/ws-interceptor.js`
+- `../../BetterDungeon/services/ultrascripts/ws-stream.js`
 
-Result:
+Current capabilities:
 
-- Ultrascripts can observe AI Dungeon's story cards and actions reliably enough to drive the runtime.
+- observes AI Dungeon WebSocket/fetch/XHR traffic
+- captures Story Cards and action updates
+- detects adventure boundaries
+- derives tail and live count
+- captures `baseCredentials` for authenticated writeback
 
-### Write path
+### Write Path
 
-Shipped:
+Shipped files:
 
-- direct hardcoded `SaveQueueStoryCard` GraphQL mutation in `ai-dungeon-service.js` (resolver `updateStoryCard`, input `UpdateStoryCardInput!`)
-- session `baseCredentials` handshake from MAIN world to isolated world
-- shared `write-queue.js`
+- `../../BetterDungeon/services/ultrascripts/write-queue.js`
+- `../../BetterDungeon/services/ai-dungeon-service.js`
+
+Current capabilities:
+
+- direct `SaveQueueStoryCard` GraphQL writes
+- captured session credentials
+- per-card write serialization
+- coalescing and retry behavior
 - optimistic local updates
-- retry/coalescing behavior
+- turn-0 heartbeat write once cards and credentials are ready
 
-Result:
+### Core Runtime
 
-- BetterDungeon can write and update Ultrascripts-owned cards from turn-0 onward with no template-priming step and no dependency on prior user-initiated card edits.
+Shipped files:
 
-### Core runtime
+- `../../BetterDungeon/services/ultrascripts/core.js`
+- `../../BetterDungeon/services/ultrascripts/module-registry.js`
+- `../../BetterDungeon/services/ultrascripts/ops-dispatcher.js`
+- `../../BetterDungeon/services/ultrascripts/envelope.js`
 
-Shipped:
+Current capabilities:
 
-- `core.js`
-- `module-registry.js`
-- `ops-dispatcher.js`
-- `envelope.js`
-- heartbeat writing in `core.js`
+- shared module context
+- state cache and state dispatch
+- live-count-aware re-dispatch
+- heartbeat writing
+- mounted-module discovery
+- request validation/routing
+- pending/ok/error/timeout responses
+- acknowledgements and stale response pruning
+- module enabled-state persistence
 
-Result:
+### BetterDungeon Integration
 
-- modules can mount, receive state dispatch, expose ops, and advertise themselves through heartbeat
+Shipped files:
 
-### Module system
+- `../../BetterDungeon/features/ultrascripts_feature.js`
+- `../../BetterDungeon/popup.js`
+- `../../BetterDungeon/background.js`
+- `../../BetterDungeon/manifest.json`
 
-Shipped:
+Current capabilities:
 
-- state-module pattern
-- ops-module pattern
-- per-module enable/disable persistence
-- per-module storage via `ctx.storage`
-- live-count-aware rerender behavior for state modules like Scripture
-
-Result:
-
-- Ultrascripts's module surface is stable enough to document and extend
-
-### BetterDungeon integration
-
-Shipped:
-
-- `features/ultrascripts_feature.js`
-- popup-side Ultrascripts controls
+- master Ultrascripts toggle
 - per-module toggles
+- debug toggle
+- Scripture display preferences
 - WebFetch consent management
-- AI module settings and connection testing
+- AI/OpenRouter settings and cost controls
+- SDK background config snapshots
+- extension load integration for all first-party modules
 
-Result:
+## Shipped Modules
 
-- Ultrascripts is integrated as a real BetterDungeon feature, not a side experiment
+| Module | Status | Notes |
+|---|---|---|
+| `scripture` | shipped, active polish focus | Needs final UI/helper review before showcase scripts |
+| `webfetch` | shipped | Review consent/error ergonomics if showcase scripts need it |
+| `clock` | shipped | Ready for Chronos V2 time helpers |
+| `sdk` | shipped | Keep heartbeat/SDK separation crisp |
+| `geolocation` | shipped | Review with Weather if Chronos V2 uses location |
+| `weather` | shipped | Ready for Chronos V2 weather sync after field-shape check |
+| `network` | shipped | Best used for fallback hints, not hard gating |
+| `system` | shipped | Best used for layout/device hints, not brittle UA branches |
+| `ai` | shipped | Ready for Brainiac/Statboy after config/cost/fallback review |
 
-## What was especially important to resolve
+## Documentation Status
 
-These were the big implementation questions that once mattered and are now settled:
+Private docs:
 
-- live-count history won over action-id-keyed history
-- full two-way Ultrascripts shipped; there is no meaningful Lite profile
-- direct credentials-driven `SaveQueueStoryCard` writes replaced the legacy snoop-and-replay template cache; turn-0 cold start, silent failure loops, and the mobile `StoryCardInput` validation trap are all gone
-- heartbeat lives in `core.js`, not a separate heartbeat subsystem
-- request/response ops are part of the same unified runtime as state cards
-- old BetterScripts-era assumptions are no longer the model Ultrascripts should be documented around
+- This folder is the canonical private Ultrascripts planning set.
+- The active files now describe current implementation, not construction-era
+  debates.
+- Archive files are historical and should not steer new work.
 
-## Current documentation position
+Public docs:
 
-The active documentation set should describe Ultrascripts as:
+- BetterRepository contains public Ultrascripts guides for overview, Quick
+  Start, Cookbook, Architecture, Building Modules, and all 9 shipped modules.
+- The public docs should remain scenario-author oriented.
+- Detailed implementation decisions belong here unless public authors need them.
 
-- built
-- unified
-- cards-based
-- live-count-aware
-- module-driven
+Template docs:
 
-It should not describe Ultrascripts as:
+- Enhanced and Required templates exist in both BetterDungeon examples and
+  BetterRepository raw-script data.
+- Template/helper changes must be synced in both places.
 
-- a speculative architecture
-- a Scripture-only prototype
-- a phased split between Lite and Full runtime profiles
-- a future possibility that still needs the core system invented
+## Active Workstream
 
-## Remaining work before Ultrascripts is fully wrapped
+### 1. Module Quality Pass
 
-The core runtime, all modules, the regression test suite, multiplatform follow-through, the public BetterRepository guide set, and the standard SDK-based Enhanced/Required script template foundation are shipped. What remains is module-by-module conceptual review and then complete production-quality scripts.
+Goal: make each shipped module feel clean in real scripts, not merely prove that
+it works.
 
-### Completed phases
+Current priority:
 
-**Phase 9 — BetterDungeon SDK.**
+- finish Scripture first
+- only pull other module work forward when it improves Brainiac, Statboy, or
+  Chronos V2
+- avoid reopening architecture unless a concrete showcase requirement exposes a
+  real gap
 
-- Shipped the `sdk` Ultrascripts module with `version` and `config` ops.
-- Locked in the separation: heartbeat owns Ultrascripts discovery, SDK owns BetterDungeon-facing metadata.
-- Added and live-validated the dedicated `sdk-module` regression script.
-- Moved config reads through the background-authoritative path so the SDK reflects real saved AI settings.
+Tracked in [08-module-quality-pass.md](./08-module-quality-pass.md).
 
-**Phase 10 — Module Polish & Test Scripts.**
+### 2. Template Alignment
 
-- All 9 shipped modules polished and validated.
-- Dedicated regression test suites created for every module in `tests/aid-scripts/`: scripture, ai, sdk, clock, system, network, geolocation, weather, webfetch.
-- Story card types normalized to capitalized `Ultrascripts` across all production code.
-- Every shipped module now has a dependable regression surface.
+Goal: keep the Enhanced and Required starter foundations as the canonical
+script-side helper pattern.
 
-**Phase 11 — Documentation Cleanup.**
+Watch:
 
-- Vetted all active internal Ultrascripts documentation files under `ultrascripts/` to ensure perfect alignment with production reality.
-- Removed stale speculative planning language, deprecated profiles, and obsolete phase references.
-- Replaced the speculative SDK roadmap with a definitive production API specification.
-- Updated project-wide management hubs to reflect complete alignment.
+- `../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/`
+- `../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/`
+- `../../BetterRepository/src/data/raw-scripts/*/ultrascripts-starter-template.js`
+- `../../BetterRepository/src/data/raw-scripts/*/ultrascripts-required-template.js`
+- `../../BetterRepository/src/data/scripts.js`
 
-**Phase 12 — Mobile Port.**
+### 3. Showcase Scripts
 
-- Carried Ultrascripts through the Android WebView path.
-- Completed multiplatform support across Chromium, Gecko/Firefox, and Android WebView.
-- Documented the supported platform set in BetterRepository.
+After module polish, build:
 
-**Phase 13 — BetterRepository Documentation.**
+1. **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
+   management derived from Auto Cards plus Inner Self patterns. Remove the old
+   memory-system framing and use the `ai` module plus well-structured cards.
+2. **Statboy** - Requires Ultrascripts. Schema-based stat management where
+   authors define stats, `ai.chat` proposes structured updates, script logic
+   validates/clamps them, and Scripture renders current state.
+3. **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps a
+   vanilla timekeeping path but adds BetterDungeon-powered time/weather sync and
+   widgets when Ultrascripts is available.
 
-- Completed the public-facing BetterRepository Ultrascripts guide set.
-- Added/polished the overview, Quick Start, Cookbook, Architecture, Building Modules, and all shipped module guides.
-- Aligned public examples with the live `ai`, `sdk`, heartbeat, and envelope contracts.
-- Cleaned the Ultrascripts info dump so it no longer carries Phase 12/13 TODOs.
+## Release Path
 
-### Phase 14 - Reopened Module Quality Pass and Complete Scripts
+```text
+Module quality pass
+-> Showcase scripts
+-> BetterDungeon V2 release plan
+-> BetterRepository V2 release plan
+-> final PC/mobile sync check
+-> launch prep
+```
 
-Active next:
+Release prep should include:
 
-- Keep the standard SDK-based Enhanced and Required templates aligned with the live AI Dungeon scripting sandbox.
-- Temporarily reopen the module quality pass so the shipped module set can be pushed from "working" to "maximally useful" for real authors.
-- Finish the Scripture pass first, especially widget/mobile polish and the remaining helper-alignment work.
-- Continue module review after Scripture only where it materially improves showcase-script quality.
-- Produce the three target showcase scripts only after the Scripture-first quality pass lands.
+- version bump decisions
+- README/changelog polish
+- BetterRepository script entries and guide links
+- extension-store copy/screenshots if needed
+- mobile/PC parity check for Ultrascripts runtime behavior
+- final regression pass on changed modules and templates
 
-Current example foundation:
+## Settled Decisions
 
-- `ultrascripts-starter-template`
-- `ultrascripts-required-template`
+These are no longer active implementation questions:
 
-Goal:
+- Ultrascripts supports two-way communication.
+- Heartbeat is the discovery surface.
+- SDK is metadata/config, not discovery.
+- Live count is the Scripture history key.
+- Direct `SaveQueueStoryCard` writeback is the production write path.
+- Mutation-template priming is retired.
+- Lite/full profiles are retired.
+- `ai` is the canonical module id; `providerAI` is only a legacy alias.
+- AI Dungeon scripts must expect module responses on later turns.
 
-- Complete scripts should be based on the standardized helper/templates and should demonstrate finalized module behavior rather than old transitional examples.
+## Intentional Future Work
 
-Showcase script targets after module polish:
-
-1. **Brainiac** - Requires Ultrascripts. Repurpose Auto Cards' automatic story-card generation flow, remove its memory system, and use the AI module plus Inner Self-style brain cards for high-quality story card and brain management.
-2. **Statboy** - Requires Ultrascripts. Build a seamless stat-management script where authors define stat schemas and the AI module proposes structured state updates, with validation and Scripture widgets.
-3. **Chronos V2** - Enhanced with Ultrascripts. Rework the existing Chronos concept so the base time system still works without BetterDungeon, while Ultrascripts adds real time/weather sync and proper widgets.
-
-Follow-up after showcase scripts:
-
-- Plan the BetterDungeon V2 release while the showcase-script results are still fresh and concrete.
-- Sync the BetterDungeon mobile codebase with the PC codebase as part of launch prep so both are on the same Ultrascripts/runtime behavior.
-- Move into launch prep once module polish, showcase scripts, release planning, and any required mobile/PC sync are complete.
-
-Quality-pass reference:
-
-- [08-module-quality-pass.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/08-module-quality-pass.md)
-
-## What is no longer an active implementation problem
-
-These should not keep showing up in active planning docs as if they are still open:
-
-- whether Ultrascripts can support two-way communication
-- whether Lite is needed
-- whether heartbeat should use a profile split
-- whether Scripture should key its turn history around wire action ids
-- whether Ultrascripts needs a separate heartbeat file
-- whether Ultrascripts is still just a future V2 experiment
-
-Those questions were useful during construction, but they are settled now.
-
-## What is intentionally out of scope for now
-
-These are still reasonable future ideas, but they are not required to describe Ultrascripts's current working state:
+Good ideas, not required for V2:
 
 - third-party module registry UI
 - sandboxed user-authored modules
-- richer inspector/debugger UI
-- full migration of every older BetterDungeon card consumer to Ultrascripts-native streams
-- additional AI provider expansion beyond the current shipped bridge
+- richer runtime inspector/debugger
+- deeper AI provider expansion beyond the current OpenRouter bridge
+- full migration of every older BetterDungeon Story Card consumer
+- TypeScript/NPM/bundler migration
 
-## Practical file references
+## Risks To Keep Visible
 
-If someone needs the real implementation, these are the most useful places to start:
+- Public examples can drift from the helper/template contract.
+- Showcase scripts may expose awkward module result fields or error codes.
+- Scripture mobile/narrow rendering can make otherwise-good scripts feel rough.
+- AI flows depend on player configuration and must stay opt-in, bounded, and
+  clear.
+- WebFetch examples must respect consent, blocked targets, and late responses.
+- Mobile/PC parity should be checked after final module/template changes, not
+  assumed from old smoke tests.
 
-- [00-overview.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/00-overview.md)
-- [01-architecture.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/01-architecture.md)
-- [02-modules.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/02-modules.md)
-- [05-betterdungeon-sdk-spec.md](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/Project%20Management/ultrascripts/05-betterdungeon-sdk-spec.md)
-- [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/core.js)
-- [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/module-registry.js)
-- [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ops-dispatcher.js)
-- [ws-stream.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ws-stream.js)
-- [ws-interceptor.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ws-interceptor.js)
+## Practical Next Action
 
-Those files are a better source of truth than the old construction diary ever was.
+Start with Scripture:
+
+1. Review current widget layout and interaction behavior on desktop, narrow
+   sidebar, and mobile-sized surfaces.
+2. Compare public Scripture examples against the live helper contract.
+3. Fix only issues that affect real showcase usage.
+4. Run or live-check the Scripture regression suite.
+5. Update public/private docs only if the actual contract changes.

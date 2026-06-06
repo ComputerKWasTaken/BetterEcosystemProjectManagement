@@ -1,102 +1,144 @@
 # 00 - Overview
 
-## Mission
+## Purpose
 
-**Ultrascripts** is BetterDungeon's story-card-based bridge between AI Dungeon scripts and extension-side capabilities.
+Ultrascripts is BetterDungeon's Story Card based bridge between AI Dungeon
+scripts and extension-side capabilities.
 
-On the script side, Ultrascripts is represented by reserved `ultrascripts:*` story cards that a scenario script can read and write during normal AI Dungeon script hooks. On the BetterDungeon side, Ultrascripts runs continuously in the content script, watches AI Dungeon's live card and action streams, and can perform privileged work on the script's behalf such as network requests, browser capability checks, geolocation, and hosted AI calls.
+It gives AI Dungeon scripts a reliable way to:
 
-Ultrascripts is not a single feature toggle in the product sense. It is a small platform made of:
+- publish structured state to BetterDungeon
+- render live BetterDungeon UI through Scripture widgets
+- call BetterDungeon modules for browser/network/system/AI capabilities
+- receive module responses back inside the AI Dungeon scripting sandbox
 
-- A transport layer that watches AI Dungeon's WebSocket and snoops the first successful GraphQL request to capture session credentials (Firebase `Authorization` token + endpoint URL).
-- A Core runtime that tracks adventure state, card state, and module lifecycle.
-- A module registry containing the shipped Ultrascripts modules.
+The important product framing is simple: Ultrascripts is the platform layer for
+BetterDungeon V2 and BetterRepository V2 scripts. It is no longer a speculative
+feature or a Scripture-only experiment.
 
-## Current scope in the codebase
+## Private Versus Public Docs
 
-The checked-in BetterDungeon extension currently loads Ultrascripts as part of the main content-script bundle in [manifest.json](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/manifest.json).
+These private docs are for maintainers. They should answer:
 
-The runtime pieces are:
+- What is the current implementation truth?
+- Which files are authoritative?
+- What is still unfinished before V2 release prep?
+- How do we avoid drifting away from the public docs and templates?
 
-- Transport: [ws-interceptor.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ws-interceptor.js), [ws-stream.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ws-stream.js), and [write-queue.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/write-queue.js)
-- Core runtime: [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/core.js), [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/module-registry.js), [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ops-dispatcher.js), and [envelope.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/envelope.js)
-- Feature lifecycle wrapper: [ultrascripts_feature.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/features/ultrascripts_feature.js)
-- Shipped modules: `scripture`, `webfetch`, `clock`, `sdk`, `geolocation`, `weather`, `network`, `system`, and `ai`
+The BetterRepository public docs are for scenario authors and developers. They
+should answer:
 
-## What Ultrascripts does today
+- What can I build with Ultrascripts?
+- How do I paste in the helper and make my first script work?
+- Which module should I use for a specific job?
+- How do I write examples that survive AI Dungeon's scripting constraints?
 
-Ultrascripts currently provides all of the following:
+The two tracks must agree on facts, but they do not need to repeat each other's
+tone or depth.
 
-- Reads full story-card snapshots and diffs from AI Dungeon's live data stream.
-- Tracks the current adventure, current tail action, and current live action count.
-- Writes reserved Ultrascripts cards back via direct, hardcoded GraphQL `SaveQueueStoryCard` mutations authenticated with the captured session token, all funneled through a serialized write queue.
-- Emits a `ultrascripts:heartbeat` card the moment an adventure or scenario loads (turn-0 included), advertising protocol information and the currently mounted modules.
-- Routes `ultrascripts:state:<name>` cards to the modules that declared those state names.
-- Processes a two-way request/response channel using `ultrascripts:out` and `ultrascripts:in:<module>` cards.
-- Persists module enabled state in extension storage and replays cached state to freshly mounted modules.
+## Current State
 
-This is a live two-way runtime, not a one-way widget-only prototype. In `core.js`, the heartbeat writes `protocol: 1` plus BetterDungeon/client metadata and the mounted module list. It no longer uses a profile split.
+Ultrascripts is about 99% done. The foundation is built:
 
-## Three-layer mental model
+- unified runtime
+- WebSocket and GraphQL observation
+- credentials-backed Story Card writeback
+- write queue
+- heartbeat discovery
+- state-card dispatch
+- two-way request/response envelopes
+- module registry and lifecycle
+- popup controls
+- all 9 first-party modules
+- per-module live regression suites
+- public BetterRepository guide set
+- Enhanced and Required starter templates
+- PC plus mobile follow-through
+
+The remaining work is polish and proof:
+
+- finish the reopened module quality pass
+- finish the Scripture-first UI/helper pass
+- review other modules only where they improve real showcase scripts
+- build Brainiac, Statboy, and Chronos V2
+- move into BetterDungeon V2 and BetterRepository V2 release prep
+
+## How Ultrascripts Works
+
+AI Dungeon scripts communicate by reading and writing reserved Story Cards.
+BetterDungeon watches AI Dungeon's live traffic, parses those cards, performs
+extension-side work, and writes results back through the same card substrate.
+
+Reserved card titles:
+
+| Card | Written by | Purpose |
+|---|---|---|
+| `ultrascripts:heartbeat` | BetterDungeon | Runtime discovery, module list, protocol metadata |
+| `ultrascripts:state:<name>` | Script | Module state publication, especially Scripture |
+| `ultrascripts:out` | Script | Batched module requests and response acknowledgements |
+| `ultrascripts:in:<module>` | BetterDungeon | Module responses and module-owned inbox data |
+
+All production Ultrascripts-owned Story Cards should use the Story Card type
+`Ultrascripts`.
+
+## Mental Model
 
 ```text
-+--------------------------------------------------------------+
-| MODULES                                                      |
-|   scripture  webfetch  clock  sdk  geolocation  weather      |
-|   network  system  ai                                        |
-+--------------------------------------------------------------+
-| ULTRASCRIPTS CORE                                                |
-|   event bus, state cache, adventure tracking, heartbeat,     |
-|   module context, module lifecycle coordination              |
-+--------------------------------------------------------------+
-| TRANSPORT                                                    |
-|   ws-interceptor -> ws-stream -> DOM events                  |
-|   session credentials capture -> direct SaveQueueStoryCard   |
-|   GraphQL writes -> write queue -> AI Dungeon backend        |
-+--------------------------------------------------------------+
+------------------------------------------------------------+
+| Modules                                                    |
+| scripture webfetch clock sdk geolocation weather network   |
+| system ai                                                  |
++------------------------------------------------------------+
+| Core                                                       |
+| state cache, live count, heartbeat, registry, dispatch,     |
+| module context, request/response coordination              |
++------------------------------------------------------------+
+| Transport And Write Path                                   |
+| ws-interceptor, ws-stream, baseCredentials, SaveQueueStory  |
+| Card mutation, write queue                                 |
++------------------------------------------------------------+
 ```
 
-- **Transport** observes AI Dungeon traffic and turns it into a local event stream Ultrascripts can consume.
-- **Core** keeps the shared runtime state and gives modules a stable API.
-- **Modules** provide concrete capabilities on top of that runtime.
+Transport observes AI Dungeon and captures the credentials needed for writes.
+Core turns those observations into stable runtime state. Modules provide the
+capabilities scripts actually use.
 
-## Data flow
+## Two Data Flows
 
-### Script -> BetterDungeon
+Script state flow:
 
-Scripts communicate state to Ultrascripts by writing reserved story cards such as:
+```text
+AI Dungeon script writes ultrascripts:state:<name>
+-> AI Dungeon broadcasts Story Card changes
+-> BetterDungeon transport captures and normalizes the update
+-> Core parses JSON and dispatches the state to matching modules
+-> modules update BetterDungeon UI or internal state
+```
 
-- `ultrascripts:state:scripture`
-- `ultrascripts:state:<moduleName>`
-- `ultrascripts:out`
+Ops flow:
 
-`core.js` parses `ultrascripts:state:*` cards as JSON and dispatches them to mounted modules whose `stateNames` include that name.
+```text
+AI Dungeon script writes a request into ultrascripts:out
+-> ops-dispatcher validates the envelope
+-> the target module handler runs
+-> BetterDungeon writes ultrascripts:in:<module>
+-> the script reads the response on a later turn
+-> the script acknowledges consumed responses through ultrascripts:out.acks
+```
 
-`ops-dispatcher.js` parses `ultrascripts:out` as the request envelope for module operations.
+Scripture widget interactions are the one important special case:
+BetterDungeon writes widget events into `ultrascripts:in:scripture`, but scripts
+acknowledge them by advancing `interactions.ackSeq` in
+`ultrascripts:state:scripture`, not by using `ultrascripts:out.acks`.
 
-### BetterDungeon -> Script
+## Live Count Is The History Key
 
-BetterDungeon writes its own reserved cards back into the same adventure:
+Ultrascripts tracks both:
 
-- `ultrascripts:heartbeat`
-- `ultrascripts:in:<module>`
+- `tail`: highest non-undone action id currently present
+- `liveCount`: count of actions whose `undoneAt` is null
 
-`ultrascripts:heartbeat` advertises protocol version, enabled state, BetterDungeon version, current turn, and the currently mounted modules with their exposed ops.
-
-`ultrascripts:in:<module>` cards carry response envelopes for Ultrascripts ops. Scripture also uses `ultrascripts:in:scripture` to store widget interaction events that can be acknowledged by the script on a later turn.
-
-## History model: live count, not action-id keys
-
-The current Ultrascripts widget/history model is based on **live count**, not action-id-keyed history.
-
-`ws-stream.js` derives:
-
-- `tail`: the highest non-undone action id currently present
-- `liveCount`: the count of actions whose `undoneAt` is null
-
-`scripture/module.js` then reads widget state from `parsed.history[liveCount]`, with fallback to the nearest earlier numeric entry or the newest available entry.
-
-That means the current expected Scripture payload shape is:
+Scripture history uses live-count keys, not action ids:
 
 ```json
 {
@@ -117,59 +159,49 @@ That means the current expected Scripture payload shape is:
 }
 ```
 
-This differs from older planning language that described action-id-keyed history. The shipped code uses numeric live-count keys for lookups and refreshes modules that declare `tracksLiveCount: true` whenever live count changes.
+This matters because undo, restore, rewind, retry, and edit do not all affect
+history the same way. Live count is the stable key for "which turn-shaped state
+should the widget display right now?"
 
-## Current shipped modules
+## Shipped Surface
 
-The checked-in module registry currently loads these built-in modules:
-
-| Module | Purpose | State cards | Ops |
-|---|---|---|---|
-| `scripture` | Renders script-driven widgets in BetterDungeon | `ultrascripts:state:scripture` | none |
-| `webfetch` | Fetches external HTTP/HTTPS resources with consent and limits | none | `fetch`, `search` |
-| `clock` | Time and formatting helpers | none | `now`, `tz`, `format` |
-| `sdk` | Exposes BetterDungeon-facing metadata and safe configuration context that complement heartbeat | none | `version`, `config` |
-| `geolocation` | Browser geolocation helpers | none | `permission`, `getCurrent` |
-| `weather` | Open-Meteo current weather and forecast lookups | none | `current`, `forecast` |
-| `network` | Connection state hints | none | `status` |
-| `system` | Device, display, locale, and power hints | none | `info`, `power` |
-| `ai` | Hosted AI calls through user-configured OpenRouter credentials | none | `chat`, `models`, `testConnection` |
-
-All of these modules are registered from files under [BetterDungeon/modules](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules).
-
-## Relationship to older BetterDungeon systems
-
-Ultrascripts has clearly replaced the old invisible-text transport ideas in the documentation. The current runtime uses reserved story cards plus AI Dungeon's own subscription/mutation traffic. There is no zero-width-character transport in the Ultrascripts implementation.
-
-At the same time, Ultrascripts does **not** replace every legacy BetterDungeon subsystem yet:
-
-- [story-card-scanner.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/story-card-scanner.js) is still bundled and loaded.
-- Ultrascripts coexists with the rest of BetterDungeon's feature manager and popup settings.
-- Scripture is implemented as a Ultrascripts module, but it still lives alongside other BetterDungeon features rather than as a standalone product boundary.
-
-## Constraints the implementation is built around
-
-- AI Dungeon scripts are still turn-gated. They only update Ultrascripts state when the script itself runs.
-- BetterDungeon is always on while the page is open, so module work can happen between turns.
-- Story cards are the persistence substrate for Ultrascripts state and request/response traffic.
-- Reserved Ultrascripts card values are expected to be JSON when the runtime parses them.
-- Card writes are funneled through `write-queue.js` so writes to the same card title are serialized and coalesced.
-- Ops responses are pruned over time. `ops-dispatcher.js` currently keeps terminal responses for up to 10 live-count turns before garbage-collecting them.
-
-## Glossary
-
-| Term | Definition |
+| Area | Current state |
 |---|---|
-| **Ultrascripts** | BetterDungeon's script-to-extension bridge built on reserved story cards plus transport/runtime helpers. |
-| **Transport** | The `ws-interceptor` + `ws-stream` + write-queue path that observes AI Dungeon traffic, captures session credentials, and writes cards back through direct GraphQL mutations. |
-| **Base credentials** | The session `{ url, method, headers, capturedAt }` payload (Firebase `Authorization` + GraphQL endpoint) captured by `ws-interceptor.js` from the first successful GraphQL request and broadcast via `ultrascripts:baseCredentials:change`. |
-| **Ultrascripts Core** | The runtime in `services/ultrascripts/core.js` that tracks adventure state, parses state cards, emits heartbeats, and provides module context. |
-| **Module Registry** | The lifecycle manager in `services/ultrascripts/module-registry.js` that registers, mounts, enables, disables, and lists modules. |
-| **Ops Dispatcher** | The runtime in `services/ultrascripts/ops-dispatcher.js` that consumes `ultrascripts:out` requests and writes `ultrascripts:in:<module>` responses. |
-| **Envelope** | The versioned JSON request/response schema defined in `services/ultrascripts/envelope.js`. |
-| **State card** | A reserved `ultrascripts:state:<name>` card whose JSON payload is routed to a module. |
-| **Heartbeat card** | The `ultrascripts:heartbeat` card written by Core to advertise runtime status and mounted modules. |
-| **Live count** | The number of non-undone actions currently present in the adventure action stream. |
-| **Tail action** | The highest current non-undone action id observed in the action stream. |
-| **Response card** | A reserved `ultrascripts:in:<module>` card containing response envelopes for module ops. |
-| **Reserved Ultrascripts card** | Any story card whose title begins with `ultrascripts:`. |
+| Transport | Shipped in `../../BetterDungeon/services/ultrascripts/ws-interceptor.js` and `ws-stream.js` |
+| Write path | Shipped through direct `SaveQueueStoryCard` mutations and `write-queue.js` |
+| Core | Shipped in `core.js`, `module-registry.js`, `ops-dispatcher.js`, and `envelope.js` |
+| BetterDungeon feature integration | Shipped in `../../BetterDungeon/features/ultrascripts_feature.js`, popup settings, and background helpers |
+| Modules | 9 first-party modules shipped |
+| Tests | 9 module regression suites under `../../BetterDungeon/tests/aid-scripts/` |
+| Public docs | BetterRepository Ultrascripts guide set shipped |
+| Templates | Enhanced and Required templates shipped |
+| Platforms | Chromium, Gecko/Firefox, and Android WebView supported |
+
+## Retired Ideas
+
+Do not use these as active planning language:
+
+- Lite/full runtime profiles
+- mutation-template priming
+- fallback guessed GraphQL mutations
+- invisible-text or zero-width-character transport
+- action-id-keyed Scripture history
+- a separate heartbeat subsystem
+- Provider AI as a separate current module name
+- "Ultrascripts might become two-way" phrasing
+
+Those were useful during design and debugging. They are not the current model.
+
+## Current Product Direction
+
+The path to launch is:
+
+1. Finish the module quality pass, starting with Scripture.
+2. Keep the Enhanced and Required templates synchronized with the live helper
+   contract.
+3. Build Brainiac as a Requires Ultrascripts AI/story-card management showcase.
+4. Build Statboy as a Requires Ultrascripts stat/state/Scripture showcase.
+5. Build Chronos V2 as an Enhanced with Ultrascripts time/weather/widget
+   showcase.
+6. Use those scripts to finish BetterDungeon V2 and BetterRepository V2 release
+   prep.

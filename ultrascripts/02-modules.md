@@ -1,72 +1,78 @@
 # 02 - Modules
 
-> This document describes how Ultrascripts modules work in the current BetterDungeon implementation, what the live module contract looks like, and how to build a new module that fits the system cleanly.
+## Purpose
 
-## What a module is
+This document describes the live Ultrascripts module system: what a module is,
+which first-party modules ship today, what contract modules implement, and what
+rules to follow when adding or polishing modules.
 
-A Ultrascripts module is a BetterDungeon-side capability that plugs into the shared Ultrascripts runtime.
+## Module Model
 
-A module can do one or both of these things:
+An Ultrascripts module is a BetterDungeon-side capability mounted into the
+shared Ultrascripts runtime.
 
-- read Ultrascripts state cards such as `ultrascripts:state:scripture`
-- expose callable ops that scripts can reach through the `ultrascripts:out` / `ultrascripts:in:<module>` request-response path
+A module may:
 
-That is the core model. A module does not need a special profile, mode, or exception case.
+- read script-published state cards
+- expose callable ops
+- do both
 
-In practice:
+There is no separate profile or capability tier for modules. The current
+question is only: is the module mounted, and what state names/ops does the
+heartbeat advertise?
 
-- `scripture` is the reference state-reading module
-- `webfetch`, `clock`, `sdk`, `geolocation`, `weather`, `network`, `system`, and `ai` are ops modules
+## Shipped Module Inventory
 
-## Current shipped modules
+| Module | Kind | State or ops | Main files | Public guide | Regression suite |
+|---|---|---|---|---|---|
+| `scripture` | state | `ultrascripts:state:scripture` | `../../BetterDungeon/modules/scripture/` | `UltrascriptsScriptureGuide.vue` | `scripture-module` |
+| `webfetch` | ops | `fetch`, `search` | `../../BetterDungeon/modules/webfetch/` | `UltrascriptsWebFetchGuide.vue` | `webfetch-module` |
+| `clock` | ops | `now`, `tz`, `format` | `../../BetterDungeon/modules/clock/` | `UltrascriptsClockGuide.vue` | `clock-module` |
+| `sdk` | ops | `version`, `config` | `../../BetterDungeon/modules/sdk/` | `UltrascriptsSdkGuide.vue` | `sdk-module` |
+| `geolocation` | ops | `permission`, `getCurrent` | `../../BetterDungeon/modules/geolocation/` | `UltrascriptsGeolocationGuide.vue` | `geolocation-module` |
+| `weather` | ops | `current`, `forecast` | `../../BetterDungeon/modules/weather/` | `UltrascriptsWeatherGuide.vue` | `weather-module` |
+| `network` | ops | `status` | `../../BetterDungeon/modules/network/` | `UltrascriptsNetworkGuide.vue` | `network-module` |
+| `system` | ops | `info`, `power` | `../../BetterDungeon/modules/system/` | `UltrascriptsSystemGuide.vue` | `system-module` |
+| `ai` | ops | `chat`, `models`, `testConnection` | `../../BetterDungeon/modules/ai/` | `UltrascriptsAiGuide.vue` | `ai-module` |
 
-Ultrascripts currently ships these first-party modules:
+Compatibility note: `ai` accepts alias `providerAI`. Public examples should use
+`ai`.
 
-- `scripture`
-- `webfetch`
-- `clock`
-- `geolocation`
-- `weather`
-- `network`
-- `system`
-- `ai`
-- `sdk`
+## Current Responsibilities
 
-Current ops exposed by those modules:
+| Module | Responsibility |
+|---|---|
+| `scripture` | Render live script-published widgets, including interaction events back to scripts |
+| `webfetch` | Controlled network fetch/search with consent, rate limiting, and blocked-target protection |
+| `clock` | Time, timezone, and format helpers |
+| `sdk` | Safe BetterDungeon metadata and configuration snapshots |
+| `geolocation` | Browser geolocation permission and current-position helpers |
+| `weather` | Open-Meteo current conditions and forecasts from coordinates or place names |
+| `network` | Browser online status and quality hints |
+| `system` | Device, browser, screen, locale, hardware, preference, and power hints |
+| `ai` | Bounded hosted AI calls through player-configured OpenRouter settings |
 
-- `webfetch`: `fetch`, `search`
-- `clock`: `now`, `tz`, `format`
-- `geolocation`: `permission`, `getCurrent`
-- `weather`: `current`, `forecast`
-- `network`: `status`
-- `system`: `info`, `power`
-- `ai`: `chat`, `models`, `testConnection`
-- `sdk`: `version`, `config`
+Keep modules narrow. If a module starts becoming a mini-application, split the
+author-facing helper/script from the BetterDungeon-side capability.
 
-The `ai` module also keeps the alias `providerAI` for compatibility.
+## Registration Flow
 
-The `sdk` module is intentionally narrow. Ultrascripts availability itself belongs to `ultrascripts:heartbeat`, so the SDK should only expose BetterDungeon-facing metadata that complements heartbeat instead of mirroring it. The current useful direction is curated BetterDungeon configuration that affects script behavior without exposing secrets.
+1. The module file is loaded by BetterDungeon.
+2. The module calls `window.Ultrascripts.registry.register(MyModule)`.
+3. The registry stores the definition and aliases.
+4. The registry checks saved enablement state.
+5. If enabled, the registry creates a scoped context and calls `mount(ctx)`.
+6. Core replays cached state if the module subscribes to state names.
+7. Core schedules a heartbeat so scripts see the mounted module.
 
-## How modules fit into Ultrascripts
+Creating a module file is not enough. It must be included in the extension load
+path and registered.
 
-The live flow is:
+## Live Module Contract
 
-1. A module registers with `window.Ultrascripts.registry`.
-2. The registry decides whether it should be enabled.
-3. If enabled, the registry calls `mount(ctx)`.
-4. Core dispatches matching state-card updates to `onStateChange(...)`.
-5. Ops requests are routed to declared `ops` handlers by `ops-dispatcher.js`.
-6. Core advertises the mounted module in `ultrascripts:heartbeat`.
-
-The important split is:
-
-- Core owns dispatch and shared runtime state.
-- The registry owns module lifecycle.
-- The ops dispatcher owns request routing and response writing.
-
-## The live module contract
-
-The current BetterDungeon-side contract is defined by how [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/module-registry.js) and [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/core.js) interact with modules.
+The implementation source of truth is
+`../../BetterDungeon/services/ultrascripts/module-registry.js` plus
+`../../BetterDungeon/services/ultrascripts/core.js`.
 
 ```ts
 interface UltrascriptsModule {
@@ -96,19 +102,24 @@ interface UltrascriptsModule {
 }
 ```
 
-Notes from the real implementation:
+Important details:
 
 - `mount(ctx)` is required.
-- `unmount()` is optional, but most real modules should have one.
-- `stateNames` is how a module subscribes to `ultrascripts:state:<name>` cards.
-- `tracksLiveCount` tells Core to re-run `onStateChange(...)` when live count changes.
-- `ops` is an object of named descriptors, not just raw functions.
-- Built-in modules default to enabled unless overridden.
-- Dotted ids are treated like third-party-style ids and default to disabled unless overridden.
+- `unmount()` is optional but strongly preferred for modules with DOM, timers,
+  retained references, or subscriptions.
+- `stateNames` subscribes the module to `ultrascripts:state:<name>`.
+- `tracksLiveCount` causes Core to re-dispatch cached state when live count
+  changes.
+- `ops` entries should be descriptor objects, not raw functions, unless a
+  legacy/simple path is intentionally being used.
+- `idempotent: 'unsafe'` means the dispatcher should avoid replaying pending
+  requests after reload in ways that could duplicate real work.
+- First-party short ids default to enabled; dotted third-party-style ids default
+  to disabled unless `defaultEnabled` overrides that.
 
-## The live module context
+## Module Context
 
-Modules receive a scoped context from Core. The current live context includes:
+Modules receive a scoped context from Core.
 
 ```ts
 interface UltrascriptsContext {
@@ -141,172 +152,26 @@ interface UltrascriptsContext {
 }
 ```
 
-What that means in practice:
+Context rules:
 
-- use `ctx.writeCard(...)` for any Ultrascripts-owned card writes
-- use `ctx.storage` for small persistent module preferences
-- use `ctx.log(...)` instead of ad hoc console noise
-- use `ctx.getLiveCount()` when your state is keyed by turn history rather than only by card content
+- Use `ctx.writeCard()` for every Ultrascripts-owned write.
+- Use `ctx.storage` for small module preferences, not scenario state.
+- Use `ctx.log()` so debug logs respect the Ultrascripts debug toggle.
+- Use `ctx.getLiveCount()` for turn-history rendering.
+- Use `onAdventureChange()` to clear per-adventure state.
+- Do not reach around the context into shared internals unless the module is
+  deliberately maintaining the runtime itself.
 
-## State modules
+## State Modules
 
-A state module reads one or more `ultrascripts:state:<name>` cards and reacts when those cards change.
+State modules read `ultrascripts:state:<name>` cards.
 
-To build one:
-
-- declare `stateNames`
-- implement `onStateChange(...)`
-- optionally set `tracksLiveCount: true` if the same card needs to render differently after undo, rewind, restore, or retry
-
-### Scripture as the reference pattern
-
-[modules/scripture/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/scripture/module.js) is the clearest state-module example.
-
-It does all of these things:
-
-- declares `stateNames: ['scripture']`
-- declares `tracksLiveCount: true`
-- mounts a renderer in `mount(ctx)`
-- clears its UI in `unmount()` and `onAdventureChange(...)`
-- rerenders in `onStateChange(...)`
-- picks values from `history[liveCount]`
-- falls back gracefully when the exact live-count entry is missing
-
-That last point matters. Scripture is not just reacting to card changes. It is reacting to "which turn are we currently on?" That is why `tracksLiveCount` exists.
-
-### State-module rules
-
-- `onStateChange(...)` should be safe to run many times.
-- Treat parsed card data as untrusted input and validate it.
-- If the state is malformed, log and no-op instead of crashing the runtime.
-- If the module owns DOM, tear it down cleanly on disable or adventure change.
-- If the module uses live-count history, do not key behavior only to tail action id.
-
-## Ops modules
-
-An ops module exposes callable work to scripts.
-
-To build one:
-
-- declare an `ops` object
-- give each op a `handler`
-- mark each op as `safe` or `unsafe` for replay
-- set a reasonable timeout
-
-Each op descriptor currently looks like this:
+Minimum shape:
 
 ```js
-someOp: {
-  idempotent: 'safe',
-  timeoutMs: 1000,
-  handler: someOpHandler,
-}
-```
-
-### How ops are executed
-
-When a script writes a request into `ultrascripts:out`:
-
-1. `ops-dispatcher.js` parses the envelope.
-2. It finds the target module and op.
-3. It writes a pending response.
-4. It runs the handler.
-5. It writes either:
-   - `ok`
-   - `err`
-   - `timeout`
-
-Most modules should simply return a JSON-serializable value or throw an error.
-
-### Ops-module rules
-
-- Validate args at the top of the handler.
-- Return plain serializable data.
-- Throw clear structured errors when input is bad or work cannot be done.
-- Use `idempotent: 'unsafe'` when replaying the op on reload would be wrong.
-- Keep handler scope bounded and explicit.
-
-The `ai.chat` op is the best example of an unsafe op. Replaying a hosted-model call is not the same as replaying a deterministic time lookup, so it is marked `unsafe`.
-
-## Lifecycle hooks
-
-Modules can participate in a few different moments:
-
-- `mount(ctx)`: called when the module is enabled and mounted
-- `onEnable(ctx)`: optional post-mount hook
-- `onDisable(ctx)`: optional pre-unmount hook
-- `unmount()`: teardown hook
-- `onAdventureChange(shortId, ctx)`: reset per-adventure state without needing a full disable/enable cycle
-- `onStateChange(name, parsed, ctx)`: state-card dispatch hook
-
-What each is best for:
-
-- Use `mount(ctx)` to set up long-lived module resources.
-- Use `onEnable(ctx)` for lightweight startup behavior or logging.
-- Use `onDisable(ctx)` to clear active behavior before teardown.
-- Use `unmount()` to destroy DOM, timers, or held references.
-- Use `onAdventureChange(...)` to clear per-adventure state.
-
-## Registration
-
-In the current codebase, first-party modules register themselves from their own module files if the Ultrascripts registry is already present.
-
-The registration call is simply:
-
-```js
-window.Ultrascripts.registry.register(MyModule);
-```
-
-The registry then:
-
-- stores the definition
-- applies aliases
-- checks enabled state
-- mounts the module if it should be active
-- replays cached state to newly enabled state modules
-- schedules a fresh heartbeat so scripts can see the updated module list
-
-## Building a new module
-
-Use this process.
-
-### 1. Decide what kind of module it is
-
-Pick one:
-
-- state-only
-- ops-only
-- mixed
-
-Most modules should be clearly one or the other.
-
-### 2. Create the module folder
-
-Use the current convention:
-
-```text
-BetterDungeon/modules/<module-id>/module.js
-```
-
-Add sibling files if the module needs them.
-
-Examples:
-
-- validators
-- renderers
-- consent helpers
-- normalizers
-
-### 3. Write the module object
-
-Minimal state-only example:
-
-```js
-const UltrascriptsExampleStateModule = {
+const ExampleStateModule = {
   id: 'exampleState',
   version: '1.0.0',
-  label: 'Example State',
-  description: 'Reads and reacts to a Ultrascripts state card.',
   stateNames: ['exampleState'],
 
   mount(ctx) {
@@ -319,27 +184,54 @@ const UltrascriptsExampleStateModule = {
 
   onStateChange(name, parsed, ctx) {
     if (name !== 'exampleState') return;
-    ctx.log('debug', 'State changed:', parsed);
+    ctx.log('debug', 'state changed', parsed);
   },
 };
 ```
 
-Minimal ops-only example:
+State-module rules:
+
+- Treat parsed data as untrusted.
+- Validate before rendering or acting.
+- No-op on malformed state instead of crashing Core.
+- Make repeated `onStateChange()` calls safe.
+- Clear DOM and ephemeral state on disable/adventure change.
+- If the module reads history keyed by turn count, set `tracksLiveCount: true`.
+
+### Scripture Reference Pattern
+
+Scripture is the canonical state module.
+
+It:
+
+- declares `stateNames: ['scripture']`
+- declares `tracksLiveCount: true`
+- validates manifest and widget state
+- renders `history[liveCount]`
+- falls back to nearest earlier/newest numeric history entry
+- writes widget interactions to `ultrascripts:in:scripture`
+- prunes widget events after script-side `interactions.ackSeq` advances
+- uses per-module storage for display preferences
+
+## Ops Modules
+
+Ops modules expose callable work through `ultrascripts:out` and
+`ultrascripts:in:<module>`.
+
+Minimum shape:
 
 ```js
 async function pingOp(args, ctx) {
   return {
     ok: true,
-    received: args ?? null,
     liveCount: ctx.getLiveCount(),
+    received: args || null,
   };
 }
 
-const UltrascriptsExampleOpsModule = {
+const ExampleOpsModule = {
   id: 'exampleOps',
   version: '1.0.0',
-  label: 'Example Ops',
-  description: 'Exposes a simple Ultrascripts op.',
 
   ops: {
     ping: {
@@ -359,102 +251,81 @@ const UltrascriptsExampleOpsModule = {
 };
 ```
 
-### 4. Register it
+Ops-module rules:
 
-At the end of the module file:
+- Normalize and validate args at the top of the handler.
+- Return plain JSON-serializable data.
+- Throw structured errors with stable `code` values when scripts need to branch.
+- Use `safe` only when replaying the op is harmless.
+- Use `unsafe` for hosted AI calls, writes, purchases, mutations, or anything
+  where duplicate execution changes meaning.
+- Pick timeouts that reflect real browser/network behavior.
+- Keep response shapes stable once public docs depend on them.
 
-```js
-window.Ultrascripts = window.Ultrascripts || {};
+## Lifecycle Hooks
 
-if (window.Ultrascripts?.registry) {
-  window.Ultrascripts.registry.register(UltrascriptsExampleOpsModule);
-}
-```
+| Hook | Use |
+|---|---|
+| `mount(ctx)` | Required startup; store context, create renderer/service state |
+| `onEnable(ctx)` | Optional lightweight post-mount work |
+| `onDisable(ctx)` | Optional pre-unmount cleanup or user-visible clearing |
+| `unmount()` | Destroy DOM, timers, subscriptions, retained references |
+| `onAdventureChange(shortId, ctx)` | Reset per-adventure state without disabling the module |
+| `onStateChange(name, parsed, ctx)` | React to parsed state-card data |
 
-### 5. Make sure it is loaded by BetterDungeon
+## Adding Or Revising A Module
 
-Registration only works if the module file is actually loaded into the extension runtime. The exact loader path depends on how the surrounding BetterDungeon bundle/script includes the module, but the key rule is simple: creating the file is not enough. It has to be part of the shipped extension load path.
+Use this checklist:
 
-### 6. Test the right surface
+1. Decide whether it is state-only, ops-only, or mixed.
+2. Confirm the capability belongs in BetterDungeon rather than in a scenario
+   helper.
+3. Define the smallest stable state/ops contract.
+4. Add the module under `../../BetterDungeon/modules/<module-id>/`.
+5. Register the module with the registry.
+6. Load the module in the extension path.
+7. Add or update the module regression suite under
+   `../../BetterDungeon/tests/aid-scripts/`.
+8. Update BetterRepository public docs if the author-facing contract changed.
+9. Update [07-example-contract-reference.md](./07-example-contract-reference.md)
+   if examples/templates need new canonical patterns.
+10. Re-check heartbeat output so module state names and ops are discoverable.
 
-Test according to module type:
+## Current Quality-Pass Guidance
 
-- state module: verify card changes dispatch correctly and survive undo/rewind behavior
-- ops module: verify request, pending, response, ack, and timeout behavior
-- mixed module: test both paths independently
+The active module work is not a redesign. It is a usefulness pass before
+showcase scripts.
 
-## Authoring guidance
+Review questions:
 
-### Keep responsibilities tight
+- Does the API match public docs and templates?
+- Does the module degrade cleanly when disabled, unsupported, denied,
+  unconfigured, offline, or rate-limited?
+- Are errors stable enough for script branching?
+- Are response fields the fields authors actually need?
+- Does mobile/narrow UI behavior hold where relevant?
+- Is the regression script still representative?
+- Would the module be comfortable to show in Brainiac, Statboy, or Chronos V2?
 
-Good Ultrascripts modules are narrow.
+Current order is tracked in [08-module-quality-pass.md](./08-module-quality-pass.md).
 
-- Scripture renders widget state.
-- WebFetch does controlled network access.
-- Clock does time helpers.
-- System exposes environment hints.
+## Do Not Build By Default
 
-That is the right scale.
+- new runtime profiles
+- direct writes that bypass `ctx.writeCard()`
+- response shapes that expose credentials or secrets
+- replay-sensitive ops marked as `safe`
+- state history keyed only to action id when live count is the real lookup key
+- browser-permission flows that pretend permission was granted
+- public examples that rely on same-turn responses
 
-### Prefer explicit validation
+## Best Reference Files
 
-Ultrascripts modules sit on a boundary:
-
-- scripts can write malformed state
-- scripts can send malformed op args
-- browser capabilities can be unavailable
-
-Validate early and fail clearly.
-
-### Respect adventure boundaries
-
-If the module keeps ephemeral state, clear it on `onAdventureChange(...)`.
-
-Do not assume one global session equals one adventure.
-
-### Use storage sparingly
-
-`ctx.storage` is good for:
-
-- preferences
-- consents
-- small module settings
-
-It is not a replacement for scenario state cards or large caches.
-
-### Treat state re-renders as normal
-
-Core may replay cached state to a newly enabled module. Live-count-aware modules may also be called again when the card itself did not change. Write module logic so that repeated calls are safe and unsurprising.
-
-## Naming conventions
-
-Use the current codebase pattern:
-
-- module entry file: `modules/<module-id>/module.js`
-- exported runtime object: PascalCase variable name if the file uses one
-- wire op names: lower camel case
-- first-party ids: short lowercase names already consistent with the codebase
-
-Third-party-style dotted ids are supported by the registry's enablement rules, but first-party shipped modules currently use short ids like `scripture`, `webfetch`, and `ai`.
-
-## What not to build into a module by default
-
-- do not invent a separate profile or capability tier
-- do not bypass `ctx.writeCard(...)` for Ultrascripts-owned card writes
-- do not make replay-sensitive ops look safe if they are not
-- do not tie history-sensitive rendering only to action id when live count is the real key
-- do not assume older planning docs reflect current loader or lifecycle behavior
-
-## Best reference files
-
-When adding or revising a module, these are the best current references:
-
-- [module-registry.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/module-registry.js)
-- [core.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/core.js)
-- [ops-dispatcher.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/services/ultrascripts/ops-dispatcher.js)
-- [modules/scripture/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/scripture/module.js)
-- [modules/webfetch/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/webfetch/module.js)
-- [modules/sdk/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/sdk/module.js)
-- [modules/ai/module.js](/C:/Users/compu/OneDrive/Documents/CascadeProjects/Projects/Web%20Dev/BetterEcosystem/BetterDungeon/modules/ai/module.js)
-
-Those reflect the real Ultrascripts module system better than the older planning-era script snippets.
+- `../../BetterDungeon/services/ultrascripts/module-registry.js`
+- `../../BetterDungeon/services/ultrascripts/core.js`
+- `../../BetterDungeon/services/ultrascripts/ops-dispatcher.js`
+- `../../BetterDungeon/services/ultrascripts/envelope.js`
+- `../../BetterDungeon/modules/scripture/module.js`
+- `../../BetterDungeon/modules/webfetch/module.js`
+- `../../BetterDungeon/modules/sdk/module.js`
+- `../../BetterDungeon/modules/ai/module.js`

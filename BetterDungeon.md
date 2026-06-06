@@ -4,78 +4,79 @@
 
 ## Current Focus
 
-BetterDungeon V2 is in progress. Ultrascripts, the largest V2 workstream, is
-feature-complete through Phase 13. Ultrascripts is now multiplatform:
-smoke-tested on Chromium, Gecko/Firefox, and Android WebView. All 9 first-party
-modules are implemented, live-tested, have dedicated regression test suites, and
-are documented in both the private planning docs and public BetterRepository
-guides.
+BetterDungeon V2 is in final Ultrascripts polish.
 
-Completed Ultrascripts capability stack:
+The major Ultrascripts capability stack is shipped:
 
-- Transport, write queue, adventure-boundary handling, and heartbeat.
-- Full two-way request/response envelope over AI Dungeon Story Cards.
-- First-party modules: Scripture, WebFetch, Clock, SDK, Geolocation, Weather,
-  Network, System, and AI.
-- Popup integration with a dedicated Ultrascripts tab and module settings.
-- Story Card UI / GraphQL drift investigation.
-- Heartbeat dedupe and safer unsafe-op replay behavior.
-- BetterDungeon SDK module with `version` and `config` ops.
-- Per-module regression test suites for all 9 modules in `tests/aid-scripts/`.
-- Consistent `Ultrascripts` story card type across all production code.
-- Internal documentation cleaned of speculative framing, with a production SDK
-  specification locked in.
-- Public BetterRepository docs for the Ultrascripts platform and every shipped
-  module.
+- transport and live AI Dungeon traffic observation
+- direct `SaveQueueStoryCard` writeback through captured credentials
+- write queue
+- heartbeat discovery
+- two-way request/response envelopes
+- state-card dispatch
+- module registry and lifecycle
+- popup integration and module settings
+- Scripture, WebFetch, Clock, SDK, Geolocation, Weather, Network, System, and AI
+- per-module AI Dungeon regression suites
+- Enhanced and Required starter templates
+- Chromium, Gecko/Firefox, and Android WebView support
 
 Current next step:
 
-- Review each shipped module one at a time for conceptual improvements before
-  creating complete scripts.
-- Keep the standardized SDK-based Enhanced and Required Ultrascripts templates
-  aligned with BetterRepository while module reviews are underway.
+- finish the module quality pass, starting with Scripture
+- keep the Enhanced and Required templates aligned with BetterRepository
+- build Brainiac, Statboy, and Chronos V2 after module polish
 
-## Roadmap
+## Active Work
 
-### Completed
+### Module Quality Pass
 
-- **Phase 10 - Module Polish & Test Scripts.** All modules polished, per-module
-  regression test scripts created in `tests/aid-scripts/`, story card types
-  normalized.
-- **Phase 11 - Documentation Cleanup.** Refreshed Ultrascripts technical docs to
-  match production code, removed speculative planning language, and locked in the
-  BetterDungeon SDK spec.
-- **Phase 12 - Mobile Port.** Ultrascripts ported to the Android WebView build
-  of BetterDungeon. Multiplatform smoke testing passed on Chromium,
-  Gecko/Firefox, and Android WebView.
-- **Phase 13 - BetterRepository Documentation.** Public Ultrascripts docs are
-  complete: overview, Quick Start, Cookbook, Architecture, Building Modules, and
-  all shipped module guides.
+Goal: make shipped modules feel good in real scripts, not merely test-passing.
 
-### Active
+Current priority:
 
-- **Phase 14 - Example Cleanup / Template Foundation / Complete Scripts.**
-  Transitional examples have been removed and replaced by public `bd.us`
-  helper templates for Enhanced and Required scripts. Next: review modules
-  conceptually, then produce proper complete scripts.
+- Scripture widget/layout/helper polish
+- AI and SDK readiness for Brainiac and Statboy
+- Clock/Weather/Geolocation readiness for Chronos V2
 
-### Later
+Tracking doc:
 
-- Release prep: version bump, README/changelog polish, store-page updates.
-- Third-party module registry and sandboxing.
+- [Module Quality Pass](./ultrascripts/08-module-quality-pass.md)
+
+### Showcase Scripts
+
+Planned after module polish:
+
+- **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
+  management using the AI module.
+- **Statboy** - Requires Ultrascripts. Schema-based stat management with AI
+  update proposals, validation, and Scripture widgets.
+- **Chronos V2** - Enhanced with Ultrascripts. Vanilla-safe timekeeping with
+  optional real time/weather sync and widgets.
+
+## Later
+
+- BetterDungeon V2 release plan.
+- Version bump, README/changelog, and store-page polish.
+- Final PC/mobile parity check after module/template changes.
+- Third-party module registry and sandboxing as a future project.
 - NPM/TypeScript/bundler migration as a separate epic.
 
-## Bugs And Risks
+## Risks
 
-- Future complete scripts should not fork the template contract without also
-  updating BetterRepository and the popup tutorial copy.
-- The AI module depends on user-supplied OpenRouter configuration and should
+- Showcase scripts may expose awkward module result fields or public-doc drift.
+- Future scripts should not fork the `bd.us` helper contract without updating
+  BetterDungeon examples and BetterRepository raw-script copies.
+- AI module flows depend on player-supplied OpenRouter configuration and should
   remain bounded, opt-in, and clearly documented.
+- Scripture polish matters disproportionately because it is the player-visible
+  face of Ultrascripts.
 
 ## Canonical Docs
 
-- [Ultrascripts planning index](./ultrascripts/README.md)
+- [Ultrascripts internal docs](./ultrascripts/README.md)
 - [Implementation status](./ultrascripts/03-implementation-status.md)
-- [Test suites](./ultrascripts/04-test-suites.md)
+- [Verification and test suites](./ultrascripts/04-test-suites.md)
 - [BetterDungeon SDK Spec](./ultrascripts/05-betterdungeon-sdk-spec.md)
 - [Example contract reference](./ultrascripts/07-example-contract-reference.md)
+- [Module quality pass](./ultrascripts/08-module-quality-pass.md)
