@@ -22,7 +22,7 @@ the verification surfaces that currently exist and when to use each one.
 | Module | Suite | Files | Main coverage |
 |---|---|---|---|
 | `scripture` | `scripture-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md`, `ROADMAP.md` | Widgets, interactions, manifest validation, custom widgets, transitions |
-| `ai` | `ai-module` | `library.js`, `output-modifier.js`, `README.md` | `chat`, `models`, `testConnection`, `providerAI` alias, invalid requests, unsafe replay |
+| `ai` | `ai-module` | `library.js`, `output-modifier.js`, `README.md` | placeholder heartbeat and `status` rebuild response |
 | `sdk` | `sdk-module` | `library.js`, `output-modifier.js`, `README.md` | heartbeat discovery, `version`, `config`, response acks, trace card |
 | `clock` | `clock-module` | `library.js`, `output-modifier.js`, `README.md` | `now`, `tz`, `format`, timezone variants, invalid requests |
 | `system` | `system-module` | `library.js`, `output-modifier.js`, `README.md` | `info`, `power`, browser/device/screen/locale/battery shape |
@@ -59,17 +59,14 @@ Special attention:
 Use when changing:
 
 - `../../../BetterDungeon/modules/ai/module.js`
-- AI settings in `popup.js` or `background.js`
-- OpenRouter request/response handling
-- unsafe replay handling
-- public AI examples
+- AI placeholder status shape
+- public AI rebuild-status examples
 
 Special attention:
 
-- `ai.chat` is unsafe
-- responses arrive on later turns
-- scripts should read `data.text` or `data.message.content`
-- scripts should check `sdk.config.ultrascripts.ai.configured`
+- heartbeat advertises only `ai.status`
+- `ai.status` returns `reason: "ai_module_rebuild"`
+- no generation op is advertised until a new contract exists
 
 ### SDK
 
@@ -187,7 +184,7 @@ Verifies:
 | Module implementation | that module suite |
 | Scripture renderer/layout | Scripture suite plus mobile/narrow visual check |
 | Core state dispatch/live count | Scripture suite plus at least one ops suite |
-| Ops dispatcher/envelope | AI suite plus one safe ops suite such as Clock or SDK |
+| Ops dispatcher/envelope | AI placeholder suite plus one safe ops suite such as Clock or SDK |
 | Write queue/GraphQL write path | heartbeat smoke, SDK suite, one module response suite |
 | Heartbeat payload | SDK suite, templates, public Quick Start claims |
 | SDK config | SDK suite, AI guide/template config branches |
@@ -227,8 +224,8 @@ When updating docs, verify:
 
 Useful grep targets:
 
-- `providerAI` in public examples, except when explicitly documenting legacy
-  compatibility
+- retired AI provider aliases
+- retired AI generation ops
 - `max_tokens`
 - `response_format`
 - `top_p`

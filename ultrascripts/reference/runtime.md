@@ -220,7 +220,7 @@ Owns module definitions and lifecycle.
 Responsibilities:
 
 - register and unregister module definitions
-- support aliases such as `providerAI -> ai`
+- support aliases only when a module deliberately declares them
 - persist enabled-state preferences under `ultrascripts_enabled_modules`
 - default first-party module ids to enabled
 - default dotted third-party-style ids to disabled
@@ -345,7 +345,7 @@ The popup and background surfaces already support:
 - debug toggle
 - Scripture display preferences
 - WebFetch consent state
-- AI/OpenRouter configuration, cost controls, and connection testing
+- AI placeholder module toggle
 - SDK background config snapshots
 
 ### Supported Platforms

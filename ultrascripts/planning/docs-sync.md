@@ -151,7 +151,7 @@ All public AI Dungeon snippets should:
   `updateStoryCard(index, keys, entry, type)` for writes
 - expect module responses on later turns
 - avoid `async`, `await`, timers, promises, and same-turn assumptions
-- use the canonical module id `ai`, not `providerAI`, except in legacy notes
+- use the canonical module id `ai`; do not teach provider aliases
 - use Story Card type `Ultrascripts` for Ultrascripts-owned cards
 
 ## Active Sync Priority
@@ -196,7 +196,7 @@ Check:
 Useful command patterns:
 
 ```powershell
-rg -n "Lite|profile|mutation template|providerAI|stat-bar|badge-list|checklist|max_tokens|response_format|data.now|accuracyMeters" "Project Management\ultrascripts" BetterRepository
+rg -n "Lite|profile|mutation template|providerAI|ai\.query|ai\.chat|stat-bar|badge-list|checklist|max_tokens|response_format|data.now|accuracyMeters" "Project Management\ultrascripts" BetterRepository
 rg --files BetterDungeon\tests\aid-scripts
 rg --files BetterRepository\src\components\guides | rg "Ultrascripts.*\.vue$"
 ```

@@ -13,13 +13,12 @@ These docs are split by how maintainers actually use them:
 
 ## Current Truth
 
-Ultrascripts is effectively feature-complete. The core runtime, two-way
-request/response protocol, write path, module registry, popup integration,
-mobile follow-through, public BetterRepository docs, and all 9 first-party
-modules are shipped.
+Ultrascripts core is effectively feature-complete. The AI module is currently a
+status-only placeholder while its generation backend is rebuilt.
 
 The active work is finish-line work:
 
+- complete the AI module rebuild
 - improve shipped modules where that makes real scripts better
 - keep the Enhanced and Required starter templates aligned with the live SDK
   helper contract
@@ -77,10 +76,10 @@ Live regression source of truth:
 | `weather` | ops | `current`, `forecast` |
 | `network` | ops | `status` |
 | `system` | ops | `info`, `power` |
-| `ai` | ops | `chat`, `models`, `testConnection` |
+| `ai` | ops | `status` |
 
-The `ai` module also accepts the legacy alias `providerAI`. Public docs should
-teach `ai`.
+The `ai` module is intentionally inert during rebuild. Public docs should teach
+only `ai.status` until a new generation contract exists.
 
 ## Doc Rules
 

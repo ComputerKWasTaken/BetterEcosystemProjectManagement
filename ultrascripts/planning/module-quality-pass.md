@@ -3,6 +3,7 @@
 ## Purpose
 
 This is the active finish-line pass before Brainiac, Statboy, and Chronos V2.
+The AI module is currently reopened as a rebuild, so it leads the pass.
 
 Ultrascripts already works. This pass is not a redesign and not another proof
 that the runtime exists. It is a usefulness review: make sure each shipped
@@ -24,12 +25,12 @@ Fix only the issues that materially improve real script quality.
 
 ## Active Priority
 
-Finish Scripture first.
+Finish the AI module rebuild first, then Scripture.
 
 Reason:
 
+- Brainiac and Statboy both depend on a real AI contract.
 - Scripture is the most player-visible Ultrascripts module.
-- Brainiac and Statboy both need good widget/status surfaces.
 - Chronos V2 benefits from widgets but must remain Enhanced, not Required.
 - If Scripture feels rough, Ultrascripts feels rough even when the protocol is
   technically correct.
@@ -38,8 +39,8 @@ Reason:
 
 | Order | Module | Why |
 |---:|---|---|
-| 1 | `scripture` | Player-visible widgets and interactions |
-| 2 | `ai` | Brainiac/Statboy core capability |
+| 1 | `ai` | Brainiac/Statboy core capability; currently status-only placeholder |
+| 2 | `scripture` | Player-visible widgets and interactions |
 | 3 | `sdk` | Required/Enhanced gating and AI setup checks |
 | 4 | `clock` | Chronos V2 time base |
 | 5 | `weather` | Chronos V2 real-world sync |
@@ -103,14 +104,13 @@ Exit:
 
 Review:
 
-- configured versus unconfigured behavior
-- dummy/local test model behavior where surfaced through config
-- free-model/cost-control branches
-- invalid JSON handling in examples
-- `data.text` and `data.message.content` guidance
-- unsafe replay expectations
-- rate limits per adventure
-- clear setup messaging for Required scripts
+- new backend contract once chosen
+- status-only placeholder until then
+- unavailable/rebuild messaging
+- heartbeat exposes only `status`
+- SDK/public docs do not imply a configured backend
+- no previous-provider, banned native-generation, or alias traces in active docs
+- clear setup messaging for Required scripts after rebuild
 
 Likely showcase needs:
 
@@ -119,6 +119,7 @@ Likely showcase needs:
 
 Exit:
 
+- a policy-safe generation backend exists
 - public examples never assume paid models
 - public examples never assume same-turn responses
 - Brainiac/Statboy can validate and branch on AI outcomes cleanly
@@ -230,8 +231,8 @@ Exit:
 
 | Script | Required module polish before build |
 |---|---|
-| Brainiac | Scripture, AI, SDK |
-| Statboy | Scripture, AI, SDK |
+| Brainiac | AI, Scripture, SDK |
+| Statboy | AI, Scripture, SDK |
 | Chronos V2 | Scripture, Clock, Weather, Geolocation, SDK as needed |
 
 WebFetch, Network, and System should be reviewed if a showcase script uses them
@@ -259,8 +260,9 @@ For accepted fixes, capture:
 
 This pass is done when:
 
+- AI is rebuilt enough for Brainiac and Statboy
 - Scripture is polished enough for public showcase widgets
-- AI and SDK are ready for Brainiac and Statboy
+- SDK is ready for Brainiac and Statboy
 - Clock/Weather/Geolocation are ready for Chronos V2
 - any touched module suite still reflects real author usage
 - Enhanced and Required templates remain aligned

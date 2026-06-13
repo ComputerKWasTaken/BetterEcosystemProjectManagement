@@ -4,7 +4,7 @@
 
 ## Current Focus
 
-BetterDungeon V2 is in final Ultrascripts polish.
+BetterDungeon V2 is in final Ultrascripts rebuild and release prep.
 
 The major Ultrascripts capability stack is shipped:
 
@@ -16,18 +16,30 @@ The major Ultrascripts capability stack is shipped:
 - state-card dispatch
 - module registry and lifecycle
 - popup integration and module settings
-- Scripture, WebFetch, Clock, SDK, Geolocation, Weather, Network, System, and AI
+- Scripture, WebFetch, Clock, SDK, Geolocation, Weather, Network, and System
 - per-module AI Dungeon regression suites
 - Enhanced and Required starter templates
 - Chromium, Gecko/Firefox, and Android WebView support
 
 Current next step:
 
-- finish the module quality pass, starting with Scripture
+- complete the AI module rebuild from a clean status-only placeholder
+- polish/complete Scripture
 - keep the Enhanced and Required templates aligned with BetterRepository
 - build Brainiac, Statboy, and Chronos V2 after module polish
 
 ## Active Work
+
+### AI Module Rebuild
+
+Goal: rebuild the AI module from a clean, policy-safe design.
+
+Current state:
+
+- module id `ai` is preserved
+- only `ai.status` is exposed
+- generation backends are intentionally absent
+- previous provider, native-generation, and alias surfaces are not active
 
 ### Module Quality Pass
 
@@ -35,8 +47,9 @@ Goal: make shipped modules feel good in real scripts, not merely test-passing.
 
 Current priority:
 
+- AI rebuild first
 - Scripture widget/layout/helper polish
-- AI and SDK readiness for Brainiac and Statboy
+- SDK readiness for Brainiac and Statboy after the new AI contract exists
 - Clock/Weather/Geolocation readiness for Chronos V2
 
 Tracking doc:
@@ -54,11 +67,19 @@ Planned after module polish:
 - **Chronos V2** - Enhanced with Ultrascripts. Vanilla-safe timekeeping with
   optional real time/weather sync and widgets.
 
+## V2 Release Sequence
+
+1. Complete the AI module rebuild.
+2. Polish/complete Scripture.
+3. Build Brainiac, Statboy, and Chronos V2.
+4. Resync mobile with PC Ultrascripts behavior.
+5. Rework Chrome Web Store marketing.
+6. Publish the Firefox Add-ons version.
+7. Drop Reddit teasers, then finish last-minute bugfixes and polish.
+8. Release BetterDungeon V2.
+
 ## Later
 
-- BetterDungeon V2 release plan.
-- Version bump, README/changelog, and store-page polish.
-- Final PC/mobile parity check after module/template changes.
 - Third-party module registry and sandboxing as a future project.
 - NPM/TypeScript/bundler migration as a separate epic.
 
@@ -67,8 +88,8 @@ Planned after module polish:
 - Showcase scripts may expose awkward module result fields or public-doc drift.
 - Future scripts should not fork the `bd.us` helper contract without updating
   BetterDungeon examples and BetterRepository raw-script copies.
-- AI module flows depend on player-supplied OpenRouter configuration and should
-  remain bounded, opt-in, and clearly documented.
+- AI module flows are blocked until a new backend design is chosen and should
+  stay policy-safe, bounded, opt-in, and clearly documented.
 - Scripture polish matters disproportionately because it is the player-visible
   face of Ultrascripts.
 

@@ -33,10 +33,10 @@ heartbeat advertise?
 | `weather` | ops | `current`, `forecast` | `../../../BetterDungeon/modules/weather/` | `UltrascriptsWeatherGuide.vue` | `weather-module` |
 | `network` | ops | `status` | `../../../BetterDungeon/modules/network/` | `UltrascriptsNetworkGuide.vue` | `network-module` |
 | `system` | ops | `info`, `power` | `../../../BetterDungeon/modules/system/` | `UltrascriptsSystemGuide.vue` | `system-module` |
-| `ai` | ops | `chat`, `models`, `testConnection` | `../../../BetterDungeon/modules/ai/` | `UltrascriptsAiGuide.vue` | `ai-module` |
+| `ai` | ops | `status` | `../../../BetterDungeon/modules/ai/` | `UltrascriptsAiGuide.vue` | `ai-module` |
 
-Compatibility note: `ai` accepts alias `providerAI`. Public examples should use
-`ai`.
+The `ai` module is a status-only placeholder while its generation backend is
+rebuilt. It has no compatibility alias.
 
 ## Current Responsibilities
 
@@ -50,7 +50,7 @@ Compatibility note: `ai` accepts alias `providerAI`. Public examples should use
 | `weather` | Open-Meteo current conditions and forecasts from coordinates or place names |
 | `network` | Browser online status and quality hints |
 | `system` | Device, browser, screen, locale, hardware, preference, and power hints |
-| `ai` | Bounded hosted AI calls through player-configured OpenRouter settings |
+| `ai` | Reports rebuild/unavailable status while the AI backend is redesigned |
 
 Keep modules narrow. If a module starts becoming a mini-application, split the
 author-facing helper/script from the BetterDungeon-side capability.

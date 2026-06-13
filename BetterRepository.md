@@ -61,10 +61,9 @@ High priority:
 ## Medium Priority
 
 - Add scenario-author examples that combine modules, such as geolocation-backed
-  weather or AI-assisted state management.
+  weather. Defer AI-assisted examples until the AI module rebuild lands.
 - Cross-link BetterDungeon popup setup steps with relevant module guides.
-- Add deeper AI recipes once additional providers, presets, or recommended
-  models are available.
+- Add deeper AI recipes once the rebuilt AI module has a public contract.
 
 ## Later
 

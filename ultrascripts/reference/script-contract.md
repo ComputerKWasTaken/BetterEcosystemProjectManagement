@@ -87,7 +87,7 @@ Do not teach:
 
 - `ultrascripts.profile`
 - Lite/full profile checks
-- `providerAI` as the canonical AI module id
+- provider aliases as canonical AI module ids
 
 ## Request Envelope
 
@@ -175,7 +175,7 @@ Required capabilities:
 
 - heartbeat
 - `sdk.config`
-- `ai.chat`
+- rebuilt AI generation contract, once available
 - Scripture if the script surfaces dashboard/status widgets
 
 Design contract:
@@ -183,8 +183,8 @@ Design contract:
 - derive from Auto Cards plus Inner Self style card-management patterns
 - remove the old standalone memory-system framing
 - use story/brain cards as the persistent author-facing substrate
-- use `ai.chat` only after `sdk.config.ultrascripts.ai.configured`
-- never assume paid models
+- use the rebuilt AI module only after its public contract exists
+- never assume paid models or provider availability
 - validate AI JSON before writing cards
 - avoid same-turn AI assumptions
 - expose clear player-facing setup messages when AI is unavailable
@@ -197,13 +197,13 @@ Required capabilities:
 
 - heartbeat
 - `sdk.config`
-- `ai.chat`
+- rebuilt AI generation contract, once available
 - `scripture`
 
 Design contract:
 
 - authors define stat schemas
-- `ai.chat` proposes structured stat updates
+- the rebuilt AI module proposes structured stat updates
 - script code validates, clamps, and applies updates
 - Scripture renders the current state
 - invalid AI output must fail closed
@@ -240,69 +240,32 @@ Design contract:
 
 Canonical module id: `ai`
 
-Legacy alias:
-
-- `providerAI`
-
 Public docs should teach `ai`.
 
 Ops:
 
-- `chat`
-- `models`
-- `testConnection`
+- `status`
 
-`ai.chat` canonical args:
+`ai.status` reports the current rebuild state:
 
 ```json
 {
-  "provider": "openrouter",
-  "messages": [
-    { "role": "system", "content": "Reply with compact JSON only." },
-    { "role": "user", "content": "Return a status object." }
-  ],
-  "maxTokens": 200,
-  "temperature": 0.2,
-  "responseFormat": { "type": "json_object" },
-  "timeoutMs": 60000
+  "ready": false,
+  "available": false,
+  "phase": "rebuild",
+  "reason": "ai_module_rebuild",
+  "message": "The AI module is being rebuilt and has no callable generation backend right now."
 }
 ```
 
 Rules:
 
-- Use `maxTokens`, not `max_tokens`.
-- Use `responseFormat`, not `response_format`.
-- Do not teach `top_p`; the live module does not normalize it.
-- Do not teach a `model` request arg; `ai.chat` uses the player's saved default
-  model.
-- Valid `responseFormat.type` values: `text`, `json_object`, `json_schema`.
-- Read text from `data.text` or `data.message.content`.
-- Do not read top-level `data.content`.
-- Check `sdk.config.ultrascripts.ai.configured` before first use.
-
-Canonical `chat` success shape:
-
-```json
-{
-  "provider": "openrouter",
-  "model": "openrouter/free",
-  "id": "gen-...",
-  "created": 1736992200,
-  "object": "chat.completion",
-  "text": "Assistant reply text",
-  "message": {
-    "role": "assistant",
-    "content": "Assistant reply text"
-  },
-  "finishReason": "stop",
-  "nativeFinishReason": "stop",
-  "usage": {
-    "promptTokens": 245,
-    "completionTokens": 87,
-    "totalTokens": 332
-  }
-}
-```
+- Heartbeat should list only `status` for `ai`.
+- Do not teach retired AI generation ops, provider aliases, provider settings,
+  model settings, or response-format settings.
+- Use `ai.status` only to explain that AI generation is unavailable during the
+  rebuild.
+- Update this contract before publishing Brainiac or Statboy AI examples.
 
 ### Clock
 
@@ -388,7 +351,6 @@ Use `sdk.config` for:
 - module preferences
 - Scripture display preferences
 - WebFetch consent counts
-- AI configured/default/cost-control summary
 
 `sdk.version` result:
 
@@ -401,30 +363,11 @@ Use `sdk.config` for:
 }
 ```
 
-`sdk.config` AI summary:
-
-```json
-{
-  "configured": true,
-  "defaultModel": "openrouter/free",
-  "costControls": {
-    "freeModelsOnly": true,
-    "advancedOpen": false,
-    "maxPromptPricePerMillion": 0,
-    "maxCompletionPricePerMillion": 0,
-    "perCallEstimateCap": 0,
-    "dailySpendCap": 0,
-    "monthlySpendCap": 0
-  },
-  "dummyModel": false
-}
-```
-
 Rules:
 
 - API keys are never exposed.
-- `dummyModel` may be present through the background-authoritative path.
-- Public examples should branch on `configured`, not on private setup details.
+- Public examples should use heartbeat and module status ops for capability
+  checks, not hidden setup details.
 
 ### Scripture
 
@@ -762,7 +705,8 @@ Do not introduce these in current examples:
 - `stat-bar`
 - `badge-list`
 - `checklist`
-- `providerAI` as canonical module id
+- retired AI provider aliases
+- retired AI generation ops
 - `max_tokens`
 - `response_format`
 - `top_p`
@@ -785,7 +729,7 @@ Before publishing an example or showcase script, check:
 - Does it read heartbeat before assuming module availability?
 - Does it call `sdk.config` only where later-turn config is acceptable?
 - Does it handle missing/disabled/unconfigured modules?
-- Does it validate AI JSON before using it?
+- Does it avoid AI generation assumptions until the rebuilt AI contract exists?
 - Does it avoid exposing secrets or encouraging credential workarounds?
 - Does it use live-count Scripture history?
 - Does it ack ops responses and Scripture widget events through the correct

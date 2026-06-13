@@ -2,7 +2,8 @@
 
 ## Status Snapshot
 
-Ultrascripts is in final polish. Treat the runtime as shipped infrastructure.
+Ultrascripts is in final polish, with the AI module reopened as the active
+rebuild workstream. Treat the core runtime as shipped infrastructure.
 
 Done:
 
@@ -13,7 +14,7 @@ Done:
 - request/response ops
 - module registry
 - popup integration
-- 9 first-party modules
+- 8 complete first-party modules plus the `ai` status placeholder
 - 9 dedicated module regression suites
 - Enhanced and Required starter templates
 - BetterRepository public Ultrascripts guide set
@@ -21,7 +22,8 @@ Done:
 
 Not done:
 
-- final module quality pass, led by Scripture
+- complete the AI module rebuild
+- final module quality pass, led by Scripture after AI
 - three production showcase scripts
 - BetterDungeon V2 release prep
 - BetterRepository V2 release prep
@@ -97,7 +99,7 @@ Current capabilities:
 - debug toggle
 - Scripture display preferences
 - WebFetch consent management
-- AI/OpenRouter settings and cost controls
+- AI status-only placeholder toggle
 - SDK background config snapshots
 - extension load integration for all first-party modules
 
@@ -113,7 +115,7 @@ Current capabilities:
 | `weather` | shipped | Ready for Chronos V2 weather sync after field-shape check |
 | `network` | shipped | Best used for fallback hints, not hard gating |
 | `system` | shipped | Best used for layout/device hints, not brittle UA branches |
-| `ai` | shipped | Ready for Brainiac/Statboy after config/cost/fallback review |
+| `ai` | rebuild placeholder | Exposes only `status`; generation backend intentionally absent |
 
 ## Documentation Status
 
@@ -146,7 +148,8 @@ it works.
 
 Current priority:
 
-- finish Scripture first
+- finish the AI module rebuild first
+- then finish Scripture
 - only pull other module work forward when it improves Brainiac, Statboy, or
   Chronos V2
 - avoid reopening architecture unless a concrete showcase requirement exposes a
@@ -172,11 +175,11 @@ Watch:
 After module polish, build:
 
 1. **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
-   management derived from Auto Cards plus Inner Self patterns. Remove the old
-   memory-system framing and use the `ai` module plus well-structured cards.
+   management after the new AI contract exists. Remove the old memory-system
+   framing and use the rebuilt `ai` module plus well-structured cards.
 2. **Statboy** - Requires Ultrascripts. Schema-based stat management where
-   authors define stats, `ai.chat` proposes structured updates, script logic
-   validates/clamps them, and Scripture renders current state.
+   authors define stats, the rebuilt AI module proposes structured updates,
+   script logic validates/clamps them, and Scripture renders current state.
 3. **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps a
    vanilla timekeeping path but adds BetterDungeon-powered time/weather sync and
    widgets when Ultrascripts is available.
@@ -184,12 +187,14 @@ After module polish, build:
 ## Release Path
 
 ```text
-Module quality pass
--> Showcase scripts
--> BetterDungeon V2 release plan
--> BetterRepository V2 release plan
--> final PC/mobile sync check
--> launch prep
+AI module rebuild
+-> Scripture polish
+-> Brainiac, Statboy, and Chronos V2
+-> PC/mobile Ultrascripts resync
+-> Chrome Web Store marketing refresh
+-> Firefox Add-ons publishing
+-> Reddit teasers, final bugfixes, and polish
+-> BetterDungeon V2 release
 ```
 
 Release prep should include:
@@ -212,7 +217,7 @@ These are no longer active implementation questions:
 - Direct `SaveQueueStoryCard` writeback is the production write path.
 - Mutation-template priming is retired.
 - Lite/full profiles are retired.
-- `ai` is the canonical module id; `providerAI` is only a legacy alias.
+- `ai` is the canonical module id.
 - AI Dungeon scripts must expect module responses on later turns.
 
 ## Intentional Future Work
@@ -222,7 +227,7 @@ Good ideas, not required for V2:
 - third-party module registry UI
 - sandboxed user-authored modules
 - richer runtime inspector/debugger
-- deeper AI provider expansion beyond the current OpenRouter bridge
+- deeper AI provider/backend expansion after the rebuild
 - full migration of every older BetterDungeon Story Card consumer
 - TypeScript/NPM/bundler migration
 
@@ -231,19 +236,17 @@ Good ideas, not required for V2:
 - Public examples can drift from the helper/template contract.
 - Showcase scripts may expose awkward module result fields or error codes.
 - Scripture mobile/narrow rendering can make otherwise-good scripts feel rough.
-- AI flows depend on player configuration and must stay opt-in, bounded, and
-  clear.
+- AI generation is unavailable until the rebuild lands.
 - WebFetch examples must respect consent, blocked targets, and late responses.
 - Mobile/PC parity should be checked after final module/template changes, not
   assumed from old smoke tests.
 
 ## Practical Next Action
 
-Start with Scripture:
+Start with AI:
 
-1. Review current widget layout and interaction behavior on desktop, narrow
-   sidebar, and mobile-sized surfaces.
-2. Compare public Scripture examples against the live helper contract.
-3. Fix only issues that affect real showcase usage.
-4. Run or live-check the Scripture regression suite.
-5. Update public/private docs only if the actual contract changes.
+1. Design the new policy-safe AI backend contract.
+2. Implement the rebuilt `ai` module behind the existing module id.
+3. Update SDK/docs/templates only after the new contract is real.
+4. Replace the placeholder AI suite with a representative live suite.
+5. Move to Scripture polish once AI is complete enough for Brainiac/Statboy.

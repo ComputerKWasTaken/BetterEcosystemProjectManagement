@@ -159,28 +159,10 @@ Fields:
       "savedOriginCount": 0,
       "allowCount": 0,
       "denyCount": 0
-    },
-    "ai": {
-      "configured": true,
-      "defaultModel": "openrouter/free",
-      "costControls": {
-        "freeModelsOnly": true,
-        "advancedOpen": false,
-        "maxPromptPricePerMillion": 0,
-        "maxCompletionPricePerMillion": 0,
-        "perCallEstimateCap": 0,
-        "dailySpendCap": 0,
-        "monthlySpendCap": 0
-      },
-      "dummyModel": false
     }
   }
 }
 ```
-
-`dummyModel` is present when the background-authoritative path supplies it. Do
-not require public examples to depend on it unless the public SDK guide is
-updated deliberately.
 
 ### Feature Fields
 
@@ -215,7 +197,6 @@ Current default keys:
 | `modulePreferences` | Saved enablement preference for the 9 first-party modules |
 | `scriptureDisplay` | Safe widget display preferences |
 | `webfetch` | Aggregate consent counts without exposing domains |
-| `ai` | Safe AI/OpenRouter setup summary |
 
 `modulePreferences` is not a substitute for heartbeat discovery. A module may be
 preferred on but not mounted on the current surface. Use heartbeat to know what
@@ -251,35 +232,6 @@ Scripts may use these values to choose denser or simpler Scripture manifests.
 
 This intentionally does not expose specific origins. Scripts should still call
 `webfetch.fetch`/`webfetch.search` and branch on consent/error responses.
-
-### AI Summary
-
-```json
-{
-  "configured": true,
-  "defaultModel": "openrouter/free",
-  "costControls": {
-    "freeModelsOnly": true,
-    "advancedOpen": false,
-    "maxPromptPricePerMillion": 0,
-    "maxCompletionPricePerMillion": 0,
-    "perCallEstimateCap": 0,
-    "dailySpendCap": 0,
-    "monthlySpendCap": 0
-  },
-  "dummyModel": false
-}
-```
-
-Rules:
-
-- `configured` is the primary public branch for "can this player use AI calls?"
-- `defaultModel` is safe to expose, but scripts cannot override it in
-  `ai.chat`.
-- cost controls are informational for script adaptation; enforcement remains in
-  BetterDungeon.
-- API keys are never exposed.
-- scripts should not assume paid models are available.
 
 ## Wire Flow
 
@@ -353,7 +305,6 @@ bd.us.hasOp = function (moduleId, opName) {
 
 Use `sdk.config` for:
 
-- deciding whether `ai.chat` can be offered
 - adapting Scripture widget density to player preferences
 - showing a better fallback when Ultrascripts is disabled
 - deciding whether optional modules should be treated as available preferences
@@ -372,7 +323,6 @@ Do not use `sdk.config` for:
 
 The SDK must not expose:
 
-- OpenRouter API keys
 - Firebase auth tokens
 - GraphQL authorization headers
 - captured `baseCredentials`
