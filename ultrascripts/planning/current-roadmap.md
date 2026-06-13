@@ -157,6 +157,69 @@ Current priority:
 
 Tracked in [Module Quality Pass](./module-quality-pass.md).
 
+### 1A. AI Rebuild Phases
+
+The AI module rebuild is intentionally split into three clean phases so we do
+not bind the public design to one temporary backend choice.
+
+#### Phase 1: Contract
+
+Define the public AI module contract first.
+
+This phase covers:
+
+- canonical module surface
+- public ops and their argument shapes
+- response envelopes and terminal statuses
+- readiness, availability, and error semantics
+- timeout/cancellation expectations
+- script-author guarantees and non-guarantees
+
+Exit condition:
+
+- `ai` has a documented, provider-agnostic public contract that is stable
+  enough for templates, BetterRepository guides, and future showcase scripts to
+  target.
+
+#### Phase 2: Execution Layer
+
+Build the internal execution layer that translates module requests into clean,
+consistent AI tasks.
+
+This phase covers:
+
+- request normalization
+- prompt/query construction
+- structured-output handling strategy
+- validation and guardrails
+- logging/debug surfaces
+- queueing/concurrency rules if needed
+- a backend-agnostic internal executor interface
+
+Exit condition:
+
+- the module has a clean internal path from public `ai` requests to a backend
+  adapter boundary, without provider-specific behavior leaking into the public
+  contract.
+
+#### Phase 3: Backend
+
+Connect the execution layer to an actual AI provider/runtime.
+
+This phase covers:
+
+- provider selection
+- authentication and settings storage
+- transport implementation
+- provider-specific parameter mapping
+- quota/rate-limit/error translation
+- live verification against real responses
+
+Exit condition:
+
+- at least one production backend satisfies the contract, passes verification,
+  and can be documented without caveats that undermine the public API.
+
 ### 2. Template Alignment
 
 Goal: keep the Enhanced and Required starter foundations as the canonical
@@ -245,8 +308,9 @@ Good ideas, not required for V2:
 
 Start with AI:
 
-1. Design the new policy-safe AI backend contract.
-2. Implement the rebuilt `ai` module behind the existing module id.
-3. Update SDK/docs/templates only after the new contract is real.
-4. Replace the placeholder AI suite with a representative live suite.
-5. Move to Scripture polish once AI is complete enough for Brainiac/Statboy.
+1. Finish Phase 1 and lock the public AI module contract.
+2. Build Phase 2 so request construction/execution is clean and documented.
+3. Choose and implement Phase 3 with one production backend.
+4. Update SDK/docs/templates only after the contract and real backend path are real.
+5. Replace the placeholder AI suite with a representative live suite.
+6. Move to Scripture polish once AI is complete enough for Brainiac/Statboy.

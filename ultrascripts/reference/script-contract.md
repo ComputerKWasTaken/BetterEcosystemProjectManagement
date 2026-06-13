@@ -246,6 +246,22 @@ Ops:
 
 - `status`
 
+Rebuild order:
+
+1. **Contract**
+   Define the public `ai` module surface first. This includes status/readiness
+   semantics, future request/response shapes, timeout/error behavior, and the
+   guarantees scripts may rely on.
+2. **Execution Layer**
+   Implement the internal request-construction path after the public contract is
+   settled. This layer owns normalization, prompt/query assembly, validation,
+   and the backend-agnostic executor boundary.
+3. **Backend**
+   Attach a real provider/runtime only after the contract and execution layer
+   are in place. Provider-specific auth, transport, parameter mapping, and
+   quota/error translation belong here rather than in the public script
+   contract.
+
 `ai.status` reports the current rebuild state:
 
 ```json

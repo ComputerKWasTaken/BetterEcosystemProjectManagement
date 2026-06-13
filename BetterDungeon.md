@@ -41,6 +41,30 @@ Current state:
 - generation backends are intentionally absent
 - previous provider, native-generation, and alias surfaces are not active
 
+Rebuild phases:
+
+1. **Contract**
+   Define the public AI module contract before any backend work resumes. This
+   phase establishes the stable module surface, request/response shapes, error
+   model, readiness/status semantics, timeout behavior, and the exact promises
+   the module makes to scripts. The goal is for public docs, starter templates,
+   and future showcase scripts to target one clear AI contract instead of a
+   provider-specific implementation.
+2. **Execution Layer**
+   Build the internal execution layer that turns script requests into clean,
+   well-bounded model tasks. This phase owns prompt/query construction,
+   structured request assembly, validation, normalization, logging hooks, and
+   the documented internal path between `ai.query` and whatever backend
+   eventually processes it. The goal is to keep request construction organized
+   and backend-agnostic.
+3. **Backend**
+   Connect the execution layer to a real provider or runtime such as
+   OpenRouter, Google AI Studio, or a future local system. This phase owns
+   authentication, transport, provider-specific settings, quota/error mapping,
+   and final result delivery back through the AI module contract. Backend work
+   happens last so the provider can change without destabilizing scripts,
+   templates, or docs.
+
 ### Module Quality Pass
 
 Goal: make shipped modules feel good in real scripts, not merely test-passing.
