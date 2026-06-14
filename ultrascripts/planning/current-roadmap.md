@@ -115,7 +115,7 @@ Current capabilities:
 | `weather` | shipped | Ready for Chronos V2 weather sync after field-shape check |
 | `network` | shipped | Best used for fallback hints, not hard gating |
 | `system` | shipped | Best used for layout/device hints, not brittle UA branches |
-| `ai` | contract signed off | Exposes `status` and `query`; generation backend intentionally absent |
+| `ai` | executor ready, backend pending | Exposes `status` and `query`; validates/builds query tasks; generation backend intentionally absent |
 
 ## Documentation Status
 
@@ -201,7 +201,9 @@ Exit condition:
 
 - the module has a clean internal path from public `ai` requests to a backend
   adapter boundary, without provider-specific behavior leaking into the public
-  contract.
+  contract. Current implementation: `modules/ai/executor.js` validates queries,
+  builds normalized tasks, normalizes text/JSON backend responses, and returns
+  `not_configured` until a backend is attached.
 
 #### Phase 3: Backend
 
@@ -310,9 +312,8 @@ Good ideas, not required for V2:
 
 Start with AI:
 
-1. Treat Phase 1 as signed off and keep docs/tests aligned with the status/query contract.
-2. Build Phase 2 so request construction/execution is clean and documented.
-3. Choose and implement Phase 3 with one production backend.
-4. Update SDK/docs/templates only after the execution layer and real backend path are real.
-5. Replace the backend-pending AI suite with a representative live suite.
-6. Move to Scripture polish once AI is complete enough for Brainiac/Statboy.
+1. Treat Phase 1 and Phase 2 as signed off and keep docs/tests aligned with the executor-backed status/query contract.
+2. Choose and implement Phase 3 with one production backend.
+3. Update SDK/docs/templates only after the real backend path is available.
+4. Replace the backend-pending AI suite with a representative live suite.
+5. Move to Scripture polish once AI is complete enough for Brainiac/Statboy.

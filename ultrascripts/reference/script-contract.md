@@ -269,7 +269,7 @@ Rebuild order:
 {
   "ready": false,
   "available": false,
-  "phase": "contract",
+  "phase": "executor",
   "backend": null,
   "supports": {
     "text": false,
@@ -280,8 +280,13 @@ Rebuild order:
     "outputTypes": ["text", "json"],
     "asyncOnly": true
   },
+  "executor": {
+    "version": "0.1.0-executor",
+    "promptMaxChars": 12000,
+    "backendConfigured": false
+  },
   "reason": "ai_backend_not_configured",
-  "message": "The AI module contract is available, but no callable generation backend is configured right now."
+  "message": "The AI execution layer is available, but no callable generation backend is configured right now."
 }
 ```
 

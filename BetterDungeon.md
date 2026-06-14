@@ -38,6 +38,7 @@ Current state:
 
 - module id `ai` is preserved
 - `ai.status` and `ai.query` are exposed
+- the backend-agnostic AI executor validates query requests and builds normalized tasks
 - generation backends are intentionally absent
 - previous provider, native-generation, and alias surfaces are not active
 

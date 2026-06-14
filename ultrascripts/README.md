@@ -14,8 +14,8 @@ These docs are split by how maintainers actually use them:
 ## Current Truth
 
 Ultrascripts core is effectively feature-complete. The AI module has its Phase 1
-`status`/`query` contract in place while its execution layer and generation
-backend are rebuilt.
+`status`/`query` contract and Phase 2 backend-agnostic executor in place while
+its generation backend is rebuilt.
 
 The active work is finish-line work:
 
