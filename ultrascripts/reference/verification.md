@@ -22,7 +22,7 @@ the verification surfaces that currently exist and when to use each one.
 | Module | Suite | Files | Main coverage |
 |---|---|---|---|
 | `scripture` | `scripture-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md`, `ROADMAP.md` | Widgets, interactions, manifest validation, custom widgets, transitions |
-| `ai` | `ai-module` | `library.js`, `output-modifier.js`, `README.md` | status/query contract, backend-pending status, and valid query `not_configured` responses |
+| `ai` | `ai-module` | `library.js`, `output-modifier.js`, `README.md` | Gemini status/query contract, text output, schema-backed JSON output, missing-key errors |
 | `sdk` | `sdk-module` | `library.js`, `output-modifier.js`, `README.md` | heartbeat discovery, `version`, `config`, response acks, trace card |
 | `clock` | `clock-module` | `library.js`, `output-modifier.js`, `README.md` | `now`, `tz`, `format`, timezone variants, invalid requests |
 | `system` | `system-module` | `library.js`, `output-modifier.js`, `README.md` | `info`, `power`, browser/device/screen/locale/battery shape |
@@ -60,14 +60,16 @@ Use when changing:
 
 - `../../../BetterDungeon/modules/ai/module.js`
 - AI status/query contract shape
-- public AI backend-pending examples
+- public AI Gemini setup and query examples
 
 Special attention:
 
 - heartbeat advertises `ai.status` and `ai.query`
-- `ai.status` returns `reason: "ai_backend_not_configured"` until a backend exists
-- valid text and JSON queries return terminal `not_configured` errors while Phase 3 is pending
-- no provider alias, model setting, or provider-native payload is advertised
+- `ai.status` reports Gemini readiness, selected model, and key-configured state
+- text and schema-backed JSON queries return live results when Gemini is configured
+- missing-key text and JSON queries return terminal `not_configured` errors
+- schema-less JSON queries return terminal `invalid_args`
+- no provider alias, script-facing model setting, or provider-native payload is advertised
 
 ### SDK
 

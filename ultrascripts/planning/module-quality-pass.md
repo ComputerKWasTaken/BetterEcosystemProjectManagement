@@ -106,11 +106,11 @@ Review:
 
 - status/query contract shape
 - text and JSON output-mode behavior
-- backend-pending `not_configured` messaging
+- missing-key `not_configured` messaging
 - heartbeat exposes `status` and `query`
-- SDK/public docs do not imply a configured backend
+- SDK/public docs do not imply AI keys are exposed to scripts
 - no previous-provider, banned native-generation, or alias traces in active docs
-- clear setup messaging for Required scripts after rebuild
+- clear Gemini setup messaging for Required scripts
 
 Likely showcase needs:
 
@@ -119,7 +119,7 @@ Likely showcase needs:
 
 Exit:
 
-- a policy-safe generation backend exists
+- the Gemini generation backend is policy-safe, opt-in, and verified
 - public examples never assume paid models
 - public examples never assume same-turn responses
 - Brainiac/Statboy can validate and branch on AI outcomes cleanly

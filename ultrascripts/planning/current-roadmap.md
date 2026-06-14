@@ -14,7 +14,7 @@ Done:
 - request/response ops
 - module registry
 - popup integration
-- 8 complete first-party modules plus the `ai` status/query contract
+- 8 complete first-party modules plus the Gemini-backed `ai` status/query contract
 - 9 dedicated module regression suites
 - Enhanced and Required starter templates
 - BetterRepository public Ultrascripts guide set
@@ -22,7 +22,7 @@ Done:
 
 Not done:
 
-- complete the AI module rebuild
+- complete Gemini AI live verification and polish
 - final module quality pass, led by Scripture after AI
 - three production showcase scripts
 - BetterDungeon V2 release prep
@@ -99,7 +99,7 @@ Current capabilities:
 - debug toggle
 - Scripture display preferences
 - WebFetch consent management
-- AI status/query contract toggle
+- AI Gemini settings and status/query contract toggle
 - SDK background config snapshots
 - extension load integration for all first-party modules
 
@@ -115,7 +115,7 @@ Current capabilities:
 | `weather` | shipped | Ready for Chronos V2 weather sync after field-shape check |
 | `network` | shipped | Best used for fallback hints, not hard gating |
 | `system` | shipped | Best used for layout/device hints, not brittle UA branches |
-| `ai` | executor ready, backend pending | Exposes `status` and `query`; validates/builds query tasks; generation backend intentionally absent |
+| `ai` | Gemini backend in implementation | Exposes `status` and async `query`; supports text and schema-backed JSON through Gemini |
 
 ## Documentation Status
 
@@ -202,8 +202,8 @@ Exit condition:
 - the module has a clean internal path from public `ai` requests to a backend
   adapter boundary, without provider-specific behavior leaking into the public
   contract. Current implementation: `modules/ai/executor.js` validates queries,
-  builds normalized tasks, normalizes text/JSON backend responses, and returns
-  `not_configured` until a backend is attached.
+  builds normalized tasks, requires schemas for JSON output, normalizes
+  text/JSON backend responses, and attaches the Gemini adapter at runtime.
 
 #### Phase 3: Backend
 
@@ -211,10 +211,10 @@ Connect the execution layer to an actual AI provider/runtime.
 
 This phase covers:
 
-- provider selection
-- authentication and settings storage
-- transport implementation
-- provider-specific parameter mapping
+- Gemini provider integration through stable `generateContent`
+- local API-key and model settings storage
+- background-worker transport implementation
+- provider-specific payload mapping for text and structured JSON
 - quota/rate-limit/error translation
 - live verification against real responses
 
@@ -241,7 +241,7 @@ Watch:
 After module polish, build:
 
 1. **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
-   management after the AI execution layer/backend exists. Remove the old
+   management through the Gemini-backed AI module. Remove the old
    memory-system framing and use the rebuilt `ai` module plus well-structured
    cards.
 2. **Statboy** - Requires Ultrascripts. Schema-based stat management where
@@ -303,7 +303,8 @@ Good ideas, not required for V2:
 - Public examples can drift from the helper/template contract.
 - Showcase scripts may expose awkward module result fields or error codes.
 - Scripture mobile/narrow rendering can make otherwise-good scripts feel rough.
-- AI generation is unavailable until the execution layer and backend land.
+- AI generation depends on player Gemini API-key setup and should fail closed
+  with actionable `not_configured` errors.
 - WebFetch examples must respect consent, blocked targets, and late responses.
 - Mobile/PC parity should be checked after final module/template changes, not
   assumed from old smoke tests.
@@ -312,8 +313,6 @@ Good ideas, not required for V2:
 
 Start with AI:
 
-1. Treat Phase 1 and Phase 2 as signed off and keep docs/tests aligned with the executor-backed status/query contract.
-2. Choose and implement Phase 3 with one production backend.
-3. Update SDK/docs/templates only after the real backend path is available.
-4. Replace the backend-pending AI suite with a representative live suite.
-5. Move to Scripture polish once AI is complete enough for Brainiac/Statboy.
+1. Finish Phase 3 Gemini verification, including text, schema-backed JSON, missing-key, and reload safety paths.
+2. Keep docs/tests aligned with the Gemini-backed status/query contract.
+3. Move to Scripture polish once AI is complete enough for Brainiac/Statboy.

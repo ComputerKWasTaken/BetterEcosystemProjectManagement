@@ -247,22 +247,6 @@ Ops:
 - `status`
 - `query`
 
-Rebuild order:
-
-1. **Contract**
-   Define the public `ai` module surface first. This includes status/readiness
-   semantics, future request/response shapes, timeout/error behavior, and the
-   guarantees scripts may rely on.
-2. **Execution Layer**
-   Implement the internal request-construction path after the public contract is
-   settled. This layer owns normalization, prompt/query assembly, validation,
-   and the backend-agnostic executor boundary.
-3. **Backend**
-   Attach a real provider/runtime only after the contract and execution layer
-   are in place. Provider-specific auth, transport, parameter mapping, and
-   quota/error translation belong here rather than in the public script
-   contract.
-
 `ai.status` reports readiness and the active output-mode support:
 
 ```json
@@ -270,10 +254,16 @@ Rebuild order:
   "ready": false,
   "available": false,
   "phase": "executor",
-  "backend": null,
+  "backend": "gemini",
+  "backendLabel": "Gemini",
   "supports": {
-    "text": false,
-    "json": false
+    "text": true,
+    "json": true
+  },
+  "config": {
+    "provider": "gemini",
+    "keyConfigured": false,
+    "model": "gemini-3.5-flash"
   },
   "contract": {
     "ops": ["status", "query"],
@@ -281,12 +271,12 @@ Rebuild order:
     "asyncOnly": true
   },
   "executor": {
-    "version": "0.1.0-executor",
+    "version": "0.2.0-gemini",
     "promptMaxChars": 12000,
-    "backendConfigured": false
+    "backendConfigured": true
   },
   "reason": "ai_backend_not_configured",
-  "message": "The AI execution layer is available, but no callable generation backend is configured right now."
+  "message": "Add a Gemini API key in BetterDungeon to enable AI queries."
 }
 ```
 
@@ -294,9 +284,17 @@ Rebuild order:
 
 ```json
 {
-  "prompt": "Classify whether the player is in combat. Return { \"inCombat\": boolean }.",
+  "prompt": "Classify whether the player is in combat.",
   "output": {
-    "type": "json"
+    "type": "json",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "inCombat": { "type": "boolean" }
+      },
+      "required": ["inCombat"],
+      "additionalProperties": false
+    }
   }
 }
 ```
@@ -307,8 +305,7 @@ Args:
   instructions, context, examples, and any formatting guidance.
 - `output`: optional. Defaults to `{ "type": "text" }`.
 - `output.type`: `text` or `json`.
-- `output.schema`: reserved for JSON output validation once the execution layer
-  and backend support it.
+- `output.schema`: required when `output.type` is `json`.
 
 Success payloads:
 
@@ -330,10 +327,11 @@ Rules:
 - Text queries return `data.text`.
 - JSON queries return `data.json`, and scripts must validate it before applying
   it to state.
-- While no backend is configured, valid queries return an `err` response with
-  `error.code: "not_configured"`.
-- Do not teach retired provider aliases, model settings, response-format
-  settings, or provider-native payloads.
+- While no Gemini API key is configured, valid queries return an `err` response
+  with `error.code: "not_configured"`.
+- JSON queries without a schema return `error.code: "invalid_args"`.
+- Do not teach retired provider aliases, script-facing model settings,
+  response-format settings, or provider-native payloads.
 
 ### Clock
 
@@ -778,6 +776,7 @@ Do not introduce these in current examples:
 - `max_tokens`
 - `response_format`
 - `top_p`
+- script-facing AI model selection
 - AI examples reading top-level `data.content`
 - WebFetch examples using `POST` or request bodies
 - `data.now`

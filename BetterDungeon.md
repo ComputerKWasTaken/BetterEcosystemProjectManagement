@@ -23,7 +23,7 @@ The major Ultrascripts capability stack is shipped:
 
 Current next step:
 
-- continue the AI module rebuild from the signed-off status/query contract
+- complete live verification of the Gemini-backed AI module
 - polish/complete Scripture
 - keep the Enhanced and Required templates aligned with BetterRepository
 - build Brainiac, Statboy, and Chronos V2 after module polish
@@ -39,7 +39,11 @@ Current state:
 - module id `ai` is preserved
 - `ai.status` and `ai.query` are exposed
 - the backend-agnostic AI executor validates query requests and builds normalized tasks
-- generation backends are intentionally absent
+- Gemini is the first production backend, using the stable `generateContent`
+  REST API through the extension background worker
+- API keys are stored in extension local storage and never exposed to page
+  scripts
+- JSON queries require an explicit schema
 - previous provider, native-generation, and alias surfaces are not active
 
 Rebuild phases:
@@ -59,12 +63,9 @@ Rebuild phases:
    eventually processes it. The goal is to keep request construction organized
    and backend-agnostic.
 3. **Backend**
-   Connect the execution layer to a real provider or runtime such as
-   OpenRouter, Google AI Studio, or a future local system. This phase owns
-   authentication, transport, provider-specific settings, quota/error mapping,
-   and final result delivery back through the AI module contract. Backend work
-   happens last so the provider can change without destabilizing scripts,
-   templates, or docs.
+   Connect the execution layer to Gemini through the background worker. This
+   phase owns authentication, transport, provider-specific settings, quota/error
+   mapping, and final result delivery back through the AI module contract.
 
 ### Module Quality Pass
 
@@ -113,8 +114,8 @@ Planned after module polish:
 - Showcase scripts may expose awkward module result fields or public-doc drift.
 - Future scripts should not fork the `bd.us` helper contract without updating
   BetterDungeon examples and BetterRepository raw-script copies.
-- AI module flows are blocked until a new backend design is chosen and should
-  stay policy-safe, bounded, opt-in, and clearly documented.
+- AI module flows now depend on user-provided Gemini API keys and should stay
+  policy-safe, bounded, opt-in, and clearly documented.
 - Scripture polish matters disproportionately because it is the player-visible
   face of Ultrascripts.
 
