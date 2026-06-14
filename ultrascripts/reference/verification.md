@@ -22,7 +22,7 @@ the verification surfaces that currently exist and when to use each one.
 | Module | Suite | Files | Main coverage |
 |---|---|---|---|
 | `scripture` | `scripture-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md`, `ROADMAP.md` | Widgets, interactions, manifest validation, custom widgets, transitions |
-| `ai` | `ai-module` | `library.js`, `output-modifier.js`, `README.md` | placeholder heartbeat and `status` rebuild response |
+| `ai` | `ai-module` | `library.js`, `output-modifier.js`, `README.md` | status/query contract, backend-pending status, and valid query `not_configured` responses |
 | `sdk` | `sdk-module` | `library.js`, `output-modifier.js`, `README.md` | heartbeat discovery, `version`, `config`, response acks, trace card |
 | `clock` | `clock-module` | `library.js`, `output-modifier.js`, `README.md` | `now`, `tz`, `format`, timezone variants, invalid requests |
 | `system` | `system-module` | `library.js`, `output-modifier.js`, `README.md` | `info`, `power`, browser/device/screen/locale/battery shape |
@@ -59,14 +59,15 @@ Special attention:
 Use when changing:
 
 - `../../../BetterDungeon/modules/ai/module.js`
-- AI placeholder status shape
-- public AI rebuild-status examples
+- AI status/query contract shape
+- public AI backend-pending examples
 
 Special attention:
 
-- heartbeat advertises only `ai.status`
-- `ai.status` returns `reason: "ai_module_rebuild"`
-- no generation op is advertised until a new contract exists
+- heartbeat advertises `ai.status` and `ai.query`
+- `ai.status` returns `reason: "ai_backend_not_configured"` until a backend exists
+- valid text and JSON queries return terminal `not_configured` errors while Phase 3 is pending
+- no provider alias, model setting, or provider-native payload is advertised
 
 ### SDK
 
@@ -184,7 +185,7 @@ Verifies:
 | Module implementation | that module suite |
 | Scripture renderer/layout | Scripture suite plus mobile/narrow visual check |
 | Core state dispatch/live count | Scripture suite plus at least one ops suite |
-| Ops dispatcher/envelope | AI placeholder suite plus one safe ops suite such as Clock or SDK |
+| Ops dispatcher/envelope | AI contract suite plus one safe ops suite such as Clock or SDK |
 | Write queue/GraphQL write path | heartbeat smoke, SDK suite, one module response suite |
 | Heartbeat payload | SDK suite, templates, public Quick Start claims |
 | SDK config | SDK suite, AI guide/template config branches |

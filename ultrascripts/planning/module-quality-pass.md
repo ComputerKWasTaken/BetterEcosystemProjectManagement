@@ -39,7 +39,7 @@ Reason:
 
 | Order | Module | Why |
 |---:|---|---|
-| 1 | `ai` | Brainiac/Statboy core capability; currently status-only placeholder |
+| 1 | `ai` | Brainiac/Statboy core capability; Phase 1 status/query contract is in place |
 | 2 | `scripture` | Player-visible widgets and interactions |
 | 3 | `sdk` | Required/Enhanced gating and AI setup checks |
 | 4 | `clock` | Chronos V2 time base |
@@ -104,10 +104,10 @@ Exit:
 
 Review:
 
-- new backend contract once chosen
-- status-only placeholder until then
-- unavailable/rebuild messaging
-- heartbeat exposes only `status`
+- status/query contract shape
+- text and JSON output-mode behavior
+- backend-pending `not_configured` messaging
+- heartbeat exposes `status` and `query`
 - SDK/public docs do not imply a configured backend
 - no previous-provider, banned native-generation, or alias traces in active docs
 - clear setup messaging for Required scripts after rebuild

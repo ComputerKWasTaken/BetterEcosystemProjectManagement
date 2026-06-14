@@ -345,7 +345,7 @@ The popup and background surfaces already support:
 - debug toggle
 - Scripture display preferences
 - WebFetch consent state
-- AI placeholder module toggle
+- AI status/query contract module toggle
 - SDK background config snapshots
 
 ### Supported Platforms

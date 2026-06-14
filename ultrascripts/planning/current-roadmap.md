@@ -14,7 +14,7 @@ Done:
 - request/response ops
 - module registry
 - popup integration
-- 8 complete first-party modules plus the `ai` status placeholder
+- 8 complete first-party modules plus the `ai` status/query contract
 - 9 dedicated module regression suites
 - Enhanced and Required starter templates
 - BetterRepository public Ultrascripts guide set
@@ -99,7 +99,7 @@ Current capabilities:
 - debug toggle
 - Scripture display preferences
 - WebFetch consent management
-- AI status-only placeholder toggle
+- AI status/query contract toggle
 - SDK background config snapshots
 - extension load integration for all first-party modules
 
@@ -115,7 +115,7 @@ Current capabilities:
 | `weather` | shipped | Ready for Chronos V2 weather sync after field-shape check |
 | `network` | shipped | Best used for fallback hints, not hard gating |
 | `system` | shipped | Best used for layout/device hints, not brittle UA branches |
-| `ai` | rebuild placeholder | Exposes only `status`; generation backend intentionally absent |
+| `ai` | contract signed off | Exposes `status` and `query`; generation backend intentionally absent |
 
 ## Documentation Status
 
@@ -179,7 +179,8 @@ Exit condition:
 
 - `ai` has a documented, provider-agnostic public contract that is stable
   enough for templates, BetterRepository guides, and future showcase scripts to
-  target.
+  target. Current contract: `status` plus async `query` with `text` and `json`
+  output modes.
 
 #### Phase 2: Execution Layer
 
@@ -238,8 +239,9 @@ Watch:
 After module polish, build:
 
 1. **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
-   management after the new AI contract exists. Remove the old memory-system
-   framing and use the rebuilt `ai` module plus well-structured cards.
+   management after the AI execution layer/backend exists. Remove the old
+   memory-system framing and use the rebuilt `ai` module plus well-structured
+   cards.
 2. **Statboy** - Requires Ultrascripts. Schema-based stat management where
    authors define stats, the rebuilt AI module proposes structured updates,
    script logic validates/clamps them, and Scripture renders current state.
@@ -299,7 +301,7 @@ Good ideas, not required for V2:
 - Public examples can drift from the helper/template contract.
 - Showcase scripts may expose awkward module result fields or error codes.
 - Scripture mobile/narrow rendering can make otherwise-good scripts feel rough.
-- AI generation is unavailable until the rebuild lands.
+- AI generation is unavailable until the execution layer and backend land.
 - WebFetch examples must respect consent, blocked targets, and late responses.
 - Mobile/PC parity should be checked after final module/template changes, not
   assumed from old smoke tests.
@@ -308,9 +310,9 @@ Good ideas, not required for V2:
 
 Start with AI:
 
-1. Finish Phase 1 and lock the public AI module contract.
+1. Treat Phase 1 as signed off and keep docs/tests aligned with the status/query contract.
 2. Build Phase 2 so request construction/execution is clean and documented.
 3. Choose and implement Phase 3 with one production backend.
-4. Update SDK/docs/templates only after the contract and real backend path are real.
-5. Replace the placeholder AI suite with a representative live suite.
+4. Update SDK/docs/templates only after the execution layer and real backend path are real.
+5. Replace the backend-pending AI suite with a representative live suite.
 6. Move to Scripture polish once AI is complete enough for Brainiac/Statboy.

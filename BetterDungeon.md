@@ -23,7 +23,7 @@ The major Ultrascripts capability stack is shipped:
 
 Current next step:
 
-- complete the AI module rebuild from a clean status-only placeholder
+- continue the AI module rebuild from the signed-off status/query contract
 - polish/complete Scripture
 - keep the Enhanced and Required templates aligned with BetterRepository
 - build Brainiac, Statboy, and Chronos V2 after module polish
@@ -37,7 +37,7 @@ Goal: rebuild the AI module from a clean, policy-safe design.
 Current state:
 
 - module id `ai` is preserved
-- only `ai.status` is exposed
+- `ai.status` and `ai.query` are exposed
 - generation backends are intentionally absent
 - previous provider, native-generation, and alias surfaces are not active
 

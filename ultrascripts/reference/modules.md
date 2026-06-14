@@ -33,10 +33,10 @@ heartbeat advertise?
 | `weather` | ops | `current`, `forecast` | `../../../BetterDungeon/modules/weather/` | `UltrascriptsWeatherGuide.vue` | `weather-module` |
 | `network` | ops | `status` | `../../../BetterDungeon/modules/network/` | `UltrascriptsNetworkGuide.vue` | `network-module` |
 | `system` | ops | `info`, `power` | `../../../BetterDungeon/modules/system/` | `UltrascriptsSystemGuide.vue` | `system-module` |
-| `ai` | ops | `status` | `../../../BetterDungeon/modules/ai/` | `UltrascriptsAiGuide.vue` | `ai-module` |
+| `ai` | ops | `status`, `query` | `../../../BetterDungeon/modules/ai/` | `UltrascriptsAiGuide.vue` | `ai-module` |
 
-The `ai` module is a status-only placeholder while its generation backend is
-rebuilt. It has no compatibility alias.
+The `ai` module has a stable asynchronous `status`/`query` contract while its
+generation backend is rebuilt. It has no compatibility alias.
 
 ## Current Responsibilities
 
@@ -50,7 +50,7 @@ rebuilt. It has no compatibility alias.
 | `weather` | Open-Meteo current conditions and forecasts from coordinates or place names |
 | `network` | Browser online status and quality hints |
 | `system` | Device, browser, screen, locale, hardware, preference, and power hints |
-| `ai` | Reports rebuild/unavailable status while the AI backend is redesigned |
+| `ai` | Reports backend readiness and accepts bounded async text/JSON query jobs; currently returns `not_configured` until a backend exists |
 
 Keep modules narrow. If a module starts becoming a mini-application, split the
 author-facing helper/script from the BetterDungeon-side capability.

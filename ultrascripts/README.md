@@ -13,8 +13,9 @@ These docs are split by how maintainers actually use them:
 
 ## Current Truth
 
-Ultrascripts core is effectively feature-complete. The AI module is currently a
-status-only placeholder while its generation backend is rebuilt.
+Ultrascripts core is effectively feature-complete. The AI module has its Phase 1
+`status`/`query` contract in place while its execution layer and generation
+backend are rebuilt.
 
 The active work is finish-line work:
 
@@ -76,10 +77,12 @@ Live regression source of truth:
 | `weather` | ops | `current`, `forecast` |
 | `network` | ops | `status` |
 | `system` | ops | `info`, `power` |
-| `ai` | ops | `status` |
+| `ai` | ops | `status`, `query` |
 
-The `ai` module is intentionally inert during rebuild. Public docs should teach
-only `ai.status` until a new generation contract exists.
+The `ai` module has a stable asynchronous query contract, but no provider
+backend is configured yet. Public docs should teach `ai.status`, `ai.query`,
+text output, JSON output, and the current `not_configured` backend-pending
+error.
 
 ## Doc Rules
 

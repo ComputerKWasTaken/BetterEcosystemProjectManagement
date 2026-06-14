@@ -175,7 +175,7 @@ Required capabilities:
 
 - heartbeat
 - `sdk.config`
-- rebuilt AI generation contract, once available
+- rebuilt AI query contract
 - Scripture if the script surfaces dashboard/status widgets
 
 Design contract:
@@ -183,7 +183,7 @@ Design contract:
 - derive from Auto Cards plus Inner Self style card-management patterns
 - remove the old standalone memory-system framing
 - use story/brain cards as the persistent author-facing substrate
-- use the rebuilt AI module only after its public contract exists
+- use the rebuilt AI module through the public `status`/`query` contract
 - never assume paid models or provider availability
 - validate AI JSON before writing cards
 - avoid same-turn AI assumptions
@@ -197,13 +197,13 @@ Required capabilities:
 
 - heartbeat
 - `sdk.config`
-- rebuilt AI generation contract, once available
+- rebuilt AI query contract
 - `scripture`
 
 Design contract:
 
 - authors define stat schemas
-- the rebuilt AI module proposes structured stat updates
+- the rebuilt AI module proposes structured stat updates through JSON queries
 - script code validates, clamps, and applies updates
 - Scripture renders the current state
 - invalid AI output must fail closed
@@ -245,6 +245,7 @@ Public docs should teach `ai`.
 Ops:
 
 - `status`
+- `query`
 
 Rebuild order:
 
@@ -262,26 +263,72 @@ Rebuild order:
    quota/error translation belong here rather than in the public script
    contract.
 
-`ai.status` reports the current rebuild state:
+`ai.status` reports readiness and the active output-mode support:
 
 ```json
 {
   "ready": false,
   "available": false,
-  "phase": "rebuild",
-  "reason": "ai_module_rebuild",
-  "message": "The AI module is being rebuilt and has no callable generation backend right now."
+  "phase": "contract",
+  "backend": null,
+  "supports": {
+    "text": false,
+    "json": false
+  },
+  "contract": {
+    "ops": ["status", "query"],
+    "outputTypes": ["text", "json"],
+    "asyncOnly": true
+  },
+  "reason": "ai_backend_not_configured",
+  "message": "The AI module contract is available, but no callable generation backend is configured right now."
 }
+```
+
+`ai.query` submits one bounded asynchronous query job:
+
+```json
+{
+  "prompt": "Classify whether the player is in combat. Return { \"inCombat\": boolean }.",
+  "output": {
+    "type": "json"
+  }
+}
+```
+
+Args:
+
+- `prompt`: required non-empty string. It contains the full request, including
+  instructions, context, examples, and any formatting guidance.
+- `output`: optional. Defaults to `{ "type": "text" }`.
+- `output.type`: `text` or `json`.
+- `output.schema`: reserved for JSON output validation once the execution layer
+  and backend support it.
+
+Success payloads:
+
+```json
+{ "text": "The player is not currently in combat." }
+```
+
+```json
+{ "json": { "inCombat": false } }
 ```
 
 Rules:
 
-- Heartbeat should list only `status` for `ai`.
-- Do not teach retired AI generation ops, provider aliases, provider settings,
-  model settings, or response-format settings.
-- Use `ai.status` only to explain that AI generation is unavailable during the
-  rebuild.
-- Update this contract before publishing Brainiac or Statboy AI examples.
+- Heartbeat should list `status` and `query` for `ai`.
+- `ai.query` is always asynchronous. Scripts must never assume same-turn
+  completion.
+- Query results return through `ultrascripts:in:ai` in the normal response
+  envelope.
+- Text queries return `data.text`.
+- JSON queries return `data.json`, and scripts must validate it before applying
+  it to state.
+- While no backend is configured, valid queries return an `err` response with
+  `error.code: "not_configured"`.
+- Do not teach retired provider aliases, model settings, response-format
+  settings, or provider-native payloads.
 
 ### Clock
 
@@ -745,7 +792,7 @@ Before publishing an example or showcase script, check:
 - Does it read heartbeat before assuming module availability?
 - Does it call `sdk.config` only where later-turn config is acceptable?
 - Does it handle missing/disabled/unconfigured modules?
-- Does it avoid AI generation assumptions until the rebuilt AI contract exists?
+- Does it avoid assuming an AI backend is configured before `ai.status` reports ready?
 - Does it avoid exposing secrets or encouraging credential workarounds?
 - Does it use live-count Scripture history?
 - Does it ack ops responses and Scripture widget events through the correct
