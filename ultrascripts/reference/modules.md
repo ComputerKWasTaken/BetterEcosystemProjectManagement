@@ -50,7 +50,7 @@ generation backend is rebuilt. It has no compatibility alias.
 | `weather` | Open-Meteo current conditions and forecasts from coordinates or place names |
 | `network` | Browser online status and quality hints |
 | `system` | Device, browser, screen, locale, hardware, preference, and power hints |
-| `ai` | Reports Gemini readiness and accepts bounded async text/schema-backed JSON query jobs with optional thinking levels; returns `not_configured` until the player saves an API key |
+| `ai` | Reports Gemini readiness and accepts bounded async text/schema-backed JSON query jobs with optional thinking levels and query metadata; returns `not_configured` until the player saves an API key |
 
 Keep modules narrow. If a module starts becoming a mini-application, split the
 author-facing helper/script from the BetterDungeon-side capability.

@@ -276,7 +276,7 @@ Ops:
     "asyncOnly": true
   },
   "executor": {
-    "version": "0.3.0-gemini-thinking",
+    "version": "0.4.0-gemini-meta",
     "promptMaxChars": 12000,
     "backendConfigured": true
   },
@@ -320,11 +320,51 @@ Args:
 Success payloads:
 
 ```json
-{ "text": "The player is not currently in combat." }
+{
+  "text": "The player is not currently in combat.",
+  "meta": {
+    "backend": "gemini",
+    "outputType": "text",
+    "model": "gemini-3.5-flash",
+    "promptChars": 44,
+    "generatedAtIso": "2026-06-15T20:00:00.000Z",
+    "thinking": {
+      "requestedLevel": "minimal",
+      "applied": true,
+      "family": "gemini-3",
+      "defaulted": true,
+      "appliedLevel": "minimal"
+    },
+    "fallback": {
+      "mode": "auto",
+      "attemptedModels": ["gemini-3.5-flash"]
+    }
+  }
+}
 ```
 
 ```json
-{ "json": { "inCombat": false } }
+{
+  "json": { "inCombat": false },
+  "meta": {
+    "backend": "gemini",
+    "outputType": "json",
+    "model": "gemini-3.5-flash",
+    "promptChars": 44,
+    "generatedAtIso": "2026-06-15T20:00:00.000Z",
+    "thinking": {
+      "requestedLevel": "low",
+      "applied": true,
+      "family": "gemini-3",
+      "defaulted": false,
+      "appliedLevel": "low"
+    },
+    "fallback": {
+      "mode": "auto",
+      "attemptedModels": ["gemini-3.5-flash"]
+    }
+  }
+}
 ```
 
 Rules:
@@ -337,11 +377,16 @@ Rules:
 - Text queries return `data.text`.
 - JSON queries return `data.json`, and scripts must validate it before applying
   it to state.
+- Successful queries return `data.meta` for diagnostics: backend id, output
+  type, model used, prompt size, generated timestamp, thinking metadata,
+  fallback attempts, and provider usage when available.
+- Scripts should not require a specific provider model for gameplay logic.
 - Thinking defaults to minimal latency. Use higher levels only for tasks where
   the extra reasoning time is worth it.
 - While no Gemini API key is configured, valid queries return an `err` response
   with `error.code: "not_configured"`.
 - JSON queries without a schema return `error.code: "invalid_args"`.
+- Invalid thinking levels return `error.code: "invalid_args"`.
 - Do not teach retired provider aliases, script-facing model settings,
   response-format settings, or provider-native payloads.
 
