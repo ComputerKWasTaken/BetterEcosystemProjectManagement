@@ -258,20 +258,25 @@ Ops:
   "backendLabel": "Gemini",
   "supports": {
     "text": true,
-    "json": true
+    "json": true,
+    "thinking": true
   },
   "config": {
     "provider": "gemini",
     "keyConfigured": false,
-    "model": "gemini-3.5-flash"
+    "model": "gemini-3.5-flash",
+    "thinkingDefault": "minimal",
+    "thinkingLevels": ["minimal", "low", "medium", "high"]
   },
   "contract": {
     "ops": ["status", "query"],
     "outputTypes": ["text", "json"],
+    "thinkingLevels": ["minimal", "low", "medium", "high"],
+    "defaultThinking": "minimal",
     "asyncOnly": true
   },
   "executor": {
-    "version": "0.2.0-gemini",
+    "version": "0.3.0-gemini-thinking",
     "promptMaxChars": 12000,
     "backendConfigured": true
   },
@@ -285,6 +290,7 @@ Ops:
 ```json
 {
   "prompt": "Classify whether the player is in combat.",
+  "thinking": "low",
   "output": {
     "type": "json",
     "schema": {
@@ -306,6 +312,10 @@ Args:
 - `output`: optional. Defaults to `{ "type": "text" }`.
 - `output.type`: `text` or `json`.
 - `output.schema`: required when `output.type` is `json`.
+- `thinking`: optional string or object. Defaults to `"minimal"`. Supported
+  levels are `"minimal"`, `"low"`, `"medium"`, and `"high"`.
+  Gemma 4 models expose thinking as an on/off toggle through the Gemini API, so
+  any non-minimal level maps to provider `thinkingLevel: "high"` on Gemma.
 
 Success payloads:
 
@@ -327,6 +337,8 @@ Rules:
 - Text queries return `data.text`.
 - JSON queries return `data.json`, and scripts must validate it before applying
   it to state.
+- Thinking defaults to minimal latency. Use higher levels only for tasks where
+  the extra reasoning time is worth it.
 - While no Gemini API key is configured, valid queries return an `err` response
   with `error.code: "not_configured"`.
 - JSON queries without a schema return `error.code: "invalid_args"`.

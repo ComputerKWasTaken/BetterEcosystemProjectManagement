@@ -115,7 +115,7 @@ Current capabilities:
 | `weather` | shipped | Ready for Chronos V2 weather sync after field-shape check |
 | `network` | shipped | Best used for fallback hints, not hard gating |
 | `system` | shipped | Best used for layout/device hints, not brittle UA branches |
-| `ai` | Gemini backend in implementation | Exposes `status` and async `query`; supports text and schema-backed JSON through Gemini |
+| `ai` | Gemini backend in implementation | Exposes `status` and async `query`; supports text, schema-backed JSON, and per-query thinking levels through Gemini |
 
 ## Documentation Status
 
@@ -180,7 +180,7 @@ Exit condition:
 - `ai` has a documented, provider-agnostic public contract that is stable
   enough for templates, BetterRepository guides, and future showcase scripts to
   target. Current contract: `status` plus async `query` with `text` and `json`
-  output modes.
+  output modes, plus optional per-query `thinking` levels.
 
 #### Phase 2: Execution Layer
 
@@ -202,8 +202,9 @@ Exit condition:
 - the module has a clean internal path from public `ai` requests to a backend
   adapter boundary, without provider-specific behavior leaking into the public
   contract. Current implementation: `modules/ai/executor.js` validates queries,
-  builds normalized tasks, requires schemas for JSON output, normalizes
-  text/JSON backend responses, and attaches the Gemini adapter at runtime.
+  builds normalized tasks, defaults thinking to `minimal`, requires schemas for
+  JSON output, normalizes text/JSON backend responses, and attaches the Gemini
+  adapter at runtime.
 
 #### Phase 3: Backend
 
@@ -313,6 +314,6 @@ Good ideas, not required for V2:
 
 Start with AI:
 
-1. Finish Phase 3 Gemini verification, including text, schema-backed JSON, missing-key, and reload safety paths.
+1. Finish Phase 3 Gemini verification, including text, schema-backed JSON, thinking levels, missing-key, and reload safety paths.
 2. Keep docs/tests aligned with the Gemini-backed status/query contract.
 3. Move to Scripture polish once AI is complete enough for Brainiac/Statboy.
