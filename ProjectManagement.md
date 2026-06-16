@@ -16,6 +16,7 @@ The current workstream is finish-line work:
 
 - polish shipped modules where it improves real scripts
 - finish the Scripture-led module quality pass
+- make Scripture feel good on mobile and narrow layouts
 - build Brainiac, Statboy, and Chronos V2
 - use those showcase scripts to drive BetterDungeon V2 and BetterRepository V2
   launch prep

@@ -4,7 +4,7 @@
 
 ## Current Focus
 
-BetterDungeon V2 is in final Ultrascripts rebuild and release prep.
+BetterDungeon V2 is in final Ultrascripts polish and release prep.
 
 The major Ultrascripts capability stack is shipped:
 
@@ -16,7 +16,7 @@ The major Ultrascripts capability stack is shipped:
 - state-card dispatch
 - module registry and lifecycle
 - popup integration and module settings
-- Scripture, WebFetch, Clock, SDK, Geolocation, Weather, Network, and System
+- Scripture, WebFetch, Clock, SDK, Geolocation, Weather, Network, System, and AI
 - per-module AI Dungeon regression suites
 - Enhanced and Required starter templates
 - Chromium, Gecko/Firefox, and Android WebView support
@@ -64,7 +64,7 @@ Current priority:
 - Scripture widget/layout/helper polish
 - Scripture behavior verification
 - Scripture mobile and narrow-layout readiness
-- SDK readiness for Brainiac and Statboy after the new AI contract exists
+- SDK readiness for Brainiac and Statboy once Scripture is settled
 - Clock/Weather/Geolocation readiness for Chronos V2
 
 Tracking doc:

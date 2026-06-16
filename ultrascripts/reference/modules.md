@@ -35,8 +35,8 @@ heartbeat advertise?
 | `system` | ops | `info`, `power` | `../../../BetterDungeon/modules/system/` | `UltrascriptsSystemGuide.vue` | `system-module` |
 | `ai` | ops | `status`, `query` | `../../../BetterDungeon/modules/ai/` | `UltrascriptsAiGuide.vue` | `ai-module` |
 
-The `ai` module has a stable asynchronous `status`/`query` contract while its
-generation backend is rebuilt. It has no compatibility alias.
+The `ai` module has a stable asynchronous `status`/`query` contract. It has no
+compatibility alias.
 
 ## Current Responsibilities
 
@@ -50,7 +50,7 @@ generation backend is rebuilt. It has no compatibility alias.
 | `weather` | Open-Meteo current conditions and forecasts from coordinates or place names |
 | `network` | Browser online status and quality hints |
 | `system` | Device, browser, screen, locale, hardware, preference, and power hints |
-| `ai` | Reports Gemini readiness and accepts bounded async text/schema-backed JSON query jobs with optional thinking levels and query metadata; returns `not_configured` until the player saves an API key |
+| `ai` | Reports readiness and accepts bounded async text/schema-backed JSON query jobs with optional thinking levels and query metadata; returns `not_configured` until the player saves an API key |
 
 Keep modules narrow. If a module starts becoming a mini-application, split the
 author-facing helper/script from the BetterDungeon-side capability.

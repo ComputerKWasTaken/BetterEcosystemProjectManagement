@@ -2,8 +2,8 @@
 
 ## Status Snapshot
 
-Ultrascripts is in final polish, with the AI module reopened as the active
-rebuild workstream. Treat the core runtime as shipped infrastructure.
+Ultrascripts is in final polish. Treat the runtime and shipped module set as
+real infrastructure, not as an active construction project.
 
 Done:
 
@@ -14,215 +14,44 @@ Done:
 - request/response ops
 - module registry
 - popup integration
-- 8 complete first-party modules plus the Gemini-backed `ai` status/query contract
+- 9 shipped first-party modules
 - 9 dedicated module regression suites
 - Enhanced and Required starter templates
 - BetterRepository public Ultrascripts guide set
 - Chromium, Gecko/Firefox, and Android WebView support
+- completed AI module with stable `status`/`query` contract
 
 Not done:
 
-- complete Gemini AI live verification and polish
-- final module quality pass, led by Scripture after AI
+- Scripture polish and cleanup
+- Scripture mobile and narrow-layout readiness
 - three production showcase scripts
 - BetterDungeon V2 release prep
 - BetterRepository V2 release prep
-- any final PC/mobile sync needed after showcase-script fallout
-
-## Shipped Runtime Capabilities
-
-### Transport
-
-Shipped files:
-
-- `../../../BetterDungeon/services/ultrascripts/ws-interceptor.js`
-- `../../../BetterDungeon/services/ultrascripts/ws-stream.js`
-
-Current capabilities:
-
-- observes AI Dungeon WebSocket/fetch/XHR traffic
-- captures Story Cards and action updates
-- detects adventure boundaries
-- derives tail and live count
-- captures `baseCredentials` for authenticated writeback
-
-### Write Path
-
-Shipped files:
-
-- `../../../BetterDungeon/services/ultrascripts/write-queue.js`
-- `../../../BetterDungeon/services/ai-dungeon-service.js`
-
-Current capabilities:
-
-- direct `SaveQueueStoryCard` GraphQL writes
-- captured session credentials
-- per-card write serialization
-- coalescing and retry behavior
-- optimistic local updates
-- turn-0 heartbeat write once cards and credentials are ready
-
-### Core Runtime
-
-Shipped files:
-
-- `../../../BetterDungeon/services/ultrascripts/core.js`
-- `../../../BetterDungeon/services/ultrascripts/module-registry.js`
-- `../../../BetterDungeon/services/ultrascripts/ops-dispatcher.js`
-- `../../../BetterDungeon/services/ultrascripts/envelope.js`
-
-Current capabilities:
-
-- shared module context
-- state cache and state dispatch
-- live-count-aware re-dispatch
-- heartbeat writing
-- mounted-module discovery
-- request validation/routing
-- pending/ok/error/timeout responses
-- acknowledgements and stale response pruning
-- module enabled-state persistence
-
-### BetterDungeon Integration
-
-Shipped files:
-
-- `../../../BetterDungeon/features/ultrascripts_feature.js`
-- `../../../BetterDungeon/popup.js`
-- `../../../BetterDungeon/background.js`
-- `../../../BetterDungeon/manifest.json`
-
-Current capabilities:
-
-- master Ultrascripts toggle
-- per-module toggles
-- debug toggle
-- Scripture display preferences
-- WebFetch consent management
-- AI Gemini settings and status/query contract toggle
-- SDK background config snapshots
-- extension load integration for all first-party modules
-
-## Shipped Modules
-
-| Module | Status | Notes |
-|---|---|---|
-| `scripture` | shipped, active polish focus | Needs final UI/helper review before showcase scripts |
-| `webfetch` | shipped | Review consent/error ergonomics if showcase scripts need it |
-| `clock` | shipped | Ready for Chronos V2 time helpers |
-| `sdk` | shipped | Keep heartbeat/SDK separation crisp |
-| `geolocation` | shipped | Review with Weather if Chronos V2 uses location |
-| `weather` | shipped | Ready for Chronos V2 weather sync after field-shape check |
-| `network` | shipped | Best used for fallback hints, not hard gating |
-| `system` | shipped | Best used for layout/device hints, not brittle UA branches |
-| `ai` | Gemini backend in implementation | Exposes `status` and async `query`; supports text, schema-backed JSON, and per-query thinking levels through Gemini |
-
-## Documentation Status
-
-Private docs:
-
-- This folder is the canonical private Ultrascripts planning set.
-- The active files now describe current implementation, not construction-era
-  debates.
-- Archive files are historical and should not steer new work.
-
-Public docs:
-
-- BetterRepository contains public Ultrascripts guides for overview, Quick
-  Start, Cookbook, Architecture, Building Modules, and all 9 shipped modules.
-- The public docs should remain scenario-author oriented.
-- Detailed implementation decisions belong here unless public authors need them.
-
-Template docs:
-
-- Enhanced and Required templates exist in both BetterDungeon examples and
-  BetterRepository raw-script data.
-- Template/helper changes must be synced in both places.
+- final PC/mobile sync after module and showcase fallout
 
 ## Active Workstream
 
-### 1. Module Quality Pass
+### 1. Scripture Polish
 
-Goal: make each shipped module feel clean in real scripts, not merely prove that
-it works.
+Goal: make Scripture feel clean, light, and dependable in real scripts.
 
-Current priority:
+Current priorities:
 
-- finish the AI module rebuild first
-- then finish Scripture
-- only pull other module work forward when it improves Brainiac, Statboy, or
-  Chronos V2
-- avoid reopening architecture unless a concrete showcase requirement exposes a
-  real gap
+- reduce renderer/helper bloat
+- verify interaction and event-ack behavior
+- review defaults across widget sizes, max-height modes, and layout modes
+- improve mobile and narrow-layout behavior
+- keep the public guide, examples, and regression suite aligned with live behavior
+
+Success looks like:
+
+- Scripture feels comfortable to ship in Brainiac, Statboy, and Chronos V2
+- the regression suite still reflects real author usage
+- helper examples match the live interaction contract
+- mobile and desktop behavior both feel intentional
 
 Tracked in [Module Quality Pass](./module-quality-pass.md).
-
-### 1A. AI Rebuild Phases
-
-The AI module rebuild is intentionally split into three clean phases so we do
-not bind the public design to one temporary backend choice.
-
-#### Phase 1: Contract
-
-Define the public AI module contract first.
-
-This phase covers:
-
-- canonical module surface
-- public ops and their argument shapes
-- response envelopes and terminal statuses
-- readiness, availability, and error semantics
-- timeout/cancellation expectations
-- script-author guarantees and non-guarantees
-
-Exit condition:
-
-- `ai` has a documented, provider-agnostic public contract that is stable
-  enough for templates, BetterRepository guides, and future showcase scripts to
-  target. Current contract: `status` plus async `query` with `text` and `json`
-  output modes, plus optional per-query `thinking` levels.
-
-#### Phase 2: Execution Layer
-
-Build the internal execution layer that translates module requests into clean,
-consistent AI tasks.
-
-This phase covers:
-
-- request normalization
-- prompt/query construction
-- structured-output handling strategy
-- validation and guardrails
-- logging/debug surfaces
-- queueing/concurrency rules if needed
-- a backend-agnostic internal executor interface
-
-Exit condition:
-
-- the module has a clean internal path from public `ai` requests to a backend
-  adapter boundary, without provider-specific behavior leaking into the public
-  contract. Current implementation: `modules/ai/executor.js` validates queries,
-  builds normalized tasks, defaults thinking to `minimal`, requires schemas for
-  JSON output, normalizes text/JSON backend responses, and attaches the Gemini
-  adapter at runtime.
-
-#### Phase 3: Backend
-
-Connect the execution layer to an actual AI provider/runtime.
-
-This phase covers:
-
-- Gemini provider integration through stable `generateContent`
-- local API-key and model settings storage
-- background-worker transport implementation
-- provider-specific payload mapping for text and structured JSON
-- quota/rate-limit/error translation
-- live verification against real responses
-
-Exit condition:
-
-- at least one production backend satisfies the contract, passes verification,
-  and can be documented without caveats that undermine the public API.
 
 ### 2. Template Alignment
 
@@ -239,24 +68,55 @@ Watch:
 
 ### 3. Showcase Scripts
 
-After module polish, build:
+After Scripture polish, build:
 
 1. **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
-   management through the Gemini-backed AI module. Remove the old
-   memory-system framing and use the rebuilt `ai` module plus well-structured
-   cards.
+   management through the shipped AI module.
 2. **Statboy** - Requires Ultrascripts. Schema-based stat management where
-   authors define stats, the rebuilt AI module proposes structured updates,
-   script logic validates/clamps them, and Scripture renders current state.
+   authors define stats, AI proposes structured updates, script logic
+   validates/clamps them, and Scripture renders current state.
 3. **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps a
    vanilla timekeeping path but adds BetterDungeon-powered time/weather sync and
    widgets when Ultrascripts is available.
 
+## Shipped Modules
+
+| Module | Status | Notes |
+|---|---|---|
+| `scripture` | shipped, active polish focus | Player-visible module; current highest priority |
+| `webfetch` | shipped | Review consent/error ergonomics if a showcase script needs it |
+| `clock` | shipped | Ready for Chronos V2 time helpers |
+| `sdk` | shipped | Keep heartbeat/SDK separation crisp |
+| `geolocation` | shipped | Review with Weather if Chronos V2 uses location |
+| `weather` | shipped | Ready for Chronos V2 weather sync after field-shape check |
+| `network` | shipped | Best used for fallback hints, not hard gating |
+| `system` | shipped | Best used for layout/device hints, not brittle UA branches |
+| `ai` | shipped | Stable async `status`/`query` contract with text, JSON, thinking levels, and backend setup gating |
+
+## BetterDungeon Integration
+
+Shipped files:
+
+- `../../../BetterDungeon/features/ultrascripts_feature.js`
+- `../../../BetterDungeon/popup.js`
+- `../../../BetterDungeon/background.js`
+- `../../../BetterDungeon/manifest.json`
+
+Current capabilities:
+
+- master Ultrascripts toggle
+- per-module toggles
+- debug toggle
+- Scripture display preferences
+- WebFetch consent management
+- AI setup and status/query configuration
+- SDK background config snapshots
+- extension load integration for all first-party modules
+
 ## Release Path
 
 ```text
-AI module rebuild
--> Scripture polish
+Scripture polish
 -> Brainiac, Statboy, and Chronos V2
 -> PC/mobile Ultrascripts resync
 -> Chrome Web Store marketing refresh
@@ -287,6 +147,7 @@ These are no longer active implementation questions:
 - Lite/full profiles are retired.
 - `ai` is the canonical module id.
 - AI Dungeon scripts must expect module responses on later turns.
+- The AI module is complete enough for V2 and is not the active rebuild track.
 
 ## Intentional Future Work
 
@@ -295,7 +156,7 @@ Good ideas, not required for V2:
 - third-party module registry UI
 - sandboxed user-authored modules
 - richer runtime inspector/debugger
-- deeper AI provider/backend expansion after the rebuild
+- deeper AI provider/backend expansion
 - full migration of every older BetterDungeon Story Card consumer
 - TypeScript/NPM/bundler migration
 
@@ -304,16 +165,19 @@ Good ideas, not required for V2:
 - Public examples can drift from the helper/template contract.
 - Showcase scripts may expose awkward module result fields or error codes.
 - Scripture mobile/narrow rendering can make otherwise-good scripts feel rough.
-- AI generation depends on player Gemini API-key setup and should fail closed
-  with actionable `not_configured` errors.
+- AI queries depend on player API-key setup and should fail closed with
+  actionable `not_configured` errors.
 - WebFetch examples must respect consent, blocked targets, and late responses.
 - Mobile/PC parity should be checked after final module/template changes, not
   assumed from old smoke tests.
 
 ## Practical Next Action
 
-Start with AI:
+Start with Scripture:
 
-1. Finish Phase 3 Gemini verification, including text, schema-backed JSON, thinking levels, missing-key, and reload safety paths.
-2. Keep docs/tests aligned with the Gemini-backed status/query contract.
-3. Move to Scripture polish once AI is complete enough for Brainiac/Statboy.
+1. Reduce bloat in the renderer, helpers, and state-flow where it improves real
+   author usage.
+2. Verify widget rendering, interactions, event pruning, and `ackSeq` behavior
+   against the live suite and public examples.
+3. Do a dedicated mobile and narrow-layout pass before moving on to showcase
+   scripts.

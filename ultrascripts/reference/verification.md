@@ -22,7 +22,7 @@ the verification surfaces that currently exist and when to use each one.
 | Module | Suite | Files | Main coverage |
 |---|---|---|---|
 | `scripture` | `scripture-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md`, `ROADMAP.md` | Widgets, interactions, manifest validation, custom widgets, transitions |
-| `ai` | `ai-module` | `library.js`, `output-modifier.js`, `README.md` | Gemini status/query contract, query metadata, text output, schema-backed JSON output, thinking levels, missing-key errors |
+| `ai` | `ai-module` | `library.js`, `output-modifier.js`, `README.md` | Async status/query contract, query metadata, text output, schema-backed JSON output, thinking levels, missing-key errors |
 | `sdk` | `sdk-module` | `library.js`, `output-modifier.js`, `README.md` | heartbeat discovery, `version`, `config`, response acks, trace card |
 | `clock` | `clock-module` | `library.js`, `output-modifier.js`, `README.md` | `now`, `tz`, `format`, timezone variants, invalid requests |
 | `system` | `system-module` | `library.js`, `output-modifier.js`, `README.md` | `info`, `power`, browser/device/screen/locale/battery shape |
@@ -50,6 +50,7 @@ Special attention:
 
 - live-count history lookup
 - mobile/narrow rendering
+- renderer/helper bloat
 - interactive widgets
 - `ultrascripts:in:scripture.widgetEvents`
 - script-side `interactions.ackSeq`
@@ -60,13 +61,13 @@ Use when changing:
 
 - `../../../BetterDungeon/modules/ai/module.js`
 - AI status/query contract shape
-- public AI Gemini setup and query examples
+- public AI setup and query examples
 
 Special attention:
 
 - heartbeat advertises `ai.status` and `ai.query`
-- `ai.status` reports Gemini readiness, selected model, and key-configured state
-- text, schema-backed JSON, query metadata, and thinking-level queries return live results when Gemini is configured
+- `ai.status` reports readiness, selected model, and key-configured state
+- text, schema-backed JSON, query metadata, and thinking-level queries return live results when the backend is configured
 - missing-key text and JSON queries return terminal `not_configured` errors
 - schema-less JSON queries return terminal `invalid_args`
 - invalid thinking levels return terminal `invalid_args`
@@ -212,7 +213,7 @@ Keep these as context, not as a substitute for rechecking changed surfaces.
 | Weather | 2026-04-23 | Live suite passed |
 | Network | 2026-04-24 | Live suite passed |
 | System | 2026-04-24 | Live suite passed |
-| AI module / Provider AI alias | 2026-04-26 | Live suite passed |
+| AI module / legacy provider alias removal | 2026-04-26 | Live suite passed |
 
 ## Documentation Verification
 

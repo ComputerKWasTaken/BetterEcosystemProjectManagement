@@ -183,7 +183,7 @@ Design contract:
 - derive from Auto Cards plus Inner Self style card-management patterns
 - remove the old standalone memory-system framing
 - use story/brain cards as the persistent author-facing substrate
-- use the rebuilt AI module through the public `status`/`query` contract
+- use the AI module through the public `status`/`query` contract
 - never assume paid models or provider availability
 - validate AI JSON before writing cards
 - avoid same-turn AI assumptions
@@ -203,7 +203,7 @@ Required capabilities:
 Design contract:
 
 - authors define stat schemas
-- the rebuilt AI module proposes structured stat updates through JSON queries
+- the AI module proposes structured stat updates through JSON queries
 - script code validates, clamps, and applies updates
 - Scripture renders the current state
 - invalid AI output must fail closed
