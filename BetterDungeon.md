@@ -16,17 +16,21 @@ The major Ultrascripts capability stack is shipped:
 - state-card dispatch
 - module registry and lifecycle
 - popup integration and module settings
-- Scripture, WebFetch, Clock, SDK, Geolocation, Weather, Network, System, and AI
+- Widget, WebFetch, Clock, SDK, Geolocation, Weather, Network, System, and AI
 - per-module AI Dungeon regression suites
 - Enhanced and Required starter templates
 - Chromium, Gecko/Firefox, and Android WebView support
 
 Current next step:
 
-- clean up and verify Scripture
-- make sure Scripture is solid on mobile and narrow layouts
+- polish and complete Widget
+- resync mobile with PC Ultrascripts behavior
+- polish the mobile build for release
+- refresh BetterRepository's Ultrascripts guides and V1.7 release wording
 - keep the Enhanced and Required templates aligned with BetterRepository
 - build Brainiac, Statboy, and Chronos V2 after module polish
+- upload the Firefox Add-ons version
+- start Reddit teasers, final bugfixes, and launch polish
 
 ## Active Work
 
@@ -61,10 +65,12 @@ Goal: make shipped modules feel good in real scripts, not merely test-passing.
 
 Current priority:
 
-- Scripture widget/layout/helper polish
-- Scripture behavior verification
-- Scripture mobile and narrow-layout readiness
-- SDK readiness for Brainiac and Statboy once Scripture is settled
+- Widget layout/helper polish
+- Widget behavior verification
+- Widget mobile and narrow-layout readiness
+- PC/mobile Ultrascripts parity
+- mobile build release polish
+- SDK readiness for Brainiac and Statboy once Widget is settled
 - Clock/Weather/Geolocation readiness for Chronos V2
 
 Tracking doc:
@@ -78,19 +84,21 @@ Planned after module polish:
 - **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
   management using the AI module.
 - **Statboy** - Requires Ultrascripts. Schema-based stat management with AI
-  update proposals, validation, and Scripture widgets.
+  update proposals, validation, and Widget dashboards.
 - **Chronos V2** - Enhanced with Ultrascripts. Vanilla-safe timekeeping with
   optional real time/weather sync and widgets.
 
 ## V2 Release Sequence
 
-1. Polish/complete Scripture.
-2. Build Brainiac, Statboy, and Chronos V2.
-3. Resync mobile with PC Ultrascripts behavior.
-4. Rework Chrome Web Store marketing.
-5. Publish the Firefox Add-ons version.
-6. Drop Reddit teasers, then finish last-minute bugfixes and polish.
-7. Release BetterDungeon V2.
+1. Polish/complete Widget.
+2. Resync mobile with PC Ultrascripts behavior.
+3. Polish the mobile build for release.
+4. Refresh and verify BetterRepository's Ultrascripts guides.
+5. Update BetterRepository V1.7 What's New and release wording.
+6. Build Brainiac, Statboy, and Chronos V2.
+7. Upload the Firefox Add-ons version of BetterDungeon.
+8. Begin Reddit teasers, final bugfixes, and polish.
+9. Release BetterDungeon V2 and BetterRepository V1.7.
 
 ## Later
 
@@ -104,7 +112,7 @@ Planned after module polish:
   BetterDungeon examples and BetterRepository raw-script copies.
 - AI module flows depend on user-provided API keys and should stay policy-safe,
   bounded, opt-in, and clearly documented.
-- Scripture polish matters disproportionately because it is the player-visible
+- Widget polish matters disproportionately because it is the player-visible
   face of Ultrascripts.
 
 ## Canonical Docs

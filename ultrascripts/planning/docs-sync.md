@@ -138,6 +138,8 @@ When roadmap/status changes:
    polish status changed.
 3. Update `../../ProjectManagement.md`, `../../BetterDungeon.md`, or
    `../../BetterRepository.md` only if project-level focus changed.
+4. If the change affects public release messaging, update BetterRepository's
+   V1.7 What's New copy and release wording.
 
 ## Example Quality Rules
 
@@ -164,6 +166,8 @@ Immediate focus:
 
 - Widget module pass
 - helper alignment for Widget interactions and widget state
+- PC/mobile Ultrascripts parity and mobile release polish claims
+- BetterRepository V1.7 What's New and release wording
 - any AI/SDK guidance needed for Brainiac and Statboy
 - any Clock/Weather/Geolocation guidance needed for Chronos V2
 - keeping Enhanced and Required templates identical across BetterDungeon and
@@ -180,6 +184,18 @@ When Brainiac, Statboy, and Chronos V2 are built:
    if a showcase reveals a better canonical example.
 5. Update project-level docs to move from "showcase scripts next" to release
    prep.
+
+## BetterRepository V1.7 Messaging Checklist
+
+Before calling V1.7 copy final:
+
+- Home page What's New uses the current V1.7 release label.
+- Copy mentions the design refresh and navigation/search polish.
+- Copy mentions Story Card command presets.
+- Copy mentions refreshed Ultrascripts guides/templates for BetterDungeon V2.
+- Copy does not claim Brainiac, Statboy, or Chronos V2 are shipped until their
+  public script entries exist.
+- Public guides avoid pre-rename module names and retired Widget display knobs.
 
 ## Verification Before Calling Docs Synced
 

@@ -4,8 +4,8 @@
 
 ## Current State
 
-The active product track is BetterDungeon V2 plus BetterRepository V2, centered
-on Ultrascripts.
+The active product track is BetterDungeon V2 plus BetterRepository V1.7,
+centered on Ultrascripts.
 
 Ultrascripts is effectively feature-complete: the runtime, 9 first-party
 modules, per-module regression suites, Enhanced/Required templates,
@@ -14,12 +14,16 @@ guides are in place.
 
 The current workstream is finish-line work:
 
-- polish shipped modules where it improves real scripts
-- finish the Scripture-led module quality pass
-- make Scripture feel good on mobile and narrow layouts
-- build Brainiac, Statboy, and Chronos V2
-- use those showcase scripts to drive BetterDungeon V2 and BetterRepository V2
-  launch prep
+- polish and complete Widget, the player-visible Ultrascripts module
+- resync mobile with PC Ultrascripts behavior
+- polish the mobile build for release
+- refresh BetterRepository's Ultrascripts guides so the public docs fully match
+  the live Widget/SDK/template contract
+- update BetterRepository V1.7 release wording and What's New messaging
+- build Brainiac, Statboy, and Chronos V2 as showcase scripts
+- publish the Firefox Add-ons version of BetterDungeon
+- start Reddit teasers, then finish final bugfixes and polish
+- release BetterDungeon V2 and BetterRepository V1.7 together
 
 ## Projects
 
@@ -38,13 +42,15 @@ The current workstream is finish-line work:
 
 ## Next Milestones
 
-1. Finish the Ultrascripts module quality pass.
-2. Build Brainiac.
-3. Build Statboy.
-4. Build Chronos V2.
-5. Plan BetterDungeon V2 release.
-6. Plan BetterRepository V2 release.
-7. Do final PC/mobile sync and launch prep.
+1. Polish/complete Widget.
+2. Resync mobile with PC Ultrascripts behavior.
+3. Polish the mobile build for release.
+4. Refresh and verify the BetterRepository Ultrascripts guides.
+5. Update BetterRepository V1.7 What's New and release wording.
+6. Build Brainiac, Statboy, and Chronos V2.
+7. Upload the Firefox Add-ons version of BetterDungeon.
+8. Begin Reddit teasers, final bugfixes, and polish.
+9. Release BetterDungeon V2 and BetterRepository V1.7.
 
 ## Cleanup Policy
 

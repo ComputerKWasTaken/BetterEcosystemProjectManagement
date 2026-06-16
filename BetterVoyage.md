@@ -17,5 +17,5 @@ Early Access and its product surface is stable enough to justify extension work.
 
 ## Current Priority
 
-None. BetterDungeon V2, BetterRepository V2, and Ultrascripts showcase/release
+None. BetterDungeon V2, BetterRepository V1.7, and Ultrascripts showcase/release
 prep remain the active work.

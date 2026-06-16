@@ -19,13 +19,18 @@ production backend path in place.
 
 The active work is finish-line work:
 
-- clean up and verify Widget
-- make sure Widget feels good on mobile and narrow layouts
-- improve shipped modules where that makes real scripts better
+- polish and complete Widget
+- resync mobile with PC Ultrascripts behavior
+- polish the mobile build for release
+- refresh BetterRepository's Ultrascripts guides so public docs match the live
+  Widget/SDK/template contract
+- update BetterRepository V1.7 What's New and release wording
 - keep the Enhanced and Required starter templates aligned with the live SDK
   helper contract
 - build the three showcase scripts: Brainiac, Statboy, and Chronos V2
-- use those results to finish BetterDungeon V2 and BetterRepository V2 launch
+- upload the Firefox Add-ons version of BetterDungeon
+- begin Reddit teasers, final bugfixes, and polish
+- use those results to finish BetterDungeon V2 and BetterRepository V1.7 launch
   preparation
 
 ## Start Here
@@ -92,6 +97,7 @@ an API key for the current backend setup.
   phase notes.
 - Keep `reference/` stable unless an implementation contract changes.
 - Keep `planning/` pointed at the current workstream.
+- Treat BetterDungeon V2 and BetterRepository V1.7 as the paired release train.
 - Do not revive retired concepts such as Lite/full profiles, mutation-template
   priming, invisible-text transport, or action-id-keyed Widget history.
 - If an active doc starts explaining old planning debates at length, summarize

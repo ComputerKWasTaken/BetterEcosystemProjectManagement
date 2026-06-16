@@ -25,10 +25,13 @@ Not done:
 
 - Widget polish and cleanup
 - Widget mobile and narrow-layout readiness
+- PC/mobile Ultrascripts behavior resync
+- mobile build release polish
+- BetterRepository V1.7 Ultrascripts guide refresh
+- BetterRepository V1.7 What's New and release wording refresh
 - three production showcase scripts
 - BetterDungeon V2 release prep
-- BetterRepository V2 release prep
-- final PC/mobile sync after module and showcase fallout
+- BetterRepository V1.7 release prep
 
 ## Active Workstream
 
@@ -42,6 +45,8 @@ Current priorities:
 - verify interaction and event-ack behavior
 - improve automatic mobile and narrow-layout behavior
 - keep the public guide, examples, and regression suite aligned with live behavior
+- confirm the module behaves consistently on PC and mobile once mobile is
+  resynced with the PC runtime
 
 Success looks like:
 
@@ -49,6 +54,8 @@ Success looks like:
 - the regression suite still reflects real author usage
 - helper examples match the live interaction contract
 - mobile and desktop behavior both feel intentional
+- BetterRepository public docs teach Widget without stale display knobs or old
+  module naming
 
 Tracked in [Module Quality Pass](./module-quality-pass.md).
 
@@ -77,6 +84,20 @@ After Widget polish, build:
 3. **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps a
    vanilla timekeeping path but adds BetterDungeon-powered time/weather sync and
    widgets when Ultrascripts is available.
+
+### 4. BetterRepository V1.7 Sync
+
+Before release, BetterRepository needs one focused pass:
+
+- refresh Ultrascripts guides for Widget, SDK, templates, mobile expectations,
+  and showcase-script examples
+- keep `docs/guides/info-dumps/ultrascripts.md` aligned with the public Vue
+  guide pages
+- update the home-page What's New section for V1.7
+- mention the design refresh, Story Card command presets, Ultrascripts guide
+  refresh, and BetterDungeon V2 support without overclaiming unfinished
+  showcase scripts
+- add Brainiac, Statboy, and Chronos V2 script entries after they exist
 
 ## Shipped Modules
 
@@ -115,12 +136,14 @@ Current capabilities:
 
 ```text
 Widget polish
--> Brainiac, Statboy, and Chronos V2
 -> PC/mobile Ultrascripts resync
--> Chrome Web Store marketing refresh
+-> mobile build release polish
+-> BetterRepository Ultrascripts guide refresh
+-> BetterRepository V1.7 What's New/release wording
+-> Brainiac, Statboy, and Chronos V2
 -> Firefox Add-ons publishing
 -> Reddit teasers, final bugfixes, and polish
--> BetterDungeon V2 release
+-> BetterDungeon V2 + BetterRepository V1.7 release
 ```
 
 Release prep should include:
@@ -130,6 +153,8 @@ Release prep should include:
 - BetterRepository script entries and guide links
 - extension-store copy/screenshots if needed
 - mobile/PC parity check for Ultrascripts runtime behavior
+- mobile APK release-readiness check
+- Firefox Add-ons package/listing upload
 - final regression pass on changed modules and templates
 
 ## Settled Decisions
@@ -146,6 +171,7 @@ These are no longer active implementation questions:
 - `ai` is the canonical module id.
 - AI Dungeon scripts must expect module responses on later turns.
 - The AI module is complete enough for V2 and is not the active rebuild track.
+- BetterRepository's paired launch target is V1.7, not V2.
 
 ## Intentional Future Work
 
@@ -168,6 +194,8 @@ Good ideas, not required for V2:
 - WebFetch examples must respect consent, blocked targets, and late responses.
 - Mobile/PC parity should be checked after final module/template changes, not
   assumed from old smoke tests.
+- BetterRepository V1.7 copy should not promise Brainiac, Statboy, or Chronos V2
+  until their entries are built.
 
 ## Practical Next Action
 
@@ -179,3 +207,5 @@ Start with Widget:
    against the live suite and public examples.
 3. Do a dedicated mobile and narrow-layout pass before moving on to showcase
    scripts.
+4. After Widget is settled, resync mobile with PC behavior and refresh the
+   BetterRepository guide/copy surfaces before building showcase scripts.

@@ -2,8 +2,9 @@
 
 ## Purpose
 
-This is the active finish-line pass before Brainiac, Statboy, and Chronos V2.
-The AI module is complete enough for V2. The active work is Widget.
+This is the active finish-line pass before mobile parity, BetterRepository V1.7
+docs polish, and the Brainiac/Statboy/Chronos V2 showcase scripts. The AI
+module is complete enough for V2. The active work is Widget.
 
 Ultrascripts already works. This pass is not a redesign. It is a usefulness
 review: make sure the shipped modules, examples, and docs feel good enough for
@@ -57,11 +58,14 @@ Widget exit:
 - helper examples match current interaction behavior
 - Widget regression suite remains representative
 - public Widget guide still matches the live widget contract
+- the mobile build can inherit the same behavior without special-case docs
 
 ### 2. Supporting Follow-Ons
 
-After Widget, review only the modules needed by the showcase scripts:
+After Widget, review only the areas needed for the launch path:
 
+- PC/mobile Ultrascripts parity and mobile build release polish
+- BetterRepository V1.7 Ultrascripts guide/copy refresh
 - `sdk` for gating, display hints, and template alignment
 - `clock`, `weather`, and `geolocation` for Chronos V2
 - `ai` only for maintenance if docs/examples drift from the shipped contract
@@ -88,6 +92,18 @@ For any touched module:
 | Statboy | AI, Widget, SDK |
 | Chronos V2 | Widget, Clock, Weather, Geolocation, SDK as needed |
 
+## Release-Path Order
+
+1. Polish/complete Widget.
+2. Resync mobile with PC Ultrascripts behavior.
+3. Polish the mobile build for release.
+4. Refresh BetterRepository Ultrascripts guides.
+5. Update BetterRepository V1.7 What's New and release wording.
+6. Build Brainiac, Statboy, and Chronos V2.
+7. Upload Firefox Add-ons version.
+8. Begin Reddit teasers, final bugfixes, and polish.
+9. Release BetterDungeon V2 and BetterRepository V1.7.
+
 ## Output Format For Each Review
 
 Record the result as one of:
@@ -112,10 +128,13 @@ This pass is done when:
 
 - Widget is polished enough for public showcase widgets
 - Widget mobile and narrow-layout behavior feels solid
+- PC/mobile Ultrascripts behavior is resynced
+- the mobile build has had a release-readiness polish pass
 - any touched module suite still reflects real author usage
 - Enhanced and Required templates remain aligned
 - public BetterRepository guides still match changed contracts
-- the next task can cleanly move to Brainiac, Statboy, and Chronos V2
+- BetterRepository V1.7 release wording reflects the current public feature set
+- the next task can cleanly move through the showcase scripts and release prep
 
 ## Do Not Let This Pass Expand Into
 

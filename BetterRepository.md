@@ -5,9 +5,10 @@
 ## Current Focus
 
 BetterRepository already has the public Ultrascripts documentation foundation
-for the shipped platform. The current responsibility is keeping public docs,
-script entries, raw-script templates, and future showcase scripts synchronized
-with BetterDungeon.
+for the shipped platform. The current release target is BetterRepository V1.7,
+paired with BetterDungeon V2. The responsibility now is keeping public docs,
+script entries, raw-script templates, release wording, and future showcase
+scripts synchronized with BetterDungeon.
 
 Completed Ultrascripts public docs:
 
@@ -16,7 +17,7 @@ Completed Ultrascripts public docs:
 - Cookbook
 - Architecture
 - Building Modules
-- Scripture
+- Widget
 - WebFetch
 - AI
 - BetterDungeon SDK
@@ -33,6 +34,7 @@ Other completed public documentation pieces:
   `../BetterRepository/docs/guides/info-dumps/ultrascripts.md`
 - Enhanced and Required Ultrascripts template entries
 - Story Card command preset documentation and seed data
+- BetterRepository design refresh foundation
 
 ## Active Work
 
@@ -40,10 +42,24 @@ Other completed public documentation pieces:
 
 - Keep BetterRepository raw-script template copies aligned with BetterDungeon
   examples.
-- Update public guides only when module contracts, helper behavior, or showcase
-  examples change.
+- Refresh public Ultrascripts guides before V1.7 so they fully match the live
+  Widget, SDK, template, and mobile behavior contracts.
 - Add or update public script entries for Brainiac, Statboy, and Chronos V2
   once they are built.
+- Cross-link showcase scripts to the module guides they demonstrate.
+
+### V1.7 Release Wording
+
+The V1.7 What's New story should emphasize:
+
+- BetterRepository design refresh and smoother navigation/search polish.
+- Story Card command presets and preset documentation.
+- Ultrascripts guide refresh for BetterDungeon V2.
+- Enhanced and Required Ultrascripts templates updated for Widget.
+- Brainiac, Statboy, and Chronos V2 entries once the showcase scripts are built.
+
+Do not present V1.7 as a full major-version relaunch. This is a substantial
+public site release that supports the BetterDungeon V2 launch.
 
 ### Non-Ultrascripts Guide Cleanup
 
@@ -65,6 +81,8 @@ High priority:
 - Cross-link BetterDungeon popup setup steps with relevant module guides.
 - Add deeper AI recipes once Brainiac and Statboy reveal the most useful public
   patterns.
+- Tighten non-Ultrascripts guide wording where V1.7 changed the UI or available
+  preset data.
 
 ## Later
 
@@ -74,6 +92,8 @@ High priority:
 ## Known Issues
 
 - Non-Ultrascripts guide info dumps still contain scaffold TODOs.
+- V1.7 What's New should be rechecked after Brainiac, Statboy, and Chronos V2
+  exist so launch copy does not overpromise missing script entries.
 
 ## Canonical Inputs
 
