@@ -13,13 +13,14 @@ These docs are split by how maintainers actually use them:
 
 ## Current Truth
 
-Ultrascripts core is effectively feature-complete. The AI module has its
-`status`/`query` contract, backend-agnostic executor, and first Gemini backend
-path in place.
+Ultrascripts core is effectively feature-complete. The AI module is complete:
+it has its stable `status`/`query` contract, backend-agnostic executor, and
+production backend path in place.
 
 The active work is finish-line work:
 
-- finish Gemini AI live verification and polish
+- clean up and verify Scripture
+- make sure Scripture feels good on mobile and narrow layouts
 - improve shipped modules where that makes real scripts better
 - keep the Enhanced and Required starter templates aligned with the live SDK
   helper contract
@@ -79,10 +80,10 @@ Live regression source of truth:
 | `system` | ops | `info`, `power` |
 | `ai` | ops | `status`, `query` |
 
-The `ai` module has a stable asynchronous query contract backed by Gemini.
+The `ai` module is complete and ships a stable asynchronous query contract.
 Public docs should teach `ai.status`, `ai.query`, text output, schema-backed
 JSON output, and the `not_configured` error shown when the player has not saved
-a Gemini API key.
+an API key for the current backend setup.
 
 ## Doc Rules
 

@@ -23,49 +23,37 @@ The major Ultrascripts capability stack is shipped:
 
 Current next step:
 
-- complete live verification of the Gemini-backed AI module
-- polish/complete Scripture
+- clean up and verify Scripture
+- make sure Scripture is solid on mobile and narrow layouts
 - keep the Enhanced and Required templates aligned with BetterRepository
 - build Brainiac, Statboy, and Chronos V2 after module polish
 
 ## Active Work
 
-### AI Module Rebuild
+### AI Module
 
-Goal: rebuild the AI module from a clean, policy-safe design.
+Goal: keep the completed AI module stable, documented, and ready for real
+script use.
 
 Current state:
 
-- module id `ai` is preserved
+- module id `ai` is shipped
 - `ai.status` and `ai.query` are exposed
-- the backend-agnostic AI executor validates query requests and builds normalized tasks
-- Gemini is the first production backend, using the stable `generateContent`
-  REST API through the extension background worker
+- the backend-agnostic AI executor validates query requests and builds
+  normalized tasks
+- the default production backend uses a policy-safe background-worker path
 - API keys are stored in extension local storage and never exposed to page
   scripts
 - JSON queries require an explicit schema
+- thinking, structured output, and fallback behavior are live
 - previous provider, native-generation, and alias surfaces are not active
 
-Rebuild phases:
+Current posture:
 
-1. **Contract**
-   Define the public AI module contract before any backend work resumes. This
-   phase establishes the stable module surface, request/response shapes, error
-   model, readiness/status semantics, timeout behavior, and the exact promises
-   the module makes to scripts. The goal is for public docs, starter templates,
-   and future showcase scripts to target one clear AI contract instead of a
-   provider-specific implementation.
-2. **Execution Layer**
-   Build the internal execution layer that turns script requests into clean,
-   well-bounded model tasks. This phase owns prompt/query construction,
-   structured request assembly, validation, normalization, logging hooks, and
-   the documented internal path between `ai.query` and whatever backend
-   eventually processes it. The goal is to keep request construction organized
-   and backend-agnostic.
-3. **Backend**
-   Connect the execution layer to Gemini through the background worker. This
-   phase owns authentication, transport, provider-specific settings, quota/error
-   mapping, and final result delivery back through the AI module contract.
+- treat the AI module as complete for V2
+- keep docs/tests aligned with the live `status`/`query` contract
+- leave future backend expansion as optional follow-on work, not current
+  release-blocking work
 
 ### Module Quality Pass
 
@@ -73,8 +61,9 @@ Goal: make shipped modules feel good in real scripts, not merely test-passing.
 
 Current priority:
 
-- AI rebuild first
 - Scripture widget/layout/helper polish
+- Scripture behavior verification
+- Scripture mobile and narrow-layout readiness
 - SDK readiness for Brainiac and Statboy after the new AI contract exists
 - Clock/Weather/Geolocation readiness for Chronos V2
 
@@ -95,14 +84,13 @@ Planned after module polish:
 
 ## V2 Release Sequence
 
-1. Complete the AI module rebuild.
-2. Polish/complete Scripture.
-3. Build Brainiac, Statboy, and Chronos V2.
-4. Resync mobile with PC Ultrascripts behavior.
-5. Rework Chrome Web Store marketing.
-6. Publish the Firefox Add-ons version.
-7. Drop Reddit teasers, then finish last-minute bugfixes and polish.
-8. Release BetterDungeon V2.
+1. Polish/complete Scripture.
+2. Build Brainiac, Statboy, and Chronos V2.
+3. Resync mobile with PC Ultrascripts behavior.
+4. Rework Chrome Web Store marketing.
+5. Publish the Firefox Add-ons version.
+6. Drop Reddit teasers, then finish last-minute bugfixes and polish.
+7. Release BetterDungeon V2.
 
 ## Later
 
@@ -114,8 +102,8 @@ Planned after module polish:
 - Showcase scripts may expose awkward module result fields or public-doc drift.
 - Future scripts should not fork the `bd.us` helper contract without updating
   BetterDungeon examples and BetterRepository raw-script copies.
-- AI module flows now depend on user-provided Gemini API keys and should stay
-  policy-safe, bounded, opt-in, and clearly documented.
+- AI module flows depend on user-provided API keys and should stay policy-safe,
+  bounded, opt-in, and clearly documented.
 - Scripture polish matters disproportionately because it is the player-visible
   face of Ultrascripts.
 
