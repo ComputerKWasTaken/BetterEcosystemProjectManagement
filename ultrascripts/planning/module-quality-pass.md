@@ -3,7 +3,7 @@
 ## Purpose
 
 This is the active finish-line pass before Brainiac, Statboy, and Chronos V2.
-The AI module is complete enough for V2. The active work is Scripture.
+The AI module is complete enough for V2. The active work is Widget.
 
 Ultrascripts already works. This pass is not a redesign. It is a usefulness
 review: make sure the shipped modules, examples, and docs feel good enough for
@@ -25,18 +25,17 @@ Fix only the issues that materially improve real script quality.
 
 ## Active Priority
 
-### 1. Scripture
+### 1. Widget
 
-Goal: make Scripture lighter, clearer, and stronger on mobile.
+Goal: make Widget lighter, clearer, and stronger on mobile.
 
 Current review targets:
 
 - renderer/helper bloat
 - desktop widget layout
 - mobile and narrow widget layout
-- compact/normal/comfortable/large display sizes
-- short/medium/tall max-height behavior
-- balanced/stacked layout behavior
+- automatic density behavior
+- automatic max-height and scrolling behavior
 - long labels and long values
 - scrolling behavior
 - interactive widget affordances
@@ -51,17 +50,17 @@ Likely showcase needs:
 - Statboy stat bars/counters/tags
 - Chronos V2 time/weather widgets
 
-Scripture exit:
+Widget exit:
 
 - no obvious UI bloat or awkward defaults
 - mobile and narrow layouts feel intentional
 - helper examples match current interaction behavior
-- Scripture regression suite remains representative
-- public Scripture guide still matches the live widget contract
+- Widget regression suite remains representative
+- public Widget guide still matches the live widget contract
 
 ### 2. Supporting Follow-Ons
 
-After Scripture, review only the modules needed by the showcase scripts:
+After Widget, review only the modules needed by the showcase scripts:
 
 - `sdk` for gating, display hints, and template alignment
 - `clock`, `weather`, and `geolocation` for Chronos V2
@@ -85,9 +84,9 @@ For any touched module:
 
 | Script | Required module polish before build |
 |---|---|
-| Brainiac | AI, Scripture, SDK |
-| Statboy | AI, Scripture, SDK |
-| Chronos V2 | Scripture, Clock, Weather, Geolocation, SDK as needed |
+| Brainiac | AI, Widget, SDK |
+| Statboy | AI, Widget, SDK |
+| Chronos V2 | Widget, Clock, Weather, Geolocation, SDK as needed |
 
 ## Output Format For Each Review
 
@@ -111,8 +110,8 @@ For accepted fixes, capture:
 
 This pass is done when:
 
-- Scripture is polished enough for public showcase widgets
-- Scripture mobile and narrow-layout behavior feels solid
+- Widget is polished enough for public showcase widgets
+- Widget mobile and narrow-layout behavior feels solid
 - any touched module suite still reflects real author usage
 - Enhanced and Required templates remain aligned
 - public BetterRepository guides still match changed contracts

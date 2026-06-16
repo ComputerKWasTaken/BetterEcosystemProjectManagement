@@ -25,7 +25,7 @@ heartbeat advertise?
 
 | Module | Kind | State or ops | Main files | Public guide | Regression suite |
 |---|---|---|---|---|---|
-| `scripture` | state | `ultrascripts:state:scripture` | `../../../BetterDungeon/modules/scripture/` | `UltrascriptsScriptureGuide.vue` | `scripture-module` |
+| `widget` | state | `ultrascripts:state:widget` | `../../../BetterDungeon/modules/widget/` | `UltrascriptsWidgetGuide.vue` | `widget-module` |
 | `webfetch` | ops | `fetch`, `search` | `../../../BetterDungeon/modules/webfetch/` | `UltrascriptsWebFetchGuide.vue` | `webfetch-module` |
 | `clock` | ops | `now`, `tz`, `format` | `../../../BetterDungeon/modules/clock/` | `UltrascriptsClockGuide.vue` | `clock-module` |
 | `sdk` | ops | `version`, `config` | `../../../BetterDungeon/modules/sdk/` | `UltrascriptsSdkGuide.vue` | `sdk-module` |
@@ -42,7 +42,7 @@ compatibility alias.
 
 | Module | Responsibility |
 |---|---|
-| `scripture` | Render live script-published widgets, including interaction events back to scripts |
+| `widget` | Render live script-published widgets, including interaction events back to scripts |
 | `webfetch` | Controlled network fetch/search with consent, rate limiting, and blocked-target protection |
 | `clock` | Time, timezone, and format helpers |
 | `sdk` | Safe BetterDungeon metadata and configuration snapshots |
@@ -198,20 +198,20 @@ State-module rules:
 - Clear DOM and ephemeral state on disable/adventure change.
 - If the module reads history keyed by turn count, set `tracksLiveCount: true`.
 
-### Scripture Reference Pattern
+### Widget Reference Pattern
 
-Scripture is the canonical state module.
+Widget is the canonical state module.
 
 It:
 
-- declares `stateNames: ['scripture']`
+- declares `stateNames: ['widget']`
 - declares `tracksLiveCount: true`
 - validates manifest and widget state
 - renders `history[liveCount]`
 - falls back to nearest earlier/newest numeric history entry
-- writes widget interactions to `ultrascripts:in:scripture`
+- writes widget interactions to `ultrascripts:in:widget`
 - prunes widget events after script-side `interactions.ackSeq` advances
-- uses per-module storage for display preferences
+- uses automatic density and responsive layout rules for desktop and mobile
 
 ## Ops Modules
 
@@ -325,7 +325,7 @@ Current order is tracked in [Module Quality Pass](../planning/module-quality-pas
 - `../../../BetterDungeon/services/ultrascripts/core.js`
 - `../../../BetterDungeon/services/ultrascripts/ops-dispatcher.js`
 - `../../../BetterDungeon/services/ultrascripts/envelope.js`
-- `../../../BetterDungeon/modules/scripture/module.js`
+- `../../../BetterDungeon/modules/widget/module.js`
 - `../../../BetterDungeon/modules/webfetch/module.js`
 - `../../../BetterDungeon/modules/sdk/module.js`
 - `../../../BetterDungeon/modules/ai/module.js`

@@ -140,7 +140,7 @@ Fields:
     "runtimeEnabled": true,
     "debug": false,
     "modulePreferences": {
-      "scripture": true,
+      "widget": true,
       "webfetch": true,
       "clock": true,
       "sdk": true,
@@ -149,11 +149,6 @@ Fields:
       "network": true,
       "system": true,
       "ai": true
-    },
-    "scriptureDisplay": {
-      "size": "normal",
-      "maxHeight": "medium",
-      "layout": "balanced"
     },
     "webfetch": {
       "savedOriginCount": 0,
@@ -195,30 +190,11 @@ Current default keys:
 | `runtimeEnabled` | Whether the current page runtime is active |
 | `debug` | Ultrascripts debug logging preference |
 | `modulePreferences` | Saved enablement preference for the 9 first-party modules |
-| `scriptureDisplay` | Safe widget display preferences |
 | `webfetch` | Aggregate consent counts without exposing domains |
 
 `modulePreferences` is not a substitute for heartbeat discovery. A module may be
 preferred on but not mounted on the current surface. Use heartbeat to know what
 is available now.
-
-### Scripture Display
-
-```json
-{
-  "size": "normal",
-  "maxHeight": "medium",
-  "layout": "balanced"
-}
-```
-
-Allowed values:
-
-- `size`: `compact`, `normal`, `comfortable`, `large`
-- `maxHeight`: `short`, `medium`, `tall`
-- `layout`: `balanced`, `stacked`
-
-Scripts may use these values to choose denser or simpler Scripture manifests.
 
 ### WebFetch Summary
 
@@ -305,7 +281,7 @@ bd.us.hasOp = function (moduleId, opName) {
 
 Use `sdk.config` for:
 
-- adapting Scripture widget density to player preferences
+- reading safe BetterDungeon feature and module preferences
 - showing a better fallback when Ultrascripts is disabled
 - deciding whether optional modules should be treated as available preferences
   versus currently mounted capabilities

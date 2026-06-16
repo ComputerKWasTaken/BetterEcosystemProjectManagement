@@ -19,8 +19,8 @@ production backend path in place.
 
 The active work is finish-line work:
 
-- clean up and verify Scripture
-- make sure Scripture feels good on mobile and narrow layouts
+- clean up and verify Widget
+- make sure Widget feels good on mobile and narrow layouts
 - improve shipped modules where that makes real scripts better
 - keep the Enhanced and Required starter templates aligned with the live SDK
   helper contract
@@ -70,7 +70,7 @@ Live regression source of truth:
 
 | Module | Type | Ops or state |
 |---|---|---|
-| `scripture` | state | `ultrascripts:state:scripture` |
+| `widget` | state | `ultrascripts:state:widget` |
 | `webfetch` | ops | `fetch`, `search` |
 | `clock` | ops | `now`, `tz`, `format` |
 | `sdk` | ops | `version`, `config` |
@@ -93,6 +93,6 @@ an API key for the current backend setup.
 - Keep `reference/` stable unless an implementation contract changes.
 - Keep `planning/` pointed at the current workstream.
 - Do not revive retired concepts such as Lite/full profiles, mutation-template
-  priming, invisible-text transport, or action-id-keyed Scripture history.
+  priming, invisible-text transport, or action-id-keyed Widget history.
 - If an active doc starts explaining old planning debates at length, summarize
   the decision or move the material into a deliberately named historical file.

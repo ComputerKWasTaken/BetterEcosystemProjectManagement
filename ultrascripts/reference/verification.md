@@ -21,7 +21,7 @@ the verification surfaces that currently exist and when to use each one.
 
 | Module | Suite | Files | Main coverage |
 |---|---|---|---|
-| `scripture` | `scripture-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md`, `ROADMAP.md` | Widgets, interactions, manifest validation, custom widgets, transitions |
+| `widget` | `widget-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md`, `ROADMAP.md` | Widgets, interactions, manifest validation, custom widgets, transitions |
 | `ai` | `ai-module` | `library.js`, `output-modifier.js`, `README.md` | Async status/query contract, query metadata, text output, schema-backed JSON output, thinking levels, missing-key errors |
 | `sdk` | `sdk-module` | `library.js`, `output-modifier.js`, `README.md` | heartbeat discovery, `version`, `config`, response acks, trace card |
 | `clock` | `clock-module` | `library.js`, `output-modifier.js`, `README.md` | `now`, `tz`, `format`, timezone variants, invalid requests |
@@ -35,16 +35,16 @@ Every shipped first-party module has a dedicated suite.
 
 ## What Each Suite Is For
 
-### Scripture
+### Widget
 
 Use when changing:
 
-- `../../../BetterDungeon/modules/scripture/module.js`
-- `../../../BetterDungeon/modules/scripture/renderer.js`
-- `../../../BetterDungeon/modules/scripture/validators.js`
-- Scripture CSS or widget layout
+- `../../../BetterDungeon/modules/widget/module.js`
+- `../../../BetterDungeon/modules/widget/renderer.js`
+- `../../../BetterDungeon/modules/widget/validators.js`
+- Widget CSS or widget layout
 - widget event queue or `ackSeq` behavior
-- public Scripture widget examples
+- public widget examples
 
 Special attention:
 
@@ -52,7 +52,7 @@ Special attention:
 - mobile/narrow rendering
 - renderer/helper bloat
 - interactive widgets
-- `ultrascripts:in:scripture.widgetEvents`
+- `ultrascripts:in:widget.widgetEvents`
 - script-side `interactions.ackSeq`
 
 ### AI
@@ -166,7 +166,7 @@ Verifies:
 - response polling and acknowledgements
 - `sdk.config` request/caching
 - `clock.now` example
-- Scripture dashboard publishing
+- Widget dashboard publishing
 
 ### Required Template
 
@@ -180,15 +180,15 @@ Verifies:
 - required module/op checks
 - clear player-facing failures
 - same helper foundation as Enhanced
-- `sdk.config` and Scripture dashboard publishing
+- `sdk.config` and Widget dashboard publishing
 
 ## When To Run What
 
 | Change | Minimum verification |
 |---|---|
 | Module implementation | that module suite |
-| Scripture renderer/layout | Scripture suite plus mobile/narrow visual check |
-| Core state dispatch/live count | Scripture suite plus at least one ops suite |
+| Widget renderer/layout | Widget suite plus mobile/narrow visual check |
+| Core state dispatch/live count | Widget suite plus at least one ops suite |
 | Ops dispatcher/envelope | AI contract suite plus one safe ops suite such as Clock or SDK |
 | Write queue/GraphQL write path | heartbeat smoke, SDK suite, one module response suite |
 | Heartbeat payload | SDK suite, templates, public Quick Start claims |
@@ -206,7 +206,7 @@ Keep these as context, not as a substitute for rechecking changed surfaces.
 
 | Area | Date | Result |
 |---|---:|---|
-| Scripture | 2026-04-22 | Live suite passed 10/10 |
+| Widget | 2026-04-22 | Live suite passed 10/10 |
 | Full two-way runtime | 2026-04-22 | Live suite passed, including reload-mid-pending |
 | WebFetch | 2026-04-23 | Live suite passed, including denied-origin consent |
 | Clock | 2026-04-23 | Live suite passed |

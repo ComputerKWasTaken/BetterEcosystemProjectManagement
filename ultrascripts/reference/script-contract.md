@@ -52,8 +52,8 @@ Public snippets must respect AI Dungeon's script sandbox:
 | `ultrascripts:heartbeat` | BetterDungeon -> script | Runtime/module/op discovery |
 | `ultrascripts:out` | script -> BetterDungeon | Request batch plus response acks |
 | `ultrascripts:in:<module>` | BetterDungeon -> script | Module responses |
-| `ultrascripts:state:scripture` | script -> BetterDungeon | Scripture widget state |
-| `ultrascripts:in:scripture` | BetterDungeon -> script | Scripture widget interaction events plus optional response envelope |
+| `ultrascripts:state:widget` | script -> BetterDungeon | widget state |
+| `ultrascripts:in:widget` | BetterDungeon -> script | widget interaction events plus optional response envelope |
 
 ## Heartbeat Contract
 
@@ -158,9 +158,9 @@ Public examples should assume the Quick Start helper shape:
 | `bd.us.call(moduleId, op, args)` | queue a request |
 | `bd.us.latest(moduleId, op)` | read newest cached response for a module/op |
 | `bd.us.commit()` | write queued requests and acks to `ultrascripts:out` |
-| `bd.us.publishScripture(state)` | write `ultrascripts:state:scripture` |
-| `bd.us.scriptureEvents()` | read pending Scripture widget events |
-| `bd.us.ackScripture(seq)` | advance Scripture interaction ack state |
+| `bd.us.publishWidget(state)` | write `ultrascripts:state:widget` |
+| `bd.us.widgetEvents()` | read pending widget events |
+| `bd.us.ackWidget(seq)` | advance Widget interaction ack state |
 
 `latest()` is convenient, but it is not a complete undo-safe freshness proof by
 itself. Use request ids/state if a script needs stricter freshness.
@@ -176,7 +176,7 @@ Required capabilities:
 - heartbeat
 - `sdk.config`
 - rebuilt AI query contract
-- Scripture if the script surfaces dashboard/status widgets
+- Widget if the script surfaces dashboard/status widgets
 
 Design contract:
 
@@ -198,14 +198,14 @@ Required capabilities:
 - heartbeat
 - `sdk.config`
 - rebuilt AI query contract
-- `scripture`
+- `widget`
 
 Design contract:
 
 - authors define stat schemas
 - the AI module proposes structured stat updates through JSON queries
 - script code validates, clamps, and applies updates
-- Scripture renders the current state
+- Widget renders the current state
 - invalid AI output must fail closed
 - stat schema/card state must remain understandable without inspecting console
 
@@ -222,7 +222,7 @@ Optional capabilities:
 - `weather.forecast`
 - `geolocation.permission`
 - `geolocation.getCurrent`
-- `scripture`
+- `widget`
 - `system.info` where layout/device hints matter
 
 Design contract:
@@ -232,7 +232,7 @@ Design contract:
 - geolocation is permission-first and optional
 - fixed-place weather should work without geolocation
 - do not block the core scenario if weather/location ops fail
-- Scripture widgets should be additive, not required for vanilla play
+- widgets should be additive, not required for vanilla play
 
 ## Module Contracts For Examples
 
@@ -472,7 +472,6 @@ Use `sdk.config` for:
 
 - safe BetterDungeon feature settings
 - module preferences
-- Scripture display preferences
 - WebFetch consent counts
 
 `sdk.version` result:
@@ -492,11 +491,11 @@ Rules:
 - Public examples should use heartbeat and module status ops for capability
   checks, not hidden setup details.
 
-### Scripture
+### Widget
 
 State card:
 
-- `ultrascripts:state:scripture`
+- `ultrascripts:state:widget`
 
 Script-published shape:
 
@@ -556,16 +555,16 @@ Rules:
 - History keys are live-count strings.
 - Public examples should not use retired names like `stat-bar`, `badge-list`,
   or `checklist`.
-- Widget events are acknowledged through `interactions.ackSeq` in the Scripture
+- Widget events are acknowledged through `interactions.ackSeq` in the Widget
   state card.
 
-Scripture interaction inbox:
+Widget interaction inbox:
 
 ```json
 {
   "widgetEvents": {
     "v": 1,
-    "module": "scripture",
+    "module": "widget",
     "source": "BetterDungeon",
     "latestSeq": 7,
     "ackSeq": 4,
@@ -587,11 +586,11 @@ Scripture interaction inbox:
 
 Rules:
 
-- Use `bd.us.scriptureEvents()` and `bd.us.ackScripture(seq)` in helper-based
+- Use `bd.us.widgetEvents()` and `bd.us.ackWidget(seq)` in helper-based
   examples.
 - Raw examples may read `widgetEvents.events` and advance
   `interactions.ackSeq`.
-- Do not teach Scripture widget-event acks through `ultrascripts:out.acks`.
+- Do not teach widget-event acks through `ultrascripts:out.acks`.
 
 ### WebFetch
 
@@ -842,7 +841,7 @@ Do not introduce these in current examples:
 - `platformType`
 - `preferredLocale`
 - top-level `viewport`
-- Scripture events acknowledged through `ultrascripts:out.acks`
+- Widget events acknowledged through `ultrascripts:out.acks`
 - same-turn response logic
 
 ## Review Checklist
@@ -855,7 +854,7 @@ Before publishing an example or showcase script, check:
 - Does it handle missing/disabled/unconfigured modules?
 - Does it avoid assuming an AI backend is configured before `ai.status` reports ready?
 - Does it avoid exposing secrets or encouraging credential workarounds?
-- Does it use live-count Scripture history?
-- Does it ack ops responses and Scripture widget events through the correct
+- Does it use live-count Widget history?
+- Does it ack ops responses and widget events through the correct
   mechanisms?
 - Does it remain understandable to an author reading only BetterRepository?

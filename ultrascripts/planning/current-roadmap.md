@@ -23,8 +23,8 @@ Done:
 
 Not done:
 
-- Scripture polish and cleanup
-- Scripture mobile and narrow-layout readiness
+- Widget polish and cleanup
+- Widget mobile and narrow-layout readiness
 - three production showcase scripts
 - BetterDungeon V2 release prep
 - BetterRepository V2 release prep
@@ -32,21 +32,20 @@ Not done:
 
 ## Active Workstream
 
-### 1. Scripture Polish
+### 1. Widget Polish
 
-Goal: make Scripture feel clean, light, and dependable in real scripts.
+Goal: make Widget feel clean, light, and dependable in real scripts.
 
 Current priorities:
 
 - reduce renderer/helper bloat
 - verify interaction and event-ack behavior
-- review defaults across widget sizes, max-height modes, and layout modes
-- improve mobile and narrow-layout behavior
+- improve automatic mobile and narrow-layout behavior
 - keep the public guide, examples, and regression suite aligned with live behavior
 
 Success looks like:
 
-- Scripture feels comfortable to ship in Brainiac, Statboy, and Chronos V2
+- Widget feels comfortable to ship in Brainiac, Statboy, and Chronos V2
 - the regression suite still reflects real author usage
 - helper examples match the live interaction contract
 - mobile and desktop behavior both feel intentional
@@ -68,13 +67,13 @@ Watch:
 
 ### 3. Showcase Scripts
 
-After Scripture polish, build:
+After Widget polish, build:
 
 1. **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
    management through the shipped AI module.
 2. **Statboy** - Requires Ultrascripts. Schema-based stat management where
    authors define stats, AI proposes structured updates, script logic
-   validates/clamps them, and Scripture renders current state.
+   validates/clamps them, and Widget renders current state.
 3. **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps a
    vanilla timekeeping path but adds BetterDungeon-powered time/weather sync and
    widgets when Ultrascripts is available.
@@ -83,7 +82,7 @@ After Scripture polish, build:
 
 | Module | Status | Notes |
 |---|---|---|
-| `scripture` | shipped, active polish focus | Player-visible module; current highest priority |
+| `widget` | shipped, active polish focus | Player-visible module; current highest priority |
 | `webfetch` | shipped | Review consent/error ergonomics if a showcase script needs it |
 | `clock` | shipped | Ready for Chronos V2 time helpers |
 | `sdk` | shipped | Keep heartbeat/SDK separation crisp |
@@ -107,7 +106,6 @@ Current capabilities:
 - master Ultrascripts toggle
 - per-module toggles
 - debug toggle
-- Scripture display preferences
 - WebFetch consent management
 - AI setup and status/query configuration
 - SDK background config snapshots
@@ -116,7 +114,7 @@ Current capabilities:
 ## Release Path
 
 ```text
-Scripture polish
+Widget polish
 -> Brainiac, Statboy, and Chronos V2
 -> PC/mobile Ultrascripts resync
 -> Chrome Web Store marketing refresh
@@ -141,7 +139,7 @@ These are no longer active implementation questions:
 - Ultrascripts supports two-way communication.
 - Heartbeat is the discovery surface.
 - SDK is metadata/config, not discovery.
-- Live count is the Scripture history key.
+- Live count is the Widget history key.
 - Direct `SaveQueueStoryCard` writeback is the production write path.
 - Mutation-template priming is retired.
 - Lite/full profiles are retired.
@@ -164,7 +162,7 @@ Good ideas, not required for V2:
 
 - Public examples can drift from the helper/template contract.
 - Showcase scripts may expose awkward module result fields or error codes.
-- Scripture mobile/narrow rendering can make otherwise-good scripts feel rough.
+- Widget mobile/narrow rendering can make otherwise-good scripts feel rough.
 - AI queries depend on player API-key setup and should fail closed with
   actionable `not_configured` errors.
 - WebFetch examples must respect consent, blocked targets, and late responses.
@@ -173,7 +171,7 @@ Good ideas, not required for V2:
 
 ## Practical Next Action
 
-Start with Scripture:
+Start with Widget:
 
 1. Reduce bloat in the renderer, helpers, and state-flow where it improves real
    author usage.

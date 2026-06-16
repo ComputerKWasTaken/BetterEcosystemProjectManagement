@@ -36,7 +36,7 @@ two-way runtime. A script can use only state publishing, only ops, or both.
 |   |-- geolocation/
 |   |-- network/
 |   |-- sdk/
-|   |-- scripture/
+|   |-- widget/
 |   |-- system/
 |   |-- weather/
 |   `-- webfetch/
@@ -119,7 +119,7 @@ The queue is used by:
 
 - heartbeat writes
 - ops response writes
-- Scripture interaction inbox writes
+- Widget interaction inbox writes
 - module writes through `ctx.writeCard`
 
 ### Production Mutation
@@ -280,12 +280,12 @@ Story Card first.
 ### State Card Dispatch
 
 ```text
-Script writes ultrascripts:state:scripture
+Script writes ultrascripts:state:widget
 -> AI Dungeon broadcasts card update
 -> ws-stream emits card diff
 -> Core parses JSON and caches state
--> Core dispatches to Scripture because stateNames includes "scripture"
--> Scripture renders history[liveCount] with fallback behavior
+-> Core dispatches to Widget because stateNames includes "widget"
+-> Widget renders history[liveCount] with fallback behavior
 ```
 
 For live-count-aware modules, Core can call `onStateChange` again without a card
@@ -303,16 +303,16 @@ Script writes request batch into ultrascripts:out
 -> script acknowledges consumed response ids through ultrascripts:out.acks
 ```
 
-### Scripture Widget Interactions
+### Widget Interactions
 
 ```text
-Player interacts with a Scripture widget
--> Scripture queues a widget event
--> Scripture writes widgetEvents to ultrascripts:in:scripture
+Player interacts with a widget
+-> Widget queues a widget event
+-> Widget writes widgetEvents to ultrascripts:in:widget
 -> script reads events on a later turn
 -> script updates its own state
--> script advances interactions.ackSeq in ultrascripts:state:scripture
--> Scripture prunes acknowledged events
+-> script advances interactions.ackSeq in ultrascripts:state:widget
+-> Widget prunes acknowledged events
 ```
 
 Widget-event acknowledgement is separate from ops response acknowledgement.
@@ -343,7 +343,6 @@ The popup and background surfaces already support:
 - Ultrascripts master toggle
 - per-module toggles
 - debug toggle
-- Scripture display preferences
 - WebFetch consent state
 - AI status/query contract module toggle
 - SDK background config snapshots

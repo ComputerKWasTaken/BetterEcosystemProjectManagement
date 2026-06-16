@@ -50,7 +50,7 @@ Current BetterRepository Ultrascripts guide pages:
 | Cookbook | `UltrascriptsCookbookGuide.vue` |
 | Architecture | `UltrascriptsArchitectureGuide.vue` |
 | Building Modules | `UltrascriptsAuthoringGuide.vue` |
-| Scripture | `UltrascriptsScriptureGuide.vue` |
+| Widget | `UltrascriptsWidgetGuide.vue` |
 | WebFetch | `UltrascriptsWebFetchGuide.vue` |
 | AI | `UltrascriptsAiGuide.vue` |
 | BetterDungeon SDK | `UltrascriptsSdkGuide.vue` |
@@ -162,8 +162,8 @@ scripts happen.
 
 Immediate focus:
 
-- Scripture module pass
-- helper alignment for Scripture interactions and widget state
+- Widget module pass
+- helper alignment for Widget interactions and widget state
 - any AI/SDK guidance needed for Brainiac and Statboy
 - any Clock/Weather/Geolocation guidance needed for Chronos V2
 - keeping Enhanced and Required templates identical across BetterDungeon and
@@ -190,7 +190,7 @@ Check:
 - test suite list still matches actual `tests/aid-scripts/` directories
 - template names match BetterDungeon examples and BetterRepository script data
 - no active doc claims Lite/full profiles, mutation-template priming, or
-  action-id-keyed Scripture history as current behavior
+  action-id-keyed Widget history as current behavior
 - no public example teaches retired widget names or stale module field names
 
 Useful command patterns:
