@@ -141,6 +141,34 @@ Best for: Game-like scenarios, complex systems
 **Problem**: Multiple cards with overlapping content
 **Solution**: Consolidate cards, use trigger networks
 
+## Optimized Context (Frontier)
+
+The Frontier release added an **Optimized Context** setting that reorders
+the context for KV (key/value) caching, letting supported models offer
+longer effective context without a subscription upgrade.
+
+- **What it does**: places the parts that change least at the front and
+  the parts that change most at the end, so the stable prefix can be
+  reused (cached) between turns. Stable content first: AI Instructions,
+  Plot Essentials, Auto Summary, story history. Dynamic content last:
+  Memory Bank, Story Cards, Author's Note, last action, Front Memory.
+- **Caching is always on**; this setting only changes *how often* the
+  cache can be reused by keeping the prefix stable.
+- **Overflow tolerance**: allows the context to exceed the set length by
+  up to ~4K tokens before trimming, so trimming doesn't shift the front of
+  the story every turn and break the cache.
+- **Script impact**: prevents scripts from modifying the stable parts of
+  the context, which effectively disables some popular scripts on
+  supported models.
+- **Supported models**: Equinox, Gemma 4 31B, DeepSeek V4 Flash,
+  DeepSeek V4 Pro, GLM 5.1. Atlas and Raven always optimize context (the
+  toggle isn't shown for them). On by default for the new Frontier models.
+- **Where**: Gameplay Settings → select the story generator → Memory
+  System → "Optimized Context" toggle.
+
+See the [Release Notes](../11-release-history/release-notes.md) for the
+Frontier release details.
+
 ## Advanced Techniques
 
 ### Trigger Networks
