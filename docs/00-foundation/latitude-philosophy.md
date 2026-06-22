@@ -89,7 +89,7 @@ Players can configure their preferred content level, and hosts control settings 
 ## Continuous Evolution
 
 The platform evolves through named releases, each bringing significant new features:
-- Phoenix, Renaissance, Pathfinder, Ember, Forge, Gauntlet, Saga, Rise, Aura
+- Phoenix, Renaissance, Pathfinder, Ember, Forge, Gauntlet, Saga, Rise, Aura, Frontier
 
 This release cadence allows for substantial feature additions while maintaining stability.
 

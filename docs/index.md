@@ -6,6 +6,17 @@
 
 This documentation is designed to serve as context for AI-assisted development, scenario creation, and advanced scripting on the AI Dungeon platform. Each document is self-contained with cross-references to related topics.
 
+## Latest Release: Frontier
+
+AI Dungeon's latest named release is **Frontier** — the biggest model refresh in a while.
+
+- **Six new story models** from Free through Ultimate: DeepSeek V4 Flash (first DeepSeek at Free), DeepSeek V4 Pro (1.6T flagship), Gemma 4 31B (first Google model), Equinox (Gemma 4 finetune), Nova (Llama 3.3 70B finetune), and GLM 5.1.
+- **Six new image models** spanning every tier.
+- **Two new beta features** in the model picker.
+- **Optimized Context setting** (on by default for new models): reorders context for KV caching to offer up to 2x context without upgrading subscription. Supported on Equinox, Gemma 4 31B, DeepSeek V4 Flash, DeepSeek V4 Pro, and GLM 5.1. Note: prevents scripts from modifying the stable cached prefix.
+
+See [Release Notes](11-release-history/release-notes.md) for the full release chronicle.
+
 ## Quick Access
 
 - [Quick Reference](reference/quick-reference.md) - One-page overview
