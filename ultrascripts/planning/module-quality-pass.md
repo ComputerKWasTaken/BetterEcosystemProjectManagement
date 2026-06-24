@@ -4,7 +4,8 @@
 
 This is the active finish-line pass before mobile parity, BetterRepository V1.7
 docs polish, and the Brainiac/Statboy/Chronos V2 showcase scripts. The AI
-module is complete enough for V2. The active work is Widget.
+module is complete enough for V2, and the Widget polish pass is complete.
+The active work is now PC/mobile Ultrascripts parity and release prep.
 
 Ultrascripts already works. This pass is not a redesign. It is a usefulness
 review: make sure the shipped modules, examples, and docs feel good enough for
@@ -26,11 +27,11 @@ Fix only the issues that materially improve real script quality.
 
 ## Active Priority
 
-### 1. Widget
+### 1. Widget - Complete
 
 Goal: make Widget lighter, clearer, and stronger on mobile.
 
-Current review targets:
+Completed review targets:
 
 - renderer/helper bloat
 - desktop widget layout
@@ -45,16 +46,16 @@ Current review targets:
 - public widget examples
 - starter template dashboard publishing
 
-Likely showcase needs:
+Likely showcase needs are covered for V2:
 
 - Brainiac status/dashboard widgets
 - Statboy stat bars/counters/tags
 - Chronos V2 time/weather widgets
 
-Widget exit:
+Widget exit result:
 
-- no obvious UI bloat or awkward defaults
-- mobile and narrow layouts feel intentional
+- no obvious UI bloat or awkward defaults remain in the V2 pass
+- mobile and narrow layouts feel intentional, with a local minimize control
 - helper examples match current interaction behavior
 - Widget regression suite remains representative
 - public Widget guide still matches the live widget contract
@@ -94,15 +95,14 @@ For any touched module:
 
 ## Release-Path Order
 
-1. Polish/complete Widget.
-2. Resync mobile with PC Ultrascripts behavior.
-3. Polish the mobile build for release.
-4. Refresh BetterRepository Ultrascripts guides.
-5. Update BetterRepository V1.7 What's New and release wording.
-6. Build Brainiac, Statboy, and Chronos V2.
-7. Upload Firefox Add-ons version.
-8. Begin Reddit teasers, final bugfixes, and polish.
-9. Release BetterDungeon V2 and BetterRepository V1.7.
+1. Resync mobile with PC Ultrascripts behavior.
+2. Polish the mobile build for release.
+3. Refresh BetterRepository Ultrascripts guides.
+4. Update BetterRepository V1.7 What's New and release wording.
+5. Build Brainiac, Statboy, and Chronos V2.
+6. Upload Firefox Add-ons version.
+7. Begin Reddit teasers, final bugfixes, and polish.
+8. Release BetterDungeon V2 and BetterRepository V1.7.
 
 ## Output Format For Each Review
 

@@ -23,14 +23,17 @@ The major Ultrascripts capability stack is shipped:
 
 Current next step:
 
-- polish and complete Widget
 - resync mobile with PC Ultrascripts behavior
 - polish the mobile build for release
 - refresh BetterRepository's Ultrascripts guides and V1.7 release wording
 - keep the Enhanced and Required templates aligned with BetterRepository
-- build Brainiac, Statboy, and Chronos V2 after module polish
+- build Brainiac, Statboy, and Chronos V2 after PC/mobile resync
 - upload the Firefox Add-ons version
 - start Reddit teasers, final bugfixes, and launch polish
+
+Completed finish-line work:
+
+- Widget V2 polish pass
 
 ## Active Work
 
@@ -65,12 +68,9 @@ Goal: make shipped modules feel good in real scripts, not merely test-passing.
 
 Current priority:
 
-- Widget layout/helper polish
-- Widget behavior verification
-- Widget mobile and narrow-layout readiness
 - PC/mobile Ultrascripts parity
 - mobile build release polish
-- SDK readiness for Brainiac and Statboy once Widget is settled
+- SDK readiness for Brainiac and Statboy
 - Clock/Weather/Geolocation readiness for Chronos V2
 
 Tracking doc:
@@ -90,15 +90,14 @@ Planned after module polish:
 
 ## V2 Release Sequence
 
-1. Polish/complete Widget.
-2. Resync mobile with PC Ultrascripts behavior.
-3. Polish the mobile build for release.
-4. Refresh and verify BetterRepository's Ultrascripts guides.
-5. Update BetterRepository V1.7 What's New and release wording.
-6. Build Brainiac, Statboy, and Chronos V2.
-7. Upload the Firefox Add-ons version of BetterDungeon.
-8. Begin Reddit teasers, final bugfixes, and polish.
-9. Release BetterDungeon V2 and BetterRepository V1.7.
+1. Resync mobile with PC Ultrascripts behavior.
+2. Polish the mobile build for release.
+3. Refresh and verify BetterRepository's Ultrascripts guides.
+4. Update BetterRepository V1.7 What's New and release wording.
+5. Build Brainiac, Statboy, and Chronos V2.
+6. Upload the Firefox Add-ons version of BetterDungeon.
+7. Begin Reddit teasers, final bugfixes, and polish.
+8. Release BetterDungeon V2 and BetterRepository V1.7.
 
 ## Later
 
@@ -112,8 +111,8 @@ Planned after module polish:
   BetterDungeon examples and BetterRepository raw-script copies.
 - AI module flows depend on user-provided API keys and should stay policy-safe,
   bounded, opt-in, and clearly documented.
-- Widget polish matters disproportionately because it is the player-visible
-  face of Ultrascripts.
+- Showcase scripts may still expose awkward Widget compositions even though
+  the Widget module polish pass is complete.
 
 ## Canonical Docs
 

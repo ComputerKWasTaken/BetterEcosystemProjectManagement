@@ -20,11 +20,10 @@ Done:
 - BetterRepository public Ultrascripts guide set
 - Chromium, Gecko/Firefox, and Android WebView support
 - completed AI module with stable `status`/`query` contract
+- completed V2 Widget polish pass
 
 Not done:
 
-- Widget polish and cleanup
-- Widget mobile and narrow-layout readiness
 - PC/mobile Ultrascripts behavior resync
 - mobile build release polish
 - BetterRepository V1.7 Ultrascripts guide refresh
@@ -35,18 +34,18 @@ Not done:
 
 ## Active Workstream
 
-### 1. Widget Polish
+### 1. Widget Polish Complete
 
 Goal: make Widget feel clean, light, and dependable in real scripts.
 
-Current priorities:
+Completed:
 
-- reduce renderer/helper bloat
-- verify interaction and event-ack behavior
-- improve automatic mobile and narrow-layout behavior
-- keep the public guide, examples, and regression suite aligned with live behavior
-- confirm the module behaves consistently on PC and mobile once mobile is
-  resynced with the PC runtime
+- tightened validation and invalid-suite coverage
+- verified interaction and event-ack behavior, including accepted-value bridge
+- improved automatic mobile and narrow-layout behavior
+- added a local minimize control for cramped/mobile surfaces
+- kept the public guide, examples, raw BetterRepository copies, and regression
+  suite aligned with live behavior
 
 Success looks like:
 
@@ -59,7 +58,19 @@ Success looks like:
 
 Tracked in [Module Quality Pass](./module-quality-pass.md).
 
-### 2. Template Alignment
+### 2. PC/Mobile Ultrascripts Resync
+
+Goal: confirm the mobile build inherits the PC Ultrascripts behavior after the
+completed Widget/template changes.
+
+Watch:
+
+- state-card dispatch and writeback parity
+- Widget layout/minimize behavior in Android WebView/narrow layouts
+- popup/module settings parity
+- mobile release-readiness polish
+
+### 3. Template Alignment
 
 Goal: keep the Enhanced and Required starter foundations as the canonical
 script-side helper pattern.
@@ -72,7 +83,7 @@ Watch:
 - `../../../BetterRepository/src/data/raw-scripts/*/ultrascripts-required-template.js`
 - `../../../BetterRepository/src/data/scripts.js`
 
-### 3. Showcase Scripts
+### 4. Showcase Scripts
 
 After Widget polish, build:
 
@@ -85,7 +96,7 @@ After Widget polish, build:
    vanilla timekeeping path but adds BetterDungeon-powered time/weather sync and
    widgets when Ultrascripts is available.
 
-### 4. BetterRepository V1.7 Sync
+### 5. BetterRepository V1.7 Sync
 
 Before release, BetterRepository needs one focused pass:
 
@@ -135,7 +146,7 @@ Current capabilities:
 ## Release Path
 
 ```text
-Widget polish
+Widget polish complete
 -> PC/mobile Ultrascripts resync
 -> mobile build release polish
 -> BetterRepository Ultrascripts guide refresh
@@ -188,7 +199,7 @@ Good ideas, not required for V2:
 
 - Public examples can drift from the helper/template contract.
 - Showcase scripts may expose awkward module result fields or error codes.
-- Widget mobile/narrow rendering can make otherwise-good scripts feel rough.
+- Showcase scripts can still expose awkward Widget compositions or result fields.
 - AI queries depend on player API-key setup and should fail closed with
   actionable `not_configured` errors.
 - WebFetch examples must respect consent, blocked targets, and late responses.
@@ -199,13 +210,11 @@ Good ideas, not required for V2:
 
 ## Practical Next Action
 
-Start with Widget:
+Start with PC/mobile Ultrascripts resync:
 
-1. Reduce bloat in the renderer, helpers, and state-flow where it improves real
-   author usage.
-2. Verify widget rendering, interactions, event pruning, and `ackSeq` behavior
-   against the live suite and public examples.
-3. Do a dedicated mobile and narrow-layout pass before moving on to showcase
-   scripts.
-4. After Widget is settled, resync mobile with PC behavior and refresh the
-   BetterRepository guide/copy surfaces before building showcase scripts.
+1. Confirm the mobile build carries the same Widget, SDK, state-card dispatch,
+   writeback, and module-toggle behavior as PC.
+2. Polish the mobile release build around the completed Widget tray/minimize
+   behavior.
+3. Refresh BetterRepository guide/copy surfaces for the final V2 contract.
+4. Build Brainiac, Statboy, and Chronos V2 against the completed module set.

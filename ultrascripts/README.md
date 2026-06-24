@@ -19,7 +19,6 @@ production backend path in place.
 
 The active work is finish-line work:
 
-- polish and complete Widget
 - resync mobile with PC Ultrascripts behavior
 - polish the mobile build for release
 - refresh BetterRepository's Ultrascripts guides so public docs match the live
@@ -32,6 +31,10 @@ The active work is finish-line work:
 - begin Reddit teasers, final bugfixes, and polish
 - use those results to finish BetterDungeon V2 and BetterRepository V1.7 launch
   preparation
+
+Completed finish-line work:
+
+- Widget V2 polish pass
 
 ## Start Here
 
