@@ -14,8 +14,6 @@ guides are in place.
 
 The current workstream is finish-line work:
 
-- resync mobile with PC Ultrascripts behavior
-- polish the mobile build for release
 - refresh BetterRepository's Ultrascripts guides so the public docs fully match
   the live Widget/SDK/template contract
 - update BetterRepository V1.7 release wording and What's New messaging
@@ -27,6 +25,8 @@ The current workstream is finish-line work:
 Completed finish-line work:
 
 - Widget V2 polish pass, covering the player-visible Ultrascripts module
+- BetterDungeon Mobile PC parity resync
+- BetterDungeon Mobile release-distribution polish
 
 ## Projects
 
@@ -45,14 +45,12 @@ Completed finish-line work:
 
 ## Next Milestones
 
-1. Resync mobile with PC Ultrascripts behavior.
-2. Polish the mobile build for release.
-3. Refresh and verify the BetterRepository Ultrascripts guides.
-4. Update BetterRepository V1.7 What's New and release wording.
-5. Build Brainiac, Statboy, and Chronos V2.
-6. Upload the Firefox Add-ons version of BetterDungeon.
-7. Begin Reddit teasers, final bugfixes, and polish.
-8. Release BetterDungeon V2 and BetterRepository V1.7.
+1. Refresh and verify the BetterRepository Ultrascripts guides.
+2. Update BetterRepository V1.7 What's New and release wording.
+3. Build Brainiac, Statboy, and Chronos V2.
+4. Upload the Firefox Add-ons version of BetterDungeon.
+5. Begin Reddit teasers, final bugfixes, and polish.
+6. Release BetterDungeon V2 and BetterRepository V1.7.
 
 ## Cleanup Policy
 

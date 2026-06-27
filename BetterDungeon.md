@@ -23,17 +23,17 @@ The major Ultrascripts capability stack is shipped:
 
 Current next step:
 
-- resync mobile with PC Ultrascripts behavior
-- polish the mobile build for release
 - refresh BetterRepository's Ultrascripts guides and V1.7 release wording
 - keep the Enhanced and Required templates aligned with BetterRepository
-- build Brainiac, Statboy, and Chronos V2 after PC/mobile resync
+- build Brainiac, Statboy, and Chronos V2 after the docs/release wording pass
 - upload the Firefox Add-ons version
 - start Reddit teasers, final bugfixes, and launch polish
 
 Completed finish-line work:
 
 - Widget V2 polish pass
+- BetterDungeon Mobile PC parity resync
+- BetterDungeon Mobile release-distribution polish
 
 ## Active Work
 
@@ -68,8 +68,6 @@ Goal: make shipped modules feel good in real scripts, not merely test-passing.
 
 Current priority:
 
-- PC/mobile Ultrascripts parity
-- mobile build release polish
 - SDK readiness for Brainiac and Statboy
 - Clock/Weather/Geolocation readiness for Chronos V2
 
@@ -90,14 +88,12 @@ Planned after module polish:
 
 ## V2 Release Sequence
 
-1. Resync mobile with PC Ultrascripts behavior.
-2. Polish the mobile build for release.
-3. Refresh and verify BetterRepository's Ultrascripts guides.
-4. Update BetterRepository V1.7 What's New and release wording.
-5. Build Brainiac, Statboy, and Chronos V2.
-6. Upload the Firefox Add-ons version of BetterDungeon.
-7. Begin Reddit teasers, final bugfixes, and polish.
-8. Release BetterDungeon V2 and BetterRepository V1.7.
+1. Refresh and verify BetterRepository's Ultrascripts guides.
+2. Update BetterRepository V1.7 What's New and release wording.
+3. Build Brainiac, Statboy, and Chronos V2.
+4. Upload the Firefox Add-ons version of BetterDungeon.
+5. Begin Reddit teasers, final bugfixes, and polish.
+6. Release BetterDungeon V2 and BetterRepository V1.7.
 
 ## Later
 
