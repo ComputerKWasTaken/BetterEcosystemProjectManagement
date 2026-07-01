@@ -21,11 +21,11 @@ Done:
 - Chromium, Gecko/Firefox, and Android WebView support
 - completed AI module with stable `status`/`query` contract
 - completed V2 Widget polish pass
+- PC/mobile Ultrascripts behavior resync
+- mobile build release polish
 
 Not done:
 
-- PC/mobile Ultrascripts behavior resync
-- mobile build release polish
 - BetterRepository V1.7 Ultrascripts guide refresh
 - BetterRepository V1.7 What's New and release wording refresh
 - three production showcase scripts
