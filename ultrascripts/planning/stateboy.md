@@ -54,13 +54,13 @@ Minimum Confidence: 0.65
 # The minimum AI confidence (0.0 to 1.0) required to apply a change.
 
 Changelog Enabled: On
-# When On, accepted AI updates are written to the Stateboy card Notes and shown to the AI updater.
+# When On, AI updates and manual Stateboy card edits are written to Notes and shown to the AI updater.
 
 AI Changelog Entries: 6
-# How many recent accepted changes the AI updater sees.
+# How many recent changes the AI updater sees.
 
 Notes Changelog Entries: 20
-# How many recent accepted changes are mirrored into the Stateboy card Notes.
+# How many recent changes are mirrored into the Stateboy card Notes.
 ```
 
 The settings card replaces commands entirely. Stateboy does not depend on `state.message`.
@@ -73,8 +73,8 @@ The settings card replaces commands entirely. Stateboy does not depend on `state
 - If `Stateboy Enabled` is off, Stateboy does not inject context, run AI, or publish widgets.
 - Context injection injects the state card text as-is, so the model sees the same sheet the player edits.
 - AI updates are asynchronous and validated on a later hook.
-- Accepted AI updates are logged with old value, new value, confidence, reason, and action count.
-- When changelogging is enabled, Stateboy mirrors recent accepted updates into the `Stateboy` card Notes and includes a bounded recent-change list in future AI updater prompts.
+- Accepted AI updates and manual Story Card edits are logged with old value, new value, source, reason, and action count.
+- When changelogging is enabled, Stateboy mirrors recent AI/manual updates into the `Stateboy` card Notes and includes a bounded recent-change list in future AI updater prompts.
 - Widget publishing is display-first and keyed by `info.actionCount`.
 
 ## AI Contract
@@ -178,18 +178,18 @@ Minimum Confidence: 0.65
 # The minimum AI confidence (0.0 to 1.0) required to apply a change.
 
 Changelog Enabled: On
-# When On, accepted AI updates are written to the Stateboy card Notes and shown to the AI updater.
+# When On, AI updates and manual Stateboy card edits are written to Notes and shown to the AI updater.
 
 AI Changelog Entries: 6
-# How many recent accepted changes the AI updater sees.
+# How many recent changes the AI updater sees.
 
 Notes Changelog Entries: 20
-# How many recent accepted changes are mirrored into the Stateboy card Notes.
+# How many recent changes are mirrored into the Stateboy card Notes.
 ```
 
 If AI is disabled, Stateboy still injects your state sheet into context, but it will not modify values. If Widgets are enabled, BetterDungeon can show a live dashboard with XP bars, level stats, inventory lists, status badges, and recent update summaries.
 
-Stateboy also keeps a changelog of accepted AI updates. The changelog shows what changed, when it changed, the AI confidence, and the reason for the change. Recent entries are fed back into the updater so it is less likely to repeat the same XP reward, stamina drop, relationship shift, or quest update on later turns.
+Stateboy also keeps a changelog of accepted AI updates and manual edits to the Stateboy card. The changelog shows what changed, when it changed, whether AI or the user changed it, the AI confidence when relevant, and the reason for the change. Recent entries are fed back into the updater so it is less likely to repeat the same XP reward, stamina drop, relationship shift, or quest update on later turns.
 
 The goal is to make state tracking plug-and-play for scenario authors without forcing everyone to write JSON, commands, or complex scripting systems.
 
