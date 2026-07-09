@@ -56,8 +56,8 @@ Minimum Confidence: 0.65
 Changelog Enabled: On
 # When On, accepted AI updates are written to Notes and shown to the AI updater.
 
-User Modification Changelog Enabled: Off
-# When On, manual Stateboy card add/remove edits are written to Notes and shown to the AI updater.
+User Modification Changelog Enabled: On
+# When On, manual Stateboy card value/add/remove edits are written to Notes and shown to the AI updater.
 
 AI Changelog Entries: 6
 # How many recent changes the AI updater sees.
@@ -77,7 +77,7 @@ The settings card replaces commands entirely. Stateboy does not depend on `state
 - Context injection injects the state card text as-is, so the model sees the same sheet the player edits.
 - AI updates are asynchronous and validated on a later hook.
 - Accepted AI updates are logged with old value, new value, source, reason, and action count.
-- Manual user changelogging is separate, off by default, and logs only structural add/remove edits when enabled.
+- Manual user changelogging is separate and logs value/add/remove edits when enabled, with no-op guards to prevent normalized value loops.
 - When changelogging is enabled, Stateboy mirrors recent updates into the `Stateboy` card Notes and includes a bounded recent-change list in future AI updater prompts.
 - Widget publishing is display-first and keyed by `info.actionCount`.
 
@@ -184,8 +184,8 @@ Minimum Confidence: 0.65
 Changelog Enabled: On
 # When On, accepted AI updates are written to Notes and shown to the AI updater.
 
-User Modification Changelog Enabled: Off
-# When On, manual Stateboy card add/remove edits are written to Notes and shown to the AI updater.
+User Modification Changelog Enabled: On
+# When On, manual Stateboy card value/add/remove edits are written to Notes and shown to the AI updater.
 
 AI Changelog Entries: 6
 # How many recent changes the AI updater sees.
@@ -196,7 +196,7 @@ Notes Changelog Entries: 20
 
 If AI is disabled, Stateboy still injects your state sheet into context, but it will not modify values. If Widgets are enabled, BetterDungeon can show a live dashboard with XP bars, level stats, inventory lists, status badges, and recent update summaries.
 
-Stateboy also keeps a changelog of accepted AI updates. Manual add/remove edits can be logged too, but that is controlled by a separate opt-in setting so ordinary value corrections never create changelog loops. Recent entries are fed back into the updater so it is less likely to repeat the same XP reward, stamina drop, relationship shift, or quest update on later turns.
+Stateboy also keeps a changelog of accepted AI updates. Manual value/add/remove edits can be logged too, using raw Story Card change detection and no-op guards so ordinary value corrections inform the updater without creating changelog loops. Recent entries are fed back into the updater so it is less likely to repeat the same XP reward, stamina drop, relationship shift, or quest update on later turns.
 
 The goal is to make state tracking plug-and-play for scenario authors without forcing everyone to write JSON, commands, or complex scripting systems.
 
