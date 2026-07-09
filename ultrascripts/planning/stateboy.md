@@ -73,7 +73,7 @@ Stateboy uses three Story Cards:
 Add categories with ## Category Name.
 Add states as Name: value.
 Put descriptions in parentheses after values.
-Hide a state from widgets with [widget: off].
+Use directives like [widget: off, context: off, ai: readonly].
 ```
 
 The settings card replaces commands entirely. Stateboy does not depend on `state.message`.
@@ -85,14 +85,33 @@ The settings card replaces commands entirely. Stateboy does not depend on `state
 - Each hook ensures all three Story Cards exist.
 - `Stateboy` and `Stateboy Settings` sync into `state.stateboy`; `Stateboy Guide` is informational only.
 - If `Stateboy Enabled` is off, Stateboy does not inject context, run AI, or publish widgets.
-- Context injection injects the state card text as-is, so the model sees the same sheet the player edits.
+- Context injection uses the state sheet, filters `context: off` states, strips directive metadata, and drops empty categories.
 - AI updates are asynchronous and validated on a later hook.
 - Accepted AI updates are logged with old value, new value, source, reason, and action count.
 - Manual user changelogging is separate and logs value/add/remove edits when enabled, with no-op guards to prevent normalized value loops.
 - When changelogging is enabled, Stateboy mirrors recent updates into the `Stateboy` card Notes and includes a bounded recent-change list in future AI updater prompts.
 - Widget publishing is display-first and keyed by `info.actionCount`.
 - Runtime status, AI status, and update-summary widgets are hidden unless `Debug Mode` is on.
-- State directives can hide individual states from widgets, e.g. `Secret: On [widget: off]`.
+- State directives can control widget visibility, story-context visibility, and AI updater modification permission.
+
+## State Directives
+
+Directives are trailing bracket metadata on state lines or category headers:
+
+```text
+## Secrets [widget: off, context: off, ai: readonly]
+VillainPlan: Active
+PublicClue: Found [context: on]
+SecretFlag: On [widget: off, context: off, ai: readonly]
+```
+
+Category directives act as defaults. State directives override category directives. Official V1 keys are:
+
+- `widget: on/off`
+- `context: on/off`
+- `ai: on/readonly/off`
+
+Directive domains are independent. `widget: off` only hides from Widgets, `context: off` only hides from normal story context, and `ai: readonly` or `ai: off` prevents AI updater changes. Existing widget aliases such as `hiddenWidget: true` still work.
 
 ## AI Contract
 
@@ -114,7 +133,7 @@ Stateboy sends schema-backed JSON to `ai.query`:
 }
 ```
 
-V1 accepts only `operation: "set"` for existing states. Unknown categories/states, wrong-type values, malformed responses, low-confidence proposals, and add/delete/rename attempts are rejected.
+V1 accepts only `operation: "set"` for existing states. Unknown categories/states, wrong-type values, malformed responses, low-confidence proposals, AI-readonly states, and add/delete/rename attempts are rejected.
 
 ## Widget Dashboard
 
@@ -124,10 +143,11 @@ When Widgets are enabled, Stateboy publishes state widgets by default. Debug-onl
 - AI status.
 - Last accepted update summary.
 
-Individual states can opt out of widgets with a trailing directive:
+Individual states or categories can opt out of widgets with directives:
 
 ```text
 SecretFlag: On (Hidden plot flag) [widget: off]
+## Secrets [widget: off]
 ```
 
 State mapping:
@@ -204,7 +224,7 @@ Notes Changelog Entries: 20
 # How many recent changes are mirrored into the Stateboy card Notes.
 ```
 
-Stateboy would also create a `Stateboy Guide` card with examples, supported value formats, description guidance, settings explanations, changelog notes, and Widget directive examples. The guide is help text only; the live `Stateboy` card remains the source of truth.
+Stateboy would also create a `Stateboy Guide` card with examples, supported value formats, description guidance, settings explanations, changelog notes, and State Directive examples. The guide is help text only; the live `Stateboy` card remains the source of truth.
 
 If AI is disabled, Stateboy still injects your state sheet into context, but it will not modify values. If Widgets are enabled, BetterDungeon can show a live dashboard with XP bars, level stats, inventory lists, status badges, and recent update summaries.
 
