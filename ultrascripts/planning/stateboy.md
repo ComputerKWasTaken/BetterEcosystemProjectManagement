@@ -2,10 +2,11 @@
 
 ## Implementation Plan
 
-Stateboy is a Requires Ultrascripts AI Dungeon script for readable, AI-assisted state management. It uses two Story Cards:
+Stateboy is a Requires Ultrascripts AI Dungeon script for readable, AI-assisted state management. It uses three Story Cards:
 
 - `Stateboy` for the live state sheet.
 - `Stateboy Settings` for configuration.
+- `Stateboy Guide` for informational help.
 
 When enabled, Stateboy parses the state sheet, injects the current state into model context, optionally asks the Ultrascripts AI module to propose updates, validates those updates in script code, rewrites accepted state changes, and optionally publishes a Widget dashboard.
 
@@ -22,17 +23,6 @@ Level: 1
 
 ## Inventory
 Inventory: empty
-
-# How to use Stateboy
-# Add a category with ## Category Name
-# Add a state with Name: value
-# Stateboy guesses the type from how you write the value:
-# number: a plain number like 5 or -3.5
-# ratio: current/max like 20/100
-# percent: a number followed by % like 85%
-# boolean: On/Off, True/False, or Yes/No
-# list: comma-separated values like Sword, Shield, Potion
-# string: anything else
 ```
 
 `Stateboy Settings`:
@@ -69,13 +59,31 @@ Notes Changelog Entries: 20
 # How many recent changes are mirrored into the Stateboy card Notes.
 ```
 
+`Stateboy Guide`:
+
+```text
+# Stateboy Guide
+
+Stateboy uses three Story Cards:
+- Stateboy: the live state sheet and source of truth.
+- Stateboy Settings: runtime configuration.
+- Stateboy Guide: this help card. It is informational only.
+
+## State Sheet Format
+Add categories with ## Category Name.
+Add states as Name: value.
+Put descriptions in parentheses after values.
+Hide a state from widgets with [widget: off].
+```
+
 The settings card replaces commands entirely. Stateboy does not depend on `state.message`.
 
 ## Runtime Behavior
 
 - Library exposes `Stateboy(hook, text)`.
 - Input, Context, and Output modifiers call the library function.
-- Each hook ensures both Story Cards exist and syncs them into `state.stateboy`.
+- Each hook ensures all three Story Cards exist.
+- `Stateboy` and `Stateboy Settings` sync into `state.stateboy`; `Stateboy Guide` is informational only.
 - If `Stateboy Enabled` is off, Stateboy does not inject context, run AI, or publish widgets.
 - Context injection injects the state card text as-is, so the model sees the same sheet the player edits.
 - AI updates are asynchronous and validated on a later hook.
@@ -150,17 +158,6 @@ Level: 1
 
 ## Inventory
 Inventory: empty
-
-# How to use Stateboy
-# Add a category with ## Category Name
-# Add a state with Name: value
-# Stateboy guesses the type from how you write the value:
-# number: a plain number like 5 or -3.5
-# ratio: current/max like 20/100
-# percent: a number followed by % like 85%
-# boolean: On/Off, True/False, or Yes/No
-# list: comma-separated values like Sword, Shield, Potion
-# string: anything else
 ```
 
 Stateboy reads this card, converts it into structured internal state, and injects the state sheet directly into the story context so the model can actually account for those values while writing.
@@ -206,6 +203,8 @@ AI Changelog Entries: 6
 Notes Changelog Entries: 20
 # How many recent changes are mirrored into the Stateboy card Notes.
 ```
+
+Stateboy would also create a `Stateboy Guide` card with examples, supported value formats, description guidance, settings explanations, changelog notes, and Widget directive examples. The guide is help text only; the live `Stateboy` card remains the source of truth.
 
 If AI is disabled, Stateboy still injects your state sheet into context, but it will not modify values. If Widgets are enabled, BetterDungeon can show a live dashboard with XP bars, level stats, inventory lists, status badges, and recent update summaries.
 
