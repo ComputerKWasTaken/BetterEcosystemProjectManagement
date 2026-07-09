@@ -25,7 +25,7 @@ Current next step:
 
 - refresh BetterRepository's Ultrascripts guides and V1.7 release wording
 - keep the Enhanced and Required templates aligned with BetterRepository
-- build Brainiac, Statboy, and Chronos V2 after the docs/release wording pass
+- build Brainiac and Chronos V2 after the docs/release wording pass
 - upload the Firefox Add-ons version
 - start Reddit teasers, final bugfixes, and launch polish
 
@@ -34,6 +34,7 @@ Completed finish-line work:
 - Widget V2 polish pass
 - BetterDungeon Mobile PC parity resync
 - BetterDungeon Mobile release-distribution polish
+- Stateboy Required Ultrascripts showcase script
 
 ## Active Work
 
@@ -68,7 +69,7 @@ Goal: make shipped modules feel good in real scripts, not merely test-passing.
 
 Current priority:
 
-- SDK readiness for Brainiac and Statboy
+- SDK readiness for Brainiac
 - Clock/Weather/Geolocation readiness for Chronos V2
 
 Tracking doc:
@@ -81,8 +82,9 @@ Planned after module polish:
 
 - **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
   management using the AI module.
-- **Statboy** - Requires Ultrascripts. Schema-based stat management with AI
-  update proposals, validation, and Widget dashboards.
+- **Stateboy** - Requires Ultrascripts. Readable Story Card state management
+  with AI update proposals, script-side validation, State Directives, and Widget
+  dashboards. Built.
 - **Chronos V2** - Enhanced with Ultrascripts. Vanilla-safe timekeeping with
   optional real time/weather sync and widgets.
 
@@ -90,7 +92,7 @@ Planned after module polish:
 
 1. Refresh and verify BetterRepository's Ultrascripts guides.
 2. Update BetterRepository V1.7 What's New and release wording.
-3. Build Brainiac, Statboy, and Chronos V2.
+3. Build Brainiac and Chronos V2.
 4. Upload the Firefox Add-ons version of BetterDungeon.
 5. Begin Reddit teasers, final bugfixes, and polish.
 6. Release BetterDungeon V2 and BetterRepository V1.7.

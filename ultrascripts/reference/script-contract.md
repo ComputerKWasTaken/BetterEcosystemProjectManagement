@@ -3,7 +3,7 @@
 ## Purpose
 
 This is the private reference for public BetterRepository examples, the
-Enhanced/Required starter templates, and the three upcoming showcase scripts.
+Enhanced/Required starter templates, and the showcase scripts.
 
 Use it when writing or reviewing:
 
@@ -12,7 +12,7 @@ Use it when writing or reviewing:
 - BetterDungeon example templates
 - BetterRepository raw-script template copies
 - Brainiac
-- Statboy
+- Stateboy
 - Chronos V2
 
 Implementation remains the source of truth. This file exists so examples do not
@@ -189,25 +189,28 @@ Design contract:
 - avoid same-turn AI assumptions
 - expose clear player-facing setup messages when AI is unavailable
 
-### Statboy
+### Stateboy
 
 Mode: Requires Ultrascripts.
 
 Required capabilities:
 
 - heartbeat
-- `sdk.config`
-- rebuilt AI query contract
+- `ai.status`
+- `ai.query`
 - `widget`
 
 Design contract:
 
-- authors define stat schemas
-- the AI module proposes structured stat updates through JSON queries
-- script code validates, clamps, and applies updates
-- Widget renders the current state
-- invalid AI output must fail closed
-- stat schema/card state must remain understandable without inspecting console
+- `Stateboy` Story Card is the readable state sheet and source of truth
+- `Stateboy Settings` controls runtime, AI, Widgets, confidence, and changelogging
+- `Stateboy Guide` explains syntax and usage without affecting runtime behavior
+- the AI module proposes schema-backed JSON state updates after generated turns
+- script code validates known states, types, confidence, clamps, and AI-readonly directives before applying updates
+- State Directives use only canonical `widget`, `context`, and `ai` keys
+- Widget renders the current visible state, while Debug Mode gates runtime/status widgets
+- manual card edits recalibrate state and may be logged without creating no-op loops
+- AI unavailable means no automatic updates, but manual state parsing and context injection still work
 
 ### Chronos V2
 

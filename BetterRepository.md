@@ -44,8 +44,9 @@ Other completed public documentation pieces:
   examples.
 - Refresh public Ultrascripts guides before V1.7 so they fully match the live
   Widget, SDK, template, and mobile behavior contracts.
-- Add or update public script entries for Brainiac, Statboy, and Chronos V2
-  once they are built.
+- Keep the Stateboy public script entry aligned with the raw script.
+- Add or update public script entries for Brainiac and Chronos V2 once they are
+  built.
 - Cross-link showcase scripts to the module guides they demonstrate.
 
 ### V1.7 Release Wording
@@ -56,7 +57,8 @@ The V1.7 What's New story should emphasize:
 - Story Card command presets and preset documentation.
 - Ultrascripts guide refresh for BetterDungeon V2.
 - Enhanced and Required Ultrascripts templates updated for Widget.
-- Brainiac, Statboy, and Chronos V2 entries once the showcase scripts are built.
+- Stateboy as the first Required Ultrascripts showcase script.
+- Brainiac and Chronos V2 entries once those showcase scripts are built.
 
 Do not present V1.7 as a full major-version relaunch. This is a substantial
 public site release that supports the BetterDungeon V2 launch.
@@ -79,7 +81,7 @@ High priority:
 - Add scenario-author examples that combine modules, such as geolocation-backed
   weather.
 - Cross-link BetterDungeon popup setup steps with relevant module guides.
-- Add deeper AI recipes once Brainiac and Statboy reveal the most useful public
+- Add deeper AI recipes once Brainiac and Stateboy reveal the most useful public
   patterns.
 - Tighten non-Ultrascripts guide wording where V1.7 changed the UI or available
   preset data.
@@ -92,8 +94,8 @@ High priority:
 ## Known Issues
 
 - Non-Ultrascripts guide info dumps still contain scaffold TODOs.
-- V1.7 What's New should be rechecked after Brainiac, Statboy, and Chronos V2
-  exist so launch copy does not overpromise missing script entries.
+- V1.7 What's New should be rechecked after Brainiac and Chronos V2 exist so
+  launch copy does not overpromise missing script entries.
 
 ## Canonical Inputs
 

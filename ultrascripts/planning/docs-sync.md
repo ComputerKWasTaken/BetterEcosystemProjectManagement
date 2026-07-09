@@ -168,16 +168,17 @@ Immediate focus:
 - helper alignment for Widget interactions and widget state
 - PC/mobile Ultrascripts parity and mobile release polish claims
 - BetterRepository V1.7 What's New and release wording
-- any AI/SDK guidance needed for Brainiac and Statboy
+- any AI/SDK guidance needed for Brainiac and Stateboy
 - any Clock/Weather/Geolocation guidance needed for Chronos V2
 - keeping Enhanced and Required templates identical across BetterDungeon and
   BetterRepository after any helper changes
 
 ## Showcase Script Documentation Path
 
-When Brainiac, Statboy, and Chronos V2 are built:
+When Brainiac and Chronos V2 are built:
 
-1. Add or update their BetterRepository script entries.
+1. Add or update their BetterRepository script entries; keep Stateboy aligned
+   with the raw script.
 2. Add public guide links where the scripts demonstrate module patterns.
 3. Update Cookbook recipes if they introduce a reusable pattern.
 4. Update [Script Contract Reference](../reference/script-contract.md)
@@ -193,8 +194,8 @@ Before calling V1.7 copy final:
 - Copy mentions the design refresh and navigation/search polish.
 - Copy mentions Story Card command presets.
 - Copy mentions refreshed Ultrascripts guides/templates for BetterDungeon V2.
-- Copy does not claim Brainiac, Statboy, or Chronos V2 are shipped until their
-  public script entries exist.
+- Copy can claim Stateboy as shipped, but does not claim Brainiac or Chronos V2
+  are shipped until their public script entries exist.
 - Public guides avoid pre-rename module names and retired Widget display knobs.
 
 ## Verification Before Calling Docs Synced

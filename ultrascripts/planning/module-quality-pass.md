@@ -2,9 +2,10 @@
 
 ## Purpose
 
-This is the active finish-line pass before mobile parity, BetterRepository V1.7
-docs polish, and the Brainiac/Statboy/Chronos V2 showcase scripts. The AI
-module is complete enough for V2, and the Widget polish pass is complete.
+This is the active finish-line pass before BetterRepository V1.7 docs polish
+and the remaining Brainiac/Chronos V2 showcase scripts. The AI module is
+complete enough for V2, the Widget polish pass is complete, and Stateboy is
+built.
 The active work is now PC/mobile Ultrascripts parity and release prep.
 
 Ultrascripts already works. This pass is not a redesign. It is a usefulness
@@ -49,7 +50,7 @@ Completed review targets:
 Likely showcase needs are covered for V2:
 
 - Brainiac status/dashboard widgets
-- Statboy stat bars/counters/tags
+- Stateboy state bars/counters/tags
 - Chronos V2 time/weather widgets
 
 Widget exit result:
@@ -90,7 +91,7 @@ For any touched module:
 | Script | Required module polish before build |
 |---|---|
 | Brainiac | AI, Widget, SDK |
-| Statboy | AI, Widget, SDK |
+| Stateboy | Done: AI, Widget, SDK |
 | Chronos V2 | Widget, Clock, Weather, Geolocation, SDK as needed |
 
 ## Release-Path Order
@@ -99,7 +100,7 @@ For any touched module:
 2. Polish the mobile build for release.
 3. Refresh BetterRepository Ultrascripts guides.
 4. Update BetterRepository V1.7 What's New and release wording.
-5. Build Brainiac, Statboy, and Chronos V2.
+5. Build Brainiac and Chronos V2.
 6. Upload Firefox Add-ons version.
 7. Begin Reddit teasers, final bugfixes, and polish.
 8. Release BetterDungeon V2 and BetterRepository V1.7.

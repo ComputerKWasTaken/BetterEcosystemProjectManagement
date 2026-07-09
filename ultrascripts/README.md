@@ -26,7 +26,7 @@ The active work is finish-line work:
 - update BetterRepository V1.7 What's New and release wording
 - keep the Enhanced and Required starter templates aligned with the live SDK
   helper contract
-- build the three showcase scripts: Brainiac, Statboy, and Chronos V2
+- build the remaining showcase scripts: Brainiac and Chronos V2
 - upload the Firefox Add-ons version of BetterDungeon
 - begin Reddit teasers, final bugfixes, and polish
 - use those results to finish BetterDungeon V2 and BetterRepository V1.7 launch
@@ -35,6 +35,9 @@ The active work is finish-line work:
 Completed finish-line work:
 
 - Widget V2 polish pass
+- PC/mobile Ultrascripts behavior resync
+- mobile build release-distribution polish
+- Stateboy Required Ultrascripts showcase script
 
 ## Start Here
 

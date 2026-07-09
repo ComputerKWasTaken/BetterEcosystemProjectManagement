@@ -305,7 +305,7 @@ Review questions:
 - Are response fields the fields authors actually need?
 - Does mobile/narrow UI behavior hold where relevant?
 - Is the regression script still representative?
-- Would the module be comfortable to show in Brainiac, Statboy, or Chronos V2?
+- Would the module be comfortable to show in Stateboy, Brainiac, or Chronos V2?
 
 Current order is tracked in [Module Quality Pass](../planning/module-quality-pass.md).
 

@@ -23,12 +23,13 @@ Done:
 - completed V2 Widget polish pass
 - PC/mobile Ultrascripts behavior resync
 - mobile build release polish
+- Stateboy Required Ultrascripts showcase script
 
 Not done:
 
 - BetterRepository V1.7 Ultrascripts guide refresh
 - BetterRepository V1.7 What's New and release wording refresh
-- three production showcase scripts
+- Brainiac and Chronos V2 showcase scripts
 - BetterDungeon V2 release prep
 - BetterRepository V1.7 release prep
 
@@ -49,7 +50,7 @@ Completed:
 
 Success looks like:
 
-- Widget feels comfortable to ship in Brainiac, Statboy, and Chronos V2
+- Widget feels comfortable to ship in Stateboy, Brainiac, and Chronos V2
 - the regression suite still reflects real author usage
 - helper examples match the live interaction contract
 - mobile and desktop behavior both feel intentional
@@ -85,13 +86,13 @@ Watch:
 
 ### 4. Showcase Scripts
 
-After Widget polish, build:
+Current showcase status:
 
-1. **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
+1. **Stateboy** - Requires Ultrascripts. Readable Story Card state management
+   with AI update proposals, deterministic validation, State Directives, and
+   Widget dashboards. Built.
+2. **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
    management through the shipped AI module.
-2. **Statboy** - Requires Ultrascripts. Schema-based stat management where
-   authors define stats, AI proposes structured updates, script logic
-   validates/clamps them, and Widget renders current state.
 3. **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps a
    vanilla timekeeping path but adds BetterDungeon-powered time/weather sync and
    widgets when Ultrascripts is available.
@@ -108,7 +109,8 @@ Before release, BetterRepository needs one focused pass:
 - mention the design refresh, Story Card command presets, Ultrascripts guide
   refresh, and BetterDungeon V2 support without overclaiming unfinished
   showcase scripts
-- add Brainiac, Statboy, and Chronos V2 script entries after they exist
+- keep Stateboy's script entry aligned with the raw script
+- add Brainiac and Chronos V2 script entries after they exist
 
 ## Shipped Modules
 
@@ -151,7 +153,7 @@ Widget polish complete
 -> mobile build release polish
 -> BetterRepository Ultrascripts guide refresh
 -> BetterRepository V1.7 What's New/release wording
--> Brainiac, Statboy, and Chronos V2
+-> Brainiac and Chronos V2
 -> Firefox Add-ons publishing
 -> Reddit teasers, final bugfixes, and polish
 -> BetterDungeon V2 + BetterRepository V1.7 release
@@ -205,8 +207,8 @@ Good ideas, not required for V2:
 - WebFetch examples must respect consent, blocked targets, and late responses.
 - Mobile/PC parity should be checked after final module/template changes, not
   assumed from old smoke tests.
-- BetterRepository V1.7 copy should not promise Brainiac, Statboy, or Chronos V2
-  until their entries are built.
+- BetterRepository V1.7 copy can mention Stateboy as built, but should not
+  promise Brainiac or Chronos V2 until their entries are built.
 
 ## Practical Next Action
 
@@ -217,4 +219,4 @@ Start with PC/mobile Ultrascripts resync:
 2. Polish the mobile release build around the completed Widget tray/minimize
    behavior.
 3. Refresh BetterRepository guide/copy surfaces for the final V2 contract.
-4. Build Brainiac, Statboy, and Chronos V2 against the completed module set.
+4. Build Brainiac and Chronos V2 against the completed module set.
