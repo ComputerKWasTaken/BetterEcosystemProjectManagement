@@ -50,6 +50,9 @@ AI Enabled: On
 Widgets Enabled: On
 # When On, Stateboy publishes a widget dashboard.
 
+Debug Mode: Off
+# When On, Stateboy shows runtime, AI, and update-summary debug widgets.
+
 Minimum Confidence: 0.65
 # The minimum AI confidence (0.0 to 1.0) required to apply a change.
 
@@ -80,6 +83,8 @@ The settings card replaces commands entirely. Stateboy does not depend on `state
 - Manual user changelogging is separate and logs value/add/remove edits when enabled, with no-op guards to prevent normalized value loops.
 - When changelogging is enabled, Stateboy mirrors recent updates into the `Stateboy` card Notes and includes a bounded recent-change list in future AI updater prompts.
 - Widget publishing is display-first and keyed by `info.actionCount`.
+- Runtime status, AI status, and update-summary widgets are hidden unless `Debug Mode` is on.
+- State directives can hide individual states from widgets, e.g. `Secret: On [widget: off]`.
 
 ## AI Contract
 
@@ -105,12 +110,17 @@ V1 accepts only `operation: "set"` for existing states. Unknown categories/state
 
 ## Widget Dashboard
 
-When Widgets are enabled, Stateboy publishes:
+When Widgets are enabled, Stateboy publishes state widgets by default. Debug-only widgets are available when `Debug Mode` is on:
 
 - Stateboy running status.
 - AI status.
 - Last accepted update summary.
-- One widget for each state in the sheet.
+
+Individual states can opt out of widgets with a trailing directive:
+
+```text
+SecretFlag: On (Hidden plot flag) [widget: off]
+```
 
 State mapping:
 
@@ -177,6 +187,9 @@ AI Enabled: On
 
 Widgets Enabled: On
 # When On, Stateboy publishes a widget dashboard.
+
+Debug Mode: Off
+# When On, Stateboy shows runtime, AI, and update-summary debug widgets.
 
 Minimum Confidence: 0.65
 # The minimum AI confidence (0.0 to 1.0) required to apply a change.
