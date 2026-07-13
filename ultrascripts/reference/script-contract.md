@@ -11,9 +11,9 @@ Use it when writing or reviewing:
 - `bd.us` helper examples
 - BetterDungeon example templates
 - BetterRepository raw-script template copies
-- Brainiac
-- Stateboy
-- Chronos V2
+- Stateboy (built)
+- Brainiac (post-V2)
+- Chronos V2 (post-V2)
 
 Implementation remains the source of truth. This file exists so examples do not
 quietly diverge from the live runtime.
@@ -167,9 +167,12 @@ itself. Use request ids/state if a script needs stricter freshness.
 
 ## Showcase Script Contracts
 
+Stateboy is built and ships with BetterDungeon V2. Brainiac and Chronos V2 are
+planned showcase scripts for the first post-V2 update.
+
 ### Brainiac
 
-Mode: Requires Ultrascripts.
+Mode: Requires Ultrascripts. Post-V2.
 
 Required capabilities:
 
@@ -214,7 +217,7 @@ Design contract:
 
 ### Chronos V2
 
-Mode: Enhanced with Ultrascripts.
+Mode: Enhanced with Ultrascripts. Post-V2.
 
 Optional capabilities:
 
@@ -672,7 +675,7 @@ Rules:
 - Read `permissionState`, not `state`.
 - Read `accuracy`, not `accuracyMeters`.
 - Use permission-first flows in public examples.
-- Chronos V2 should support fixed-place weather without requiring geolocation.
+- A future Chronos V2 should support fixed-place weather without requiring geolocation.
 
 ### Weather
 

@@ -95,7 +95,7 @@ Use when changing:
 - `../../../BetterDungeon/modules/clock/module.js`
 - timezone normalization
 - date/time formatting
-- Chronos V2 time helpers
+- future Chronos V2 time helpers
 
 Special attention:
 
@@ -107,7 +107,7 @@ Special attention:
 Use together when changing:
 
 - location-to-weather flows
-- Chronos V2 real-world sync
+- future Chronos V2 real-world sync
 - permission-first examples
 - place lookup or Open-Meteo integration
 

@@ -3,9 +3,9 @@
 ## Purpose
 
 This is the active finish-line pass before BetterRepository V1.7 docs polish
-and the remaining Brainiac/Chronos V2 showcase scripts. The AI module is
-complete enough for V2, the Widget polish pass is complete, and Stateboy is
-built.
+and the BetterDungeon V2 release. The AI module is complete enough for V2, the
+Widget polish pass is complete, and Stateboy is built. Brainiac and Chronos V2
+are deferred until after the V2 release.
 The active work is now PC/mobile Ultrascripts parity and release prep.
 
 Ultrascripts already works. This pass is not a redesign. It is a usefulness
@@ -47,11 +47,11 @@ Completed review targets:
 - public widget examples
 - starter template dashboard publishing
 
-Likely showcase needs are covered for V2:
+Likely showcase needs are covered for V2 and future post-V2 scripts:
 
-- Brainiac status/dashboard widgets
 - Stateboy state bars/counters/tags
-- Chronos V2 time/weather widgets
+- Brainiac status/dashboard widgets (post-V2)
+- Chronos V2 time/weather widgets (post-V2)
 
 Widget exit result:
 
@@ -69,9 +69,9 @@ After Widget, review only the areas needed for the launch path:
 - PC/mobile Ultrascripts parity and mobile build release polish
 - BetterRepository V1.7 Ultrascripts guide/copy refresh
 - `sdk` for gating, display hints, and template alignment
-- `clock`, `weather`, and `geolocation` for Chronos V2
+- `clock`, `weather`, and `geolocation` for a future Chronos V2
 - `ai` only for maintenance if docs/examples drift from the shipped contract
-- `webfetch`, `system`, and `network` only if a showcase script truly needs them
+- `webfetch`, `system`, and `network` only if a post-V2 showcase script truly needs them
 
 ## Standard Review Questions
 
@@ -90,9 +90,9 @@ For any touched module:
 
 | Script | Required module polish before build |
 |---|---|
-| Brainiac | AI, Widget, SDK |
 | Stateboy | Done: AI, Widget, SDK |
-| Chronos V2 | Widget, Clock, Weather, Geolocation, SDK as needed |
+| Brainiac | AI, Widget, SDK (post-V2) |
+| Chronos V2 | Widget, Clock, Weather, Geolocation, SDK as needed (post-V2) |
 
 ## Release-Path Order
 
@@ -100,10 +100,10 @@ For any touched module:
 2. Polish the mobile build for release.
 3. Refresh BetterRepository Ultrascripts guides.
 4. Update BetterRepository V1.7 What's New and release wording.
-5. Build Brainiac and Chronos V2.
-6. Upload Firefox Add-ons version.
-7. Begin Reddit teasers, final bugfixes, and polish.
-8. Release BetterDungeon V2 and BetterRepository V1.7.
+5. Upload Firefox Add-ons version.
+6. Begin Reddit teasers, final bugfixes, and polish.
+7. Release BetterDungeon V2 and BetterRepository V1.7.
+8. Build Brainiac and Chronos V2 after the V2 release.
 
 ## Output Format For Each Review
 
@@ -135,7 +135,8 @@ This pass is done when:
 - Enhanced and Required templates remain aligned
 - public BetterRepository guides still match changed contracts
 - BetterRepository V1.7 release wording reflects the current public feature set
-- the next task can cleanly move through the showcase scripts and release prep
+- the next task can cleanly move into V2 release prep, with Brainiac and Chronos
+  V2 as post-V2 work
 
 ## Do Not Let This Pass Expand Into
 

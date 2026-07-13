@@ -25,9 +25,9 @@ Current next step:
 
 - refresh BetterRepository's Ultrascripts guides and V1.7 release wording
 - keep the Enhanced and Required templates aligned with BetterRepository
-- build Brainiac and Chronos V2 after the docs/release wording pass
 - upload the Firefox Add-ons version
 - start Reddit teasers, final bugfixes, and launch polish
+- release BetterDungeon V2 and BetterRepository V1.7
 
 Completed finish-line work:
 
@@ -69,8 +69,8 @@ Goal: make shipped modules feel good in real scripts, not merely test-passing.
 
 Current priority:
 
-- SDK readiness for Brainiac
-- Clock/Weather/Geolocation readiness for Chronos V2
+- SDK readiness for future showcase scripts
+- Clock/Weather/Geolocation readiness for a future Chronos V2
 
 Tracking doc:
 
@@ -78,24 +78,25 @@ Tracking doc:
 
 ### Showcase Scripts
 
-Planned after module polish:
-
-- **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
-  management using the AI module.
 - **Stateboy** - Requires Ultrascripts. Readable Story Card state management
   with AI update proposals, script-side validation, State Directives, and Widget
   dashboards. Built.
+- **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
+  management using the AI module. Post-V2.
 - **Chronos V2** - Enhanced with Ultrascripts. Vanilla-safe timekeeping with
-  optional real time/weather sync and widgets.
+  optional real time/weather sync and widgets. Post-V2.
 
 ## V2 Release Sequence
 
 1. Refresh and verify BetterRepository's Ultrascripts guides.
 2. Update BetterRepository V1.7 What's New and release wording.
-3. Build Brainiac and Chronos V2.
-4. Upload the Firefox Add-ons version of BetterDungeon.
-5. Begin Reddit teasers, final bugfixes, and polish.
-6. Release BetterDungeon V2 and BetterRepository V1.7.
+3. Upload the Firefox Add-ons version of BetterDungeon.
+4. Begin Reddit teasers, final bugfixes, and polish.
+5. Release BetterDungeon V2 and BetterRepository V1.7.
+
+## Post-V2
+
+- Build Brainiac and Chronos V2 as the first showcase scripts after launch.
 
 ## Later
 

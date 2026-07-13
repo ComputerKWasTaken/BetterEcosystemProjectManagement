@@ -159,8 +159,8 @@ All public AI Dungeon snippets should:
 ## Active Sync Priority
 
 The public docs are complete for the shipped module set. The current sync
-priority is keeping docs and templates stable while module polish and showcase
-scripts happen.
+priority is keeping docs and templates stable while module polish and V2 release
+prep happen. Brainiac and Chronos V2 are deferred until after the V2 release.
 
 Immediate focus:
 
@@ -168,14 +168,18 @@ Immediate focus:
 - helper alignment for Widget interactions and widget state
 - PC/mobile Ultrascripts parity and mobile release polish claims
 - BetterRepository V1.7 What's New and release wording
-- any AI/SDK guidance needed for Brainiac and Stateboy
-- any Clock/Weather/Geolocation guidance needed for Chronos V2
+- AI/SDK guidance needed for Stateboy
 - keeping Enhanced and Required templates identical across BetterDungeon and
   BetterRepository after any helper changes
 
+Post-V2 sync focus:
+
+- any AI/SDK guidance needed for Brainiac
+- any Clock/Weather/Geolocation guidance needed for Chronos V2
+
 ## Showcase Script Documentation Path
 
-When Brainiac and Chronos V2 are built:
+When Brainiac and Chronos V2 are built after the V2 release:
 
 1. Add or update their BetterRepository script entries; keep Stateboy aligned
    with the raw script.
@@ -183,8 +187,7 @@ When Brainiac and Chronos V2 are built:
 3. Update Cookbook recipes if they introduce a reusable pattern.
 4. Update [Script Contract Reference](../reference/script-contract.md)
    if a showcase reveals a better canonical example.
-5. Update project-level docs to move from "showcase scripts next" to release
-   prep.
+5. Update project-level docs to mark Brainiac and Chronos V2 as shipped.
 
 ## BetterRepository V1.7 Messaging Checklist
 

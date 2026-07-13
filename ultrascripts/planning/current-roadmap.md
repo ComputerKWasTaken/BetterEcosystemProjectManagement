@@ -29,9 +29,12 @@ Not done:
 
 - BetterRepository V1.7 Ultrascripts guide refresh
 - BetterRepository V1.7 What's New and release wording refresh
-- Brainiac and Chronos V2 showcase scripts
 - BetterDungeon V2 release prep
 - BetterRepository V1.7 release prep
+
+Post-V2:
+
+- Brainiac and Chronos V2 showcase scripts
 
 ## Active Workstream
 
@@ -50,7 +53,7 @@ Completed:
 
 Success looks like:
 
-- Widget feels comfortable to ship in Stateboy, Brainiac, and Chronos V2
+- Widget feels comfortable to ship in Stateboy and future showcase scripts
 - the regression suite still reflects real author usage
 - helper examples match the live interaction contract
 - mobile and desktop behavior both feel intentional
@@ -92,10 +95,10 @@ Current showcase status:
    with AI update proposals, deterministic validation, State Directives, and
    Widget dashboards. Built.
 2. **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
-   management through the shipped AI module.
+   management through the shipped AI module. Post-V2.
 3. **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps a
    vanilla timekeeping path but adds BetterDungeon-powered time/weather sync and
-   widgets when Ultrascripts is available.
+   widgets when Ultrascripts is available. Post-V2.
 
 ### 5. BetterRepository V1.7 Sync
 
@@ -110,7 +113,7 @@ Before release, BetterRepository needs one focused pass:
   refresh, and BetterDungeon V2 support without overclaiming unfinished
   showcase scripts
 - keep Stateboy's script entry aligned with the raw script
-- add Brainiac and Chronos V2 script entries after they exist
+- add Brainiac and Chronos V2 script entries in a post-V2 update
 
 ## Shipped Modules
 
@@ -118,10 +121,10 @@ Before release, BetterRepository needs one focused pass:
 |---|---|---|
 | `widget` | shipped, active polish focus | Player-visible module; current highest priority |
 | `webfetch` | shipped | Review consent/error ergonomics if a showcase script needs it |
-| `clock` | shipped | Ready for Chronos V2 time helpers |
+| `clock` | shipped | Ready for future Chronos V2 time helpers |
 | `sdk` | shipped | Keep heartbeat/SDK separation crisp |
-| `geolocation` | shipped | Review with Weather if Chronos V2 uses location |
-| `weather` | shipped | Ready for Chronos V2 weather sync after field-shape check |
+| `geolocation` | shipped | Review with Weather if a future Chronos V2 uses location |
+| `weather` | shipped | Ready for future Chronos V2 weather sync after field-shape check |
 | `network` | shipped | Best used for fallback hints, not hard gating |
 | `system` | shipped | Best used for layout/device hints, not brittle UA branches |
 | `ai` | shipped | Stable async `status`/`query` contract with text, JSON, thinking levels, and backend setup gating |
@@ -153,10 +156,10 @@ Widget polish complete
 -> mobile build release polish
 -> BetterRepository Ultrascripts guide refresh
 -> BetterRepository V1.7 What's New/release wording
--> Brainiac and Chronos V2
 -> Firefox Add-ons publishing
 -> Reddit teasers, final bugfixes, and polish
 -> BetterDungeon V2 + BetterRepository V1.7 release
+-> Brainiac and Chronos V2 (post-V2)
 ```
 
 Release prep should include:
@@ -219,4 +222,5 @@ Start with PC/mobile Ultrascripts resync:
 2. Polish the mobile release build around the completed Widget tray/minimize
    behavior.
 3. Refresh BetterRepository guide/copy surfaces for the final V2 contract.
-4. Build Brainiac and Chronos V2 against the completed module set.
+4. Release BetterDungeon V2 and BetterRepository V1.7.
+5. Build Brainiac and Chronos V2 after the V2 release.
