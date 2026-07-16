@@ -1,226 +1,91 @@
-# Current Roadmap
+# Ultrascripts Current Roadmap
 
 ## Status Snapshot
 
-Ultrascripts is in final polish. Treat the runtime and shipped module set as
-real infrastructure, not as an active construction project.
-
-Done:
-
-- core runtime
-- transport and write path
-- heartbeat discovery
-- state-card dispatch
-- request/response ops
-- module registry
-- popup integration
-- 9 shipped first-party modules
-- 9 dedicated module regression suites
-- Enhanced and Required starter templates
-- BetterRepository public Ultrascripts guide set
-- Chromium, Gecko/Firefox, and Android WebView support
-- completed AI module with stable `status`/`query` contract
-- completed V2 Widget polish pass
-- PC/mobile Ultrascripts behavior resync
-- mobile build release polish
-- Stateboy Required Ultrascripts showcase script
-
-Not done:
-
-- BetterRepository V1.7 Ultrascripts guide refresh
-- BetterRepository V1.7 What's New and release wording refresh
-- BetterDungeon V2 release prep
-- BetterRepository V1.7 release prep
-
-Post-V2:
-
-- Brainiac and Chronos V2 showcase scripts
-
-## Active Workstream
-
-### 1. Widget Polish Complete
-
-Goal: make Widget feel clean, light, and dependable in real scripts.
+Ultrascripts is feature-complete for the BetterDungeon V2 launch. Treat the runtime and shipped module set as production-facing infrastructure, not an active construction project.
 
 Completed:
 
-- tightened validation and invalid-suite coverage
-- verified interaction and event-ack behavior, including accepted-value bridge
-- improved automatic mobile and narrow-layout behavior
-- added a local minimize control for cramped/mobile surfaces
-- kept the public guide, examples, raw BetterRepository copies, and regression
-  suite aligned with live behavior
+- Core runtime, transport, write path, heartbeat discovery, and state-card dispatch.
+- Request/response operations and module registry.
+- Popup integration and per-module settings.
+- Nine first-party modules with dedicated regression suites.
+- Enhanced and Required starter templates.
+- BetterRepository public Ultrascripts guide foundation.
+- Chromium, Firefox/Gecko, and Android WebView support.
+- AI module with stable asynchronous `status`/`query` contract.
+- Widget V2 polish pass.
+- PC/mobile behavior resynchronization.
+- Mobile release-distribution polish.
+- Stateboy Required showcase script.
 
-Success looks like:
+## Active Release Workstream
 
-- Widget feels comfortable to ship in Stateboy and future showcase scripts
-- the regression suite still reflects real author usage
-- helper examples match the live interaction contract
-- mobile and desktop behavior both feel intentional
-- BetterRepository public docs teach Widget without stale display knobs or old
-  module naming
+The remaining work is the paired BetterDungeon V2 and BetterRepository V1.7 launch:
 
-Tracked in [Module Quality Pass](./module-quality-pass.md).
+### 1. Polish BetterRepository V1.7
 
-### 2. PC/Mobile Ultrascripts Resync
+- Refresh public Ultrascripts guides against the live Widget, SDK, template, and mobile contracts.
+- Keep the public info dump and guide components aligned.
+- Verify the Enhanced and Required templates and Stateboy entry.
+- Polish the V1.7 What's New section and release wording.
+- Avoid presenting Brainiac or Chronos V2 as shipped.
 
-Goal: confirm the mobile build inherits the PC Ultrascripts behavior after the
-completed Widget/template changes.
+### 2. Upload BetterDungeon to Firefox Add-ons
 
-Watch:
+- Prepare the Firefox-compatible package and listing copy.
+- Upload the extension to Firefox Add-ons.
+- Validate installation, popup behavior, content-script behavior, and Ultrascripts on Firefox.
+- Record any store-specific compatibility issues before launch.
 
-- state-card dispatch and writeback parity
-- Widget layout/minimize behavior in Android WebView/narrow layouts
-- popup/module settings parity
-- mobile release-readiness polish
+### 3. Teasers, Bugfixes, and Launch Polish
 
-### 3. Template Alignment
+- Continue Reddit teasers while keeping the messaging accurate.
+- Run final regression checks across modules, templates, and examples.
+- Fix launch-blocking bugs and compatibility issues.
+- Check PC/mobile parity after the final shared-runtime changes.
+- Finish release screenshots, README copy, store copy, and changelog wording.
 
-Goal: keep the Enhanced and Required starter foundations as the canonical
-script-side helper pattern.
+### 4. Release the Paired Launch
 
-Watch:
+- Release BetterDungeon V2.
+- Release BetterRepository V1.7.
+- Keep official Android APK distribution on the primary BetterDungeon repository.
+- Confirm public links and documentation point users to the correct release locations.
 
-- `../../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/`
-- `../../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/`
-- `../../../BetterRepository/src/data/raw-scripts/*/ultrascripts-starter-template.js`
-- `../../../BetterRepository/src/data/raw-scripts/*/ultrascripts-required-template.js`
-- `../../../BetterRepository/src/data/scripts.js`
+## Post-V2
 
-### 4. Showcase Scripts
-
-Current showcase status:
-
-1. **Stateboy** - Requires Ultrascripts. Readable Story Card state management
-   with AI update proposals, deterministic validation, State Directives, and
-   Widget dashboards. Built.
-2. **Brainiac** - Requires Ultrascripts. AI-powered story-card and brain-card
-   management through the shipped AI module. Post-V2.
-3. **Chronos V2** - Enhanced with Ultrascripts. A reworked Chronos that keeps a
-   vanilla timekeeping path but adds BetterDungeon-powered time/weather sync and
-   widgets when Ultrascripts is available. Post-V2.
-
-### 5. BetterRepository V1.7 Sync
-
-Before release, BetterRepository needs one focused pass:
-
-- refresh Ultrascripts guides for Widget, SDK, templates, mobile expectations,
-  and showcase-script examples
-- keep `docs/guides/info-dumps/ultrascripts.md` aligned with the public Vue
-  guide pages
-- update the home-page What's New section for V1.7
-- mention the design refresh, Story Card command presets, Ultrascripts guide
-  refresh, and BetterDungeon V2 support without overclaiming unfinished
-  showcase scripts
-- keep Stateboy's script entry aligned with the raw script
-- add Brainiac and Chronos V2 script entries in a post-V2 update
-
-## Shipped Modules
-
-| Module | Status | Notes |
-|---|---|---|
-| `widget` | shipped, active polish focus | Player-visible module; current highest priority |
-| `webfetch` | shipped | Review consent/error ergonomics if a showcase script needs it |
-| `clock` | shipped | Ready for future Chronos V2 time helpers |
-| `sdk` | shipped | Keep heartbeat/SDK separation crisp |
-| `geolocation` | shipped | Review with Weather if a future Chronos V2 uses location |
-| `weather` | shipped | Ready for future Chronos V2 weather sync after field-shape check |
-| `network` | shipped | Best used for fallback hints, not hard gating |
-| `system` | shipped | Best used for layout/device hints, not brittle UA branches |
-| `ai` | shipped | Stable async `status`/`query` contract with text, JSON, thinking levels, and backend setup gating |
-
-## BetterDungeon Integration
-
-Shipped files:
-
-- `../../../BetterDungeon/features/ultrascripts_feature.js`
-- `../../../BetterDungeon/popup.js`
-- `../../../BetterDungeon/background.js`
-- `../../../BetterDungeon/manifest.json`
-
-Current capabilities:
-
-- master Ultrascripts toggle
-- per-module toggles
-- debug toggle
-- WebFetch consent management
-- AI setup and status/query configuration
-- SDK background config snapshots
-- extension load integration for all first-party modules
-
-## Release Path
-
-```text
-Widget polish complete
--> PC/mobile Ultrascripts resync
--> mobile build release polish
--> BetterRepository Ultrascripts guide refresh
--> BetterRepository V1.7 What's New/release wording
--> Firefox Add-ons publishing
--> Reddit teasers, final bugfixes, and polish
--> BetterDungeon V2 + BetterRepository V1.7 release
--> Brainiac and Chronos V2 (post-V2)
-```
-
-Release prep should include:
-
-- version bump decisions
-- README/changelog polish
-- BetterRepository script entries and guide links
-- extension-store copy/screenshots if needed
-- mobile/PC parity check for Ultrascripts runtime behavior
-- mobile APK release-readiness check
-- Firefox Add-ons package/listing upload
-- final regression pass on changed modules and templates
+- Build Brainiac as an AI-powered story-card and brain-card management script.
+- Build Chronos V2 as a vanilla-safe timekeeper enhanced by Ultrascripts.
 
 ## Settled Decisions
 
-These are no longer active implementation questions:
-
 - Ultrascripts supports two-way communication.
-- Heartbeat is the discovery surface.
-- SDK is metadata/config, not discovery.
-- Live count is the Widget history key.
+- Heartbeat is the discovery surface; SDK is metadata/configuration, not discovery.
 - Direct `SaveQueueStoryCard` writeback is the production write path.
-- Mutation-template priming is retired.
-- Lite/full profiles are retired.
+- Mutation-template priming, Lite/full profiles, and invisible-text transport are retired.
 - `ai` is the canonical module id.
 - AI Dungeon scripts must expect module responses on later turns.
-- The AI module is complete enough for V2 and is not the active rebuild track.
+- The AI module is complete enough for V2 and is not an active rebuild track.
 - BetterRepository's paired launch target is V1.7, not V2.
 
 ## Intentional Future Work
 
-Good ideas, not required for V2:
+These are good ideas, but none are required for the paired launch:
 
-- third-party module registry UI
-- sandboxed user-authored modules
-- richer runtime inspector/debugger
-- deeper AI provider/backend expansion
-- full migration of every older BetterDungeon Story Card consumer
-- TypeScript/NPM/bundler migration
+- Third-party module registry and sandboxing.
+- A richer runtime inspector/debugger.
+- Deeper AI provider/backend expansion.
+- Full migration of older BetterDungeon Story Card consumers.
+- TypeScript/NPM/bundler migration.
 
-## Risks To Keep Visible
+## Risks to Keep Visible
 
 - Public examples can drift from the helper/template contract.
-- Showcase scripts may expose awkward module result fields or error codes.
-- Showcase scripts can still expose awkward Widget compositions or result fields.
-- AI queries depend on player API-key setup and should fail closed with
-  actionable `not_configured` errors.
+- AI queries depend on player API-key setup and should fail closed with actionable errors.
 - WebFetch examples must respect consent, blocked targets, and late responses.
-- Mobile/PC parity should be checked after final module/template changes, not
-  assumed from old smoke tests.
-- BetterRepository V1.7 copy can mention Stateboy as built, but should not
-  promise Brainiac or Chronos V2 until their entries are built.
+- Mobile/PC parity must be checked after final shared-runtime changes.
 
 ## Practical Next Action
 
-Start with PC/mobile Ultrascripts resync:
-
-1. Confirm the mobile build carries the same Widget, SDK, state-card dispatch,
-   writeback, and module-toggle behavior as PC.
-2. Polish the mobile release build around the completed Widget tray/minimize
-   behavior.
-3. Refresh BetterRepository guide/copy surfaces for the final V2 contract.
-4. Release BetterDungeon V2 and BetterRepository V1.7.
-5. Build Brainiac and Chronos V2 after the V2 release.
+Start with the BetterRepository V1.7 polish pass. Once its public guides and release wording are ready, move through Firefox publishing, teasers/final polish, and the paired release.

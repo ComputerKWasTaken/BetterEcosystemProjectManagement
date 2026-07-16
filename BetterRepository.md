@@ -1,106 +1,53 @@
 # BetterRepository Project Management
 
-> Project tracking for the public BetterEcosystem resource and guide site.
+> Release tracking for the public BetterEcosystem resource and guide site.
 
-## Current Focus
+## Current Status
 
-BetterRepository already has the public Ultrascripts documentation foundation
-for the shipped platform. The current release target is BetterRepository V1.7,
-paired with BetterDungeon V2. The responsibility now is keeping public docs,
-script entries, raw-script templates, release wording, and future showcase
-scripts synchronized with BetterDungeon.
+BetterRepository V1.7 is the public-documentation half of the BetterDungeon V2 launch. The site already has its Ultrascripts documentation foundation; the final work is accuracy, synchronization, and presentation.
 
-Completed Ultrascripts public docs:
+## V1.7 Release Checklist
 
-- overview
-- Quick Start
-- Cookbook
-- Architecture
-- Building Modules
-- Widget
-- WebFetch
-- AI
-- BetterDungeon SDK
-- Clock
-- Geolocation
-- Weather
-- Network
-- System
+- [ ] Refresh the Ultrascripts guides against the live Widget, SDK, template, and mobile contracts.
+- [ ] Keep the public info dump aligned with the guide components.
+- [ ] Keep the Enhanced and Required raw-script templates aligned with BetterDungeon.
+- [ ] Keep the Stateboy public entry aligned with its raw script.
+- [ ] Cross-link the showcase script and module guides where useful.
+- [ ] Polish the design refresh, navigation, and search experience.
+- [ ] Document Story Card command presets and their seed data clearly.
+- [ ] Update the V1.7 What's New section and release wording.
+- [ ] Make the site ready to launch alongside BetterDungeon V2.
 
-Other completed public documentation pieces:
+V1.7 is a substantial public-site release supporting BetterDungeon V2, not a full major-version relaunch. Brainiac and Chronos V2 should not be described as shipped until they exist.
 
-- standardized guide format at `../BetterRepository/docs/guides/format-spec.md`
-- Ultrascripts info dump at
-  `../BetterRepository/docs/guides/info-dumps/ultrascripts.md`
-- Enhanced and Required Ultrascripts template entries
-- Story Card command preset documentation and seed data
-- BetterRepository design refresh foundation
+## Public Documentation Already in Place
 
-## Active Work
+- Ultrascripts overview, Quick Start, Cookbook, Architecture, and module guides.
+- Widget, WebFetch, AI, SDK, Clock, Geolocation, Weather, Network, and System guides.
+- Enhanced and Required Ultrascripts template entries.
+- Story Card command preset documentation and seed data.
+- BetterRepository design-refresh foundation.
 
-### Ultrascripts Sync
+## Remaining Cleanup
 
-- Keep BetterRepository raw-script template copies aligned with BetterDungeon
-  examples.
-- Refresh public Ultrascripts guides before V1.7 so they fully match the live
-  Widget, SDK, template, and mobile behavior contracts.
-- Keep the Stateboy public script entry aligned with the raw script.
-- Cross-link showcase scripts to the module guides they demonstrate.
-- Add public script entries for Brainiac and Chronos V2 after the V2 release.
+These are documentation-quality tasks, not BetterDungeon V2 blockers unless they affect public launch accuracy:
 
-### V1.7 Release Wording
+- Finish scaffolded info dumps for AI Instructions, Plot Components, Scripts, Symbols & Commands, and Advanced Settings.
+- Bring older non-Ultrascripts guides into the standard guide format.
+- Replace legacy BetterScripts framing where current Ultrascripts behavior has superseded it.
+- Remove outdated Zero-width, TagCipher, and Context Modifier guidance where it only describes retired workflows.
 
-The V1.7 What's New story should emphasize:
+## Post-Launch
 
-- BetterRepository design refresh and smoother navigation/search polish.
-- Story Card command presets and preset documentation.
-- Ultrascripts guide refresh for BetterDungeon V2.
-- Enhanced and Required Ultrascripts templates updated for Widget.
-- Stateboy as the first Required Ultrascripts showcase script.
-- Brainiac and Chronos V2 entries in a post-V2 update once those showcase scripts
-  are built.
-
-Do not present V1.7 as a full major-version relaunch. This is a substantial
-public site release that supports the BetterDungeon V2 launch.
-
-### Non-Ultrascripts Guide Cleanup
-
-High priority:
-
-- Finish populating scaffolded info dumps for AI Instructions, Plot Components,
-  Scripts, Symbols & Commands, and Advanced Settings.
-- Refactor existing non-Ultrascripts guides to fully match
-  `docs/guides/format-spec.md`.
-- Replace legacy BetterScripts guide material with current Ultrascripts framing
-  where relevant.
-- Remove Zero-width, TagCipher, and Context Modifier guidance where it only
-  existed for old BetterScripts workflows.
-
-## Medium Priority
-
-- Add scenario-author examples that combine modules, such as geolocation-backed
-  weather.
-- Cross-link BetterDungeon popup setup steps with relevant module guides.
-- Add deeper AI recipes once Brainiac and Stateboy reveal the most useful public
-  patterns after the V2 release.
-- Tighten non-Ultrascripts guide wording where V1.7 changed the UI or available
-  preset data.
-
-## Later
-
-- Add Voyage resources when Voyage leaves Early Access and the product direction
-  is clear.
-
-## Known Issues
-
-- Non-Ultrascripts guide info dumps still contain scaffold TODOs.
-- V1.7 What's New should not claim Brainiac or Chronos V2 are shipped. Post-V2
-  updates will add those script entries once they are built.
+- Add Brainiac and Chronos V2 entries once the scripts are built.
+- Add scenario-author examples that combine modules.
+- Add deeper AI recipes based on real showcase-script patterns.
+- Add Voyage resources only when BetterVoyage leaves Early Access and its direction is clear.
 
 ## Canonical Inputs
 
 - [BetterRepository docs index](../BetterRepository/docs/README.md)
-- [Standardized Guide Format spec](../BetterRepository/docs/guides/format-spec.md)
+- [Guide format specification](../BetterRepository/docs/guides/format-spec.md)
 - [Ultrascripts internal docs](./ultrascripts/README.md)
-- [Documentation sync](./ultrascripts/planning/docs-sync.md)
+- [Documentation sync plan](./ultrascripts/planning/docs-sync.md)
 - [Script contract reference](./ultrascripts/reference/script-contract.md)

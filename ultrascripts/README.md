@@ -1,83 +1,59 @@
 # Ultrascripts Internal Docs
 
-Private planning and maintenance docs for Ultrascripts, the BetterDungeon
-runtime that lets AI Dungeon scripts communicate both ways with BetterDungeon
-through reserved Story Cards.
+Private reference and maintenance docs for Ultrascripts, the BetterDungeon runtime that lets AI Dungeon scripts communicate with BetterDungeon through reserved Story Cards.
 
-These docs are split by how maintainers actually use them:
+## What These Docs Are For
 
-- `reference/` contains stable facts about the runtime, modules, script
-  contracts, SDK, and verification.
-- `planning/` contains current work, roadmap, docs sync, and the active module
-  quality pass.
+- `reference/` contains stable runtime facts, module contracts, SDK details, script contracts, and verification guidance.
+- `planning/` contains focused maintenance notes and the current release roadmap.
 
-## Current Truth
+Ultrascripts is shipped infrastructure for BetterDungeon V2, not an active construction project. Keep these documents aligned with the implementation and public BetterRepository guides.
 
-Ultrascripts core is effectively feature-complete. The AI module is complete:
-it has its stable `status`/`query` contract, backend-agnostic executor, and
-production backend path in place.
+## Current Release Context
 
-The active work is finish-line work:
+The runtime and nine first-party modules are complete for launch. The active work is now the paired BetterDungeon V2/BetterRepository V1.7 release:
 
-- resync mobile with PC Ultrascripts behavior
-- polish the mobile build for release
-- refresh BetterRepository's Ultrascripts guides so public docs match the live
-  Widget/SDK/template contract
-- update BetterRepository V1.7 What's New and release wording
-- keep the Enhanced and Required starter templates aligned with the live SDK
-  helper contract
-- upload the Firefox Add-ons version of BetterDungeon
-- begin Reddit teasers, final bugfixes, and polish
-- release BetterDungeon V2 and BetterRepository V1.7
+1. Polish and verify BetterRepository V1.7.
+2. Upload BetterDungeon to Firefox Add-ons.
+3. Continue Reddit teasers, resolve bugs, and finish launch polish.
+4. Release BetterDungeon V2 and BetterRepository V1.7.
 
-Post-V2:
+Completed supporting work includes the Widget V2 polish pass, PC/mobile behavior resynchronization, mobile release-distribution polish, and the Stateboy Required showcase script.
 
-- build Brainiac and Chronos V2 as the first showcase scripts after launch
-
-Completed finish-line work:
-
-- Widget V2 polish pass
-- PC/mobile Ultrascripts behavior resync
-- mobile build release-distribution polish
-- Stateboy Required Ultrascripts showcase script
+Brainiac and Chronos V2 are post-launch showcase-script work.
 
 ## Start Here
 
 | Need | Open |
 |---|---|
-| What is true right now and what is next? | [Current Roadmap](./planning/current-roadmap.md) |
-| How does the runtime work? | [Runtime Reference](./reference/runtime.md) |
-| Which modules ship and what contract do they implement? | [Module System Reference](./reference/modules.md) |
-| What should scripts/templates/examples assume? | [Script Contract Reference](./reference/script-contract.md) |
-| What does the `sdk` module expose? | [BetterDungeon SDK Reference](./reference/sdk.md) |
-| What should be tested or live-checked? | [Verification Reference](./reference/verification.md) |
-| How do private docs, public docs, and templates stay synced? | [Documentation Sync Plan](./planning/docs-sync.md) |
-| What is the active module polish checklist? | [Module Quality Pass](./planning/module-quality-pass.md) |
+| What is true right now and what is next? | [Current roadmap](./planning/current-roadmap.md) |
+| How does the runtime work? | [Runtime reference](./reference/runtime.md) |
+| Which modules ship and what contracts do they implement? | [Module system reference](./reference/modules.md) |
+| What should scripts and templates assume? | [Script contract reference](./reference/script-contract.md) |
+| What does `sdk` expose? | [BetterDungeon SDK reference](./reference/sdk.md) |
+| What should be tested or live-checked? | [Verification reference](./reference/verification.md) |
+| How do private docs and public docs stay aligned? | [Documentation sync plan](./planning/docs-sync.md) |
+| What module polish is still worth tracking? | [Module quality pass](./planning/module-quality-pass.md) |
 
-## Source Of Truth Map
+## Source-of-Truth Map
 
-Implementation source of truth:
+Implementation:
 
 - BetterDungeon runtime: `../../BetterDungeon/services/ultrascripts/`
 - BetterDungeon modules: `../../BetterDungeon/modules/`
 - BetterDungeon feature wrapper: `../../BetterDungeon/features/ultrascripts_feature.js`
-- BetterDungeon popup/runtime settings: `../../BetterDungeon/popup.js`,
-  `../../BetterDungeon/background.js`
+- BetterDungeon settings/runtime: `../../BetterDungeon/popup.js`, `../../BetterDungeon/background.js`
 
-Public docs source of truth:
+Public documentation:
 
-- BetterRepository public guide components:
-  `../../BetterRepository/src/components/guides/Ultrascripts*.vue`
-- BetterRepository Ultrascripts info dump:
-  `../../BetterRepository/docs/guides/info-dumps/ultrascripts.md`
-- BetterRepository script catalog/templates:
-  `../../BetterRepository/src/data/scripts.js`
-  and `../../BetterRepository/src/data/raw-scripts/`
+- BetterRepository guide components: `../../BetterRepository/src/components/guides/Ultrascripts*.vue`
+- BetterRepository info dump: `../../BetterRepository/docs/guides/info-dumps/ultrascripts.md`
+- BetterRepository scripts/templates: `../../BetterRepository/src/data/scripts.js` and `../../BetterRepository/src/data/raw-scripts/`
 
-Live regression source of truth:
+Regression and author examples:
 
 - Module suites: `../../BetterDungeon/tests/aid-scripts/`
-- Author template foundations: `../../BetterDungeon/examples/aid-scripts/`
+- Starter templates: `../../BetterDungeon/examples/aid-scripts/`
 
 ## Shipped Module Set
 
@@ -93,20 +69,13 @@ Live regression source of truth:
 | `system` | ops | `info`, `power` |
 | `ai` | ops | `status`, `query` |
 
-The `ai` module is complete and ships a stable asynchronous query contract.
-Public docs should teach `ai.status`, `ai.query`, text output, schema-backed
-JSON output, and the `not_configured` error shown when the player has not saved
-an API key for the current backend setup.
+The AI module exposes a stable asynchronous `status`/`query` contract with text output, schema-backed JSON output, and clear `not_configured` handling.
 
-## Doc Rules
+## Documentation Rules
 
-- Treat Ultrascripts as shipped infrastructure, not a prototype.
-- Prefer live code, public guide components, and current templates over old
-  phase notes.
+- Treat Ultrascripts as shipped infrastructure.
+- Prefer live code, public guide components, and current templates over old phase notes.
 - Keep `reference/` stable unless an implementation contract changes.
-- Keep `planning/` pointed at the current workstream.
-- Treat BetterDungeon V2 and BetterRepository V1.7 as the paired release train.
-- Do not revive retired concepts such as Lite/full profiles, mutation-template
-  priming, invisible-text transport, or action-id-keyed Widget history.
-- If an active doc starts explaining old planning debates at length, summarize
-  the decision or move the material into a deliberately named historical file.
+- Keep `planning/` focused on active work rather than completed milestones.
+- Do not revive retired concepts such as Lite/full profiles, mutation-template priming, invisible-text transport, or action-id-keyed Widget history.
+- If a planning document starts explaining an old debate at length, summarize the decision or move the history into a deliberately named archive later.

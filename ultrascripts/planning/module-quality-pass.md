@@ -2,11 +2,12 @@
 
 ## Purpose
 
-This is the active finish-line pass before BetterRepository V1.7 docs polish
-and the BetterDungeon V2 release. The AI module is complete enough for V2, the
-Widget polish pass is complete, and Stateboy is built. Brainiac and Chronos V2
-are deferred until after the V2 release.
-The active work is now PC/mobile Ultrascripts parity and release prep.
+This document records the completed Ultrascripts usefulness pass and the small
+maintenance checks that remain relevant to the BetterDungeon V2 launch. The AI
+module and Widget polish pass are complete, Stateboy is built, and Brainiac and
+Chronos V2 are deferred until after release.
+
+The active release work is tracked in [Current Roadmap](./current-roadmap.md).
 
 Ultrascripts already works. This pass is not a redesign. It is a usefulness
 review: make sure the shipped modules, examples, and docs feel good enough for
@@ -64,14 +65,13 @@ Widget exit result:
 
 ### 2. Supporting Follow-Ons
 
-After Widget, review only the areas needed for the launch path:
+The Widget pass is complete. Keep only these maintenance checks visible:
 
-- PC/mobile Ultrascripts parity and mobile build release polish
-- BetterRepository V1.7 Ultrascripts guide/copy refresh
-- `sdk` for gating, display hints, and template alignment
-- `clock`, `weather`, and `geolocation` for a future Chronos V2
-- `ai` only for maintenance if docs/examples drift from the shipped contract
-- `webfetch`, `system`, and `network` only if a post-V2 showcase script truly needs them
+- BetterRepository V1.7 Ultrascripts guide and copy accuracy
+- `sdk` gating, display hints, and template alignment
+- `clock`, `weather`, and `geolocation` readiness for future Chronos V2
+- `ai` maintenance if docs or examples drift from the shipped contract
+- `webfetch`, `system`, and `network` maintenance if a post-V2 script needs them
 
 ## Standard Review Questions
 
@@ -96,14 +96,13 @@ For any touched module:
 
 ## Release-Path Order
 
-1. Resync mobile with PC Ultrascripts behavior.
-2. Polish the mobile build for release.
-3. Refresh BetterRepository Ultrascripts guides.
-4. Update BetterRepository V1.7 What's New and release wording.
-5. Upload Firefox Add-ons version.
-6. Begin Reddit teasers, final bugfixes, and polish.
-7. Release BetterDungeon V2 and BetterRepository V1.7.
-8. Build Brainiac and Chronos V2 after the V2 release.
+The paired launch follows the [Current Roadmap](./current-roadmap.md):
+
+1. Polish and verify BetterRepository V1.7.
+2. Upload BetterDungeon to Firefox Add-ons.
+3. Continue Reddit teasers, final bugfixes, and launch polish.
+4. Release BetterDungeon V2 and BetterRepository V1.7.
+5. Build Brainiac and Chronos V2 after the release.
 
 ## Output Format For Each Review
 
