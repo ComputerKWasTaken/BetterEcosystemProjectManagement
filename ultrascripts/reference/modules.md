@@ -292,7 +292,7 @@ Use this checklist:
 ## Current Quality-Pass Guidance
 
 The active module work is not a redesign. It is limited maintenance supporting
-BetterRepository V1.7 and the Stateboy, Brainiac, and Chronos V2 release stages.
+the Stateboy, Brainiac, and Chronos V2 release stages.
 
 Review questions:
 

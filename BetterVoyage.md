@@ -17,6 +17,6 @@ Early Access and its product surface is stable enough to justify extension work.
 
 ## Current Priority
 
-None. BetterVoyage remains parked through the BetterRepository V1.7, Stateboy,
-Brainiac, and Chronos V2 release sequence. Reconsider it only after the current
-project era is formally closed.
+None. BetterVoyage remains parked through the Stateboy, Brainiac, and Chronos V2
+release sequence. Reconsider it only after the current project era is formally
+closed.

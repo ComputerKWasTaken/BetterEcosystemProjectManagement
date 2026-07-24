@@ -10,7 +10,6 @@ stable runtime foundation for the remaining BetterEcosystem releases.
 BetterDungeon has no active feature milestone in this era. Change it only when:
 
 - a confirmed defect affects security or core compatibility
-- BetterRepository V1.7 exposes inaccurate V2 behavior
 - Stateboy, Brainiac, or Chronos V2 reveals a small contract or regression issue
 - desktop/mobile parity breaks in a supported shared feature
 
@@ -32,11 +31,10 @@ scope until the final release sequence is complete.
 
 ## Remaining-Era Role
 
-1. Support BetterRepository V1.7 documentation accuracy.
-2. Support Stateboy verification and publication.
-3. Support Brainiac only after Stateboy is public.
-4. Support Chronos V2 only after Brainiac is public.
-5. End with a stable V2 maintenance baseline rather than another feature cycle.
+1. Support Stateboy verification and publication.
+2. Support Brainiac only after Stateboy is public.
+3. Support Chronos V2 only after Brainiac is public.
+4. End with a stable V2 maintenance baseline rather than another feature cycle.
 
 ## Maintenance Gate
 

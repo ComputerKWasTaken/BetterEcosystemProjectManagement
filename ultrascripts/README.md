@@ -14,15 +14,14 @@ Ultrascripts is shipped infrastructure for BetterDungeon V2, not an active const
 BetterDungeon V2 and its eight first-party modules are released. Ultrascripts
 is now a stable dependency for the remaining BetterEcosystem release sequence:
 
-1. Polish and release BetterRepository V1.7.
-2. Polish, verify, and publish Stateboy.
-3. Build, verify, and publish Brainiac.
-4. Build, verify, and publish Chronos V2.
-5. Complete final documentation alignment and close this project era.
+1. Polish, verify, and publish Stateboy.
+2. Build, verify, and publish Brainiac.
+3. Build, verify, and publish Chronos V2.
+4. Complete final documentation alignment and close this project era.
 
-The current stage is BetterRepository V1.7. Stateboy has an existing
-implementation but is not public yet. Brainiac and Chronos V2 remain sequential
-future stages, not parallel work.
+The current stage is Stateboy. It has an existing implementation but is not
+public yet. Brainiac and Chronos V2 remain sequential future stages, not
+parallel work.
 
 ## Start Here
 

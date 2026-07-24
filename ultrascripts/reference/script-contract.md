@@ -11,7 +11,7 @@ Use it when writing or reviewing:
 - `bd.us` helper examples
 - BetterDungeon example templates
 - BetterRepository raw-script template copies
-- Stateboy (implemented; publication follows BetterRepository V1.7)
+- Stateboy (implemented; active publication stage)
 - Brainiac (planned after Stateboy)
 - Chronos V2 (planned after Brainiac)
 

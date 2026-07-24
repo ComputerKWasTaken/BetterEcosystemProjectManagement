@@ -11,11 +11,10 @@ production baseline rather than an active release project.
 The remaining BetterEcosystem work for this era is intentionally finite and
 sequential:
 
-1. Polish and release BetterRepository V1.7.
-2. Polish, verify, and publish Stateboy.
-3. Build, verify, and publish Brainiac.
-4. Build, verify, and publish Chronos V2.
-5. Close the era with final documentation alignment and planning cleanup.
+1. Polish, verify, and publish Stateboy.
+2. Build, verify, and publish Brainiac.
+3. Build, verify, and publish Chronos V2.
+4. Close the era with final documentation alignment and planning cleanup.
 
 Only the first incomplete stage is active. Later stages may keep brief design
 notes, but they must not expand the scope of the current release.
@@ -24,10 +23,7 @@ notes, but they must not expand the scope of the current release.
 
 - **[BetterDungeon](./BetterDungeon.md)** — V2 released; maintenance-only unless
   a defect blocks a remaining release.
-- **[BetterRepository](./BetterRepository.md)** — Active project; preparing
-  V1.7 for release.
-- **Stateboy** — Existing showcase implementation; next publication target
-  after V1.7.
+- **Stateboy** — Active project; polish, verification, and publication target.
 - **Brainiac** — Planned after Stateboy.
 - **Chronos V2** — Planned after Brainiac.
 - **[BetterVoyage](./BetterVoyage.md)** — Future Voyage extension idea; parked.
@@ -43,32 +39,22 @@ notes, but they must not expand the scope of the current release.
 
 ## Final-Era Release Stages
 
-### 1. BetterRepository V1.7 — Active
-
-Prioritize public accuracy, presentation, and a clean standalone release:
-
-- Verify the Ultrascripts guides against the released V2 contracts.
-- Keep templates and script entries aligned with their canonical sources.
-- Polish the V1.7 What's New section and release wording.
-- Validate navigation, search, responsive presentation, downloads, and builds.
-- Do not make V1.7 depend on showcase-script publication.
-
-### 2. Stateboy
+### 1. Stateboy — Active
 
 Use the existing implementation as the starting point, then complete its
 player-facing polish, live verification, documentation, and publication.
 
-### 3. Brainiac
+### 2. Brainiac
 
 Build and publish the AI-powered story-card and brain-card management showcase
 after Stateboy is public.
 
-### 4. Chronos V2
+### 3. Chronos V2
 
 Build and publish the vanilla-safe timekeeper with optional Clock, Weather, and
 Widget enhancements after Brainiac is public.
 
-### 5. Era Closeout
+### 4. Era Closeout
 
 - Align BetterRepository entries, private references, and release status.
 - Move completed planning out of active checklists.

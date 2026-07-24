@@ -135,10 +135,10 @@ When roadmap/status changes:
 1. Update [Current Roadmap](./current-roadmap.md).
 2. Update [Module Quality Pass](./module-quality-pass.md) if module
    polish status changed.
-3. Update `../../ProjectManagement.md`, `../../BetterDungeon.md`, or
-   `../../BetterRepository.md` only if project-level focus changed.
-4. If the change affects public release messaging, update BetterRepository's
-   V1.7 What's New copy and release wording.
+3. Update `../../ProjectManagement.md` or `../../BetterDungeon.md` only if
+   project-level focus changed.
+4. If the change affects public release messaging, update the active showcase
+   entry and release wording in BetterRepository.
 
 ## Example Quality Rules
 
@@ -157,21 +157,20 @@ All public AI Dungeon snippets should:
 
 ## Active Sync Priority
 
-BetterDungeon V2 is released, and the public docs cover its shipped module set.
-The active sync priority is preparing BetterRepository V1.7 as an accurate,
-polished standalone release.
+BetterDungeon V2 and BetterRepository's supporting resource release are
+complete. The active sync priority is keeping Stateboy's source, public entry,
+guide, and publication status aligned.
 
 Immediate focus:
 
-- public guide and info-dump accuracy against the released eight-module surface
-- Enhanced and Required template parity across BetterDungeon and BetterRepository
-- BetterRepository V1.7 What's New and release wording
-- navigation, route, search, and script-download smoke checks
-- keeping Stateboy accurate but clearly unpublished
+- exact parity between Stateboy's canonical source and public raw script
+- Stateboy catalog metadata, guide copy, and publication status
+- Required-mode gating and player-facing setup documentation
+- AI, Widget, SDK, manual-edit, and fallback-path documentation
+- keeping Stateboy clearly unpublished until its live release succeeds
 
 Later-stage sync focus:
 
-- Stateboy source, entry, guide, and publication status
 - any AI/SDK guidance needed for Brainiac
 - any Clock/Weather guidance needed for Chronos V2
 
@@ -187,18 +186,6 @@ When each showcase reaches its roadmap stage:
 5. Publish and verify the script and its public download.
 6. Mark it as published only after publication succeeds, then activate the next
    stage: Stateboy, Brainiac, and Chronos V2 in that order.
-
-## BetterRepository V1.7 Messaging Checklist
-
-Before calling V1.7 copy final:
-
-- Home page What's New uses the current V1.7 release label.
-- Copy mentions the design refresh and navigation/search polish.
-- Copy mentions Story Card command presets.
-- Copy mentions refreshed Ultrascripts guides/templates for BetterDungeon V2.
-- Copy keeps Stateboy labeled unpublished and does not claim Brainiac or Chronos
-  V2 are shipped.
-- Public guides avoid pre-rename module names and retired Widget display knobs.
 
 ## Verification Before Calling Docs Synced
 

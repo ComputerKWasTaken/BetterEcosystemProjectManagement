@@ -13,24 +13,22 @@ The release order lives in [Current Roadmap](./current-roadmap.md).
 
 ## Current Stage
 
-BetterRepository V1.7 is active.
+Stateboy is active.
 
 Module work during this stage is limited to:
 
-- correcting public guide or info-dump inaccuracies
-- keeping Enhanced and Required templates aligned
-- fixing a regression that makes a documented V2 capability false
-- removing stale public references to retired capabilities
+- supporting Stateboy's AI, Widget, SDK, and Required-mode paths
+- correcting a confirmed defect exposed by Stateboy verification
+- keeping Stateboy documentation, examples, and regression coverage aligned
 
-Stateboy, Brainiac, and Chronos-specific enhancements do not belong in the V1.7
-stage unless V1.7 already makes a concrete claim that must be corrected.
+Brainiac- and Chronos-specific enhancements do not belong in the Stateboy stage
+unless they correct a shared contract defect blocking Stateboy.
 
 ## Showcase Readiness Matrix
 
 | Release | Relevant surfaces | Current status |
 |---|---|---|
-| BetterRepository V1.7 | All eight module guides, templates, metadata | Active documentation/build verification |
-| Stateboy | AI, Widget, SDK, Required gating | Existing implementation; polish and publication pending |
+| Stateboy | AI, Widget, SDK, Required gating | Active polish, verification, and publication |
 | Brainiac | AI, Widget, SDK, card write safety | Planned after Stateboy |
 | Chronos V2 | Clock, Weather, Widget, SDK | Planned after Brainiac |
 
@@ -48,13 +46,6 @@ For any touched module:
 - Is the change required for the current release stage?
 
 ## Stage-Specific Gates
-
-### BetterRepository V1.7
-
-- The eight-module inventory is consistent everywhere.
-- Public examples match released behavior.
-- Templates and downloadable copies remain synchronized.
-- No unpublished showcase is labeled as shipped.
 
 ### Stateboy
 

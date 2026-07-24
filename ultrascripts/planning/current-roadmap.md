@@ -21,33 +21,9 @@ Completed foundation:
 
 The remaining roadmap is a fixed release sequence. Work on one stage at a time.
 
-## Stage 1 — BetterRepository V1.7
+## Stage 1 — Stateboy
 
 Status: **Active**
-
-Goal: publish a polished public resource release that accurately supports the
-already-released BetterDungeon V2.
-
-Required work:
-
-- Reconcile public guides, info dumps, templates, and script metadata.
-- Confirm the public module inventory contains the eight shipped modules.
-- Polish navigation, search, responsive layouts, downloads, and visual finish.
-- Finalize V1.7 What's New copy, metadata, and release notes.
-- Clearly label Stateboy as unpublished if it appears before its release stage.
-- Run a clean production build and smoke-test primary routes.
-- Publish V1.7 and verify the live deployment.
-
-Exit gate:
-
-- Public claims match released V2 behavior.
-- Primary routes, search, navigation, and downloads work.
-- No unpublished showcase is presented as public.
-- The live deployment is verified.
-
-## Stage 2 — Stateboy
-
-Status: **Next**
 
 Goal: turn the existing implementation into the first published Ultrascripts
 showcase.
@@ -66,7 +42,7 @@ Exit gate:
 - Documentation matches the published script.
 - BetterRepository marks Stateboy as published only after publication succeeds.
 
-## Stage 3 — Brainiac
+## Stage 2 — Brainiac
 
 Status: **Planned after Stateboy**
 
@@ -87,7 +63,7 @@ Exit gate:
 - AI-unavailable behavior is actionable and non-destructive.
 - Public examples teach reusable patterns rather than project-specific tricks.
 
-## Stage 4 — Chronos V2
+## Stage 3 — Chronos V2
 
 Status: **Planned after Brainiac**
 
@@ -108,7 +84,7 @@ Exit gate:
 - Time and weather behavior is deterministic enough for scenario authors.
 - Public documentation clearly distinguishes required and optional capabilities.
 
-## Stage 5 — Era Closeout
+## Stage 4 — Era Closeout
 
 Status: **Planned after Chronos V2**
 
@@ -124,7 +100,6 @@ Status: **Planned after Chronos V2**
 - Only the first incomplete stage is active.
 - A later showcase may collect brief notes but may not become parallel work.
 - BetterDungeon changes require a confirmed maintenance or showcase blocker.
-- BetterRepository V1.7 does not wait for Stateboy publication.
 - Stateboy must publish before Brainiac becomes active.
 - Brainiac must publish before Chronos V2 becomes active.
 - New platform initiatives wait until era closeout.
@@ -150,5 +125,5 @@ Status: **Planned after Chronos V2**
 
 ## Practical Next Action
 
-Work only on the BetterRepository V1.7 release checklist. Do not begin Stateboy
-publication work until V1.7 is live and verified.
+Work only on Stateboy polish, verification, documentation, and publication.
+Do not begin Brainiac implementation until Stateboy is live and verified.
