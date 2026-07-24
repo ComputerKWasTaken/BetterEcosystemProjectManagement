@@ -144,7 +144,6 @@ Fields:
       "webfetch": true,
       "clock": true,
       "sdk": true,
-      "geolocation": true,
       "weather": true,
       "network": true,
       "system": true,

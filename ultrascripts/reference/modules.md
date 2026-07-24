@@ -29,7 +29,6 @@ heartbeat advertise?
 | `webfetch` | ops | `fetch`, `search` | `../../../BetterDungeon/modules/webfetch/` | `UltrascriptsWebFetchGuide.vue` | `webfetch-module` |
 | `clock` | ops | `now`, `tz`, `format` | `../../../BetterDungeon/modules/clock/` | `UltrascriptsClockGuide.vue` | `clock-module` |
 | `sdk` | ops | `version`, `config` | `../../../BetterDungeon/modules/sdk/` | `UltrascriptsSdkGuide.vue` | `sdk-module` |
-| `geolocation` | ops | `permission`, `getCurrent` | `../../../BetterDungeon/modules/geolocation/` | `UltrascriptsGeolocationGuide.vue` | `geolocation-module` |
 | `weather` | ops | `current`, `forecast` | `../../../BetterDungeon/modules/weather/` | `UltrascriptsWeatherGuide.vue` | `weather-module` |
 | `network` | ops | `status` | `../../../BetterDungeon/modules/network/` | `UltrascriptsNetworkGuide.vue` | `network-module` |
 | `system` | ops | `info`, `power` | `../../../BetterDungeon/modules/system/` | `UltrascriptsSystemGuide.vue` | `system-module` |
@@ -46,7 +45,6 @@ compatibility alias.
 | `webfetch` | Controlled network fetch/search with consent, rate limiting, and blocked-target protection |
 | `clock` | Time, timezone, and format helpers |
 | `sdk` | Safe BetterDungeon metadata and configuration snapshots |
-| `geolocation` | Browser geolocation permission and current-position helpers |
 | `weather` | Open-Meteo current conditions and forecasts from coordinates or place names |
 | `network` | Browser online status and quality hints |
 | `system` | Device, browser, screen, locale, hardware, preference, and power hints |
@@ -293,8 +291,8 @@ Use this checklist:
 
 ## Current Quality-Pass Guidance
 
-The active module work is not a redesign. It is a usefulness pass before the
-BetterDungeon V2 release.
+The active module work is not a redesign. It is limited maintenance supporting
+BetterRepository V1.7 and the Stateboy, Brainiac, and Chronos V2 release stages.
 
 Review questions:
 

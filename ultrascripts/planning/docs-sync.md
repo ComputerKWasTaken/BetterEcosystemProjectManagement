@@ -55,7 +55,6 @@ Current BetterRepository Ultrascripts guide pages:
 | AI | `UltrascriptsAiGuide.vue` |
 | BetterDungeon SDK | `UltrascriptsSdkGuide.vue` |
 | Clock | `UltrascriptsClockGuide.vue` |
-| Geolocation | `UltrascriptsGeolocationGuide.vue` |
 | Weather | `UltrascriptsWeatherGuide.vue` |
 | Network | `UltrascriptsNetworkGuide.vue` |
 | System | `UltrascriptsSystemGuide.vue` |
@@ -158,36 +157,36 @@ All public AI Dungeon snippets should:
 
 ## Active Sync Priority
 
-The public docs are complete for the shipped module set. The current sync
-priority is keeping docs and templates stable while module polish and V2 release
-prep happen. Brainiac and Chronos V2 are deferred until after the V2 release.
+BetterDungeon V2 is released, and the public docs cover its shipped module set.
+The active sync priority is preparing BetterRepository V1.7 as an accurate,
+polished standalone release.
 
 Immediate focus:
 
-- Widget module pass
-- helper alignment for Widget interactions and widget state
-- PC/mobile Ultrascripts parity and mobile release polish claims
+- public guide and info-dump accuracy against the released eight-module surface
+- Enhanced and Required template parity across BetterDungeon and BetterRepository
 - BetterRepository V1.7 What's New and release wording
-- AI/SDK guidance needed for Stateboy
-- keeping Enhanced and Required templates identical across BetterDungeon and
-  BetterRepository after any helper changes
+- navigation, route, search, and script-download smoke checks
+- keeping Stateboy accurate but clearly unpublished
 
-Post-V2 sync focus:
+Later-stage sync focus:
 
+- Stateboy source, entry, guide, and publication status
 - any AI/SDK guidance needed for Brainiac
-- any Clock/Weather/Geolocation guidance needed for Chronos V2
+- any Clock/Weather guidance needed for Chronos V2
 
 ## Showcase Script Documentation Path
 
-When Brainiac and Chronos V2 are built after the V2 release:
+When each showcase reaches its roadmap stage:
 
-1. Add or update their BetterRepository script entries; keep Stateboy aligned
-   with the raw script.
+1. Align its canonical source, BetterRepository raw script, and catalog entry.
 2. Add public guide links where the scripts demonstrate module patterns.
 3. Update Cookbook recipes if they introduce a reusable pattern.
 4. Update [Script Contract Reference](../reference/script-contract.md)
    if a showcase reveals a better canonical example.
-5. Update project-level docs to mark Brainiac and Chronos V2 as shipped.
+5. Publish and verify the script and its public download.
+6. Mark it as published only after publication succeeds, then activate the next
+   stage: Stateboy, Brainiac, and Chronos V2 in that order.
 
 ## BetterRepository V1.7 Messaging Checklist
 
@@ -197,15 +196,15 @@ Before calling V1.7 copy final:
 - Copy mentions the design refresh and navigation/search polish.
 - Copy mentions Story Card command presets.
 - Copy mentions refreshed Ultrascripts guides/templates for BetterDungeon V2.
-- Copy can claim Stateboy as shipped, but does not claim Brainiac or Chronos V2
-  are shipped until their public script entries exist.
+- Copy keeps Stateboy labeled unpublished and does not claim Brainiac or Chronos
+  V2 are shipped.
 - Public guides avoid pre-rename module names and retired Widget display knobs.
 
 ## Verification Before Calling Docs Synced
 
 Check:
 
-- private docs mention all 9 shipped modules consistently
+- private docs mention all eight shipped modules consistently
 - public guide list still matches actual `Ultrascripts*.vue` files
 - test suite list still matches actual `tests/aid-scripts/` directories
 - template names match BetterDungeon examples and BetterRepository script data

@@ -11,9 +11,9 @@ Use it when writing or reviewing:
 - `bd.us` helper examples
 - BetterDungeon example templates
 - BetterRepository raw-script template copies
-- Stateboy (built)
-- Brainiac (post-V2)
-- Chronos V2 (post-V2)
+- Stateboy (implemented; publication follows BetterRepository V1.7)
+- Brainiac (planned after Stateboy)
+- Chronos V2 (planned after Brainiac)
 
 Implementation remains the source of truth. This file exists so examples do not
 quietly diverge from the live runtime.
@@ -167,12 +167,12 @@ itself. Use request ids/state if a script needs stricter freshness.
 
 ## Showcase Script Contracts
 
-Stateboy is built and ships with BetterDungeon V2. Brainiac and Chronos V2 are
-planned showcase scripts for the first post-V2 update.
+Stateboy has an existing implementation but is not published. The remaining
+showcases are completed sequentially: Stateboy, then Brainiac, then Chronos V2.
 
 ### Brainiac
 
-Mode: Requires Ultrascripts. Post-V2.
+Mode: Requires Ultrascripts. Planned after Stateboy.
 
 Required capabilities:
 
@@ -217,7 +217,7 @@ Design contract:
 
 ### Chronos V2
 
-Mode: Enhanced with Ultrascripts. Post-V2.
+Mode: Enhanced with Ultrascripts. Planned after Brainiac.
 
 Optional capabilities:
 
@@ -226,8 +226,6 @@ Optional capabilities:
 - `clock.format`
 - `weather.current`
 - `weather.forecast`
-- `geolocation.permission`
-- `geolocation.getCurrent`
 - `widget`
 - `system.info` where layout/device hints matter
 
@@ -235,9 +233,8 @@ Design contract:
 
 - base timekeeping works without BetterDungeon
 - Ultrascripts adds real time/weather sync and widgets
-- geolocation is permission-first and optional
-- fixed-place weather should work without geolocation
-- do not block the core scenario if weather/location ops fail
+- fixed-place weather should accept place names or coordinates
+- do not block the core scenario if weather ops fail
 - widgets should be additive, not required for vanilla play
 
 ## Module Contracts For Examples
@@ -634,48 +631,6 @@ Rules:
   `abstractText`, `abstractUrl`, `related`, `source`, and `truncated`.
 - Consent-denied, blocked-target, timeout, and rate-limit paths must be treated
   as normal branchable outcomes.
-
-### Geolocation
-
-Module id: `geolocation`
-
-Ops:
-
-- `permission`
-- `getCurrent`
-
-`permission` result:
-
-```json
-{
-  "supported": true,
-  "permissionState": "granted"
-}
-```
-
-`getCurrent` result:
-
-```json
-{
-  "latitude": 41.88,
-  "longitude": -87.62,
-  "accuracy": 35,
-  "altitude": null,
-  "altitudeAccuracy": null,
-  "heading": null,
-  "speed": null,
-  "timestamp": 1736992200000,
-  "iso": "2025-01-15T20:30:00.000Z",
-  "permissionState": "granted"
-}
-```
-
-Rules:
-
-- Read `permissionState`, not `state`.
-- Read `accuracy`, not `accuracyMeters`.
-- Use permission-first flows in public examples.
-- A future Chronos V2 should support fixed-place weather without requiring geolocation.
 
 ### Weather
 

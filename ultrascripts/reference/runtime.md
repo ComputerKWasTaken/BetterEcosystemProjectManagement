@@ -33,7 +33,6 @@ two-way runtime. A script can use only state publishing, only ops, or both.
 |-- modules/
 |   |-- ai/
 |   |-- clock/
-|   |-- geolocation/
 |   |-- network/
 |   |-- sdk/
 |   |-- widget/

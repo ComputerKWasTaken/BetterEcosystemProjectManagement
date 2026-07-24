@@ -27,7 +27,6 @@ the verification surfaces that currently exist and when to use each one.
 | `clock` | `clock-module` | `library.js`, `output-modifier.js`, `README.md` | `now`, `tz`, `format`, timezone variants, invalid requests |
 | `system` | `system-module` | `library.js`, `output-modifier.js`, `README.md` | `info`, `power`, browser/device/screen/locale/battery shape |
 | `network` | `network-module` | `library.js`, `output-modifier.js`, `README.md` | `status`, online/quality/connection hints |
-| `geolocation` | `geolocation-module` | `library.js`, `output-modifier.js`, `README.md` | `permission`, `getCurrent`, high accuracy, denied/unsupported behavior |
 | `weather` | `weather-module` | `library.js`, `output-modifier.js`, `README.md` | `current`, `forecast`, coordinates, place lookup, units, network/geocode failures |
 | `webfetch` | `webfetch-module` | `library.js`, `output-modifier.js`, `README.md` | `fetch`, `search`, consent, rate limits, SSRF/private target blocking, truncation |
 
@@ -102,13 +101,12 @@ Special attention:
 - `clock.format` returns a string
 - public examples should not read `data.now`
 
-### Geolocation And Weather
+### Weather
 
-Use together when changing:
+Use when changing:
 
-- location-to-weather flows
+- coordinate or place-name weather flows
 - future Chronos V2 real-world sync
-- permission-first examples
 - place lookup or Open-Meteo integration
 
 Special attention:
@@ -196,7 +194,7 @@ Verifies:
 | Public example/helper changes | Enhanced and Required templates plus relevant module guide |
 | Showcase script work | relevant module suites plus template contract check |
 
-For release prep, re-check all 9 module suites or at least the suites touched
+For release prep, re-check all eight module suites or at least the suites touched
 since the last known-good pass.
 
 ## Known Historical Sign-Offs

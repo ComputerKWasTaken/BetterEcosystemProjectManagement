@@ -4,59 +4,84 @@
 
 ## Current Status
 
-Ultrascripts is feature-complete for the BetterDungeon V2 release train. The runtime, nine first-party modules, templates, regression coverage, cross-platform support, and public documentation foundation are in place.
+BetterDungeon V2 is released. Its runtime, eight first-party Ultrascripts
+modules, templates, regression coverage, and cross-platform support are now a
+production baseline rather than an active release project.
 
-The project is now in launch preparation. BetterDungeon V2 and BetterRepository V1.7 are a paired release, and the remaining work is intentionally focused:
+The remaining BetterEcosystem work for this era is intentionally finite and
+sequential:
 
-1. Polish and verify BetterRepository V1.7.
-2. Upload BetterDungeon to Firefox Add-ons.
-3. Continue Reddit teasers, fix remaining bugs, and finish launch polish.
-4. Release BetterDungeon V2 and BetterRepository V1.7.
+1. Polish and release BetterRepository V1.7.
+2. Polish, verify, and publish Stateboy.
+3. Build, verify, and publish Brainiac.
+4. Build, verify, and publish Chronos V2.
+5. Close the era with final documentation alignment and planning cleanup.
+
+Only the first incomplete stage is active. Later stages may keep brief design
+notes, but they must not expand the scope of the current release.
 
 ## Active Projects
 
-- **[BetterDungeon](./BetterDungeon.md)** — AI Dungeon browser extension. Preparing V2.
-- **[BetterRepository](./BetterRepository.md)** — Public BetterEcosystem resource site. Preparing V1.7.
-- **[BetterVoyage](./BetterVoyage.md)** — Future Voyage extension idea. Parked.
+- **[BetterDungeon](./BetterDungeon.md)** — V2 released; maintenance-only unless
+  a defect blocks a remaining release.
+- **[BetterRepository](./BetterRepository.md)** — Active project; preparing
+  V1.7 for release.
+- **Stateboy** — Existing showcase implementation; next publication target
+  after V1.7.
+- **Brainiac** — Planned after Stateboy.
+- **Chronos V2** — Planned after Brainiac.
+- **[BetterVoyage](./BetterVoyage.md)** — Future Voyage extension idea; parked.
 
 ## Planning Areas
 
-- **[Ultrascripts internal docs](./ultrascripts/README.md)** — Runtime reference, module contracts, verification, templates, and focused maintenance notes.
-- **[AI Dungeon reference docs](./docs/index.md)** — Private platform, scripting, DOM, and GraphQL reference material.
-- **[Design notes](./design/README.md)** — Shared product and visual design references.
+- **[Ultrascripts internal docs](./ultrascripts/README.md)** — Runtime reference,
+  module contracts, verification, templates, and focused maintenance notes.
+- **[AI Dungeon reference docs](./docs/index.md)** — Private platform, scripting,
+  DOM, and GraphQL reference material.
+- **[Design notes](./design/README.md)** — Shared product and visual design
+  references.
 
-## Release Notes
+## Final-Era Release Stages
 
-### BetterRepository V1.7
+### 1. BetterRepository V1.7 — Active
 
-The final pass should prioritize public accuracy and launch presentation:
+Prioritize public accuracy, presentation, and a clean standalone release:
 
-- Verify the Ultrascripts guides against the live Widget, SDK, and template contracts.
-- Keep Stateboy's public entry aligned with its raw script.
+- Verify the Ultrascripts guides against the released V2 contracts.
+- Keep templates and script entries aligned with their canonical sources.
 - Polish the V1.7 What's New section and release wording.
-- Make sure the design refresh and Story Card command presets are represented clearly.
-- Do not present Brainiac or Chronos V2 as shipped; they are post-launch work.
+- Validate navigation, search, responsive presentation, downloads, and builds.
+- Do not make V1.7 depend on showcase-script publication.
 
-### BetterDungeon V2
+### 2. Stateboy
 
-The final pass should prioritize compatibility and confidence:
+Use the existing implementation as the starting point, then complete its
+player-facing polish, live verification, documentation, and publication.
 
-- Verify the current browser-extension build.
-- Upload and validate the Firefox Add-ons listing.
-- Run the final regression pass across features, templates, and Ultrascripts modules.
-- Continue public teasers while fixing launch-blocking bugs.
-- Capture release screenshots and finish store/README polish.
+### 3. Brainiac
 
-## After Launch
+Build and publish the AI-powered story-card and brain-card management showcase
+after Stateboy is public.
 
-Brainiac and Chronos V2 are the first showcase-script projects after the paired release. They are deliberately not part of the V2/V1.7 launch scope.
+### 4. Chronos V2
 
-Longer-term ideas—including a third-party module registry, richer runtime tooling, and a TypeScript/NPM migration—remain parked until the release is safely out.
+Build and publish the vanilla-safe timekeeper with optional Clock, Weather, and
+Widget enhancements after Brainiac is public.
 
-## Source-of-Truth Rules
+### 5. Era Closeout
+
+- Align BetterRepository entries, private references, and release status.
+- Move completed planning out of active checklists.
+- Record maintenance risks without opening new feature tracks.
+- Leave BetterVoyage and speculative infrastructure work parked.
+
+## Scope Rules
 
 - Prefer live implementation and current contracts over old planning notes.
-- Keep this hub focused on cross-project status; put technical detail in the relevant project or reference document.
-- Treat BetterDungeon V2 and BetterRepository V1.7 as one launch train.
+- Keep only one release stage active at a time.
+- Do not let a later showcase expand the scope of the current release.
+- Treat BetterDungeon V2 as maintenance-only unless a confirmed defect affects
+  security, compatibility, or a remaining release.
 - Keep completed work out of active checklists.
-- Do not delete historical or reference material merely because it is not part of the current launch; archive it deliberately if that becomes necessary later.
+- Archive useful history deliberately; remove stale status claims from current
+  planning documents.

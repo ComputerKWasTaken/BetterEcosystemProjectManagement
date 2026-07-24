@@ -11,16 +11,18 @@ Ultrascripts is shipped infrastructure for BetterDungeon V2, not an active const
 
 ## Current Release Context
 
-The runtime and nine first-party modules are complete for launch. The active work is now the paired BetterDungeon V2/BetterRepository V1.7 release:
+BetterDungeon V2 and its eight first-party modules are released. Ultrascripts
+is now a stable dependency for the remaining BetterEcosystem release sequence:
 
-1. Polish and verify BetterRepository V1.7.
-2. Upload BetterDungeon to Firefox Add-ons.
-3. Continue Reddit teasers, resolve bugs, and finish launch polish.
-4. Release BetterDungeon V2 and BetterRepository V1.7.
+1. Polish and release BetterRepository V1.7.
+2. Polish, verify, and publish Stateboy.
+3. Build, verify, and publish Brainiac.
+4. Build, verify, and publish Chronos V2.
+5. Complete final documentation alignment and close this project era.
 
-Completed supporting work includes the Widget V2 polish pass, PC/mobile behavior resynchronization, mobile release-distribution polish, and the Stateboy Required showcase script.
-
-Brainiac and Chronos V2 are post-launch showcase-script work.
+The current stage is BetterRepository V1.7. Stateboy has an existing
+implementation but is not public yet. Brainiac and Chronos V2 remain sequential
+future stages, not parallel work.
 
 ## Start Here
 
@@ -63,7 +65,6 @@ Regression and author examples:
 | `webfetch` | ops | `fetch`, `search` |
 | `clock` | ops | `now`, `tz`, `format` |
 | `sdk` | ops | `version`, `config` |
-| `geolocation` | ops | `permission`, `getCurrent` |
 | `weather` | ops | `current`, `forecast` |
 | `network` | ops | `status` |
 | `system` | ops | `info`, `power` |

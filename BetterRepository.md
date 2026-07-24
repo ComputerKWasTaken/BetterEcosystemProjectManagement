@@ -4,45 +4,61 @@
 
 ## Current Status
 
-BetterRepository V1.7 is the public-documentation half of the BetterDungeon V2 launch. The site already has its Ultrascripts documentation foundation; the final work is accuracy, synchronization, and presentation.
+BetterRepository V1.7 is the only active release. BetterDungeon V2 is already
+public, so V1.7 should ship as a polished standalone documentation and resource
+release supporting that stable baseline.
 
 ## V1.7 Release Checklist
 
-- [ ] Refresh the Ultrascripts guides against the live Widget, SDK, template, and mobile contracts.
+- [ ] Refresh Ultrascripts guides against the released V2 contracts.
 - [ ] Keep the public info dump aligned with the guide components.
-- [ ] Keep the Enhanced and Required raw-script templates aligned with BetterDungeon.
-- [ ] Keep the Stateboy public entry aligned with its raw script.
-- [ ] Cross-link the showcase script and module guides where useful.
-- [ ] Polish the design refresh, navigation, and search experience.
+- [ ] Keep Enhanced and Required raw-script templates aligned with BetterDungeon.
+- [ ] Keep any Stateboy entry aligned with its current source and clearly mark it
+      unpublished until the Stateboy release stage.
+- [ ] Polish the design refresh, navigation, search, and responsive experience.
 - [ ] Document Story Card command presets and their seed data clearly.
-- [ ] Update the V1.7 What's New section and release wording.
-- [ ] Make the site ready to launch alongside BetterDungeon V2.
+- [ ] Update the V1.7 What's New section, metadata, and release wording.
+- [ ] Check internal links, script downloads, and primary guide routes.
+- [ ] Run a clean production build and smoke-test the release candidate.
+- [ ] Publish V1.7 and verify the live deployment.
 
-V1.7 is a substantial public-site release supporting BetterDungeon V2, not a full major-version relaunch. Brainiac and Chronos V2 should not be described as shipped until they exist.
+## Release Gate
+
+V1.7 is ready when:
+
+- public claims match released BetterDungeon V2 behavior
+- the eight-module Ultrascripts surface is consistent across guides and templates
+- navigation, search, downloads, and primary routes work in production
+- What's New and release metadata describe V1.7 accurately
+- no unfinished showcase script is presented as published
 
 ## Public Documentation Already in Place
 
 - Ultrascripts overview, Quick Start, Cookbook, Architecture, and module guides.
-- Widget, WebFetch, AI, SDK, Clock, Geolocation, Weather, Network, and System guides.
+- Widget, WebFetch, AI, SDK, Clock, Weather, Network, and System guides.
 - Enhanced and Required Ultrascripts template entries.
 - Story Card command preset documentation and seed data.
 - BetterRepository design-refresh foundation.
 
-## Remaining Cleanup
+## Non-Blocking Cleanup
 
-These are documentation-quality tasks, not BetterDungeon V2 blockers unless they affect public launch accuracy:
+These are useful tasks, but they do not block V1.7 unless they create incorrect
+public information or a visibly incomplete primary route:
 
-- Finish scaffolded info dumps for AI Instructions, Plot Components, Scripts, Symbols & Commands, and Advanced Settings.
+- Finish scaffolded info dumps for AI Instructions, Plot Components, Scripts,
+  Symbols & Commands, and Advanced Settings.
 - Bring older non-Ultrascripts guides into the standard guide format.
-- Replace legacy BetterScripts framing where current Ultrascripts behavior has superseded it.
-- Remove outdated Zero-width, TagCipher, and Context Modifier guidance where it only describes retired workflows.
+- Replace legacy BetterScripts framing where Ultrascripts superseded it.
+- Remove retired Zero-width, TagCipher, and Context Modifier guidance.
 
-## Post-Launch
+## After V1.7
 
-- Add Brainiac and Chronos V2 entries once the scripts are built.
-- Add scenario-author examples that combine modules.
-- Add deeper AI recipes based on real showcase-script patterns.
-- Add Voyage resources only when BetterVoyage leaves Early Access and its direction is clear.
+1. Polish and publish Stateboy, then mark its entry as published.
+2. Add and publish Brainiac after Stateboy.
+3. Add and publish Chronos V2 after Brainiac.
+4. Perform final status alignment during era closeout.
+
+Voyage resources remain parked until BetterVoyage has a clear, stable direction.
 
 ## Canonical Inputs
 
