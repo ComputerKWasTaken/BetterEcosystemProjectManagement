@@ -29,6 +29,13 @@ The intended experience is:
    immediately correct or reshape the system.
 7. Widget presents the current state when available.
 
+Stateboy's Context hook opts into AI Dungeon's cache-compatible V1 script
+contract. Every Context change preserves the entire assembled prompt unchanged
+and appends Stateboy's setup guidance and state-sheet suffix afterward. This
+keeps Stateboy effective when a player enables Optimized Context on a
+cache-efficient model, without requiring a separate `info.useCacheEfficient`
+runtime branch.
+
 Stateboy is a **Requires Ultrascripts** showcase. Manual parsing and context
 injection should remain usable during setup problems so users do not lose their
 state sheet, but missing required features must never fail silently.
@@ -50,9 +57,15 @@ The Library function runs from the Context and Output hooks. On each call it:
 - publishes visible states to Widget; and
 - queues one asynchronous AI analysis after an Output turn.
 
+The Context modifier begins with `// @cache-compatible`. Both normal state
+injection and required setup warnings are suffix-only, satisfying AI Dungeon's
+cache-efficient prefix check while retaining the existing behavior on other
+models.
+
 The `Stateboy` card is the source of truth. Script-written changes are rendered
-back into it, and manual edits are detected by comparing the observed card text
-with the last script-written text.
+back into it. Manual edits are detected with semantic sheet fingerprints, while
+a short script-write handshake prevents delayed Story Card snapshots from
+being mistaken for repeated user edits.
 
 ### State model
 
@@ -61,8 +74,8 @@ The current parser supports:
 - categories declared with `##` through `######` headers;
 - states written as `Name: Value`;
 - optional descriptions in trailing parentheses;
-- inferred JSON, ratio, percent, boolean, number, list, string, object, and
-  null values;
+- inferred ratio, percent, boolean, number, list, text, object, and null values;
+- JSON literal notation normalized into those actual value types;
 - category-level directives inherited by child states; and
 - state-level directives that override the category.
 
@@ -81,18 +94,46 @@ The settings card controls:
 - Debug Mode;
 - minimum accepted confidence;
 - changelog on/off;
-- manual-edit changelog on/off;
-- number of changelog entries sent to AI; and
-- number of changelog entries mirrored into Stateboy card notes.
+- manual-edit changelog on/off.
+
+Changelog window sizes are implementation details rather than player settings:
+the updater receives the newest 20 changes and Stateboy card Notes mirror up to
+the newest 40. Legacy count fields are removed from existing Settings cards.
+
+### Current Widget presentation
+
+Widget presentation is type-aware and always names the displayed state:
+
+- ratios use labeled bars and percentages use labeled progress indicators;
+- numbers, booleans, and nulls use labeled stats;
+- text uses titled panels instead of unlabeled text widgets;
+- short lists use labeled tag groups, long lists use titled lists, and empty
+  lists explicitly show `Empty`;
+- objects use titled structured-data panels with named fields;
+- stable per-state colors and optional category dividers make adjacent states
+  easier to distinguish; and
+- output is bounded to Widget's 40-widget and field-length limits without
+  changing the source Stateboy card or AI Context.
+
+JSON is not exposed as a Stateboy type. It is an optional notation: `true`
+becomes a boolean, arrays become lists, objects become structured objects, and
+`null` becomes an empty value. The Guide card explains this distinction with
+examples.
 
 ### Current AI context and limits
 
 The AI prompt currently includes:
 
+- the explicit current AI Dungeon turn number;
 - the complete parsed state sheet;
-- up to 6 changelog entries by default, configurable from 0 to 20;
+- the newest 20 changelog entries when changelog use is enabled;
 - the last 8 history actions, each truncated to 900 characters; and
 - the most recent model output, truncated to 2,500 characters.
+
+Normal story Context wraps the visible state sheet in square brackets as an
+editorial reference block. It tells the story model that this is the world's
+current state and explicitly instructs it to continue the story rather than
+continue or reproduce the sheet.
 
 Stateboy keeps at most 40 accepted changes and 40 rejected changes in script
 state. Notes are truncated to 3,000 characters, individual reasons to 160
@@ -124,9 +165,6 @@ or "do not let AI change this" harder to express than necessary.
 
 ### Gaps
 
-- Missing heartbeat, unavailable AI, and missing Widget currently cause
-  features to be skipped without strong, actionable user warnings.
-- AI status is requested but not translated into clear configuration guidance.
 - The prompt and logs are intentionally conservative despite the intended
   AI-first experience.
 - AI cannot add or remove states.
@@ -168,7 +206,7 @@ whether the backend is configured.
 Warnings should be visible without repeatedly polluting story prose:
 
 - set `state.message` when a warning first appears or materially changes;
-- prepend a compact `[Stateboy setup: ...]` note to Context while a required
+- append a compact `[Stateboy setup: ...]` note to Context while a required
   condition remains unresolved;
 - deduplicate identical messages across hooks and turns;
 - allow a higher-priority warning to replace a lower-priority one; and
@@ -218,20 +256,19 @@ Prompt content priority, highest to lowest:
 1. updater instructions and response rules;
 2. complete current state sheet;
 3. latest model output;
-4. recent story actions, newest first;
+4. the compiled Context captured from AI Dungeon's Context hook; and
 5. recent accepted/manual changes, newest first.
 
 The builder should allocate the remaining budget dynamically. It should retain
-whole entries where practical and report truncation in Debug Mode. Generous
-defaults after the executor limit is raised:
+whole sections where practical and report truncation in Debug Mode. After the
+executor limit is raised, allow up to 8,000 characters from the latest output
+and up to 30 recent changelog entries, then give the remaining budget to the
+compiled Context.
 
-- up to 30 recent history actions;
-- up to 2,500 characters per history action;
-- up to 8,000 characters from the latest output; and
-- up to 30 recent changelog entries.
-
-These are ceilings, not fixed allocations. The complete current state sheet
-must not be truncated just to include older story history.
+Stateboy does not need to select individual Plot Components, Story Cards, or
+history actions: AI Dungeon already assembles those sources into Context. The
+complete current state sheet must not be truncated just to retain the oldest
+part of compiled Context.
 
 ### Logging
 
@@ -239,8 +276,8 @@ Increase retained detail so both the AI and user can understand past changes:
 
 - accepted/manual change log: 200 records;
 - rejected change log: 100 records;
-- AI changelog setting range: 0-100, default 30;
-- Notes changelog setting range: 0-100, default 50;
+- fixed AI changelog window: target 30;
+- fixed Notes changelog window: target 50;
 - Notes rendering budget: target 12,000 characters, confirmed against live
   Story Card behavior before release;
 - individual reason: up to 600 characters; and
@@ -262,10 +299,20 @@ Add:
 ```text
 AI May Add States: On
 AI May Remove States: On
+Add Confidence: 0.70
+Remove Confidence: 0.80
+Important Change Confidence: 0.85
 ```
 
 Both default to `On` to match Stateboy's AI-first direction. Turning either off
 must reject that operation without affecting `set`.
+
+`Stateboy Settings` is Stateboy-owned and may be rewritten into its canonical
+layout. Show Add Confidence only while adding is enabled, and Remove Confidence
+only while removal is enabled. Preserve their last parsed values in script
+state while hidden so re-enabling the capability restores the user's choices.
+Important Change Confidence remains visible whenever important states are
+supported.
 
 Manual card edits remain unrestricted and authoritative regardless of these
 settings.
@@ -284,20 +331,25 @@ write path while still covering the common need for evolving state.
 
 An added state should include category, name, value, reason, and confidence.
 Description may be optional. Its type should be inferred by the same local
-value parser used for manual states, keeping one type system. New states inherit
-their category directives and receive no state-specific directives unless the
-user later adds them.
+value parser used for manual states. States use duck typing rather than a
+persistent declared-type contract. New states inherit their category
+directives and receive no state-specific directives unless AI marks the new
+state as temporary or the user later adds directives. Ordinary updates may not
+create important states; initial generation may.
 
 ### Validation
 
 Script validation remains mandatory:
 
 - require the corresponding setting for add/remove;
-- require confidence at or above the configured threshold;
+- require set confidence at or above Minimum Confidence;
+- require add/remove confidence at or above their separate thresholds;
+- require Important Change Confidence when setting an important state;
 - reject duplicate category/name pairs on add;
 - reject unknown categories on add;
 - reject unknown states on set/remove;
 - reject set/remove for locked states;
+- reject every attempt to remove an important state;
 - reject empty or malformed names;
 - reserve Stateboy syntax delimiters that cannot round-trip safely;
 - apply operations in response order against the evolving in-memory sheet;
@@ -323,12 +375,14 @@ operations from the latest response.
 
 ### Proposed user syntax
 
-Replace the common punctuation-heavy forms with three intent-based flags:
+Replace the common punctuation-heavy forms with intent-based flags:
 
 ```text
 ## Secrets [hidden, locked]
 Public Clue: Found [visible]
 Internal Counter: 3 [no-widget]
+Main Quest: Find the Crown [important]
+Poisoned: On [temporary]
 ```
 
 Canonical flags:
@@ -338,8 +392,12 @@ Canonical flags:
   `hidden`;
 - `locked` — AI may read the state but may not set or remove it;
 - `unlocked` — allow AI updates, overriding an inherited `locked`;
-- `no-widget` — keep in Context but omit from Widget; and
-- `widget` — show in Widget, overriding inherited `no-widget`.
+- `no-widget` — keep in Context but omit from Widget;
+- `widget` — show in Widget, overriding inherited `no-widget`;
+- `important` — the state cannot be removed, requires Important Change
+  Confidence for ordinary updates, and is completely immutable to cleanup; and
+- `temporary` — tell AI that the state represents a short-lived condition and
+  should be removed or promoted to normal when the story supports doing so.
 
 Flags remain valid on both category headers and state lines. State flags
 override category flags.
@@ -352,38 +410,206 @@ This covers the common intents directly:
   available to the Stateboy updater;
 - `[hidden, locked]` means fully private and user-managed.
 
-### Compatibility
+`temporary` is an AI-interpreted semantic hint, not a turn counter or automatic
+expiration system. Ordinary updates and cleanup may remove the flag when a
+temporary concept becomes permanent. Ordinary AI may create temporary states.
+Only initial generation or the user may create important states.
 
-Do not break existing cards on upgrade.
+`[important, temporary]` is invalid. Ignore both flags and treat the state as a
+normal state. Preserve the user's text until another Stateboy write naturally
+canonicalizes the card; report the conflict only in Debug Mode.
 
-- Continue parsing legacy `widget:`, `context:`, and `ai:` directives.
-- Normalize both syntaxes into one internal policy object:
-  `{ contextVisible, widgetVisible, aiMutable }`.
-- Prefer explicit state flags over inherited category policy.
-- If one line mixes legacy and new syntax, apply tokens from left to right and
-  record a parse warning in Debug Mode.
-- When Stateboy rewrites a card, render the new shorthand flags.
-- Update the generated Guide card with a short examples-first section and move
-  the legacy syntax to a compatibility note.
+### Canonical policy
+
+Replace the old directive parser and renderer outright. Only the new flags are
+supported, and the internal policy object is:
+
+```js
+{ contextVisible, widgetVisible, aiMutable, important, temporary }
+```
+
+Unknown or contradictory flags are ignored and may be surfaced in Debug Mode.
+Every Stateboy write renders only the canonical shorthand syntax. Update the
+generated Guide card with a short, examples-first explanation of the new flags.
 
 `hidden` affects normal story Context and Widget, not the dedicated AI updater
 prompt. `locked` controls AI mutation. Keeping those concepts separate allows
 the updater to reason about private state without leaking it into story
 generation.
 
+## Target 5: Initial Generation and Cleanup Jobs
+
+### Shared job model
+
+Generation and cleanup are explicit heavyweight AI jobs, separate from the
+ordinary per-turn updater. This separation keeps requests easy to trace and
+lets each prompt use a task-appropriate thinking level:
+
+- ordinary update: `low`;
+- initial or commanded generation: `high`; and
+- cleanup: `medium`.
+
+Only one Stateboy AI job is authoritative at a time. While generation or
+cleanup is pending, skip ordinary update requests; the next ordinary request
+will see the accumulated story context. A new generation/cleanup command takes
+precedence over an older pending special job: abandon the old request id,
+ignore any late response, and start the newly requested job. This prevents a
+stalled request from deadlocking Stateboy.
+
+Special jobs must never block normal play. The regular Widget shows that
+Stateboy is thinking during generation or cleanup, but ordinary background
+updates remain silent outside Debug Mode. Responses are applied on the first
+later script invocation that can consume them.
+
+Use the compiled Context exposed by AI Dungeon's normal lifecycle. Stateboy
+does not choose separate scenario sources or pretend it can request additional
+platform context. Cache the most recent compiled Context when necessary so a
+command stopped in the Input hook can schedule its job without changing how AI
+Dungeon assembles context.
+
+### Automatic initial generation
+
+If the scenario creator supplied a `Stateboy` card, use it exactly as the
+initial sheet. If no card exists, create one containing:
+
+```text
+Stateboy is currently generating an initial state sheet. Please wait...
+```
+
+Do not inject this placeholder into story Context. Automatically request a new
+sheet using the compiled scenario context, without bias from an old default
+sheet. Initial generation may organize categories, add descriptions, and mark
+appropriate states as important or temporary.
+
+The automatic initial generation is not added to undo history because it
+creates the starting point rather than modifying an established sheet. If it
+cannot start because AI is unavailable, or if the request fails or times out,
+do not retry automatically. Keep the setup/error message actionable and wait
+for the user to run `/stateboy generate`.
+
+The player may continue taking story actions while generation is pending.
+
+### User-triggered generation
+
+`/stateboy generate` creates an entirely new state sheet. Its prompt must not
+include the previous Stateboy sheet; generation is deliberately unbiased by
+the existing design. The old sheet is retained only in the inverse history
+batch so the command can be undone.
+
+Generation replaces all categories, states, values, descriptions, and
+directives, including important states. Cleanup—not generation—is the command
+for improving the existing sheet.
+
+### Cleanup
+
+Cleanup runs only through `/stateboy cleanup`; there is no periodic cleanup.
+It is a dedicated AI request and applies without review.
+
+Ask the AI for one complete proposed sheet. Stateboy then parses it, protects
+important states, computes the difference from the current sheet, applies the
+candidate, and stores an inverse batch. Cleanup may:
+
+- add or remove ordinary states and categories;
+- merge duplicates;
+- rename or move ordinary states;
+- create, rename, reorder, or remove categories;
+- improve descriptions;
+- simplify or restructure values using the normal duck-typed representation;
+- change temporary states into permanent states; and
+- simplify overly detailed data.
+
+Cleanup may not change any aspect of an important state: category, position,
+name, value, inferred type, description, or directives. It has no confidence
+threshold because the user explicitly requested the operation. Structural
+validation and important-state protection still apply.
+
+If cleanup produces no effective difference, report that the sheet is already
+clean and do not create a history batch.
+
+## Target 6: Batch Undo and Redo
+
+### History model
+
+Store inverse operation batches rather than full snapshots wherever possible.
+Each successful ordinary AI response is one batch, and each successful cleanup
+is one batch regardless of how many states it changes. A user-triggered
+generation is also one reversible replacement batch. Automatic initial
+generation and manual card edits are not history entries.
+
+Keep the latest 100 applied batches. Each operation retains enough structured
+old/new data to reverse sets, additions, removals, description edits, moves,
+renames, directive changes, and sheet replacement. This is intentionally a
+simple count limit; the AI Dungeon sandbox's 16 MB allowance leaves ample room
+for this bounded history under ordinary use.
+
+### Undo behavior
+
+`/stateboy undo` reverses one complete batch. `/stateboy undo N` reverses up to
+N batches, newest first, and creates the corresponding redo entries. If fewer
+than N exist, reverse all available batches and report the actual number.
+
+Undo must be conflict-safe. Before reversing an operation, confirm that the
+current state still matches the result originally written by that batch. If a
+later manual edit changed it, skip that operation rather than overwrite the
+user's correction. Continue reversing non-conflicting operations in the same
+batch and report how many were skipped.
+
+### Redo behavior
+
+`/stateboy redo` and `/stateboy redo N` replay whole batches. Clear the redo
+stack after any new ordinary AI update, cleanup, generation, or manual card
+edit, because the sheet has branched. Reject undo and redo while an AI job is
+pending so a late response cannot land on a restored sheet.
+
+There is no history browser or batch-id command. Status only needs undo and
+redo counts.
+
+## Target 7: Command System
+
+Add an Input modifier and accept both `/stateboy` and `/sb` prefixes:
+
+```text
+/stateboy status
+/stateboy undo [count]
+/stateboy redo [count]
+/stateboy generate
+/stateboy cleanup
+/stateboy help
+```
+
+Every recognized command returns `stop: true`, preventing the game loop from
+progressing the story. Put feedback in `state.message` and, where relevant,
+the regular Widget. Do not send a neutral replacement action to the story
+model.
+
+Command behavior:
+
+- `status` reports runtime, AI, Widget, state count, active job, and undo/redo
+  counts;
+- `undo` and `redo` operate on whole batches and reject while AI is pending;
+- `generate` replaces the complete sheet and is reversible;
+- `cleanup` improves the current sheet in a separate request; and
+- `help` lists commands and their concise purpose.
+
+There is no review, history, regenerate, sync, or confirmation command. A new
+generation/cleanup command supersedes an older special request rather than
+being rejected as busy.
+
 ## Internal Refactor
 
 Keep the script ES5-compatible with the AI Dungeon environment, but organize
 the flow around a few explicit phases:
 
-1. bootstrap cards and persistent state;
-2. read Ultrascripts responses and assess setup;
-3. parse settings and state sheet;
-4. reconcile manual edits;
-5. process and validate the prior AI response;
-6. inject Context or queue Output analysis;
-7. publish Widget/status;
-8. commit Ultrascripts requests.
+1. parse Input commands and stop recognized commands;
+2. bootstrap cards and persistent state;
+3. read Ultrascripts responses and assess setup;
+4. parse settings and state sheet;
+5. reconcile manual edits and redo invalidation;
+6. process the authoritative ordinary/special AI response;
+7. apply or reverse a validated operation batch;
+8. capture/inject Context or queue the appropriate request;
+9. publish Widget/status; and
+10. commit Ultrascripts requests.
 
 Recommended internal boundaries:
 
@@ -391,6 +617,10 @@ Recommended internal boundaries:
 - `buildStateboyPromptWithinBudget`
 - `validateStateboyOperation`
 - `applyStateboyOperationBatch`
+- `diffStateboySheets`
+- `undoStateboyBatch`
+- `startStateboyJob`
+- `processStateboyCommand`
 - `resolveStateboyPolicy`
 - `publishStateboyWarning`
 
@@ -419,6 +649,8 @@ identical behavior and cover the duplicated surface with tests.
 
 ### Phase 3: Add/remove operations
 
+- make the Settings card canonical and conditionally render add/remove
+  confidence fields;
 - add settings and guide text;
 - expand the JSON schema and AI instructions;
 - implement ordered batch validation/application;
@@ -428,12 +660,30 @@ identical behavior and cover the duplicated surface with tests.
 ### Phase 4: Directive simplification
 
 - introduce the normalized policy model;
-- parse new flags and legacy directives;
+- replace the old parser with the new flags;
 - render canonical shorthand;
 - update Guide examples; and
-- test inheritance, overrides, mixed syntax, and round trips.
+- test inheritance, overrides, invalid combinations, and round trips.
 
-### Phase 5: Publication alignment
+### Phase 5: Generation and cleanup
+
+- replace the static default sheet with automatic initial generation;
+- add the placeholder and regular-Widget thinking state;
+- implement authoritative special-job precedence and stale-response ignoring;
+- implement unbiased user-triggered generation;
+- implement full-sheet cleanup, diffing, and important-state protection; and
+- verify that special jobs never block story play.
+
+### Phase 6: Undo, redo, and commands
+
+- add the Input modifier and both command prefixes;
+- implement 100 inverse batches plus redo;
+- add conflict-safe partial reversal;
+- clear redo on every branch-producing change;
+- return `stop: true` for recognized commands; and
+- test asynchronous command and pending-job interactions.
+
+### Phase 7: Publication alignment
 
 - update the Script Contract Reference to the final operation and directive
   contracts;
@@ -457,9 +707,15 @@ At minimum, verify:
 | Set | every supported type, clamp behavior, low confidence, locked state |
 | Add | allowed/disabled, duplicate, unknown category, inferred types, invalid name |
 | Remove | allowed/disabled, unknown state, locked state, final category entry |
+| Confidence | set/add/remove thresholds, conditionally displayed settings, important threshold |
 | Batch | ordered dependencies, mixed operations, partial rejection, 20-operation cap |
-| Directives | new flags, legacy syntax, inheritance, override, mixed syntax, render/parse round trip |
-| Undo/edit | user restores removed entry, user edits after AI write, no write-observation loop |
+| Directives | canonical flags, inheritance, override, unknown flags, important/temporary conflict, render/parse round trip |
+| Initial generation | creator sheet preserved, absent sheet, placeholder, failure without retry, play continues |
+| Generate | unbiased prompt, complete replacement, important replacement, undo/redo |
+| Cleanup | separate request, full-sheet diff, category changes, duck typing, no-op, important immutability |
+| Job control | ordinary update skipped, new special job supersedes old, late response ignored |
+| Undo/edit | whole batches, multiple counts, partial conflicts, manual edits clear redo, 100-batch rollover |
+| Commands | both prefixes, parsing, `stop: true`, pending undo rejection, status and help feedback |
 
 ## Release Acceptance Criteria
 
@@ -472,8 +728,15 @@ Stateboy is ready to publish when:
 - AI receives substantially more context within a verified executor budget;
 - expanded logs remain bounded and readable;
 - add/remove settings and all three operations behave predictably;
+- Add/Remove confidence settings appear only while their capabilities are on;
 - users can understand the shorthand directives from examples alone;
-- legacy Stateboy cards continue to parse correctly;
+- important states receive their higher-confidence and cleanup protections;
+- temporary states behave as AI-interpreted lifecycle hints;
+- automatic generation replaces the old static default without blocking play;
+- user generation is unbiased by the old sheet and can be undone;
+- cleanup is explicit, separate, immediately applied, and reversible;
+- 100-batch undo/redo skips conflicts instead of overwriting manual edits;
+- every recognized command stops story progression and reports its result;
 - manual edits remain authoritative and do not create update loops;
 - live AI, Widget, manual-edit, and failure-path tests pass; and
 - the script, Guide card, contract reference, repository entry, and public
@@ -484,8 +747,13 @@ Stateboy is ready to publish when:
 - replacing the Stateboy card with opaque script state;
 - exposing or reading API keys;
 - selecting provider-native models from Stateboy;
-- allowing AI to create/remove/rename categories in the first release;
-- implementing automatic undo UI;
+- automatic or periodic cleanup;
+- a review/approval queue for AI changes;
+- deterministic expiration timers for temporary states;
+- evidence requirements beyond the existing AI reason/debug information;
+- state-count limits or anti-bloat heuristics;
+- periodic full reconciliation or correction-specific prompt logic;
+- a history browser or batch-id rollback interface;
+- blocking story play while generation or cleanup is pending;
 - removing validation because the AI is trusted; or
 - supporting a no-Ultrascripts mode as an equal product experience.
-
