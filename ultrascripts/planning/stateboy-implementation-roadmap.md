@@ -36,7 +36,7 @@ This document owns sequencing only.
 | 1A | Widget clarity and value-type guidance | Implemented locally; live verification pending | Stage 1 |
 | 1B | Optimized Context compatibility | Implemented locally; live verification pending | Stage 1 |
 | 1C | Turn grounding, story Context framing, and fixed changelog windows | Implemented locally; live verification pending | Stage 1B |
-| 2 | Canonical directive cutover | Pending | Stage 0 |
+| 2 | Canonical directive cutover | Implemented locally; live verification pending | Stage 0 |
 | 3 | Canonical Settings card | Pending | Stage 0 |
 | 4 | Operation batches and inverse records | Pending | Stages 2-3 |
 | 5 | AI add/remove operations | Pending | Stage 4 |

@@ -146,31 +146,38 @@ builder becomes aware of the advertised limit.
 
 ### Current directives
 
-Directives use trailing bracket metadata:
+Directives use concise trailing flags:
 
 ```text
-## Secrets [widget: off, context: off, ai: readonly]
-Secret: Known [widget: off, context: off, ai: readonly]
+## Secrets [hidden, locked]
+Public Clue: Found [visible, unlocked]
+Internal Counter: 3 [no-widget]
+Main Quest: Find the Crown [important]
+Poisoned: On [temporary]
 ```
 
-The three independent domains are:
+The parser resolves every state to:
 
-- `widget: on/off`;
-- `context: on/off`; and
-- `ai: on/readonly`.
+```js
+{ contextVisible, widgetVisible, aiMutable, important, temporary }
+```
 
-This is flexible but verbose. It exposes implementation domains to users,
-requires punctuation-heavy syntax, and makes common intents such as "hide this"
-or "do not let AI change this" harder to express than necessary.
+Category flags are inherited and state flags override them by domain. `hidden`
+and `visible` control story Context and Widget together, `no-widget` and
+`widget` provide a Widget-only override, and `locked`/`unlocked` control AI
+mutation. The dedicated updater still sees hidden states.
+
+`important` and `temporary` are semantic roles. Their conflicting combination
+is treated as normal. Other conflicting or unknown flags are ignored, omitted
+by the next canonical Stateboy write, and reported only through Debug Mode.
+The former `widget:`, `context:`, and `ai:` syntax is unsupported.
 
 ### Gaps
 
 - The prompt and logs are intentionally conservative despite the intended
   AI-first experience.
 - AI cannot add or remove states.
-- The directive syntax is more technical than the rest of the card format.
-- There is no explicit prompt-budget policy, warning-state model, or focused
-  Stateboy regression suite.
+- There is no complete prompt-budget policy or command/history system yet.
 
 ## Target 1: Enforce Required-Mode Setup Warnings
 
