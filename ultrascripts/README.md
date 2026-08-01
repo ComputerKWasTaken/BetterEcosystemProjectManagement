@@ -35,6 +35,7 @@ parallel work.
 | What should be tested or live-checked? | [Verification reference](./reference/verification.md) |
 | How do private docs and public docs stay aligned? | [Documentation sync plan](./planning/docs-sync.md) |
 | What module polish is still worth tracking? | [Module quality pass](./planning/module-quality-pass.md) |
+| What would modules nine and ten look like? | [JavaScript module concept](./planning/javascript-module.md), [Audio module concept](./planning/audio-module.md) |
 
 ## Source-of-Truth Map
 

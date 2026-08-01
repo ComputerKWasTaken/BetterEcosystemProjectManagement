@@ -116,6 +116,9 @@ Status: **Planned after Chronos V2**
 
 ## Parked Work
 
+- Ninth and tenth first-party modules:
+  [JavaScript](./javascript-module.md) and [Audio](./audio-module.md)
+  (concept drafts only; implementation waits for era closeout).
 - Third-party module registry and sandboxing.
 - Richer runtime inspector/debugger.
 - Broad AI provider expansion.
