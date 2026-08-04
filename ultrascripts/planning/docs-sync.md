@@ -37,7 +37,8 @@ that contract must be checked.
 | [reference/verification.md](../reference/verification.md) | verification surfaces |
 | [planning/current-roadmap.md](./current-roadmap.md) | active roadmap and release path |
 | [planning/docs-sync.md](./docs-sync.md) | this sync plan |
-| [planning/module-quality-pass.md](./module-quality-pass.md) | active module polish checklist |
+| [planning/module-quality-pass.md](./module-quality-pass.md) | V2.1 quality and security gates |
+| [planning/v2.1-design-notes.md](./v2.1-design-notes.md) | investigated options and open V2.1 decisions |
 
 ## Public Guide Inventory
 
@@ -158,25 +159,20 @@ All public AI Dungeon snippets should:
 ## Active Sync Priority
 
 BetterDungeon V2 and BetterRepository's supporting resource release are
-complete. The active sync priority is keeping Stateboy's source, public entry,
-guide, and publication status aligned.
+complete. The active priority is V2.1 contract migration in roadmap order:
 
-Immediate focus:
+1. heartbeat freshness, liveness, and PC/Mobile identity;
+2. Audio and JS contracts, settings, suites, and guides;
+3. WebFetch safe-read permissions and migration guidance;
+4. AI safety, provider-neutral errors, Interactions, and model fallback;
+5. Navigator product, permission, automation, audit, and recovery documentation.
 
-- exact parity between Stateboy's canonical source and public raw script
-- Stateboy catalog metadata, guide copy, and publication status
-- Required-mode gating and player-facing setup documentation
-- AI, Widget, SDK, manual-edit, and fallback-path documentation
-- keeping Stateboy clearly unpublished until its live release succeeds
+Stateboy, Brainiac, and Chronos V2 documentation remains independently owned and
+must not be described as the active BetterDungeon release sequence.
 
-Later-stage sync focus:
+## Independent Script Documentation Path
 
-- any AI/SDK guidance needed for Brainiac
-- any Clock/Weather guidance needed for Chronos V2
-
-## Showcase Script Documentation Path
-
-When each showcase reaches its roadmap stage:
+When Stateboy, Brainiac, or Chronos V2 is worked on independently:
 
 1. Align its canonical source, BetterRepository raw script, and catalog entry.
 2. Add public guide links where the scripts demonstrate module patterns.
@@ -184,14 +180,14 @@ When each showcase reaches its roadmap stage:
 4. Update [Script Contract Reference](../reference/script-contract.md)
    if a showcase reveals a better canonical example.
 5. Publish and verify the script and its public download.
-6. Mark it as published only after publication succeeds, then activate the next
-   stage: Stateboy, Brainiac, and Chronos V2 in that order.
+6. Mark it as published only after publication succeeds. Its status does not
+   activate or block a BetterDungeon V2.1 phase.
 
 ## Verification Before Calling Docs Synced
 
 Check:
 
-- private docs mention all eight shipped modules consistently
+- private docs distinguish the eight V2 modules from the ten-module V2.1 target
 - public guide list still matches actual `Ultrascripts*.vue` files
 - test suite list still matches actual `tests/aid-scripts/` directories
 - template names match BetterDungeon examples and BetterRepository script data

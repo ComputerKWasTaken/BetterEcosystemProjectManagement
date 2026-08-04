@@ -7,21 +7,16 @@ Private reference and maintenance docs for Ultrascripts, the BetterDungeon runti
 - `reference/` contains stable runtime facts, module contracts, SDK details, script contracts, and verification guidance.
 - `planning/` contains focused maintenance notes and the current release roadmap.
 
-Ultrascripts is shipped infrastructure for BetterDungeon V2, not an active construction project. Keep these documents aligned with the implementation and public BetterRepository guides.
+Ultrascripts shipped with BetterDungeon V2 and is the first active improvement
+track for V2.1. Keep these documents aligned with the implementation and public
+BetterRepository guides.
 
 ## Current Release Context
 
-BetterDungeon V2 and its eight first-party modules are released. Ultrascripts
-is now a stable dependency for the remaining BetterEcosystem release sequence:
-
-1. Polish, verify, and publish Stateboy.
-2. Build, verify, and publish Brainiac.
-3. Build, verify, and publish Chronos V2.
-4. Complete final documentation alignment and close this project era.
-
-The current stage is Stateboy. It has an existing implementation but is not
-public yet. Brainiac and Chronos V2 remain sequential future stages, not
-parallel work.
+BetterDungeon V2 and its eight first-party modules are released. V2.1 now
+prioritizes heartbeat reliability, Audio and JS module investigation, WebFetch
+and AI improvements, and then Navigator. Stateboy, Brainiac, and Chronos V2 are
+independent script projects and no longer gate BetterDungeon releases.
 
 ## Start Here
 
@@ -35,6 +30,7 @@ parallel work.
 | What should be tested or live-checked? | [Verification reference](./reference/verification.md) |
 | How do private docs and public docs stay aligned? | [Documentation sync plan](./planning/docs-sync.md) |
 | What module polish is still worth tracking? | [Module quality pass](./planning/module-quality-pass.md) |
+| Why are the V2.1 designs shaped this way? | [V2.1 design notes](./planning/v2.1-design-notes.md) |
 
 ## Source-of-Truth Map
 
@@ -69,11 +65,14 @@ Regression and author examples:
 | `system` | ops | `info`, `power` |
 | `ai` | ops | `status`, `query` |
 
-The AI module exposes a stable asynchronous `status`/`query` contract with text output, schema-backed JSON output, and clear `not_configured` handling.
+The V2 AI module exposes a stable asynchronous `status`/`query` contract with
+text output, schema-backed JSON output, and clear `not_configured` handling.
+Audio and JS are planned V2.1 modules; do not list them as shipped until their
+contracts, implementations, tests, and guides pass the roadmap gates.
 
 ## Documentation Rules
 
-- Treat Ultrascripts as shipped infrastructure.
+- Treat the V2 contracts as shipped infrastructure and V2.1 changes as active work.
 - Prefer live code, public guide components, and current templates over old phase notes.
 - Keep `reference/` stable unless an implementation contract changes.
 - Keep `planning/` focused on active work rather than completed milestones.

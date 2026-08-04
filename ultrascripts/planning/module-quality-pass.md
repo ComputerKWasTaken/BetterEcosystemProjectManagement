@@ -1,101 +1,97 @@
-# Module Quality and Showcase Readiness
+# Ultrascripts V2.1 Quality Plan
 
 ## Purpose
 
-The BetterDungeon V2 module-quality pass is complete. This document now defines
-small, showcase-driven maintenance gates for the final release sequence.
+This document defines the cross-cutting quality gates for the active V2.1
+Ultrascripts work. Phase sequencing lives in [Current Roadmap](./current-roadmap.md).
 
-Ultrascripts is shipped infrastructure, not an active redesign project. A module
-change should be accepted only when it improves the current release stage,
-corrects a confirmed defect, or restores documentation/test alignment.
+## Readiness Matrix
 
-The release order lives in [Current Roadmap](./current-roadmap.md).
+| Surface | V2.1 target | Principal risk | Status |
+|---|---|---|---|
+| Heartbeat | Live-client lease and PC/Mobile identity | Stale cross-device availability | Active design |
+| Audio | Ambient state and bounded synth effects | Autoplay, lifecycle, noisy scripts | Planned |
+| JS | Isolated quota-bound computation | Sandbox escape and resource exhaustion | Provisional pending threat model |
+| WebFetch | Prompt-free safe public reads | SSRF and data leakage | Planned revision |
+| AI | Safety controls, Interactions, current models | Silent blocks and provider coupling | Planned revision |
+| Navigator | Typed, reversible adventure mutations | Stale overwrites and automation loops | Planned after Ultrascripts |
 
-## Current Stage
+## Standard Module Gates
 
-Stateboy is active.
+Every changed or new module must answer:
 
-Module work during this stage is limited to:
+- Is its public contract narrow, versioned, and discoverable?
+- Does it degrade clearly when disabled, unsupported, unconfigured, offline, or timed out?
+- Are errors stable, branchable, and useful to scripts?
+- Are input, output, rate, concurrency, and persistence bounds explicit?
+- Does it clean up observers, workers, media, queues, and state on disable/navigation?
+- Does PC/mobile behavior match, or is a documented capability difference exposed?
+- Do regression fixtures represent hostile inputs as well as normal author use?
+- Are settings, references, public guides, examples, and heartbeat advertising aligned?
 
-- supporting Stateboy's AI, Widget, SDK, and Required-mode paths
-- correcting a confirmed defect exposed by Stateboy verification
-- keeping Stateboy documentation, examples, and regression coverage aligned
+## Heartbeat Gates
 
-Brainiac- and Chronos-specific enhancements do not belong in the Stateboy stage
-unless they correct a shared contract defect blocking Stateboy.
+- A heartbeat from another device cannot prove current availability.
+- Required helpers do not remain ready indefinitely on durable card state alone.
+- Nonce acknowledgements are adventure/session-bound and replay-resistant.
+- Clean disable improves freshness but correctness survives missing cleanup.
+- Multiple active clients and delayed/out-of-order writes are deterministic.
+- `PC` and `Mobile` labels are tested at their actual packaging boundaries.
 
-## Showcase Readiness Matrix
+## Audio Gates
 
-| Release | Relevant surfaces | Current status |
-|---|---|---|
-| Stateboy | AI, Widget, SDK, Required gating | Active polish, verification, and publication |
-| Brainiac | AI, Widget, SDK, card write safety | Planned after Stateboy |
-| Chronos V2 | Clock, Weather, Widget, SDK | Planned after Brainiac |
+- First playback follows browser user-activation rules.
+- Global mute/stop and per-module settings remain reachable.
+- Track transitions, fades, rapid replacement, and concurrent effects are bounded.
+- Invalid catalog ids and synth parameters fail without partial playback.
+- Adventure exit, feature disable, tab backgrounding, and mobile suspension clean up.
+- CC0 asset provenance and distribution size are reviewed.
 
-## Standard Review Questions
+## JS Gates
 
-For any touched module:
+- Threat model is approved before module implementation is considered committed scope.
+- Code cannot reach DOM, page globals, extension APIs, network, storage, or credentials.
+- Infinite loops and resource exhaustion terminate inside enforced bounds.
+- JSON serialization cannot flood or corrupt the transport.
+- No cross-request state or prototype pollution survives one-shot execution.
+- Chromium, Firefox, and Android WebView run the same escape suite.
 
-- Does the live API match the public guide?
-- Does it match [Script Contract Reference](../reference/script-contract.md)?
-- Does it degrade cleanly when disabled, unsupported, unconfigured, or offline?
-- Are errors stable and branchable?
-- Are response fields useful and naturally named?
-- Does mobile/narrow behavior hold where relevant?
-- Does the regression suite represent real author usage?
-- Is the change required for the current release stage?
+## WebFetch Gates
 
-## Stage-Specific Gates
+- Safe public `GET`/`HEAD` needs no per-origin interaction.
+- Redirect hops receive the same target validation as the initial URL.
+- Private, loopback, link-local, credentialed, extension, and sensitive schemes are blocked.
+- Default requests cannot forward cookies, authorization, or arbitrary sensitive headers.
+- Query/body leakage guidance and request logging are present.
+- Time, byte, response, method, and rate limits remain enforced.
 
-### Stateboy
+## AI Gates
 
-- Required-mode gating is clear.
-- AI configuration failures leave manual behavior usable.
-- Widget and debug/status surfaces remain readable on narrow screens.
-- Manual edits do not create no-op update loops.
-- Public documentation matches the exact published script.
+- Gemini adjustable safety settings are explicit and covered by compatibility tests.
+- Prompt and output blocks surface stable errors with provider diagnostics.
+- Interactions text, JSON schema, thinking, timeout, usage, and fallback paths pass.
+- Model-specific capabilities are detected or encoded; fallback does not assume parity.
+- The public Ultrascripts module contract stays provider-neutral.
+- OpenRouter is added only after a recorded Gemini compatibility decision.
 
-### Brainiac
+## Navigator Gates
 
-- AI JSON is validated before card writes.
-- Card changes are bounded, observable, and recoverable.
-- AI-unavailable behavior is non-destructive.
-- Widget/SDK surfaces explain status rather than add decorative complexity.
-
-### Chronos V2
-
-- Base timekeeping works without BetterDungeon.
-- Clock and Weather enhancement paths are optional.
-- Place-name and coordinate weather flows are documented and tested.
-- Weather failures do not block core scenario behavior.
-- Timezone and formatting behavior is stable.
+- Read, suggestion, and mutation privileges are separate.
+- Mutations target stable ids and enforce version/hash preconditions.
+- Every applied mutation records reason, before/after values, actor/run id, and undo data.
+- Delete and bulk operations receive heightened review and bounded batch size.
+- Automation evaluation is idempotent across reloads and multiple clients.
+- Cooldowns, budgets, pending-job suppression, failure backoff, and global pause work.
 
 ## Review Result Format
 
-Record each review as:
+Record each review as one of:
 
-- `No change needed`
-- `Docs/example fix only`
-- `Small implementation fix`
-- `Regression suite update`
-- `Blocked by showcase decision`
+- `Ready`
+- `Ready with documented limitation`
+- `Needs implementation or contract change`
+- `Needs regression coverage`
+- `Blocked by security/product decision`
 
-For accepted fixes, capture:
-
-- what changed
-- why the current release needs it
-- which suite/template/public guide was checked
-- whether the script contract reference changed
-
-## Scope Guardrails
-
-Do not expand a showcase review into:
-
-- new runtime architecture
-- broad AI provider expansion
-- public debugger/inspector work
-- third-party module marketplace work
-- full TypeScript migration
-- unrelated BetterDungeon feature rewrites
-
-Those remain parked through era closeout.
+For accepted work, capture what changed, why, compatibility impact, test surfaces,
+documentation surfaces, and PC/mobile result.

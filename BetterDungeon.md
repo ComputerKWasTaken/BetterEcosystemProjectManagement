@@ -1,62 +1,118 @@
 # BetterDungeon Project Management
 
-> Maintenance status for the released AI Dungeon browser extension.
+> Active planning for BetterDungeon V2.1 following the completed V2 release.
 
 ## Current Status
 
-BetterDungeon V2 is released. The extension and mobile app now serve as the
-stable runtime foundation for the remaining BetterEcosystem releases.
+BetterDungeon V2 is released, polished, and complete. V2 remains the stable
+baseline while development moves to V2.1.
 
-BetterDungeon has no active feature milestone in this era. Change it only when:
+V2.1 has two release-critical tracks, in order:
 
-- a confirmed defect affects security or core compatibility
-- Stateboy, Brainiac, or Chronos V2 reveals a small contract or regression issue
-- desktop/mobile parity breaks in a supported shared feature
+1. harden and complete Ultrascripts as a platform; and
+2. build Navigator as the release's headline player-facing feature.
 
-New platform work, broad refactors, and speculative runtime expansion are out of
-scope until the final release sequence is complete.
+Stateboy, Brainiac, and Chronos V2 are no longer BetterDungeon release gates.
+They remain useful Ultrascripts consumers and may be developed independently,
+but V2.1 must not wait for their publication.
 
 ## V2 Baseline
 
 - Ultrascripts transport, write queue, heartbeat discovery, and two-way envelopes.
 - State-card dispatch, module registry, lifecycle handling, and popup settings.
-- `widget`, `webfetch`, `clock`, `sdk`, `weather`, `network`, `system`, and `ai`
-  modules.
+- Eight modules: `widget`, `webfetch`, `clock`, `sdk`, `weather`, `network`,
+  `system`, and `ai`.
 - Per-module AI Dungeon regression suites.
 - Enhanced and Required starter templates.
 - Chromium, Firefox/Gecko, and Android WebView support.
-- Widget V2 polish.
-- PC/mobile Ultrascripts resynchronization.
-- Mobile release-distribution polish.
+- Widget V2 polish and PC/mobile Ultrascripts resynchronization.
 
-## Remaining-Era Role
+## V2.1 Roadmap
 
-1. Support Stateboy verification and publication.
-2. Support Brainiac only after Stateboy is public.
-3. Support Chronos V2 only after Brainiac is public.
-4. End with a stable V2 maintenance baseline rather than another feature cycle.
+### Stage 1 — Ultrascripts Reliability
 
-## Maintenance Gate
+- Replace durable-heartbeat trust with freshness plus an active liveness
+  challenge/acknowledgement for scripts that require Ultrascripts.
+- Advertise `PC` for the browser extension and `Mobile` for the APK runtime.
+- Preserve heartbeat as discovery; do not pretend a Story Card can prove that
+  the currently active device still runs BetterDungeon.
 
-Before accepting a BetterDungeon change, confirm:
+### Stage 2 — Module Expansion and Revision
 
-- the issue is reproducible against the released V2 baseline
-- the smallest safe fix is understood
-- relevant desktop/mobile behavior and regression coverage are checked
-- public docs or templates are updated if the contract changed
-- the fix does not silently create a new feature track
+- Add `audio` as a stateful ambient-loop and synthesized-sound module.
+- Add `js` as an isolated, quota-bound compute module.
+- Remove WebFetch's per-origin prompt from the ordinary safe-read path while
+  retaining request-shape limits, blocked-target/SSRF protection, privacy
+  controls, rate limits, and explicit escalation for sensitive capabilities.
+- Add explicit Gemini safety settings, migrate the backend to the Interactions
+  API, and update the automatic model chain to:
+  `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite` → `gemma-4-31b-it` →
+  `gemma-4-26b-a4b-it`.
+- Add OpenRouter only if an explicit-content compatibility spike shows Gemini
+  remains unsuitable after supported safety controls are configured.
 
-## Risks to Keep Visible
+### Stage 3 — Navigator Foundation
 
-- Public examples and BetterRepository guides can drift from live contracts.
-- AI requests depend on player-provided API keys and must remain opt-in and bounded.
-- WebFetch examples must respect consent, blocked targets, and late responses.
-- Mobile/PC parity must be checked after shared-runtime maintenance changes.
+- Add an adventure-page sidebar chat grounded in AI Dungeon behavior, current
+  Plot Components, Story Cards, and a bounded slice of adventure context.
+- Let Navigator propose, preview, apply, and undo changes through explicit tools.
+- Support brainstorming and story questions without requiring a mutation.
+- Establish audit history, stale-data checks, conflict handling, and recovery
+  before introducing unattended changes.
+
+### Stage 4 — Navigator Automations
+
+- Add deterministic triggers such as every N turns and action-type triggers.
+- Run the same validated tools used by interactive Navigator.
+- Give every automation enable/disable controls, run history, cooldowns, failure
+  handling, and a dry-run/manual-approval mode.
+- Begin with conservative, bounded mutation policies; expand autonomy only after
+  interactive editing is dependable.
+
+### Stage 5 — V2.1 Release Closeout
+
+- Complete desktop/mobile parity and regression coverage.
+- Align private references, public guides, templates, settings, and release copy.
+- Run migration, upgrade, permission, failure, and rollback checks.
+- Publish V2.1 without coupling release readiness to showcase-script status.
+
+## Product Principles
+
+- Navigator serves players maintaining live adventures first; scenario creation
+  assistance is useful but secondary.
+- Every agent mutation is inspectable, attributable, and recoverable.
+- Suggestions and read-only chat should remain available when mutation access is
+  disabled.
+- Automation triggers are deterministic even when the resulting AI work is not.
+- Ultrascripts capability claims must describe the active client, not merely a
+  card written by a previous client.
+- New high-power modules get explicit quotas and narrow contracts rather than
+  becoming general escape hatches.
+
+## V2.1 Release Gates
+
+- Required scripts can distinguish live, uncertain, and unavailable Ultrascripts.
+- Heartbeat reports `PC` or `Mobile` correctly.
+- Audio and JS have documented contracts, lifecycle cleanup, quotas, and tests.
+- WebFetch is useful without weakening blocked-target and data-exfiltration rules.
+- AI errors—including content blocks—are visible and branchable, never silently dropped.
+- Navigator edits cannot silently overwrite data that changed after it was read.
+- Every applied Navigator mutation can be reviewed and reversed.
+- Automations can be paused globally and cannot create unbounded request loops.
+
+## Out of the V2.1 Critical Path
+
+- Stateboy publication and its remaining feature work.
+- Brainiac implementation and publication.
+- Chronos V2 implementation and publication.
+- Third-party module marketplace work.
+- Broad TypeScript/NPM/bundler migration.
+- BetterVoyage implementation.
 
 ## Canonical References
 
 - [Ultrascripts internal docs](./ultrascripts/README.md)
-- [Ultrascripts roadmap](./ultrascripts/planning/current-roadmap.md)
-- [Verification reference](./ultrascripts/reference/verification.md)
-- [BetterDungeon SDK reference](./ultrascripts/reference/sdk.md)
-- [Script contract reference](./ultrascripts/reference/script-contract.md)
+- [V2.1 roadmap](./ultrascripts/planning/current-roadmap.md)
+- [V2.1 investigation and design notes](./ultrascripts/planning/v2.1-design-notes.md)
+- [Documentation sync plan](./ultrascripts/planning/docs-sync.md)
+- [Module quality plan](./ultrascripts/planning/module-quality-pass.md)
