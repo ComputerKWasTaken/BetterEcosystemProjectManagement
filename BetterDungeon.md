@@ -31,11 +31,13 @@ but V2.1 must not wait for their publication.
 
 ### Stage 1 — Ultrascripts Reliability
 
-- Replace durable-heartbeat trust with freshness plus an active liveness
-  challenge/acknowledgement for scripts that require Ultrascripts.
+- Advance a persistent heartbeat `beat` after every observed adventure action
+  and whenever the advertised runtime/module state is refreshed.
+- Teach scripts to compare consecutive beats once per logical turn and treat an
+  unchanged beat as a stale BetterDungeon client.
 - Advertise `PC` for the browser extension and `Mobile` for the APK runtime.
-- Preserve heartbeat as discovery; do not pretend a Story Card can prove that
-  the currently active device still runs BetterDungeon.
+- Accept the deliberate one-turn detection window so async module calls can
+  fall back cleanly without invasive action interception.
 
 ### Stage 2 — Module Expansion and Revision
 
@@ -91,7 +93,8 @@ but V2.1 must not wait for their publication.
 
 ## V2.1 Release Gates
 
-- Required scripts can distinguish live, uncertain, and unavailable Ultrascripts.
+- Scripts stop treating an unchanged durable heartbeat as live and recover
+  automatically when the beat advances again.
 - Heartbeat reports `PC` or `Mobile` correctly.
 - Audio and JS have documented contracts, lifecycle cleanup, quotas, and tests.
 - WebFetch is useful without weakening blocked-target and data-exfiltration rules.

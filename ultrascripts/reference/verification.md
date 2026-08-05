@@ -157,7 +157,7 @@ Location:
 
 Verifies:
 
-- heartbeat detection
+- heartbeat beat initialization, advancement, stale detection, and recovery
 - optional Ultrascripts path
 - fallback behavior when runtime is absent
 - `bd.us` helper shape
@@ -175,6 +175,7 @@ Location:
 Verifies:
 
 - hard runtime requirement messaging
+- stale heartbeat gating after an unchanged beat
 - required module/op checks
 - clear player-facing failures
 - same helper foundation as Enhanced
@@ -189,7 +190,7 @@ Verifies:
 | Core state dispatch/live count | Widget suite plus at least one ops suite |
 | Ops dispatcher/envelope | AI contract suite plus one safe ops suite such as Clock or SDK |
 | Write queue/GraphQL write path | heartbeat smoke, SDK suite, one module response suite |
-| Heartbeat payload | SDK suite, templates, public Quick Start claims |
+| Heartbeat payload/liveness | action and Retry refresh smoke, stale/recovery template checks, SDK suite, public Quick Start claims |
 | SDK config | SDK suite, AI guide/template config branches |
 | Public example/helper changes | Enhanced and Required templates plus relevant module guide |
 | Showcase script work | relevant module suites plus template contract check |

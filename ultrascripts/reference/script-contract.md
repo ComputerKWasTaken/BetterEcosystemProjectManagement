@@ -57,8 +57,11 @@ Public snippets must respect AI Dungeon's script sandbox:
 
 ## Heartbeat Contract
 
-Scripts should treat heartbeat presence as "Ultrascripts is available on this
-turn." The heartbeat advertises mounted modules and ops.
+The heartbeat advertises mounted modules and ops, but card presence alone is not
+liveness proof. Scripts should compare `ultrascripts.beat` once per logical turn.
+If it changed since the previous observation, BetterDungeon refreshed the
+heartbeat after the preceding adventure activity. If it did not change, treat
+the card and its capability list as stale and use fallback behavior.
 
 Example:
 
@@ -68,7 +71,8 @@ Example:
     "protocol": 1,
     "enabled": true,
     "client": "BetterDungeon",
-    "clientVersion": "2.0.0"
+    "clientVersion": "2.0.0",
+    "beat": 143
   },
   "turn": 12,
   "modules": [
@@ -152,7 +156,8 @@ Public examples should assume the Quick Start helper shape:
 | Helper | Expected meaning |
 |---|---|
 | `bd.us.tick()` | read heartbeat/responses and queue cleanup acks |
-| `bd.us.available()` | heartbeat is present |
+| `bd.us.observeHeartbeat(hook)` | compare `beat` once from the Input hook |
+| `bd.us.available()` | latest heartbeat observation is live and valid |
 | `bd.us.hasModule(id)` | heartbeat lists the module |
 | `bd.us.hasOp(id, op)` | heartbeat lists the op on that module |
 | `bd.us.call(moduleId, op, args)` | queue a request |

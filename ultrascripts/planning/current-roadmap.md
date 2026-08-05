@@ -22,23 +22,26 @@ owner, migration note, and test surface.
 
 ## Phase 1 — Heartbeat Reliability
 
+Status: **Implemented locally; live AI Dungeon verification pending**
+
 Goal: make availability claims reflect the client currently playing the adventure.
 
-- Keep heartbeat as the capability-discovery snapshot.
-- Add a short-lived liveness lease and a script-generated nonce challenge that
-  BetterDungeon acknowledges through the existing two-way transport.
-- Bind acknowledgement to adventure, client session, protocol version, and a
-  current turn/action marker where available.
-- Teach helpers to expose `available`, `uncertain`, and `unavailable`; a stale
-  persisted heartbeat must never remain indefinitely `available`.
+- Keep heartbeat as the capability-discovery snapshot and turn it into an
+  actual liveness signal with a persistent monotonic `beat`.
+- Advance `beat` on every successful heartbeat write, including after every
+  observed adventure action even when live count does not change.
+- Teach helpers to compare the beat once from the Input hook. A changed beat is
+  live; an unchanged beat is stale and triggers ordinary fallback behavior.
+- Preserve the intentional one-turn detection delay instead of intercepting
+  action submission or adding a separate ping/ack protocol.
 - Report client platform as `PC` or `Mobile`, with a separate implementation or
   version field if finer diagnostics are needed.
 - Attempt best-effort invalidation on clean disable/leave, but do not depend on
   cleanup for correctness.
 
 Exit gate: switching from a BetterDungeon client to a vanilla client stops a
-Required script from treating Ultrascripts as live after the bounded handshake
-window, including abrupt close and offline cases.
+script from treating Ultrascripts as live after one unchanged observation,
+including Retry, abrupt close, and offline cases.
 
 ## Phase 2 — Audio Module
 
@@ -168,7 +171,7 @@ responses, and failures do not duplicate or loop automations.
 
 ## Practical Next Action
 
-Build a heartbeat failure matrix and prototype the nonce acknowledgement using
-the existing request/response envelope. In parallel planning, specify the Audio
-state schema and complete the JS threat model; do not begin Navigator mutations
-until the platform reliability gates are settled.
+Live-test heartbeat beat advancement and stale/recovery behavior across ordinary
+turns, Retry, device switching, disable/enable, and PC/mobile clients. In parallel
+planning, specify the Audio state schema and complete the JS threat model; do not
+begin Navigator mutations until the platform reliability gates are settled.

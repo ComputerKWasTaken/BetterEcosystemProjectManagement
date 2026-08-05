@@ -9,7 +9,7 @@ Ultrascripts work. Phase sequencing lives in [Current Roadmap](./current-roadmap
 
 | Surface | V2.1 target | Principal risk | Status |
 |---|---|---|---|
-| Heartbeat | Live-client lease and PC/Mobile identity | Stale cross-device availability | Active design |
+| Heartbeat | Per-write beat and PC/Mobile identity | Stale cross-device availability | Implemented; live verification pending |
 | Audio | Ambient state and bounded synth effects | Autoplay, lifecycle, noisy scripts | Planned |
 | JS | Isolated quota-bound computation | Sandbox escape and resource exhaustion | Provisional pending threat model |
 | WebFetch | Prompt-free safe public reads | SSRF and data leakage | Planned revision |
@@ -31,9 +31,10 @@ Every changed or new module must answer:
 
 ## Heartbeat Gates
 
-- A heartbeat from another device cannot prove current availability.
-- Required helpers do not remain ready indefinitely on durable card state alone.
-- Nonce acknowledgements are adventure/session-bound and replay-resistant.
+- A heartbeat from another device cannot remain ready after its beat stops advancing.
+- Helpers compare the beat once per logical turn and reuse that result in later hooks.
+- Retry and other action updates refresh heartbeat even when live count is unchanged.
+- The deliberate one-turn detection window and fallback expectation are documented.
 - Clean disable improves freshness but correctness survives missing cleanup.
 - Multiple active clients and delayed/out-of-order writes are deterministic.
 - `PC` and `Mobile` labels are tested at their actual packaging boundaries.

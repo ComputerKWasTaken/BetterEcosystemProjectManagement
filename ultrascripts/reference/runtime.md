@@ -173,7 +173,7 @@ Responsibilities:
 - re-dispatch cached state to `tracksLiveCount` modules when live count changes
 - expose the scoped module context
 - write `ultrascripts:heartbeat`
-- coordinate heartbeat updates when modules mount/unmount or live count changes
+- coordinate heartbeat updates when modules mount/unmount or adventure actions change
 
 Core owns dispatch and shared runtime state. It does not own module enablement
 preferences; the registry does.
@@ -188,7 +188,9 @@ The heartbeat card is the discovery surface:
     "protocol": 1,
     "enabled": true,
     "client": "BetterDungeon",
-    "clientVersion": "2.0.0"
+    "platform": "PC",
+    "clientVersion": "2.0.0",
+    "beat": 143
   },
   "turn": 12,
   "modules": [
@@ -208,6 +210,9 @@ Heartbeat rules:
 - discovery belongs here, not in `sdk`
 - the module list includes mounted modules only
 - each module advertises state names and ops
+- `platform` is `PC` for the browser extension and `Mobile` for the Android APK
+- `beat` advances on every successful heartbeat write
+- action updates schedule a heartbeat even when live count is unchanged
 - `turn` mirrors live count
 - there is no `profile` field
 - duplicate heartbeat cards are archived under `ultrascripts:archived:heartbeat:<id>`
@@ -274,7 +279,10 @@ AI Dungeon page loads or adventure changes
 ```
 
 The heartbeat can be written at turn 0. It does not require the player to edit a
-Story Card first.
+Story Card first. After each completed generation action, BetterDungeon refreshes
+the card and advances `ultrascripts.beat`. A script compares consecutive beats
+once per logical turn; an unchanged beat means the durable card is stale. This
+detects a missing BetterDungeon client on the turn after it stops writing.
 
 ### State Card Dispatch
 
