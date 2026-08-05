@@ -45,7 +45,7 @@ including Retry, abrupt close, and offline cases.
 
 ## Phase 2 — Audio Module
 
-Status: **PC implementation and guide complete; live verification pending**
+Status: **Complete — implemented consistently on PC and Mobile**
 
 Goal: provide a small, state-driven sound module without forcing scripts to ship
 or execute audio code.
@@ -78,34 +78,16 @@ Implemented foundation:
   catalog, copyright/provenance burden, and overlap with dedicated music
   services did not justify their value.
 
-Release blockers still open:
+Final release verification:
 
 - Live-test autoplay recovery, all waveform types, pitch sweeps, envelopes,
-  replay prevention, stop behavior, and lifecycle cleanup.
-- Port the verified synthesizer-only implementation to Mobile and confirm Web
-  Audio behavior matches the PC extension.
+  replay prevention, stop behavior, and lifecycle cleanup on the device matrix.
+- Keep the PC and Mobile copies behaviorally identical when Audio changes.
 
 Exit gate: synthesized effects play and stop predictably across navigation,
 backgrounding, client disable, repeated state hydration, and PC/mobile runtimes.
 
-## Phase 3 — JS Module
-
-Goal: offer heavier computation through a narrow, isolated execution service.
-
-- Run code in a dedicated Worker or stronger isolated realm; never the page,
-  extension, or privileged background global.
-- Expose JSON-serializable input/output only and no DOM, extension APIs, network,
-  storage, dynamic imports, or ambient credentials.
-- Enforce wall-clock, memory, source-size, output-size, and concurrency quotas;
-  terminate the worker on timeout.
-- Version the execution environment and supported language features.
-- Treat this as compute offload, not a promise of unlimited execution.
-
-Exit gate: escape attempts, infinite loops, memory pressure, oversized output,
-concurrency, cancellation, and mobile teardown are covered by tests and cannot
-affect privileged BetterDungeon state.
-
-## Phase 4 — WebFetch Revision
+## Phase 3 — WebFetch Revision
 
 Goal: make safe public reads convenient while preserving meaningful boundaries.
 
@@ -124,7 +106,7 @@ Goal: make safe public reads convenient while preserving meaningful boundaries.
 Exit gate: ordinary public API reads require no origin prompt, while SSRF,
 credential forwarding, redirect bypass, data leakage, and abuse limits remain tested.
 
-## Phase 5 — AI Backend Modernization
+## Phase 4 — AI Backend Modernization
 
 Goal: keep the public `ai.status`/`ai.query` contract stable while making provider
 behavior current, visible, and replaceable.
@@ -147,6 +129,23 @@ behavior current, visible, and replaceable.
 
 Exit gate: blocks are never silent, model fallback is observable, contracts stay
 stable, and the OpenRouter decision is evidence-based.
+
+## Phase 5 — JS Module
+
+Goal: offer heavier computation through a narrow, isolated execution service.
+
+- Run code in a dedicated Worker or stronger isolated realm; never the page,
+  extension, or privileged background global.
+- Expose JSON-serializable input/output only and no DOM, extension APIs, network,
+  storage, dynamic imports, or ambient credentials.
+- Enforce wall-clock, memory, source-size, output-size, and concurrency quotas;
+  terminate the worker on timeout.
+- Version the execution environment and supported language features.
+- Treat this as compute offload, not a promise of unlimited execution.
+
+Exit gate: escape attempts, infinite loops, memory pressure, oversized output,
+concurrency, cancellation, and mobile teardown are covered by tests and cannot
+affect privileged BetterDungeon state.
 
 ## Phase 6 — Navigator Interactive MVP
 
@@ -200,6 +199,7 @@ responses, and failures do not duplicate or loop automations.
 
 ## Practical Next Action
 
-Live-test autoplay recovery, every waveform, pitch sweeps, envelopes, replay
-prevention, stopping, and cleanup. Then port the validated synthesizer-only
-module to Mobile. Complete the JS threat model before beginning JS work.
+Audit the current PC and Mobile WebFetch implementations, define the prompt-free
+safe-read boundary, and replace per-origin consent without weakening SSRF,
+privacy, redirect, size, timeout, or rate-limit protections. Leave JS until the
+other Ultrascripts module revisions are complete.

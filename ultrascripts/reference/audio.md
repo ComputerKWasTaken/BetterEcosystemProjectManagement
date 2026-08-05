@@ -2,9 +2,8 @@
 
 ## Status
 
-Audio is a V2.1 module under active development. The synthesizer-only PC
-implementation is available for live testing; it is not release-ready or
-ported to Mobile yet.
+Audio is a V2.1 module implemented consistently in the PC extension and Android
+app. It remains outside the shipped V2 inventory until the V2.1 release.
 
 ## Scope
 

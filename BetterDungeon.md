@@ -43,7 +43,7 @@ Status: **Complete and verified on PC and Mobile**
 
 ### Stage 2 — Module Expansion and Revision
 
-Status: **Active — PC Audio synthesizer and guide complete; live verification pending**
+Status: **Active — Audio complete on PC and Mobile; WebFetch revision is next**
 
 - Add `audio` as a stateful module for bounded, one-shot synthesized effects.
 - Add `js` as an isolated, quota-bound compute module.

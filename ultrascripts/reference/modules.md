@@ -43,9 +43,8 @@ compatibility alias.
 |---|---|---|---|---|---|
 | `audio` | state | `ultrascripts:state:audio` | `../../../BetterDungeon/modules/audio/` | [Audio reference](./audio.md), `UltrascriptsAudioGuide.vue` | `audio-module` |
 
-Audio is wired into the PC extension for live testing but remains outside the
-shipped inventory until its contract, PC/mobile lifecycle, settings, and live
-regression gates are complete.
+Audio is wired into both PC and Mobile but remains outside the shipped inventory
+until the V2.1 release and its final device-matrix regression pass.
 
 ## Current Responsibilities
 

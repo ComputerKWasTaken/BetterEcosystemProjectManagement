@@ -10,7 +10,7 @@ Ultrascripts work. Phase sequencing lives in [Current Roadmap](./current-roadmap
 | Surface | V2.1 target | Principal risk | Status |
 |---|---|---|---|
 | Heartbeat | Per-write beat and PC/Mobile identity | Stale cross-device availability | Ready — verified on PC and Mobile |
-| Audio | State-driven synthesized effects | Autoplay, lifecycle, noisy scripts | PC implementation; live verification pending |
+| Audio | State-driven synthesized effects | Autoplay, lifecycle, noisy scripts | Complete on PC and Mobile; device-matrix smoke test at release |
 | JS | Isolated quota-bound computation | Sandbox escape and resource exhaustion | Provisional pending threat model |
 | WebFetch | Prompt-free safe public reads | SSRF and data leakage | Planned revision |
 | AI | Safety controls, Interactions, current models | Silent blocks and provider coupling | Planned revision |
