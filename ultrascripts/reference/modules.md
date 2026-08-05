@@ -37,6 +37,16 @@ heartbeat advertise?
 The `ai` module has a stable asynchronous `status`/`query` contract. It has no
 compatibility alias.
 
+## V2.1 Module In Development
+
+| Module | Kind | State or ops | Main files | Contract | Regression suite |
+|---|---|---|---|---|---|
+| `audio` | state | `ultrascripts:state:audio` | `../../../BetterDungeon/modules/audio/` | [Audio reference](./audio.md), `UltrascriptsAudioGuide.vue` | `audio-module` |
+
+Audio is wired into the PC extension for live testing but remains outside the
+shipped inventory until its contract, PC/mobile lifecycle, settings, and live
+regression gates are complete.
+
 ## Current Responsibilities
 
 | Module | Responsibility |

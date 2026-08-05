@@ -31,6 +31,8 @@ but V2.1 must not wait for their publication.
 
 ### Stage 1 — Ultrascripts Reliability
 
+Status: **Complete and verified on PC and Mobile**
+
 - Advance a persistent heartbeat `beat` after every observed adventure action
   and whenever the advertised runtime/module state is refreshed.
 - Teach scripts to compare consecutive beats once per logical turn and treat an
@@ -41,7 +43,10 @@ but V2.1 must not wait for their publication.
 
 ### Stage 2 — Module Expansion and Revision
 
-- Add `audio` as a stateful ambient-loop and synthesized-sound module.
+Status: **Active — PC Audio implementation and guide complete; live loop and provenance verification pending**
+
+- Add `audio` as a stateful module with seven bundled ambient loops and a
+  bounded synthesizer for one-shot effects.
 - Add `js` as an isolated, quota-bound compute module.
 - Remove WebFetch's per-origin prompt from the ordinary safe-read path while
   retaining request-shape limits, blocked-target/SSRF protection, privacy

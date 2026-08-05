@@ -29,6 +29,7 @@ the verification surfaces that currently exist and when to use each one.
 | `network` | `network-module` | `library.js`, `output-modifier.js`, `README.md` | `status`, online/quality/connection hints |
 | `weather` | `weather-module` | `library.js`, `output-modifier.js`, `README.md` | `current`, `forecast`, coordinates, place lookup, units, network/geocode failures |
 | `webfetch` | `webfetch-module` | `library.js`, `output-modifier.js`, `README.md` | `fetch`, `search`, consent, rate limits, SSRF/private target blocking, truncation |
+| `audio` (V2.1 development) | `audio-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md` | seven bundled loops, track replacement, volume updates, oscillator/noise effects, replay prevention, stop lifecycle |
 
 Every shipped first-party module has a dedicated suite.
 

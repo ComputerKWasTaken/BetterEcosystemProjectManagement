@@ -22,7 +22,7 @@ owner, migration note, and test surface.
 
 ## Phase 1 — Heartbeat Reliability
 
-Status: **Implemented locally; live AI Dungeon verification pending**
+Status: **Complete — implemented and live-tested on PC and Mobile**
 
 Goal: make availability claims reflect the client currently playing the adventure.
 
@@ -45,19 +45,50 @@ including Retry, abrupt close, and offline cases.
 
 ## Phase 2 — Audio Module
 
-Goal: provide stateful sound without forcing scripts to ship or execute audio code.
+Status: **PC implementation complete; live loop and provenance verification pending**
 
-- Ambient state: track id, play/pause/stop, volume, fade, and loop behavior.
-- Synth effects: a declarative, bounded note/envelope/waveform sequence rather
-  than arbitrary audio graphs.
-- Ship a curated CC0 loop catalog with attribution/provenance metadata.
+Goal: provide a small, state-driven sound module without forcing scripts to ship
+or execute audio code.
+
+- Use `ultrascripts:state:audio` as the module's primary interface. Scripts
+  describe the audio they want; BetterDungeon observes the latest state and
+  reconciles playback.
+- Begin with a declarative Web Audio synthesizer. Scripts describe bounded
+  waveforms, notes or frequencies, timing, envelopes, and volume in state.
+- Give one-shot sounds a changing event id or revision so the same sound can be
+  intentionally triggered again without replaying during state hydration.
+- Provide seven bundled MP3 loops through stable track ids rather than remote
+  audio URLs.
+- Keep the first contract intentionally small: synth sound, stop, and volume.
 - Require a user gesture before first playback and respect browser autoplay,
   mute, visibility, and mobile lifecycle behavior.
-- Define ownership and arbitration when multiple scripts request audio.
-- Add global/module volume, panic stop, concurrency caps, and cleanup on adventure exit.
+- Define the simplest predictable rule for replacement, repeated effects, and
+  malformed state.
+- Add a user-facing master mute/stop, conservative playback bounds, and cleanup
+  on adventure exit or module disable.
 
-Exit gate: audio resumes/stops predictably across navigation, backgrounding,
-client disable, conflicting scripts, and PC/mobile runtimes.
+Implemented foundation:
+
+- `ultrascripts:state:audio` schema version 1 with one-shot `effect` state.
+- Bounded sine, square, triangle, sawtooth, and generated-noise effects with
+  frequency sweeps and attack/release envelopes.
+- Per-adventure effect-id replay prevention across repeated state hydration.
+- Seven file-backed ambient loops: `cavern`, `cozy`, `mystery`, `nature`,
+  `ominous`, `peaceful`, and `tension`.
+- Web Audio gesture unlocking, suspended-context handling, module/adventure
+  cleanup, popup enablement, local unit coverage, a live AI Dungeon suite, and
+  an author-facing guide.
+
+Release blockers still open:
+
+- Listen through every MP3 wrap point on PC and Mobile; long duration does not
+  itself prove seamless looping, and MP3 padding may create a gap.
+- Recover source, creator, and CC0 evidence for each track or replace any file
+  whose redistribution rights cannot be verified.
+
+Exit gate: synthesized effects and bundled ambient loops play and stop
+predictably across navigation, backgrounding, client disable, repeated state
+hydration, and PC/mobile runtimes.
 
 ## Phase 3 — JS Module
 
@@ -171,7 +202,7 @@ responses, and failures do not duplicate or loop automations.
 
 ## Practical Next Action
 
-Live-test heartbeat beat advancement and stale/recovery behavior across ordinary
-turns, Retry, device switching, disable/enable, and PC/mobile clients. In parallel
-planning, specify the Audio state schema and complete the JS threat model; do not
-begin Navigator mutations until the platform reliability gates are settled.
+Live-test all seven ambient tracks, replacement/volume behavior, autoplay
+recovery, synthesized effects, and cleanup. Recover license provenance, then
+port the validated module and assets to Mobile. Complete the JS threat model
+before beginning JS work.

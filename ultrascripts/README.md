@@ -27,6 +27,7 @@ independent script projects and no longer gate BetterDungeon releases.
 | Which modules ship and what contracts do they implement? | [Module system reference](./reference/modules.md) |
 | What should scripts and templates assume? | [Script contract reference](./reference/script-contract.md) |
 | What does `sdk` expose? | [BetterDungeon SDK reference](./reference/sdk.md) |
+| What does the developing Audio module accept? | [Audio module reference](./reference/audio.md) |
 | What should be tested or live-checked? | [Verification reference](./reference/verification.md) |
 | How do private docs and public docs stay aligned? | [Documentation sync plan](./planning/docs-sync.md) |
 | What module polish is still worth tracking? | [Module quality pass](./planning/module-quality-pass.md) |
