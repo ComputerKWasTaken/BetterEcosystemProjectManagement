@@ -45,7 +45,7 @@ including Retry, abrupt close, and offline cases.
 
 ## Phase 2 — Audio Module
 
-Status: **PC implementation complete; live loop and provenance verification pending**
+Status: **PC implementation and guide complete; live verification pending**
 
 Goal: provide a small, state-driven sound module without forcing scripts to ship
 or execute audio code.
@@ -57,8 +57,6 @@ or execute audio code.
   waveforms, notes or frequencies, timing, envelopes, and volume in state.
 - Give one-shot sounds a changing event id or revision so the same sound can be
   intentionally triggered again without replaying during state hydration.
-- Provide seven bundled MP3 loops through stable track ids rather than remote
-  audio URLs.
 - Keep the first contract intentionally small: synth sound, stop, and volume.
 - Require a user gesture before first playback and respect browser autoplay,
   mute, visibility, and mobile lifecycle behavior.
@@ -73,22 +71,22 @@ Implemented foundation:
 - Bounded sine, square, triangle, sawtooth, and generated-noise effects with
   frequency sweeps and attack/release envelopes.
 - Per-adventure effect-id replay prevention across repeated state hydration.
-- Seven file-backed ambient loops: `cavern`, `cozy`, `mystery`, `nature`,
-  `ominous`, `peaceful`, and `tension`.
 - Web Audio gesture unlocking, suspended-context handling, module/adventure
   cleanup, popup enablement, local unit coverage, a live AI Dungeon suite, and
   an author-facing guide.
+- Bundled background tracks were deliberately removed. Their size, limited
+  catalog, copyright/provenance burden, and overlap with dedicated music
+  services did not justify their value.
 
 Release blockers still open:
 
-- Listen through every MP3 wrap point on PC and Mobile; long duration does not
-  itself prove seamless looping, and MP3 padding may create a gap.
-- Recover source, creator, and CC0 evidence for each track or replace any file
-  whose redistribution rights cannot be verified.
+- Live-test autoplay recovery, all waveform types, pitch sweeps, envelopes,
+  replay prevention, stop behavior, and lifecycle cleanup.
+- Port the verified synthesizer-only implementation to Mobile and confirm Web
+  Audio behavior matches the PC extension.
 
-Exit gate: synthesized effects and bundled ambient loops play and stop
-predictably across navigation, backgrounding, client disable, repeated state
-hydration, and PC/mobile runtimes.
+Exit gate: synthesized effects play and stop predictably across navigation,
+backgrounding, client disable, repeated state hydration, and PC/mobile runtimes.
 
 ## Phase 3 — JS Module
 
@@ -202,7 +200,6 @@ responses, and failures do not duplicate or loop automations.
 
 ## Practical Next Action
 
-Live-test all seven ambient tracks, replacement/volume behavior, autoplay
-recovery, synthesized effects, and cleanup. Recover license provenance, then
-port the validated module and assets to Mobile. Complete the JS threat model
-before beginning JS work.
+Live-test autoplay recovery, every waveform, pitch sweeps, envelopes, replay
+prevention, stopping, and cleanup. Then port the validated synthesizer-only
+module to Mobile. Complete the JS threat model before beginning JS work.

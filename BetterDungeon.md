@@ -43,10 +43,9 @@ Status: **Complete and verified on PC and Mobile**
 
 ### Stage 2 — Module Expansion and Revision
 
-Status: **Active — PC Audio implementation and guide complete; live loop and provenance verification pending**
+Status: **Active — PC Audio synthesizer and guide complete; live verification pending**
 
-- Add `audio` as a stateful module with seven bundled ambient loops and a
-  bounded synthesizer for one-shot effects.
+- Add `audio` as a stateful module for bounded, one-shot synthesized effects.
 - Add `js` as an isolated, quota-bound compute module.
 - Remove WebFetch's per-origin prompt from the ordinary safe-read path while
   retaining request-shape limits, blocked-target/SSRF protection, privacy

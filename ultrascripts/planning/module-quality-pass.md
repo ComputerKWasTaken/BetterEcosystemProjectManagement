@@ -10,7 +10,7 @@ Ultrascripts work. Phase sequencing lives in [Current Roadmap](./current-roadmap
 | Surface | V2.1 target | Principal risk | Status |
 |---|---|---|---|
 | Heartbeat | Per-write beat and PC/Mobile identity | Stale cross-device availability | Ready — verified on PC and Mobile |
-| Audio | State-driven synth sounds and bundled loops | Autoplay, lifecycle, noisy scripts | PC implementation; loop/provenance verification pending |
+| Audio | State-driven synthesized effects | Autoplay, lifecycle, noisy scripts | PC implementation; live verification pending |
 | JS | Isolated quota-bound computation | Sandbox escape and resource exhaustion | Provisional pending threat model |
 | WebFetch | Prompt-free safe public reads | SSRF and data leakage | Planned revision |
 | AI | Safety controls, Interactions, current models | Silent blocks and provider coupling | Planned revision |
@@ -44,9 +44,9 @@ Every changed or new module must answer:
 - First playback follows browser user-activation rules.
 - Global mute/stop and per-module settings remain reachable.
 - Synth duration, sequencing, rapid replacement, and concurrent effects are bounded.
-- Invalid synth parameters or ambient track ids fail without partial playback.
+- Invalid synth parameters fail without partial playback.
 - Adventure exit, feature disable, tab backgrounding, and mobile suspension clean up.
-- Bundled loop files have verified redistribution terms and recorded provenance.
+- The module does not accept audio files, remote URLs, or arbitrary Web Audio graphs.
 
 ## JS Gates
 
