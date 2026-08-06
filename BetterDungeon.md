@@ -43,7 +43,7 @@ Status: **Complete and verified on PC and Mobile**
 
 ### Stage 2 — Module Expansion and Revision
 
-Status: **Active — Audio and WebFetch complete; AI provider revision in progress**
+Status: **Active — Audio, WebFetch, and Gemini modernization implemented; JS remains**
 
 - Add `audio` as a stateful module for bounded, one-shot synthesized effects.
 - Add `js` as an isolated, quota-bound compute module.
@@ -54,17 +54,15 @@ Status: **Active — Audio and WebFetch complete; AI provider revision in progre
 - **Completed foundation:** the PC and Mobile AI executors now provide a
   provider-neutral registry/router, and Scripts plus Character Presets use
   consumer-specific routing without depending directly on Gemini.
-- Support user-selectable Gemini and OpenRouter providers, each with its own API
-  key and provider-specific configuration. Users can switch providers at any
-  time; subsequent requests use the selected provider.
-- Distinguish adjustable Gemini `SAFETY` blocks from non-adjustable
-  `PROHIBITED_CONTENT`, migrate Gemini to the Interactions API, and update its
-  automatic model chain to:
+- **Completed implementation:** Gemini now uses stateless Interactions API
+  requests on PC and Mobile, distinguishes adjustable `SAFETY` blocks from
+  non-adjustable `PROHIBITED_CONTENT`, and uses this automatic model chain:
   `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite` → `gemma-4-31b-it` →
   `gemma-4-26b-a4b-it`.
-- Add OpenRouter as a committed alternative for scenarios Gemini cannot reliably
-  serve, including explicit adult fictional content. Provider selection remains
-  a player choice rather than automatic cross-provider failover.
+- Keep Gemini as the only configured provider for V2.1 to preserve the lowest-
+  friction setup. The provider-neutral executor remains in place so OpenRouter,
+  local models, or another backend can be evaluated later without recoupling
+  Scripts, Character Presets, or Navigator to Gemini.
 
 ### Stage 3 — Navigator Foundation
 
@@ -123,6 +121,7 @@ Status: **Active — Audio and WebFetch complete; AI provider revision in progre
 - Chronos V2 implementation and publication.
 - Third-party module marketplace work.
 - Broad TypeScript/NPM/bundler migration.
+- OpenRouter, local-model, and multi-provider settings UX.
 - BetterVoyage implementation.
 
 ## Canonical References

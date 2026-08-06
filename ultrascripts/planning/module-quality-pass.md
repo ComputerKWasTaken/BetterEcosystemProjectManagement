@@ -13,7 +13,7 @@ Ultrascripts work. Phase sequencing lives in [Current Roadmap](./current-roadmap
 | Audio | State-driven synthesized effects | Autoplay, lifecycle, noisy scripts | Complete on PC and Mobile; device-matrix smoke test at release |
 | JS | Isolated quota-bound computation | Sandbox escape and resource exhaustion | Provisional pending threat model |
 | WebFetch | Prompt-free safe public reads | SSRF and data leakage | Complete and accepted on PC and Mobile |
-| AI | Provider-neutral Gemini/OpenRouter execution | Silent blocks, provider coupling, and unexpected data routing | In progress — neutral PC/Mobile router and consumer boundaries complete |
+| AI | Provider-neutral executor with Gemini Interactions | Silent blocks, model drift, and provider coupling | Implemented on PC/Mobile; live Gemini matrix pending |
 | Navigator | Typed, reversible adventure mutations | Stale overwrites and automation loops | Planned after Ultrascripts |
 
 ## Standard Module Gates
@@ -76,10 +76,10 @@ Every changed or new module must answer:
 - Interactions text, JSON schema, thinking, timeout, usage, and fallback paths pass.
 - Model-specific capabilities are detected or encoded; fallback does not assume parity.
 - The public Ultrascripts module contract stays provider-neutral.
-- Gemini and OpenRouter both satisfy the shared text/JSON contract, with
-  provider-specific capabilities represented honestly rather than assumed.
-- Provider keys and settings remain separate, the active provider is visible,
-  and switching applies cleanly to subsequent requests.
+- Gemini satisfies the shared text/JSON contract through stateless Interactions
+  requests, with model-family-specific capabilities represented honestly.
+- Gemini remains the only configured V2.1 provider; future providers must keep
+  separate credentials and explicit routing if they are introduced.
 - Character Presets and every first-party AI consumer work through the shared
   executor and contain no Gemini-only setup or transport assumptions.
 - No automatic cross-provider failover sends scenario content to a service the

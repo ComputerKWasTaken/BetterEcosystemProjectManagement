@@ -71,6 +71,9 @@ Special attention:
 - missing-key text and JSON queries return terminal `not_configured` errors
 - schema-less JSON queries return terminal `invalid_args`
 - invalid thinking levels return terminal `invalid_args`
+- Interactions requests use `store: false`, parse `steps`, and return usage/model metadata
+- `safety_blocked` and `prohibited_content` remain distinct terminal errors
+- automatic rate-limit stepdown begins with `gemini-3.5-flash-lite`
 - no provider alias, script-facing model setting, or provider-native payload is advertised
 
 ### SDK
@@ -213,7 +216,8 @@ Keep these as context, not as a substitute for rechecking changed surfaces.
 | Full two-way runtime | 2026-04-22 | Live suite passed, including reload-mid-pending |
 | WebFetch legacy contract | 2026-04-23 | Live suite passed before the V2.1 fetch-only transport revision |
 | WebFetch 1.0 | 2026-08-05 | PC and Mobile module copies passed the expanded Node suite; native Kotlin transport compiled independently; user smoke test accepted the revision for roadmap completion |
-| AI provider router foundation | 2026-08-06 | PC and Mobile executor routing and Gemini-adapter integration suites passed; persistent selection and OpenRouter remain |
+| AI provider router foundation | 2026-08-06 | PC and Mobile executor routing and Gemini-adapter integration suites passed; provider-selection UX remains deliberately deferred |
+| Gemini Interactions modernization | 2026-08-06 | PC transport suite passed text, JSON schema, thinking, usage/model metadata, rate-limit stepdown, and distinct safety/prohibited blocks; Mobile parity markers and syntax passed; live API smoke remains |
 | Clock | 2026-04-23 | Live suite passed |
 | Weather | 2026-04-23 | Live suite passed |
 | Network | 2026-04-24 | Live suite passed |

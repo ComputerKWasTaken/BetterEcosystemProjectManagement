@@ -276,7 +276,17 @@ Ops:
   "config": {
     "provider": "gemini",
     "keyConfigured": false,
-    "model": "gemini-3.5-flash",
+    "api": "interactions",
+    "apiVersion": "v1",
+    "stateless": true,
+    "adjustableSafety": "provider-default",
+    "model": "gemini-3.5-flash-lite",
+    "fallbackModels": [
+      "gemini-3.5-flash-lite",
+      "gemini-3.1-flash-lite",
+      "gemma-4-31b-it",
+      "gemma-4-26b-a4b-it"
+    ],
     "thinkingDefault": "minimal",
     "thinkingLevels": ["minimal", "low", "medium", "high"]
   },
@@ -327,8 +337,10 @@ Args:
 - `output.schema`: required when `output.type` is `json`.
 - `thinking`: optional string or object. Defaults to `"minimal"`. Supported
   levels are `"minimal"`, `"low"`, `"medium"`, and `"high"`.
-  Gemma 4 models expose thinking as an on/off toggle through the Gemini API, so
-  any non-minimal level maps to provider `thinkingLevel: "high"` on Gemma.
+  Interactions uses `thinking_level` for Gemini 3 and 2.5 models; a requested
+  `minimal` maps to `low` for model families that do not support it. Gemma 4
+  exposes thinking as an on/off toggle, so any non-minimal level maps to
+  provider `thinking_level: "high"`.
 
 Success payloads:
 
@@ -340,7 +352,7 @@ Success payloads:
     "providerLabel": "Gemini",
     "backend": "gemini",
     "outputType": "text",
-    "model": "gemini-3.5-flash",
+    "model": "gemini-3.5-flash-lite",
     "promptChars": 44,
     "generatedAtIso": "2026-06-15T20:00:00.000Z",
     "thinking": {
@@ -352,7 +364,7 @@ Success payloads:
     },
     "fallback": {
       "mode": "auto",
-      "attemptedModels": ["gemini-3.5-flash"]
+      "attemptedModels": ["gemini-3.5-flash-lite"]
     }
   }
 }
@@ -366,7 +378,7 @@ Success payloads:
     "providerLabel": "Gemini",
     "backend": "gemini",
     "outputType": "json",
-    "model": "gemini-3.5-flash",
+    "model": "gemini-3.5-flash-lite",
     "promptChars": 44,
     "generatedAtIso": "2026-06-15T20:00:00.000Z",
     "thinking": {
@@ -378,7 +390,7 @@ Success payloads:
     },
     "fallback": {
       "mode": "auto",
-      "attemptedModels": ["gemini-3.5-flash"]
+      "attemptedModels": ["gemini-3.5-flash-lite"]
     }
   }
 }
@@ -406,6 +418,15 @@ Rules:
   with `error.code: "not_configured"`.
 - JSON queries without a schema return `error.code: "invalid_args"`.
 - Invalid thinking levels return `error.code: "invalid_args"`.
+- Gemini Interactions requests are stateless (`store: false`). BetterDungeon
+  does not use or expose server-side conversation continuation as script state.
+- Adjustable Gemini filter blocks return `error.code: "safety_blocked"` with
+  `error.providerReason: "SAFETY"`.
+- Non-adjustable Gemini policy blocks return
+  `error.code: "prohibited_content"` with
+  `error.providerReason: "PROHIBITED_CONTENT"`.
+- Gemini 3's adjustable filters use provider defaults. Custom safety settings
+  are not sent because the Interactions API does not currently support them.
 - Do not teach retired provider aliases, script-facing model settings,
   response-format settings, or provider-native payloads.
 

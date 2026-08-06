@@ -111,6 +111,8 @@ credential forwarding, redirect bypass, data leakage, and abuse limits remain te
 
 ## Phase 4 — AI Backend Modernization
 
+Status: **Implementation complete on PC and Mobile; live Gemini smoke test pending**
+
 Goal: keep the public `ai.status`/`ai.query` contract stable while making provider
 behavior current, visible, and replaceable.
 
@@ -118,36 +120,35 @@ behavior current, visible, and replaceable.
   providers, resolve a provider per consumer, snapshot routing for each request,
   and expose provider-neutral status/results. Ultrascripts and Character Presets
   use the shared executor without registering or refreshing Gemini directly.
-- Add Gemini and OpenRouter as user-selectable providers with separately stored
-  keys, provider-specific settings, clear readiness/status information, and the
-  ability to switch at any time. A request uses the provider selected when it is
-  dispatched; switching affects subsequent requests.
+- Keep Gemini as the only configured V2.1 provider. Preserve the internal
+  provider registry and per-consumer routing boundary so another backend can be
+  added later without changing first-party features or the script contract.
 - Keep provider and model selection out of the script-facing request contract.
   Scripts ask for supported capabilities such as text, structured JSON, and
   thinking; the selected provider adapter performs the translation.
-- Verify Gemini's documented `OFF` defaults for the adjustable harm categories
-  and return prompt/candidate block reasons through stable Ultrascripts errors.
+- Rely on Gemini 3's documented default-off adjustable filters because custom
+  safety settings are not currently supported by the Interactions API. Return
+  generation block reasons through stable Ultrascripts errors.
 - Treat `SAFETY` as an adjustable-filter result and `PROHIBITED_CONTENT` as a
   separate provider policy/core-protection result that safety thresholds cannot
   be expected to override.
 - Run an explicit-content compatibility matrix for AI queries and Character
   Presets using adult fictional input/output and structured-output cases.
-- Migrate Gemini execution from legacy `generateContent` to the Interactions API.
-- Preserve stateless request behavior initially; adopt server-side interaction
-  state only with explicit lifecycle/privacy rules.
-- Update auto stepdown to `gemini-3.5-flash-lite`,
+- **Implemented:** migrate Gemini execution from legacy `generateContent` to
+  stateless Interactions requests with `store: false`, `steps` response parsing,
+  Interactions usage metadata, and `response_format` JSON schemas.
+- **Implemented:** update auto stepdown to `gemini-3.5-flash-lite`,
   `gemini-3.1-flash-lite`, `gemma-4-31b-it`, `gemma-4-26b-a4b-it`.
-- Revalidate thinking and structured-output payload differences per model.
-- Add the OpenRouter backend with its own key, privacy disclosure, model and
-  capability metadata, moderation/error mapping, and cost-conscious defaults.
-  It is a committed alternative for explicit adult-fiction scenarios that
-  Gemini does not reliably support.
-- Do not silently fail over between providers. Preserve user control over which
-  service receives scenario content and make the active provider visible.
+- **Implemented:** translate public thinking levels into model-family-specific
+  Interactions payloads and keep structured output behind the shared JSON
+  contract. The local suite covers payloads, parsing, metadata, blocks, and
+  rate-limit stepdown; the live suite remains the final compatibility check.
+- Defer OpenRouter, local models, multi-provider credential UX, and provider
+  switching to a future release. Never add silent cross-provider failover.
 
 Exit gate: blocks are never silent, model fallback is observable, contracts stay
-stable, Gemini and OpenRouter can be selected at any time, and all first-party AI
-features work without provider-specific coupling.
+stable, the Gemini Interactions path passes a live smoke test, and all first-party
+AI features continue to work through the provider-neutral executor.
 
 ## Phase 5 — JS Module
 
@@ -213,12 +214,12 @@ responses, and failures do not duplicate or loop automations.
 - Heartbeat correctness precedes reliance on new modules.
 - JS threat modeling precedes implementation.
 - Interactive Navigator mutation safety precedes auto-apply automations.
-- Gemini and OpenRouter are committed scope; provider selection is explicit and
-  no cross-provider fallback occurs without a future product decision.
+- Gemini is the sole V2.1 provider. Multi-provider support requires a future
+  product decision and must never introduce silent cross-provider fallback.
 - Showcase scripts may inform tests, but cannot block phase progression.
 
 ## Practical Next Action
 
-Add persistent provider selection and its settings UI, then implement the
-OpenRouter adapter against the completed provider-neutral executor boundary.
-Leave JS until the other Ultrascripts module revisions are complete.
+Live-test Gemini text, JSON, thinking, rate-limit fallback, and visible content
+blocks through the Interactions path. Then begin the JS isolation threat model
+before implementing the final planned Ultrascripts module.
