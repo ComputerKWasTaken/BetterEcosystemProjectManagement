@@ -350,7 +350,7 @@ The popup and background surfaces already support:
 - Ultrascripts master toggle
 - per-module toggles
 - debug toggle
-- WebFetch consent state
+- WebFetch module toggle
 - AI status/query contract module toggle
 - SDK background config snapshots
 

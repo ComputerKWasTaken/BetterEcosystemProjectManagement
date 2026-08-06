@@ -91,17 +91,20 @@ backgrounding, client disable, repeated state hydration, and PC/mobile runtimes.
 
 Goal: make safe public reads convenient while preserving meaningful boundaries.
 
-- Remove mandatory per-origin prompts for the default safe-read profile.
-- Keep `GET`/`HEAD`, header, redirect, body-size, content-type, timeout, and
-  response-size limits.
-- Keep DNS/IP revalidation and block loopback, link-local, private-network,
-  credential-bearing URLs, extension URLs, and other sensitive targets.
-- Do not allow arbitrary cookies, authorization headers, or adventure/user data
-  in the default profile.
-- Consider optional global modes: Disabled, Safe Reads, and Advanced. Advanced
-  may retain explicit consent for broader methods or sensitive headers.
-- Replace origin allowlisting UI with clear global controls, request logs, and
-  actionable errors.
+Status: **Complete and accepted on PC and Mobile**
+
+- WebFetch 1.0 exposes only `fetch`; the DuckDuckGo `search` wrapper is removed.
+- The module toggle is the sole player control. Per-origin prompts, saved origin
+  decisions, consent UI, and SDK consent summaries are removed.
+- Requests are HTTPS-only `GET`/`HEAD` reads with no body. Sensitive and
+  browser-controlled headers are stripped, and custom headers are bounded.
+- The privileged PC background transport and native Android transport both
+  revalidate initial URLs and every manual redirect, cap redirects at five,
+  omit ambient credentials, and drop custom headers across origins.
+- Responses are text-like only and keep consistent timeout, response-size,
+  header-filtering, truncation, rate-limit, response, and error shapes.
+- Local names plus literal non-public IPv4/IPv6 targets are blocked. Full DNS
+  rebinding prevention is deliberately not claimed.
 
 Exit gate: ordinary public API reads require no origin prompt, while SSRF,
 credential forwarding, redirect bypass, data leakage, and abuse limits remain tested.
@@ -111,8 +114,11 @@ credential forwarding, redirect bypass, data leakage, and abuse limits remain te
 Goal: keep the public `ai.status`/`ai.query` contract stable while making provider
 behavior current, visible, and replaceable.
 
-- Add explicit Gemini safety settings for supported adjustable categories and
-  return provider block reasons through stable Ultrascripts errors.
+- Verify Gemini's documented `OFF` defaults for the adjustable harm categories
+  and return prompt/candidate block reasons through stable Ultrascripts errors.
+- Treat `SAFETY` as an adjustable-filter result and `PROHIBITED_CONTENT` as a
+  separate provider policy/core-protection result that safety thresholds cannot
+  be expected to override.
 - Run an explicit-content compatibility matrix for AI queries and Character
   Presets using adult fictional input/output and structured-output cases.
 - Migrate Gemini execution from legacy `generateContent` to the Interactions API.
@@ -199,7 +205,6 @@ responses, and failures do not duplicate or loop automations.
 
 ## Practical Next Action
 
-Audit the current PC and Mobile WebFetch implementations, define the prompt-free
-safe-read boundary, and replace per-origin consent without weakening SSRF,
-privacy, redirect, size, timeout, or rate-limit protections. Leave JS until the
-other Ultrascripts module revisions are complete.
+Begin the AI backend modernization with block diagnostics and the Gemini
+compatibility matrix. Leave JS until the other Ultrascripts module revisions
+are complete.

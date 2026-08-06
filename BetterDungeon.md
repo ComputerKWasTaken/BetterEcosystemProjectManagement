@@ -43,15 +43,17 @@ Status: **Complete and verified on PC and Mobile**
 
 ### Stage 2 — Module Expansion and Revision
 
-Status: **Active — Audio complete on PC and Mobile; WebFetch revision is next**
+Status: **Active — Audio and WebFetch complete on PC and Mobile; AI revision is next**
 
 - Add `audio` as a stateful module for bounded, one-shot synthesized effects.
 - Add `js` as an isolated, quota-bound compute module.
-- Remove WebFetch's per-origin prompt from the ordinary safe-read path while
-  retaining request-shape limits, blocked-target/SSRF protection, privacy
-  controls, rate limits, and explicit escalation for sensitive capabilities.
-- Add explicit Gemini safety settings, migrate the backend to the Interactions
-  API, and update the automatic model chain to:
+- Keep WebFetch 1.0 focused on bounded, credential-free public HTTPS reads:
+  `GET`/`HEAD` only, text-like responses only, validated redirects, strict
+  request/response limits, blocked local/literal non-public targets, and no
+  per-origin prompt or search wrapper.
+- Distinguish adjustable Gemini `SAFETY` blocks from non-adjustable
+  `PROHIBITED_CONTENT`, migrate the backend to the Interactions API, and update
+  the automatic model chain to:
   `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite` → `gemma-4-31b-it` →
   `gemma-4-26b-a4b-it`.
 - Add OpenRouter only if an explicit-content compatibility spike shows Gemini

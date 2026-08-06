@@ -58,7 +58,7 @@ Regression and author examples:
 | Module | Type | Ops or state |
 |---|---|---|
 | `widget` | state | `ultrascripts:state:widget` |
-| `webfetch` | ops | `fetch`, `search` |
+| `webfetch` | ops | `fetch` |
 | `clock` | ops | `now`, `tz`, `format` |
 | `sdk` | ops | `version`, `config` |
 | `weather` | ops | `current`, `forecast` |

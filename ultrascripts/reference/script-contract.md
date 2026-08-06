@@ -480,7 +480,6 @@ Use `sdk.config` for:
 
 - safe BetterDungeon feature settings
 - module preferences
-- WebFetch consent counts
 
 `sdk.version` result:
 
@@ -607,13 +606,11 @@ Module id: `webfetch`
 Ops:
 
 - `fetch`
-- `search`
 
-`webfetch.fetch` supports safe HTTP methods only:
+`webfetch.fetch` supports public HTTPS reads with these methods:
 
 - `GET`
 - `HEAD`
-- `OPTIONS`
 
 Canonical `fetch` args:
 
@@ -630,12 +627,17 @@ Canonical `fetch` args:
 Rules:
 
 - Do not teach `POST` or request bodies in WebFetch v1.
-- Response data includes `status`, `headers`, `bodyEncoding`, `body`,
-  `truncated`, and `request.strippedHeaders`.
-- `search` returns `query`, `provider`, `status`, `heading`, `answer`,
-  `abstractText`, `abstractUrl`, `related`, `source`, and `truncated`.
-- Consent-denied, blocked-target, timeout, and rate-limit paths must be treated
-  as normal branchable outcomes.
+- Only `https:` URLs are accepted. Embedded credentials, localhost/`.local`,
+  and literal non-public IPv4/IPv6 targets are blocked.
+- JSON, text, HTML, XML, and undeclared content types are returned as text.
+  Declared binary content returns `content_type_blocked`.
+- Response data includes `url`, `redirected`, `status`, `headers`,
+  `contentType`, `bodyEncoding: "text"`, `body`, byte/truncation metadata, and
+  `request.strippedHeaders`.
+- Blocked-target, content-type, redirect, timeout, and rate-limit paths must be
+  treated as normal branchable outcomes.
+- There is no per-origin consent flow or built-in web-search operation. The
+  module toggle is the player control.
 
 ### Weather
 

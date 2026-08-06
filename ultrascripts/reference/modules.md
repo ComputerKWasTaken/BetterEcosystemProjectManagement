@@ -26,7 +26,7 @@ heartbeat advertise?
 | Module | Kind | State or ops | Main files | Public guide | Regression suite |
 |---|---|---|---|---|---|
 | `widget` | state | `ultrascripts:state:widget` | `../../../BetterDungeon/modules/widget/` | `UltrascriptsWidgetGuide.vue` | `widget-module` |
-| `webfetch` | ops | `fetch`, `search` | `../../../BetterDungeon/modules/webfetch/` | `UltrascriptsWebFetchGuide.vue` | `webfetch-module` |
+| `webfetch` | ops | `fetch` | `../../../BetterDungeon/modules/webfetch/` | `UltrascriptsWebFetchGuide.vue` | `webfetch-module` |
 | `clock` | ops | `now`, `tz`, `format` | `../../../BetterDungeon/modules/clock/` | `UltrascriptsClockGuide.vue` | `clock-module` |
 | `sdk` | ops | `version`, `config` | `../../../BetterDungeon/modules/sdk/` | `UltrascriptsSdkGuide.vue` | `sdk-module` |
 | `weather` | ops | `current`, `forecast` | `../../../BetterDungeon/modules/weather/` | `UltrascriptsWeatherGuide.vue` | `weather-module` |
@@ -51,7 +51,7 @@ until the V2.1 release and its final device-matrix regression pass.
 | Module | Responsibility |
 |---|---|
 | `widget` | Render live script-published widgets, including interaction events back to scripts |
-| `webfetch` | Controlled network fetch/search with consent, rate limiting, and blocked-target protection |
+| `webfetch` | Bounded public HTTPS text reads with rate limiting and blocked-target protection |
 | `clock` | Time, timezone, and format helpers |
 | `sdk` | Safe BetterDungeon metadata and configuration snapshots |
 | `weather` | Open-Meteo current conditions and forecasts from coordinates or place names |

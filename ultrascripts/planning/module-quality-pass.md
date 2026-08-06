@@ -12,7 +12,7 @@ Ultrascripts work. Phase sequencing lives in [Current Roadmap](./current-roadmap
 | Heartbeat | Per-write beat and PC/Mobile identity | Stale cross-device availability | Ready — verified on PC and Mobile |
 | Audio | State-driven synthesized effects | Autoplay, lifecycle, noisy scripts | Complete on PC and Mobile; device-matrix smoke test at release |
 | JS | Isolated quota-bound computation | Sandbox escape and resource exhaustion | Provisional pending threat model |
-| WebFetch | Prompt-free safe public reads | SSRF and data leakage | Planned revision |
+| WebFetch | Prompt-free safe public reads | SSRF and data leakage | Complete and accepted on PC and Mobile |
 | AI | Safety controls, Interactions, current models | Silent blocks and provider coupling | Planned revision |
 | Navigator | Typed, reversible adventure mutations | Stale overwrites and automation loops | Planned after Ultrascripts |
 
@@ -63,12 +63,15 @@ Every changed or new module must answer:
 - Redirect hops receive the same target validation as the initial URL.
 - Private, loopback, link-local, credentialed, extension, and sensitive schemes are blocked.
 - Default requests cannot forward cookies, authorization, or arbitrary sensitive headers.
-- Query/body leakage guidance and request logging are present.
+- Query-data leakage guidance is present; request bodies are rejected.
+- URL query strings are not logged outside explicit Ultrascripts debug mode.
 - Time, byte, response, method, and rate limits remain enforced.
 
 ## AI Gates
 
-- Gemini adjustable safety settings are explicit and covered by compatibility tests.
+- Gemini adjustable-filter (`SAFETY`) and provider-policy
+  (`PROHIBITED_CONTENT`) outcomes are distinguished and covered by compatibility
+  tests.
 - Prompt and output blocks surface stable errors with provider diagnostics.
 - Interactions text, JSON schema, thinking, timeout, usage, and fallback paths pass.
 - Model-specific capabilities are detected or encoded; fallback does not assume parity.

@@ -148,11 +148,6 @@ Fields:
       "network": true,
       "system": true,
       "ai": true
-    },
-    "webfetch": {
-      "savedOriginCount": 0,
-      "allowCount": 0,
-      "denyCount": 0
     }
   }
 }
@@ -188,25 +183,11 @@ Current default keys:
 | `enabled` | Master Ultrascripts feature preference from BetterDungeon settings |
 | `runtimeEnabled` | Whether the current page runtime is active |
 | `debug` | Ultrascripts debug logging preference |
-| `modulePreferences` | Saved enablement preference for the 9 first-party modules |
-| `webfetch` | Aggregate consent counts without exposing domains |
+| `modulePreferences` | Saved enablement preference for first-party modules |
 
 `modulePreferences` is not a substitute for heartbeat discovery. A module may be
 preferred on but not mounted on the current surface. Use heartbeat to know what
 is available now.
-
-### WebFetch Summary
-
-```json
-{
-  "savedOriginCount": 0,
-  "allowCount": 0,
-  "denyCount": 0
-}
-```
-
-This intentionally does not expose specific origins. Scripts should still call
-`webfetch.fetch`/`webfetch.search` and branch on consent/error responses.
 
 ## Wire Flow
 
@@ -301,7 +282,6 @@ The SDK must not expose:
 - Firebase auth tokens
 - GraphQL authorization headers
 - captured `baseCredentials`
-- raw WebFetch allowlist origins
 - hidden browser/session identifiers
 - unrestricted storage dumps
 

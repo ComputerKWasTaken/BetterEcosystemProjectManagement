@@ -15,7 +15,7 @@ the verification surfaces that currently exist and when to use each one.
 | Required template | `../../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/` | Smoke check for hard runtime/capability gating |
 | Public template copies | `../../../BetterRepository/src/data/raw-scripts/` | Ensure BetterRepository ships the same helper contract |
 | Public guide pages | `../../../BetterRepository/src/components/guides/Ultrascripts*.vue` | Ensure author-facing claims match the runtime |
-| Popup/background settings | `../../../BetterDungeon/popup.js`, `../../../BetterDungeon/background.js` | Verify player configuration, consent, SDK, and AI setup |
+| Popup/background settings | `../../../BetterDungeon/popup.js`, `../../../BetterDungeon/background.js` | Verify player configuration, privileged fetch transport, SDK, and AI setup |
 
 ## Module Suite Inventory
 
@@ -28,7 +28,7 @@ the verification surfaces that currently exist and when to use each one.
 | `system` | `system-module` | `library.js`, `output-modifier.js`, `README.md` | `info`, `power`, browser/device/screen/locale/battery shape |
 | `network` | `network-module` | `library.js`, `output-modifier.js`, `README.md` | `status`, online/quality/connection hints |
 | `weather` | `weather-module` | `library.js`, `output-modifier.js`, `README.md` | `current`, `forecast`, coordinates, place lookup, units, network/geocode failures |
-| `webfetch` | `webfetch-module` | `library.js`, `output-modifier.js`, `README.md` | `fetch`, `search`, consent, rate limits, SSRF/private target blocking, truncation |
+| `webfetch` | `webfetch-module` | `library.js`, `output-modifier.js`, `README.md` | HTTPS `fetch`, redirects, content types, header stripping, rate limits, private-target blocking, truncation |
 | `audio` (V2.1 development) | `audio-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md` | oscillator/noise effects, pitch sweeps, envelopes, replay prevention, validation, stop lifecycle |
 
 Every shipped first-party module has a dedicated suite.
@@ -121,16 +121,19 @@ Special attention:
 Use when changing:
 
 - `../../../BetterDungeon/modules/webfetch/module.js`
-- `../../../BetterDungeon/modules/webfetch/consent.js`
-- consent prompts or saved decisions
+- `../../../BetterDungeon/background.js`
+- Android `WebFetchClient.kt` and bridge/polyfill files
 - blocked target rules
-- public fetch/search examples
+- public fetch examples
 
 Special attention:
 
-- v1 supports safe methods only: `GET`, `HEAD`, `OPTIONS`
+- v1 supports HTTPS `GET` and `HEAD` only
 - no public examples should teach `POST` or request bodies
-- consent-denied and rate-limit errors must be branchable
+- redirects must be manually bounded and revalidated at every hop
+- cross-origin redirects must not forward custom headers
+- declared binary content, private targets, timeouts, and rate limits must be branchable
+- PC and Mobile must return equivalent response and error shapes
 
 ### Network And System
 
@@ -208,7 +211,8 @@ Keep these as context, not as a substitute for rechecking changed surfaces.
 |---|---:|---|
 | Widget | 2026-04-22 | Live suite passed 10/10 |
 | Full two-way runtime | 2026-04-22 | Live suite passed, including reload-mid-pending |
-| WebFetch | 2026-04-23 | Live suite passed, including denied-origin consent |
+| WebFetch legacy contract | 2026-04-23 | Live suite passed before the V2.1 fetch-only transport revision |
+| WebFetch 1.0 | 2026-08-05 | PC and Mobile module copies passed the expanded Node suite; native Kotlin transport compiled independently; user smoke test accepted the revision for roadmap completion |
 | Clock | 2026-04-23 | Live suite passed |
 | Weather | 2026-04-23 | Live suite passed |
 | Network | 2026-04-24 | Live suite passed |
