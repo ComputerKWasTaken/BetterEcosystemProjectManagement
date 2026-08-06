@@ -114,9 +114,10 @@ credential forwarding, redirect bypass, data leakage, and abuse limits remain te
 Goal: keep the public `ai.status`/`ai.query` contract stable while making provider
 behavior current, visible, and replaceable.
 
-- Make the internal AI executor provider-neutral before modernizing either
-  backend. Character Presets and other first-party AI consumers must use that
-  shared executor rather than a Gemini-specific transport or setup path.
+- **Completed foundation:** the PC and Mobile executors now register multiple
+  providers, resolve a provider per consumer, snapshot routing for each request,
+  and expose provider-neutral status/results. Ultrascripts and Character Presets
+  use the shared executor without registering or refreshing Gemini directly.
 - Add Gemini and OpenRouter as user-selectable providers with separately stored
   keys, provider-specific settings, clear readiness/status information, and the
   ability to switch at any time. A request uses the provider selected when it is
@@ -218,6 +219,6 @@ responses, and failures do not duplicate or loop automations.
 
 ## Practical Next Action
 
-Begin the AI backend modernization by extracting the provider-neutral executor
-boundary, then add provider selection and the Gemini/OpenRouter adapters. Leave
-JS until the other Ultrascripts module revisions are complete.
+Add persistent provider selection and its settings UI, then implement the
+OpenRouter adapter against the completed provider-neutral executor boundary.
+Leave JS until the other Ultrascripts module revisions are complete.

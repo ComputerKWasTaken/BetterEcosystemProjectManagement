@@ -262,8 +262,12 @@ Ops:
   "ready": false,
   "available": false,
   "phase": "executor",
+  "provider": "gemini",
+  "providerLabel": "Gemini",
   "backend": "gemini",
   "backendLabel": "Gemini",
+  "consumer": "ultrascripts",
+  "selection": "default",
   "supports": {
     "text": true,
     "json": true,
@@ -284,8 +288,9 @@ Ops:
     "asyncOnly": true
   },
   "executor": {
-    "version": "0.4.0-gemini-meta",
+    "version": "0.5.0-provider-router",
     "promptMaxChars": 12000,
+    "providerConfigured": true,
     "backendConfigured": true
   },
   "reason": "ai_backend_not_configured",
@@ -331,6 +336,8 @@ Success payloads:
 {
   "text": "The player is not currently in combat.",
   "meta": {
+    "provider": "gemini",
+    "providerLabel": "Gemini",
     "backend": "gemini",
     "outputType": "text",
     "model": "gemini-3.5-flash",
@@ -355,6 +362,8 @@ Success payloads:
 {
   "json": { "inCombat": false },
   "meta": {
+    "provider": "gemini",
+    "providerLabel": "Gemini",
     "backend": "gemini",
     "outputType": "json",
     "model": "gemini-3.5-flash",
@@ -385,13 +394,15 @@ Rules:
 - Text queries return `data.text`.
 - JSON queries return `data.json`, and scripts must validate it before applying
   it to state.
-- Successful queries return `data.meta` for diagnostics: backend id, output
+- Successful queries return `data.meta` for diagnostics: provider id/label, output
   type, model used, prompt size, generated timestamp, thinking metadata,
   fallback attempts, and provider usage when available.
 - Scripts should not require a specific provider model for gameplay logic.
+- Provider selection belongs to the player and the consuming BetterDungeon
+  feature. Scripts cannot select a provider in `ai.query`.
 - Thinking defaults to minimal latency. Use higher levels only for tasks where
   the extra reasoning time is worth it.
-- While no Gemini API key is configured, valid queries return an `err` response
+- While the selected AI provider is not configured, valid queries return an `err` response
   with `error.code: "not_configured"`.
 - JSON queries without a schema return `error.code: "invalid_args"`.
 - Invalid thinking levels return `error.code: "invalid_args"`.

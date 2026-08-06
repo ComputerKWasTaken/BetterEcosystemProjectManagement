@@ -43,7 +43,7 @@ Status: **Complete and verified on PC and Mobile**
 
 ### Stage 2 — Module Expansion and Revision
 
-Status: **Active — Audio and WebFetch complete on PC and Mobile; AI revision is next**
+Status: **Active — Audio and WebFetch complete; AI provider revision in progress**
 
 - Add `audio` as a stateful module for bounded, one-shot synthesized effects.
 - Add `js` as an isolated, quota-bound compute module.
@@ -51,9 +51,9 @@ Status: **Active — Audio and WebFetch complete on PC and Mobile; AI revision i
   `GET`/`HEAD` only, text-like responses only, validated redirects, strict
   request/response limits, blocked local/literal non-public targets, and no
   per-origin prompt or search wrapper.
-- Refactor the AI executor and every first-party AI feature behind a
-  provider-neutral adapter. Scripts and Character Presets continue using the
-  stable AI contract without depending directly on Gemini.
+- **Completed foundation:** the PC and Mobile AI executors now provide a
+  provider-neutral registry/router, and Scripts plus Character Presets use
+  consumer-specific routing without depending directly on Gemini.
 - Support user-selectable Gemini and OpenRouter providers, each with its own API
   key and provider-specific configuration. Users can switch providers at any
   time; subsequent requests use the selected provider.

@@ -213,6 +213,7 @@ Keep these as context, not as a substitute for rechecking changed surfaces.
 | Full two-way runtime | 2026-04-22 | Live suite passed, including reload-mid-pending |
 | WebFetch legacy contract | 2026-04-23 | Live suite passed before the V2.1 fetch-only transport revision |
 | WebFetch 1.0 | 2026-08-05 | PC and Mobile module copies passed the expanded Node suite; native Kotlin transport compiled independently; user smoke test accepted the revision for roadmap completion |
+| AI provider router foundation | 2026-08-06 | PC and Mobile executor routing and Gemini-adapter integration suites passed; persistent selection and OpenRouter remain |
 | Clock | 2026-04-23 | Live suite passed |
 | Weather | 2026-04-23 | Live suite passed |
 | Network | 2026-04-24 | Live suite passed |
