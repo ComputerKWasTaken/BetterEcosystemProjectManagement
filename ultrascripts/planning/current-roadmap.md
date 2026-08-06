@@ -114,6 +114,16 @@ credential forwarding, redirect bypass, data leakage, and abuse limits remain te
 Goal: keep the public `ai.status`/`ai.query` contract stable while making provider
 behavior current, visible, and replaceable.
 
+- Make the internal AI executor provider-neutral before modernizing either
+  backend. Character Presets and other first-party AI consumers must use that
+  shared executor rather than a Gemini-specific transport or setup path.
+- Add Gemini and OpenRouter as user-selectable providers with separately stored
+  keys, provider-specific settings, clear readiness/status information, and the
+  ability to switch at any time. A request uses the provider selected when it is
+  dispatched; switching affects subsequent requests.
+- Keep provider and model selection out of the script-facing request contract.
+  Scripts ask for supported capabilities such as text, structured JSON, and
+  thinking; the selected provider adapter performs the translation.
 - Verify Gemini's documented `OFF` defaults for the adjustable harm categories
   and return prompt/candidate block reasons through stable Ultrascripts errors.
 - Treat `SAFETY` as an adjustable-filter result and `PROHIBITED_CONTENT` as a
@@ -127,14 +137,16 @@ behavior current, visible, and replaceable.
 - Update auto stepdown to `gemini-3.5-flash-lite`,
   `gemini-3.1-flash-lite`, `gemma-4-31b-it`, `gemma-4-26b-a4b-it`.
 - Revalidate thinking and structured-output payload differences per model.
-- Introduce an internal provider adapter so Character Presets and Ultrascripts AI
-  do not hardcode Gemini transport details.
-- Gate OpenRouter implementation on the compatibility spike. If needed, add it
-  as a user-selected provider with its own key, privacy disclosure, model
-  compatibility metadata, moderation errors, and cost controls.
+- Add the OpenRouter backend with its own key, privacy disclosure, model and
+  capability metadata, moderation/error mapping, and cost-conscious defaults.
+  It is a committed alternative for explicit adult-fiction scenarios that
+  Gemini does not reliably support.
+- Do not silently fail over between providers. Preserve user control over which
+  service receives scenario content and make the active provider visible.
 
 Exit gate: blocks are never silent, model fallback is observable, contracts stay
-stable, and the OpenRouter decision is evidence-based.
+stable, Gemini and OpenRouter can be selected at any time, and all first-party AI
+features work without provider-specific coupling.
 
 ## Phase 5 — JS Module
 
@@ -200,11 +212,12 @@ responses, and failures do not duplicate or loop automations.
 - Heartbeat correctness precedes reliance on new modules.
 - JS threat modeling precedes implementation.
 - Interactive Navigator mutation safety precedes auto-apply automations.
-- OpenRouter is conditional, not assumed scope.
+- Gemini and OpenRouter are committed scope; provider selection is explicit and
+  no cross-provider fallback occurs without a future product decision.
 - Showcase scripts may inform tests, but cannot block phase progression.
 
 ## Practical Next Action
 
-Begin the AI backend modernization with block diagnostics and the Gemini
-compatibility matrix. Leave JS until the other Ultrascripts module revisions
-are complete.
+Begin the AI backend modernization by extracting the provider-neutral executor
+boundary, then add provider selection and the Gemini/OpenRouter adapters. Leave
+JS until the other Ultrascripts module revisions are complete.

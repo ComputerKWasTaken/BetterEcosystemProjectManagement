@@ -13,7 +13,7 @@ Ultrascripts work. Phase sequencing lives in [Current Roadmap](./current-roadmap
 | Audio | State-driven synthesized effects | Autoplay, lifecycle, noisy scripts | Complete on PC and Mobile; device-matrix smoke test at release |
 | JS | Isolated quota-bound computation | Sandbox escape and resource exhaustion | Provisional pending threat model |
 | WebFetch | Prompt-free safe public reads | SSRF and data leakage | Complete and accepted on PC and Mobile |
-| AI | Safety controls, Interactions, current models | Silent blocks and provider coupling | Planned revision |
+| AI | Provider-neutral Gemini/OpenRouter execution | Silent blocks, provider coupling, and unexpected data routing | Planned revision |
 | Navigator | Typed, reversible adventure mutations | Stale overwrites and automation loops | Planned after Ultrascripts |
 
 ## Standard Module Gates
@@ -76,7 +76,14 @@ Every changed or new module must answer:
 - Interactions text, JSON schema, thinking, timeout, usage, and fallback paths pass.
 - Model-specific capabilities are detected or encoded; fallback does not assume parity.
 - The public Ultrascripts module contract stays provider-neutral.
-- OpenRouter is added only after a recorded Gemini compatibility decision.
+- Gemini and OpenRouter both satisfy the shared text/JSON contract, with
+  provider-specific capabilities represented honestly rather than assumed.
+- Provider keys and settings remain separate, the active provider is visible,
+  and switching applies cleanly to subsequent requests.
+- Character Presets and every first-party AI consumer work through the shared
+  executor and contain no Gemini-only setup or transport assumptions.
+- No automatic cross-provider failover sends scenario content to a service the
+  player did not select.
 
 ## Navigator Gates
 

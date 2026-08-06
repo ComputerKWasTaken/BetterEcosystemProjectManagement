@@ -51,13 +51,20 @@ Status: **Active — Audio and WebFetch complete on PC and Mobile; AI revision i
   `GET`/`HEAD` only, text-like responses only, validated redirects, strict
   request/response limits, blocked local/literal non-public targets, and no
   per-origin prompt or search wrapper.
+- Refactor the AI executor and every first-party AI feature behind a
+  provider-neutral adapter. Scripts and Character Presets continue using the
+  stable AI contract without depending directly on Gemini.
+- Support user-selectable Gemini and OpenRouter providers, each with its own API
+  key and provider-specific configuration. Users can switch providers at any
+  time; subsequent requests use the selected provider.
 - Distinguish adjustable Gemini `SAFETY` blocks from non-adjustable
-  `PROHIBITED_CONTENT`, migrate the backend to the Interactions API, and update
-  the automatic model chain to:
+  `PROHIBITED_CONTENT`, migrate Gemini to the Interactions API, and update its
+  automatic model chain to:
   `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite` → `gemma-4-31b-it` →
   `gemma-4-26b-a4b-it`.
-- Add OpenRouter only if an explicit-content compatibility spike shows Gemini
-  remains unsuitable after supported safety controls are configured.
+- Add OpenRouter as a committed alternative for scenarios Gemini cannot reliably
+  serve, including explicit adult fictional content. Provider selection remains
+  a player choice rather than automatic cross-provider failover.
 
 ### Stage 3 — Navigator Foundation
 
