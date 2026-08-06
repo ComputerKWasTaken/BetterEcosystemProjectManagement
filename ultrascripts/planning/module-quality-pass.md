@@ -2,8 +2,8 @@
 
 ## Purpose
 
-This document defines the cross-cutting quality gates for the active V2.1
-Ultrascripts work. Phase sequencing lives in [Current Roadmap](./current-roadmap.md).
+This document defines the cross-cutting quality gates for the V2.1 platform and
+Navigator work. Phase sequencing lives in [Current Roadmap](./current-roadmap.md).
 
 ## Readiness Matrix
 
@@ -11,10 +11,9 @@ Ultrascripts work. Phase sequencing lives in [Current Roadmap](./current-roadmap
 |---|---|---|---|
 | Heartbeat | Per-write beat and PC/Mobile identity | Stale cross-device availability | Ready — verified on PC and Mobile |
 | Audio | State-driven synthesized effects | Autoplay, lifecycle, noisy scripts | Complete on PC and Mobile; device-matrix smoke test at release |
-| JS | Isolated quota-bound computation | Sandbox escape and resource exhaustion | Provisional pending threat model |
 | WebFetch | Prompt-free safe public reads | SSRF and data leakage | Complete and accepted on PC and Mobile |
 | AI | Provider-neutral executor with Gemini Interactions | Silent blocks, model drift, and provider coupling | Complete on PC/Mobile; live suite verified |
-| Navigator | Typed, reversible adventure mutations | Stale overwrites and automation loops | Planned after Ultrascripts |
+| Navigator | Typed, reversible adventure mutations | Stale overwrites and automation loops | Active next target |
 
 ## Standard Module Gates
 
@@ -47,15 +46,6 @@ Every changed or new module must answer:
 - Invalid synth parameters fail without partial playback.
 - Adventure exit, feature disable, tab backgrounding, and mobile suspension clean up.
 - The module does not accept audio files, remote URLs, or arbitrary Web Audio graphs.
-
-## JS Gates
-
-- Threat model is approved before module implementation is considered committed scope.
-- Code cannot reach DOM, page globals, extension APIs, network, storage, or credentials.
-- Infinite loops and resource exhaustion terminate inside enforced bounds.
-- JSON serialization cannot flood or corrupt the transport.
-- No cross-request state or prototype pollution survives one-shot execution.
-- Chromium, Firefox, and Android WebView run the same escape suite.
 
 ## WebFetch Gates
 

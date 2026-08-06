@@ -13,10 +13,11 @@ BetterRepository guides.
 
 ## Current Release Context
 
-BetterDungeon V2 and its eight first-party modules are released. V2.1 now
-prioritizes heartbeat reliability, Audio and JS module investigation, WebFetch
-and AI improvements, and then Navigator. Stateboy, Brainiac, and Chronos V2 are
-independent script projects and no longer gate BetterDungeon releases.
+BetterDungeon V2 is released, and the V2.1 Ultrascripts improvement pass is
+complete. BetterDungeon now ships nine first-party modules across PC and Mobile,
+and Navigator Interactive MVP is the active next phase. Stateboy, Brainiac, and
+Chronos V2 are independent script projects and no longer gate BetterDungeon
+releases.
 
 ## Start Here
 
@@ -27,7 +28,7 @@ independent script projects and no longer gate BetterDungeon releases.
 | Which modules ship and what contracts do they implement? | [Module system reference](./reference/modules.md) |
 | What should scripts and templates assume? | [Script contract reference](./reference/script-contract.md) |
 | What does `sdk` expose? | [BetterDungeon SDK reference](./reference/sdk.md) |
-| What does the developing Audio module accept? | [Audio module reference](./reference/audio.md) |
+| What does the Audio module accept? | [Audio module reference](./reference/audio.md) |
 | What should be tested or live-checked? | [Verification reference](./reference/verification.md) |
 | How do private docs and public docs stay aligned? | [Documentation sync plan](./planning/docs-sync.md) |
 | What module polish is still worth tracking? | [Module quality pass](./planning/module-quality-pass.md) |
@@ -65,11 +66,13 @@ Regression and author examples:
 | `network` | ops | `status` |
 | `system` | ops | `info`, `power` |
 | `ai` | ops | `status`, `query` |
+| `audio` | state | `ultrascripts:state:audio` |
 
 The V2 AI module exposes a stable asynchronous `status`/`query` contract with
 text output, schema-backed JSON output, and clear `not_configured` handling.
-Audio and JS are planned V2.1 modules; do not list them as shipped until their
-contracts, implementations, tests, and guides pass the roadmap gates.
+Audio is the ninth shipped module and uses a bounded state-driven synthesizer
+contract. Arbitrary JavaScript execution is deferred and is not part of the
+V2.1 module set.
 
 ## Documentation Rules
 

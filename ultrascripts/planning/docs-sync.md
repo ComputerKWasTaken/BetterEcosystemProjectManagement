@@ -158,14 +158,15 @@ All public AI Dungeon snippets should:
 
 ## Active Sync Priority
 
-BetterDungeon V2 and BetterRepository's supporting resource release are
-complete. The active priority is V2.1 contract migration in roadmap order:
+BetterDungeon V2 and the V2.1 Ultrascripts improvement pass are complete. Keep
+the shipped heartbeat, Audio, WebFetch, and AI documentation synchronized while
+the active documentation priority moves to Navigator in roadmap order:
 
-1. heartbeat freshness, liveness, and PC/Mobile identity;
-2. Audio and JS contracts, settings, suites, and guides;
-3. WebFetch safe-read permissions and migration guidance;
-4. AI safety, provider-neutral errors, Interactions, and model fallback;
-5. Navigator product, permission, automation, audit, and recovery documentation.
+1. Navigator Interactive MVP product shape, context, tools, preview, conflict,
+   audit, undo, privacy, and recovery documentation;
+2. Navigator Automation triggers, permissions, budgets, history, pause, and
+   failure-handling documentation after the interactive foundation is stable;
+3. V2.1 PC/Mobile parity, onboarding, release, and rollback documentation.
 
 Stateboy, Brainiac, and Chronos V2 documentation remains independently owned and
 must not be described as the active BetterDungeon release sequence.
@@ -187,7 +188,7 @@ When Stateboy, Brainiac, or Chronos V2 is worked on independently:
 
 Check:
 
-- private docs distinguish the eight V2 modules from the ten-module V2.1 target
+- private and public docs consistently describe the nine-module V2.1 set
 - public guide list still matches actual `Ultrascripts*.vue` files
 - test suite list still matches actual `tests/aid-scripts/` directories
 - template names match BetterDungeon examples and BetterRepository script data

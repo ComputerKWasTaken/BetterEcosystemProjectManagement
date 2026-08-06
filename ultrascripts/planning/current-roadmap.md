@@ -2,8 +2,8 @@
 
 ## Status Snapshot
 
-BetterDungeon V2 is complete. V2.1 is now active and begins with an
-Ultrascripts improvement pass before Navigator development.
+BetterDungeon V2 is complete. The V2.1 Ultrascripts improvement pass is
+complete, and Navigator Interactive MVP is now the active development phase.
 
 The old Stateboy → Brainiac → Chronos V2 release sequence is retired. Those
 scripts are independent consumers, not gates for BetterDungeon work.
@@ -132,8 +132,10 @@ behavior current, visible, and replaceable.
 - Treat `SAFETY` as an adjustable-filter result and `PROHIBITED_CONTENT` as a
   separate provider policy/core-protection result that safety thresholds cannot
   be expected to override.
-- Run an explicit-content compatibility matrix for AI queries and Character
-  Presets using adult fictional input/output and structured-output cases.
+- **Verified limitation:** live testing confirmed that Gemini cannot be relied
+  on for explicit NSFW scenarios. BetterDungeon surfaces the resulting content
+  block clearly and accepts the limitation while Gemini remains the sole V2.1
+  provider.
 - **Implemented:** migrate Gemini execution from legacy `generateContent` to
   stateless Interactions requests with `store: false`, `steps` response parsing,
   Interactions usage metadata, and `response_format` JSON schemas.
@@ -142,7 +144,8 @@ behavior current, visible, and replaceable.
 - **Implemented:** translate public thinking levels into model-family-specific
   Interactions payloads and keep structured output behind the shared JSON
   contract. The local suite covers payloads, parsing, metadata, blocks, and
-  rate-limit stepdown; the live suite remains the final compatibility check.
+  rate-limit stepdown, and the live contract suite has passed on the completed
+  PC and Mobile implementation.
 - Defer OpenRouter, local models, multi-provider credential UX, and provider
   switching to a future release. Never add silent cross-provider failover.
 
@@ -150,24 +153,9 @@ Exit gate: blocks are never silent, model fallback is observable, contracts stay
 stable, the Gemini Interactions path passes a live smoke test, and all first-party
 AI features continue to work through the provider-neutral executor.
 
-## Phase 5 — JS Module
+## Phase 5 — Navigator Interactive MVP
 
-Goal: offer heavier computation through a narrow, isolated execution service.
-
-- Run code in a dedicated Worker or stronger isolated realm; never the page,
-  extension, or privileged background global.
-- Expose JSON-serializable input/output only and no DOM, extension APIs, network,
-  storage, dynamic imports, or ambient credentials.
-- Enforce wall-clock, memory, source-size, output-size, and concurrency quotas;
-  terminate the worker on timeout.
-- Version the execution environment and supported language features.
-- Treat this as compute offload, not a promise of unlimited execution.
-
-Exit gate: escape attempts, infinite loops, memory pressure, oversized output,
-concurrency, cancellation, and mobile teardown are covered by tests and cannot
-affect privileged BetterDungeon state.
-
-## Phase 6 — Navigator Interactive MVP
+Status: **Active — product contract and architecture planning**
 
 Goal: ship a trustworthy adventure copilot before unattended automation.
 
@@ -184,7 +172,9 @@ Goal: ship a trustworthy adventure copilot before unattended automation.
 Exit gate: Navigator can safely perform representative maintenance tasks,
 explain its intended changes, detect conflicts, and undo its own mutations.
 
-## Phase 7 — Navigator Automations
+## Phase 6 — Navigator Automations
+
+Status: **Planned — begins after the Interactive MVP exit gate**
 
 Goal: provide bounded, observable upkeep without disrupting play.
 
@@ -200,9 +190,11 @@ Goal: provide bounded, observable upkeep without disrupting play.
 Exit gate: reloads, multi-device play, rapid actions, offline periods, delayed AI
 responses, and failures do not duplicate or loop automations.
 
-## Phase 8 — Documentation and V2.1 Release
+## Phase 7 — Documentation and V2.1 Release
 
-- Update ten-module reference and public guide coverage.
+Status: **Planned**
+
+- Update nine-module reference and public guide coverage.
 - Update Enhanced/Required helpers for liveness semantics.
 - Document WebFetch migration and AI provider/safety behavior.
 - Add Navigator onboarding, permission, privacy, automation, audit, and recovery docs.
@@ -212,7 +204,6 @@ responses, and failures do not duplicate or loop automations.
 ## Sequencing Rules
 
 - Heartbeat correctness precedes reliance on new modules.
-- JS threat modeling precedes implementation.
 - Interactive Navigator mutation safety precedes auto-apply automations.
 - Gemini is the sole V2.1 provider. Multi-provider support requires a future
   product decision and must never introduce silent cross-provider fallback.
@@ -220,6 +211,8 @@ responses, and failures do not duplicate or loop automations.
 
 ## Practical Next Action
 
-Begin the JS isolation threat model before implementing the final planned
-Ultrascripts module. Define its execution boundary, quotas, cancellation model,
-and PC/Mobile parity requirements first.
+Define the Navigator Interactive MVP architecture and product contract. Lock the
+sidebar interaction model, context boundaries, typed read/mutation tools,
+preview and approval flow, conflict checks, audit and undo behavior, PC/Mobile
+integration, shared AI executor usage, and acceptance tests before designing
+automations.

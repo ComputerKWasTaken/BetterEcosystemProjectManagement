@@ -16,12 +16,15 @@ Stateboy, Brainiac, and Chronos V2 are no longer BetterDungeon release gates.
 They remain useful Ultrascripts consumers and may be developed independently,
 but V2.1 must not wait for their publication.
 
+The Ultrascripts improvement pass is complete. Navigator Interactive MVP is now
+the active V2.1 development track.
+
 ## V2 Baseline
 
 - Ultrascripts transport, write queue, heartbeat discovery, and two-way envelopes.
 - State-card dispatch, module registry, lifecycle handling, and popup settings.
-- Eight modules: `widget`, `webfetch`, `clock`, `sdk`, `weather`, `network`,
-  `system`, and `ai`.
+- Nine modules: `widget`, `webfetch`, `clock`, `sdk`, `weather`, `network`,
+  `system`, `ai`, and `audio`.
 - Per-module AI Dungeon regression suites.
 - Enhanced and Required starter templates.
 - Chromium, Firefox/Gecko, and Android WebView support.
@@ -43,10 +46,9 @@ Status: **Complete and verified on PC and Mobile**
 
 ### Stage 2 — Module Expansion and Revision
 
-Status: **Active — Audio, WebFetch, and AI modernization complete; JS remains**
+Status: **Complete — Audio, WebFetch, and AI modernization verified on PC and Mobile**
 
 - Add `audio` as a stateful module for bounded, one-shot synthesized effects.
-- Add `js` as an isolated, quota-bound compute module.
 - Keep WebFetch 1.0 focused on bounded, credential-free public HTTPS reads:
   `GET`/`HEAD` only, text-like responses only, validated redirects, strict
   request/response limits, blocked local/literal non-public targets, and no
@@ -68,6 +70,8 @@ Status: **Active — Audio, WebFetch, and AI modernization complete; JS remains*
   Scripts, Character Presets, or Navigator to Gemini.
 
 ### Stage 3 — Navigator Foundation
+
+Status: **Active — Interactive MVP planning and architecture**
 
 - Add an adventure-page sidebar chat grounded in AI Dungeon behavior, current
   Plot Components, Story Cards, and a bounded slice of adventure context.
@@ -110,7 +114,7 @@ Status: **Active — Audio, WebFetch, and AI modernization complete; JS remains*
 - Scripts stop treating an unchanged durable heartbeat as live and recover
   automatically when the beat advances again.
 - Heartbeat reports `PC` or `Mobile` correctly.
-- Audio and JS have documented contracts, lifecycle cleanup, quotas, and tests.
+- Audio has a documented contract, lifecycle cleanup, quotas, and tests.
 - WebFetch is useful without weakening blocked-target and data-exfiltration rules.
 - AI errors—including content blocks—are visible and branchable, never silently dropped.
 - Navigator edits cannot silently overwrite data that changed after it was read.
