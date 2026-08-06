@@ -43,7 +43,7 @@ Status: **Complete and verified on PC and Mobile**
 
 ### Stage 2 — Module Expansion and Revision
 
-Status: **Active — Audio, WebFetch, and Gemini modernization implemented; JS remains**
+Status: **Active — Audio, WebFetch, and AI modernization complete; JS remains**
 
 - Add `audio` as a stateful module for bounded, one-shot synthesized effects.
 - Add `js` as an isolated, quota-bound compute module.
@@ -59,6 +59,9 @@ Status: **Active — Audio, WebFetch, and Gemini modernization implemented; JS r
   non-adjustable `PROHIBITED_CONTENT`, and uses this automatic model chain:
   `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite` → `gemma-4-31b-it` →
   `gemma-4-26b-a4b-it`.
+- **Completed UX:** Character Prefill presents concise, actionable messages for
+  policy blocks, safety blocks, setup failures, rate limits, and timeouts without
+  exposing raw provider diagnostics.
 - Keep Gemini as the only configured provider for V2.1 to preserve the lowest-
   friction setup. The provider-neutral executor remains in place so OpenRouter,
   local models, or another backend can be evaluated later without recoupling

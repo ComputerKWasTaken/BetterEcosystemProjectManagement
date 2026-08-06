@@ -13,7 +13,7 @@ Ultrascripts work. Phase sequencing lives in [Current Roadmap](./current-roadmap
 | Audio | State-driven synthesized effects | Autoplay, lifecycle, noisy scripts | Complete on PC and Mobile; device-matrix smoke test at release |
 | JS | Isolated quota-bound computation | Sandbox escape and resource exhaustion | Provisional pending threat model |
 | WebFetch | Prompt-free safe public reads | SSRF and data leakage | Complete and accepted on PC and Mobile |
-| AI | Provider-neutral executor with Gemini Interactions | Silent blocks, model drift, and provider coupling | Implemented on PC/Mobile; live Gemini matrix pending |
+| AI | Provider-neutral executor with Gemini Interactions | Silent blocks, model drift, and provider coupling | Complete on PC/Mobile; live suite verified |
 | Navigator | Typed, reversible adventure mutations | Stale overwrites and automation loops | Planned after Ultrascripts |
 
 ## Standard Module Gates

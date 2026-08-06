@@ -10,7 +10,7 @@ scripts are independent consumers, not gates for BetterDungeon work.
 
 ## Phase 0 — Baseline and Contract Freeze
 
-Status: **Active**
+Status: **Complete — baseline contracts recorded and regression coverage established**
 
 - Record the V2 heartbeat, module, permission, and AI behavior in regression tests.
 - Define migration expectations for existing Enhanced and Required scripts.
@@ -111,7 +111,7 @@ credential forwarding, redirect bypass, data leakage, and abuse limits remain te
 
 ## Phase 4 — AI Backend Modernization
 
-Status: **Implementation complete on PC and Mobile; live Gemini smoke test pending**
+Status: **Complete — implemented and live-verified on PC and Mobile**
 
 Goal: keep the public `ai.status`/`ai.query` contract stable while making provider
 behavior current, visible, and replaceable.
@@ -220,6 +220,6 @@ responses, and failures do not duplicate or loop automations.
 
 ## Practical Next Action
 
-Live-test Gemini text, JSON, thinking, rate-limit fallback, and visible content
-blocks through the Interactions path. Then begin the JS isolation threat model
-before implementing the final planned Ultrascripts module.
+Begin the JS isolation threat model before implementing the final planned
+Ultrascripts module. Define its execution boundary, quotas, cancellation model,
+and PC/Mobile parity requirements first.
