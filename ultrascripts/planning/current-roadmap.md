@@ -10,6 +10,9 @@ Navigator's architecture and product contract are locked in the
 three phases: the first-party AI chat surface it depends on, the shell with
 grounded read-only chat, then tools and mutations.
 
+The first-party chat surface and grounded Navigator shell are complete and
+live-tested. Phase 7 tools and mutations are the next development stage.
+
 Navigator Automations are **removed from V2.1**. They are deferred, not
 cancelled.
 
@@ -163,7 +166,7 @@ AI features continue to work through the provider-neutral executor.
 
 ## Phase 5 — First-Party AI Chat Surface
 
-Status: **Active — implementation**
+Status: **Complete — implemented and live-verified without changing `ai.query`**
 
 Goal: give first-party features multi-turn streaming AI without touching the
 script-facing contract.
@@ -190,12 +193,27 @@ surface, not a contract revision.
   stable error shapes already used by `ai.query`.
 - Never add silent cross-provider failover.
 
+Implemented foundation:
+
+- `UltrascriptsAIExecutor.chat()` is an internal-only, provider-neutral surface
+  with multi-turn messages, a system instruction, independent per-consumer
+  budgets, optional thinking, streaming deltas, and structured terminal results.
+- Gemini chat uses a versioned long-lived runtime port. The background owns the
+  API key and request `AbortController`; both sides tear down on completion,
+  error, abort, disconnect, page exit, startup timeout, and invalidated extension
+  context.
+- Provider blocks, missing credentials, rate limits, and observable model
+  stepdown retain the stable AI error vocabulary. There is no cross-provider
+  failover.
+- The frozen script path and Character Presets continue to use `ai.query()` with
+  its existing 12k single-shot contract.
+
 Exit gate: multi-turn streaming chat works end to end with clean abort and no
 leaked ports, and the existing `ai.query` regression suite passes unchanged.
 
 ## Phase 6 — Navigator Shell and Grounded Chat
 
-Status: **Planned — begins after the Phase 5 exit gate**
+Status: **Complete — grounded read-only shell implemented and live-tested**
 
 Goal: a trustworthy, useful, read-only adventure copilot.
 
@@ -213,16 +231,33 @@ Goal: a trustworthy, useful, read-only adventure copilot.
   internal documentation corpus is the source for that primer, never a payload.
 - Assemble adventure context from data already in memory: `Ultrascripts.ws`
   cards and actions, the normalized story card cache, and one new adventure
-  query for `memory`, `authorsNote`, `instructions`, and `state.storySummary`.
+  query for `memory`, `authorsNote`, legacy `instructions`, and
+  `state.instructions` plus `state.storySummary`.
 - Account for every context segment against an explicit budget.
 - With no tool loop available, pre-select story cards by relevance with per-card
   truncation, and always report how many cards were omitted so Navigator can say
   what it cannot see.
-- Render assistant output as plain text with paragraph splitting. The extension
-  has no markdown renderer, and adding one is deferred. Never assign model output
-  via `innerHTML`.
+- Render assistant output with Navigator's bounded DOM-only Markdown renderer.
+  It supports headings, emphasis, lists and nested lists, blockquotes, safe
+  links, inline and fenced code, rules, and tables. Model output is never
+  assigned via `innerHTML`, and scoped layout resets prevent AI Dungeon's global
+  element styles from flattening lists or code blocks.
 - Read-only. Navigator explains, diagnoses, brainstorms, and drafts text the
   player applies themselves.
+
+Implemented foundation:
+
+- Right-gutter overlay drawer with draggable persisted width, full-screen narrow
+  fallback, launcher, transcript, composer, stop control, and per-adventure
+  persisted sessions.
+- Versioned platform primer plus an explicitly budgeted snapshot covering
+  identity, all Plot Components, relevance-ranked Story Cards, recent actions,
+  omission counts, and truncation metadata.
+- Plot reads prefer the UI-backed `Adventure.state.instructions` value and fall
+  back to legacy flat `Adventure.instructions`, normalizing the returned JSON or
+  string shape into text.
+- Context refreshes before each user turn, and partial-source failures remain
+  visible in snapshot metadata and the drawer subtitle.
 
 Exit gate: Navigator holds a grounded multi-turn conversation about a real
 adventure, respects its context budget, is honest about omitted context, and
@@ -230,7 +265,7 @@ opening or closing it never disturbs play.
 
 ## Phase 7 — Navigator Tools and Mutations
 
-Status: **Planned — begins after the Phase 6 exit gate**
+Status: **Next — design and implementation not started**
 
 Goal: let Navigator act, without ever being able to quietly damage an adventure.
 
@@ -243,8 +278,9 @@ Goal: let Navigator act, without ever being able to quietly damage an adventure.
   `createStoryCard`/`updateStoryCard`/`deleteStoryCard` for cards. Never DOM
   automation — the current Plot Presets DOM path is too fragile for agent edits.
 - Resolve before writing: whether `updateAdventureState` merges or replaces a
-  partial `state`, and the real shape of AI Instructions across the flat
-  `Adventure.instructions` string and the `AdventureState.instructions` object.
+  partial `state`, and the exact write payload required for the UI-backed
+  `AdventureState.instructions` value. The read path is resolved: state wins,
+  with the flat `Adventure.instructions` string retained only as fallback.
 - Preview a structured change set before application by default.
 - Use stable IDs plus read-version preconditions to prevent stale overwrites.
 - Store an audit log and reversible before/after data for every applied change.
@@ -294,6 +330,7 @@ Status: **Planned**
 
 ## Practical Next Action
 
-Implement Phase 5. Add the first-party chat surface with `messages`, a system
-instruction, per-consumer budget, background streaming port, and abort, while
-leaving `ai.query` and its regression coverage untouched.
+Begin Phase 7 with read tools and the tool loop. Define typed list, inspect, and
+search operations behind `NavigatorSession`, validate multi-step streaming tool
+turns without mutations, and preserve the completed read-only chat path as the
+safe fallback.

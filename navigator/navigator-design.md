@@ -3,6 +3,10 @@
 > V2.1 headline feature. This document locks the decisions needed to build
 > Navigator's shell and live chat, and records what is deliberately deferred.
 
+Implementation status: the first-party streaming chat surface and Phase 6
+grounded read-only Navigator are complete and live-tested. Read and mutation
+tools remain deferred to Phase 7.
+
 ## 1. Product Definition
 
 Navigator is an adventure copilot: a chat surface attached to the AI Dungeon
@@ -76,11 +80,12 @@ neither is expressible through `ai.query`.
 
 ### Streaming transport
 
-`background.js` currently issues a single non-streaming `fetch` with a 120s
-timeout. Streaming adds a long-lived runtime port: the background worker reads
-the Gemini Interactions stream and forwards deltas to the content script, which
-appends them to the in-flight assistant message. Abort propagates from the
-drawer's stop button through the port to an `AbortController`.
+The implemented chat path uses a versioned long-lived runtime port. The
+background worker reads the Gemini Interactions stream and forwards deltas to
+the content script, which appends them to the in-flight assistant message.
+Abort propagates from the drawer's stop button through the port to an
+`AbortController`. Completion, error, abort, disconnect, page exit, startup
+timeout, and extension-context invalidation all terminate the port.
 
 ## 4. Grounding
 
@@ -124,28 +129,35 @@ adventure(shortId: $shortId) {
   id shortId actionCount thirdPerson
   memory        # Plot Essentials
   authorsNote
-  instructions  # AI Instructions
-  state { storySummary }
+  instructions  # Legacy AI Instructions fallback
+  state {
+    instructions # UI-backed AI Instructions JSON value
+    storySummary
+  }
 }
 ```
+
+Live verification resolved the read ambiguity: the current AI Instructions UI
+maps to `Adventure.state.instructions`. Navigator normalizes that JSON/string
+value to text and prefers it over the flat `Adventure.instructions` fallback.
 
 ### Context budget
 
 | Segment | Target |
 |---|---|
-| Primer + system framing | ~4k chars |
-| Plot components (verbatim) | 2–6k chars |
-| Story cards | budgeted, see below |
-| Recent story actions | 4–8k chars |
-| Rolling conversation history | ~10k chars, truncated oldest-first |
+| Primer + complete system snapshot | 46k chars maximum |
+| Adventure identity | 1.2k chars |
+| Plot components (verbatim) | 7k chars |
+| Story cards | 16k chars; 1.6k per card value |
+| Recent story actions | 8k chars; 1.8k per action |
+| Rolling conversation history | 12k chars, truncated oldest-first |
 
-**Open decision — story card inclusion.** With no tool loop, Navigator cannot
-fetch cards on demand, so cards must be pre-selected. Recommended approach: a
-character-budgeted selection ordered by relevance — cards whose triggers appear
-in recent story text first, then most recently updated — with per-card value
-truncation and an explicit count of omitted cards so Navigator can honestly say
-it cannot see everything. This is the primary limitation of the tool-free
-design and the strongest argument for adding read tools in the next stage.
+**Implemented story card inclusion.** With no tool loop, cards are pre-selected
+within a character budget. Cards whose triggers appear in recent story text are
+ranked first, followed by recently updated cards. Values are truncated per card,
+and the snapshot reports included and omitted counts so Navigator can state its
+coverage honestly. This remains the primary limitation of the tool-free design
+and the strongest argument for Phase 7 read tools.
 
 ## 5. Shell Architecture
 
@@ -179,21 +191,22 @@ property.
 
 ### Anatomy
 
-- **Header** — Navigator mark, adventure title, provider/model chip, session
-  usage indicator, settings, close.
+- **Header** — Navigator mark, adventure title and context-coverage subtitle,
+  clear-conversation action, and close.
 - **Transcript** — user and assistant messages, plus error and status cards.
-  The extension has no markdown renderer; `utils/markdown-config.js` is AI Dungeon
-  emphasis-syntax metadata, not a renderer. Assistant output is written with
-  `textContent` and paragraph/line splitting. A bounded markdown renderer is
-  deferred until the content justifies it. Model output is never assigned via
-  `innerHTML`.
-- **Composer** — autosizing textarea, send, stop-while-streaming, and a mode
-  chip that will later toggle mutation access.
+  Assistant messages use a bounded DOM-only Markdown renderer supporting
+  headings, emphasis, nested lists, blockquotes, safe links, inline and fenced
+  code, rules, and tables. Streaming may re-render an incomplete construct, but
+  raw HTML is always text and model output is never assigned via `innerHTML`.
+  Scoped display rules isolate Markdown layout from AI Dungeon's global styles.
+- **Composer** — autosizing textarea, send, and stop-while-streaming. Mutation
+  mode remains deferred with the Phase 7 permission and preview design.
 
 ### Launcher
 
-A Navigator button in the nav toolbar adjacent to `[aria-label="Game settings"]`,
-plus a binding through the existing hotkey feature.
+A fixed Navigator button mounts independently of AI Dungeon's changing toolbar
+DOM. `Alt+N` toggles the drawer directly, and Escape closes it while focus is
+inside Navigator.
 
 ### Session
 
@@ -249,19 +262,19 @@ its own later pass and is not a V2.1 gate.
 To resolve by live capture before the mutation stage:
 
 - Whether `updateAdventureState` merges a partial `state` object or replaces it.
-- The exact shape of `AdventureState.instructions` (`JSONObject`) versus the
-  flat `Adventure.instructions` (`String`), and which one the AI Instructions
-  field in the UI actually maps to.
-- Streaming behavior and abort semantics of the Gemini Interactions endpoint as
-  invoked from the background worker.
+- The exact mutation payload shape required to preserve and update the
+  UI-backed `AdventureState.instructions` value. Its read mapping is resolved;
+  the state value is authoritative and the flat string is a legacy fallback.
 
 ## 8. Build Order
 
-1. First-party chat surface: `messages[]`, system instruction, streaming port,
-   per-consumer budget. `ai.query` untouched.
-2. Navigator shell: drawer, launcher, session, transcript, composer.
-3. Grounding: primer, context assembly, budget accounting, plot component read.
-4. Read tools and the tool loop.
+1. **Complete:** first-party chat surface with `messages[]`, system instruction,
+   streaming port, and per-consumer budget. `ai.query` remains untouched.
+2. **Complete:** Navigator shell with drawer, launcher, session, transcript, and
+   composer.
+3. **Complete:** grounding primer, context assembly, budget accounting, and Plot
+   Component reads.
+4. **Next:** read tools and the tool loop.
 5. Mutation tools with preview, preconditions, audit, and undo.
 
 Steps 1–5 are V2.1. OpenRouter and Automations are beyond it.
