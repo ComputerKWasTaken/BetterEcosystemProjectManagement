@@ -15,7 +15,8 @@ BetterRepository guides.
 
 BetterDungeon V2 is released, and the V2.1 Ultrascripts improvement pass is
 complete. BetterDungeon now ships nine first-party modules across PC and Mobile,
-and Navigator Interactive MVP is the active next phase. Stateboy, Brainiac, and
+and Navigator is the active next track, starting with the first-party AI chat
+surface that Navigator depends on. Stateboy, Brainiac, and
 Chronos V2 are independent script projects and no longer gate BetterDungeon
 releases.
 

@@ -162,11 +162,16 @@ BetterDungeon V2 and the V2.1 Ultrascripts improvement pass are complete. Keep
 the shipped heartbeat, Audio, WebFetch, and AI documentation synchronized while
 the active documentation priority moves to Navigator in roadmap order:
 
-1. Navigator Interactive MVP product shape, context, tools, preview, conflict,
-   audit, undo, privacy, and recovery documentation;
-2. Navigator Automation triggers, permissions, budgets, history, pause, and
-   failure-handling documentation after the interactive foundation is stable;
-3. V2.1 PC/Mobile parity, onboarding, release, and rollback documentation.
+1. A note that the script-facing `ai.query` contract is unchanged and that the
+   new multi-turn streaming chat surface is first-party only;
+2. Navigator product shape, grounding and context boundaries, privacy, and
+   onboarding documentation for the read-only shell;
+3. Navigator tools, preview, conflict, audit, undo, and recovery documentation
+   once mutations land;
+4. V2.1 PC/Mobile parity, onboarding, release, and rollback documentation.
+
+Navigator Automation documentation is deferred with the feature and is out of
+V2.1.
 
 Stateboy, Brainiac, and Chronos V2 documentation remains independently owned and
 must not be described as the active BetterDungeon release sequence.

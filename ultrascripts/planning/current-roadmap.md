@@ -3,7 +3,15 @@
 ## Status Snapshot
 
 BetterDungeon V2 is complete. The V2.1 Ultrascripts improvement pass is
-complete, and Navigator Interactive MVP is now the active development phase.
+complete, and Navigator is now the active development track.
+
+Navigator's architecture and product contract are locked in the
+[Navigator design doc](../../navigator/navigator-design.md). Navigator ships in
+three phases: the first-party AI chat surface it depends on, the shell with
+grounded read-only chat, then tools and mutations.
+
+Navigator Automations are **removed from V2.1**. They are deferred, not
+cancelled.
 
 The old Stateboy → Brainiac → Chronos V2 release sequence is retired. Those
 scripts are independent consumers, not gates for BetterDungeon work.
@@ -153,66 +161,138 @@ Exit gate: blocks are never silent, model fallback is observable, contracts stay
 stable, the Gemini Interactions path passes a live smoke test, and all first-party
 AI features continue to work through the provider-neutral executor.
 
-## Phase 5 — Navigator Interactive MVP
+## Phase 5 — First-Party AI Chat Surface
 
-Status: **Active — product contract and architecture planning**
+Status: **Active — implementation**
 
-Goal: ship a trustworthy adventure copilot before unattended automation.
+Goal: give first-party features multi-turn streaming AI without touching the
+script-facing contract.
 
-- Sidebar chat attached to the adventure page.
-- Grounding adapter for AI Dungeon platform concepts, current Plot Components,
-  Story Cards, relevant story context, and current adventure identity.
-- Read tools for listing, inspecting, searching, and diagnosing content.
-- Mutation tools for creating/updating/deleting Plot Components and Story Cards.
+Navigator needs conversation state, a system instruction, a context budget far
+above 12k characters, and streaming. `ai.query` provides none of those, and
+cannot be changed: third-party Ultrascripts depend on its single-shot 12k
+non-streaming shape and V2.1 protects it. The answer is an additive internal
+surface, not a contract revision.
+
+- Keep `ai.query` byte-for-byte behaviorally identical. No migration note, no
+  contract version bump, no change to `PROMPT_MAX_CHARS` for scripts.
+- Add a first-party chat surface accepting `messages`, a system instruction, and
+  a per-consumer budget, exposed only to BetterDungeon features.
+- Reuse the existing provider registry, per-consumer routing, and Gemini
+  adapter. Navigator registers as `consumer: 'navigator'` so an alternate
+  provider is later additive.
+- Stream Gemini Interactions responses from the background worker to the content
+  script over a long-lived port, replacing the single blocking request for
+  first-party chat only.
+- Propagate abort from the caller through the port to an `AbortController`, and
+  guarantee port teardown on adventure change, drawer close, and page unload.
+- Keep provider blocks, rate limits, and stepdown observable through the same
+  stable error shapes already used by `ai.query`.
+- Never add silent cross-provider failover.
+
+Exit gate: multi-turn streaming chat works end to end with clean abort and no
+leaked ports, and the existing `ai.query` regression suite passes unchanged.
+
+## Phase 6 — Navigator Shell and Grounded Chat
+
+Status: **Planned — begins after the Phase 5 exit gate**
+
+Goal: a trustworthy, useful, read-only adventure copilot.
+
+- Overlay drawer pinned to the right gutter of the adventure page. The play page
+  is Tamagui with an absolutely-positioned layer stack and a fixed 1067px content
+  container, so a layout-reflowing sidebar is not safely achievable. Reuse the
+  available-space measurement already proven by the story card dock, and collapse
+  to a full-screen sheet when there is no gutter.
+- No backdrop. The story stays readable and interactive while Navigator is open.
+- `NavigatorSession` owns the transcript, send, abort, and per-adventure
+  persistence. The drawer talks only to the session.
+- Ground with a hand-written platform primer of roughly 1k tokens covering the
+  adventure model, the purpose of each Plot Component, how Story Card triggers
+  work, and the rot/modification failure modes Navigator exists to catch. The
+  internal documentation corpus is the source for that primer, never a payload.
+- Assemble adventure context from data already in memory: `Ultrascripts.ws`
+  cards and actions, the normalized story card cache, and one new adventure
+  query for `memory`, `authorsNote`, `instructions`, and `state.storySummary`.
+- Account for every context segment against an explicit budget.
+- With no tool loop available, pre-select story cards by relevance with per-card
+  truncation, and always report how many cards were omitted so Navigator can say
+  what it cannot see.
+- Render assistant output through the shared markdown config. Never assign model
+  output via `innerHTML`.
+- Read-only. Navigator explains, diagnoses, brainstorms, and drafts text the
+  player applies themselves.
+
+Exit gate: Navigator holds a grounded multi-turn conversation about a real
+adventure, respects its context budget, is honest about omitted context, and
+opening or closing it never disturbs play.
+
+## Phase 7 — Navigator Tools and Mutations
+
+Status: **Planned — begins after the Phase 6 exit gate**
+
+Goal: let Navigator act, without ever being able to quietly damage an adventure.
+
+- Add typed read tools first — list, inspect, and search Story Cards, read Plot
+  Components, read recent story. These remove the context pre-selection problem
+  from Phase 6 and validate the tool loop on operations that cannot cause harm.
+- Add mutation tools over the confirmed GraphQL write paths:
+  `updateAdventurePlot` for Plot Essentials, Author's Note, and third person;
+  `updateAdventureState` for AI Instructions and Story Summary; and
+  `createStoryCard`/`updateStoryCard`/`deleteStoryCard` for cards. Never DOM
+  automation — the current Plot Presets DOM path is too fragile for agent edits.
+- Resolve before writing: whether `updateAdventureState` merges or replaces a
+  partial `state`, and the real shape of AI Instructions across the flat
+  `Adventure.instructions` string and the `AdventureState.instructions` object.
 - Preview a structured change set before application by default.
-- Use stable IDs plus read-version/hash preconditions to prevent stale overwrites.
+- Use stable IDs plus read-version preconditions to prevent stale overwrites.
 - Store an audit log and reversible before/after data for every applied change.
-- Support a read-only brainstorm/question mode when mutation access is disabled.
+- Keep mutation access behind an off-by-default permission, and keep read-only
+  chat fully useful when it is off.
 
-Exit gate: Navigator can safely perform representative maintenance tasks,
-explain its intended changes, detect conflicts, and undo its own mutations.
+Exit gate: Navigator performs representative maintenance tasks, explains its
+intended changes before applying them, detects conflicts, and reverses its own
+mutations.
 
-## Phase 6 — Navigator Automations
-
-Status: **Planned — begins after the Interactive MVP exit gate**
-
-Goal: provide bounded, observable upkeep without disrupting play.
-
-- Initial triggers: every N completed turns and selected action types.
-- Separate trigger evaluation from agent execution and persist a monotonic
-  last-run marker to prevent duplicate firing.
-- Reuse Navigator's validated tools, conflict checks, audit log, and undo path.
-- Add dry-run, require-approval, and auto-apply modes per automation.
-- Add cooldowns, maximum runs, request budgets, failure backoff, and a global kill switch.
-- Show queued/running/completed/failed state without blocking ordinary play.
-- Defer semantic/event triggers until deterministic triggers are proven.
-
-Exit gate: reloads, multi-device play, rapid actions, offline periods, delayed AI
-responses, and failures do not duplicate or loop automations.
-
-## Phase 7 — Documentation and V2.1 Release
+## Phase 8 — Documentation and V2.1 Release
 
 Status: **Planned**
 
 - Update nine-module reference and public guide coverage.
 - Update Enhanced/Required helpers for liveness semantics.
 - Document WebFetch migration and AI provider/safety behavior.
-- Add Navigator onboarding, permission, privacy, automation, audit, and recovery docs.
-- Verify Chromium, Firefox/Gecko, and Android WebView parity.
+- Document that `ai.query` is unchanged and that first-party chat is internal.
+- Add Navigator onboarding, permission, privacy, audit, and recovery docs.
+- Verify Chromium and Firefox/Gecko parity for Navigator; Ultrascripts parity
+  still includes Android WebView.
 - Publish V2.1 independently of Stateboy, Brainiac, and Chronos V2.
 
 ## Sequencing Rules
 
 - Heartbeat correctness precedes reliance on new modules.
-- Interactive Navigator mutation safety precedes auto-apply automations.
+- The first-party chat surface precedes any Navigator UI, because multi-turn and
+  streaming are not expressible through `ai.query`.
+- Read-only grounded chat precedes tools; read tools precede mutation tools.
+- Mutation safety — preview, preconditions, audit, undo — precedes any future
+  unattended execution.
 - Gemini is the sole V2.1 provider. Multi-provider support requires a future
   product decision and must never introduce silent cross-provider fallback.
 - Showcase scripts may inform tests, but cannot block phase progression.
 
+## Deferred Beyond V2.1
+
+- **Navigator Automations.** Deterministic triggers, monotonic last-run markers,
+  dry-run and approval modes, cooldowns, request budgets, failure backoff, run
+  history, and a global kill switch. Removed from V2.1 as too large to absorb on
+  top of newly established mutation safety.
+- **Navigator on mobile.** Separate repository; PC-first, ported later.
+- **OpenRouter and multi-provider UX.** The intended next provider step after
+  the Navigator foundation. Relevant because Gemini is documented as unreliable
+  for explicit content, which affects Navigator more than any other feature
+  since Navigator reads live adventure text as input.
+
 ## Practical Next Action
 
-Define the Navigator Interactive MVP architecture and product contract. Lock the
-sidebar interaction model, context boundaries, typed read/mutation tools,
-preview and approval flow, conflict checks, audit and undo behavior, PC/Mobile
-integration, shared AI executor usage, and acceptance tests before designing
-automations.
+Implement Phase 5. Add the first-party chat surface with `messages`, a system
+instruction, per-consumer budget, background streaming port, and abort, while
+leaving `ai.query` and its regression coverage untouched.
