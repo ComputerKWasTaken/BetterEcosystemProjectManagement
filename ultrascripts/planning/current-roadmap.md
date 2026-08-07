@@ -218,8 +218,9 @@ Goal: a trustworthy, useful, read-only adventure copilot.
 - With no tool loop available, pre-select story cards by relevance with per-card
   truncation, and always report how many cards were omitted so Navigator can say
   what it cannot see.
-- Render assistant output through the shared markdown config. Never assign model
-  output via `innerHTML`.
+- Render assistant output as plain text with paragraph splitting. The extension
+  has no markdown renderer, and adding one is deferred. Never assign model output
+  via `innerHTML`.
 - Read-only. Navigator explains, diagnoses, brainstorms, and drafts text the
   player applies themselves.
 

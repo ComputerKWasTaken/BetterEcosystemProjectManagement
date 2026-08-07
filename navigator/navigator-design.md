@@ -182,8 +182,11 @@ property.
 - **Header** — Navigator mark, adventure title, provider/model chip, session
   usage indicator, settings, close.
 - **Transcript** — user and assistant messages, plus error and status cards.
-  Assistant output renders through `utils/markdown-config.js`. Model output is
-  never assigned via `innerHTML`.
+  The extension has no markdown renderer; `utils/markdown-config.js` is AI Dungeon
+  emphasis-syntax metadata, not a renderer. Assistant output is written with
+  `textContent` and paragraph/line splitting. A bounded markdown renderer is
+  deferred until the content justifies it. Model output is never assigned via
+  `innerHTML`.
 - **Composer** — autosizing textarea, send, stop-while-streaming, and a mode
   chip that will later toggle mutation access.
 
