@@ -1,0 +1,173 @@
+{
+  "capturedAt": "2026-08-08",
+  "environment": "Disposable AI Dungeon adventure",
+  "shortId": "4x41Zd-6ZXs0",
+  "sanitization": "Authorization headers, cookies, credentials, and user identifiers are omitted.",
+  "operations": {
+    "updateAdventureState": {
+      "operationName": "UpdateAdventureState",
+      "document": "mutation UpdateAdventureState($input: AdventureStateInput) { updateAdventureState(input: $input) { adventure { id state { instructions storySummary storyCardStoryInformation storyCardInstructions imageStyle __typename } editedAt __typename } message success __typename } }",
+      "uiVariables": {
+        "input": {
+          "shortId": "4x41Zd-6ZXs0",
+          "state": {
+            "changedFields": [
+              "instructions"
+            ],
+            "instructions": {
+              "type": "custom",
+              "custom": "NAV_MUTATION_LAB_AI_PROBE_20260808"
+            },
+            "storySummary": "NAV_MUTATION_LAB_SUMMARY_BASELINE_20260808",
+            "storyCardStoryInformation": "",
+            "storyCardInstructions": "",
+            "imageStyle": ""
+          }
+        }
+      },
+      "partialMergeProbeVariables": {
+        "input": {
+          "shortId": "4x41Zd-6ZXs0",
+          "state": {
+            "storySummary": "NAV_MUTATION_LAB_SUMMARY_PARTIAL_PROBE_20260808"
+          }
+        }
+      },
+      "responseShape": {
+        "data": {
+          "updateAdventureState": {
+            "success": "boolean",
+            "message": "string",
+            "adventure": {
+              "id": "string",
+              "editedAt": "string",
+              "state": {
+                "instructions": {
+                  "type": "string",
+                  "custom": "string"
+                },
+                "storySummary": "string",
+                "storyCardStoryInformation": "string",
+                "storyCardInstructions": "string",
+                "imageStyle": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "updateAdventurePlot": {
+      "operationName": "UpdateAdventurePlot",
+      "document": "mutation UpdateAdventurePlot($input: AdventurePlotInput) { updateAdventurePlot(input: $input) { adventure { id thirdPerson memory authorsNote editedAt __typename } message success __typename } }",
+      "uiVariables": {
+        "input": {
+          "shortId": "4x41Zd-6ZXs0",
+          "thirdPerson": true,
+          "memory": "NAV_MUTATION_LAB_PLOT_PROBE_20260808",
+          "authorsNote": "NAV_MUTATION_LAB_AUTHOR_BASELINE_20260808"
+        }
+      },
+      "partialProbeVariables": {
+        "input": {
+          "shortId": "4x41Zd-6ZXs0",
+          "memory": "NAV_MUTATION_LAB_PLOT_PARTIAL_PROBE_20260808"
+        }
+      },
+      "clearProbeVariables": {
+        "input": {
+          "shortId": "4x41Zd-6ZXs0",
+          "memory": ""
+        }
+      },
+      "responseShape": {
+        "data": {
+          "updateAdventurePlot": {
+            "success": "boolean",
+            "message": "string",
+            "adventure": {
+              "id": "string",
+              "thirdPerson": "boolean",
+              "memory": "string",
+              "authorsNote": "string",
+              "editedAt": "string"
+            }
+          }
+        }
+      }
+    },
+    "upsertStoryCard": {
+      "operationNamesObserved": [
+        "UseAutoSaveStoryCard",
+        "SaveQueueStoryCard"
+      ],
+      "document": "mutation UseAutoSaveStoryCard($input: UpdateStoryCardInput!) { updateStoryCard(input: $input) { success message storyCard { id type title description keys value useForCharacterCreation updatedAt __typename } __typename } }",
+      "createVariables": {
+        "input": {
+          "id": "536603098",
+          "type": "location",
+          "title": "NAV_MUTATION_LAB_CARD_TEMP_DELETE",
+          "description": "NAV_MUTATION_LAB_CARD_TEMP_DELETE_NOTES",
+          "keys": "navlab-temp-delete",
+          "value": "NAV_MUTATION_LAB_CARD_TEMP_DELETE_VALUE",
+          "shortId": "4x41Zd-6ZXs0",
+          "contentType": "adventure",
+          "useForCharacterCreation": false
+        }
+      },
+      "updateVariables": {
+        "input": {
+          "id": "924501899",
+          "type": "character",
+          "title": "NAV_MUTATION_LAB_CARD_ALPHA_PROBE",
+          "description": "NAV_MUTATION_LAB_CARD_ALPHA_NOTES_PROBE",
+          "keys": "navlab-alpha-probe, sentinel-alpha-probe",
+          "value": "NAV_MUTATION_LAB_CARD_ALPHA_VALUE_PROBE",
+          "shortId": "4x41Zd-6ZXs0",
+          "contentType": "adventure",
+          "useForCharacterCreation": false
+        }
+      },
+      "responseShape": {
+        "data": {
+          "updateStoryCard": {
+            "success": "boolean",
+            "message": "string",
+            "storyCard": {
+              "id": "string",
+              "type": "string",
+              "title": "string",
+              "description": "string",
+              "keys": "string",
+              "value": "string",
+              "useForCharacterCreation": "boolean",
+              "updatedAt": "string"
+            }
+          }
+        }
+      }
+    },
+    "deleteStoryCard": {
+      "operationName": "UseDeleteStoryCard",
+      "document": "mutation UseDeleteStoryCard($input: DeleteStoryCardInput!) { deleteStoryCard(input: $input) { success message storyCard { id deletedAt __typename } __typename } }",
+      "variables": {
+        "input": {
+          "id": "536603098",
+          "shortId": "4x41Zd-6ZXs0",
+          "contentType": "adventure"
+        }
+      },
+      "responseShape": {
+        "data": {
+          "deleteStoryCard": {
+            "success": "boolean",
+            "message": "string",
+            "storyCard": {
+              "id": "string",
+              "deletedAt": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

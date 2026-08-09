@@ -3,9 +3,10 @@
 > V2.1 headline feature. This document locks the decisions needed to build
 > Navigator's shell and live chat, and records what is deliberately deferred.
 
-Implementation status: the first-party streaming chat surface and Phase 6
-grounded read-only Navigator are complete and live-tested. Read and mutation
-tools remain deferred to Phase 7.
+Implementation status: the first-party streaming chat surface, grounded
+Navigator, compact Story Card tools, and confirmed mutation proposals are
+complete and live-tested. Phase 7C's shipped contract is recorded in
+[`navigator-mutation-tools-plan.md`](./navigator-mutation-tools-plan.md).
 
 ## 1. Product Definition
 
@@ -40,8 +41,8 @@ Voyage Studio and Puppeteer) targets **scenario authors**. Navigator targets
 |---|---|
 | Surface | Right-pinned overlay drawer; full-screen sheet when narrow |
 | First build | Shell + live grounded chat, read-only, streaming |
-| Tool loop | **Deferred.** No tools in the first pass, read or write |
-| Mutations | Deferred to a later stage, behind an off-by-default permission |
+| Tool loop | Two bounded read tools plus five proposal-only mutation tools |
+| Mutations | Model proposes; an explicit user action applies; optional Read-only mode removes proposals |
 | Grounding | Hand-written paraphrase, ~1k tokens. No documentation injection |
 | Provider | Gemini, via an upgraded first-party chat surface |
 | OpenRouter | After the Navigator foundation lands |
@@ -118,7 +119,7 @@ Everything needed for reads is already in memory and requires no new transport:
 | Data | Source |
 |---|---|
 | Adventure identity, `shortId`, action count | `Ultrascripts.ws.getAdventureShortId()` / `getAdventureId()` |
-| Story cards (id, type, title, keys, value) | `Ultrascripts.ws.getCards()`, normalized by `storyCardCache` |
+| Story cards (id, type, title, keys, value) | Authoritative GraphQL read per Navigator turn; live cache fallback |
 | Recent actions with text | `Ultrascripts.ws.getActions()` |
 | GraphQL credentials for replay | `Ultrascripts.ws.getBaseCredentials()` |
 
@@ -148,16 +149,17 @@ value to text and prefers it over the flat `Adventure.instructions` fallback.
 | Primer + complete system snapshot | 46k chars maximum |
 | Adventure identity | 1.2k chars |
 | Plot components (verbatim) | 7k chars |
-| Story cards | 16k chars; 1.6k per card value |
-| Recent story actions | 8k chars; 1.8k per action |
-| Rolling conversation history | 12k chars, truncated oldest-first |
+| Recent story actions | 20k chars; 3k per action |
+| Story Card directory | Remaining snapshot space; `id \| type \| title` only |
+| Rolling conversation history | 16k chars, truncated oldest-first |
 
-**Implemented story card inclusion.** With no tool loop, cards are pre-selected
-within a character budget. Cards whose triggers appear in recent story text are
-ranked first, followed by recently updated cards. Values are truncated per card,
-and the snapshot reports included and omitted counts so Navigator can state its
-coverage honestly. This remains the primary limitation of the tool-free design
-and the strongest argument for Phase 7 read tools.
+**Implemented Story Card directory.** Every turn refreshes the complete current
+card collection through GraphQL and retains it in a non-persisted, content-side
+index. The baseline injects only stable IDs, types, and titles, sorted by type,
+title, and ID. Recent Story keeps its full allocation before the directory is
+filled. The snapshot reports directory coverage, and search can still inspect
+cards omitted from the injected directory because it uses the complete index.
+No raw card entry is carried into later turns.
 
 ## 5. Shell Architecture
 
@@ -168,7 +170,9 @@ and the strongest argument for Phase 7 read tools.
 | `features/navigator_feature.js` | Lifecycle, adventure detection, launcher, drawer mount |
 | `services/navigator/session.js` | Transcript, send/abort, per-adventure persistence |
 | `services/navigator/context.js` | Grounding assembly and budget accounting |
+| `services/navigator/tools.js` | Typed, bounded read-tool registry and execution |
 | `services/navigator/primer.js` | The versioned system primer |
+| `services/graphql-service.js` | Authenticated current Plot Component and Story Card reads |
 | `styles.css` | `.bd-navigator-*` rules, tokens only |
 
 Registered in `core/feature-manager.js` as `navigator`, **default off**, with a
@@ -199,8 +203,9 @@ property.
   code, rules, and tables. Streaming may re-render an incomplete construct, but
   raw HTML is always text and model output is never assigned via `innerHTML`.
   Scoped display rules isolate Markdown layout from AI Dungeon's global styles.
-- **Composer** — autosizing textarea, send, and stop-while-streaming. Mutation
-  mode remains deferred with the Phase 7 permission and preview design.
+- **Composer** — autosizing textarea, send, and stop-while-streaming. Confirmed
+  mutation proposals render beneath assistant responses without widening the
+  composer or holding a provider stream open.
 
 ### Launcher
 
@@ -212,17 +217,39 @@ inside Navigator.
 
 `NavigatorSession` owns `messages[]`, per-adventure persisted transcript,
 `send()`, and `abort()`. The drawer talks only to the session; the session talks
-only to the first-party chat surface. When tools arrive, they are added behind
-the session boundary without touching the drawer's message rendering except to
-introduce new card types.
+only to the first-party chat surface. Read tools stay behind that session
+boundary, so the drawer and persisted transcript do not carry provider
+continuation state or raw tool results.
+
+### Read tool loop
+
+Phase 7B exposes two typed, read-only Story Card functions:
+
+- `search_story_cards` searches title, type, triggers, description, and entry in
+  the per-turn card index. It returns at most ten bounded candidates with a
+  240-character entry preview and a 4k result cap.
+- `get_story_card` reads one card by stable ID with complete bounded metadata and
+  at most 6k entry characters, reporting source length and truncation.
+
+The internal chat task can carry provider-neutral function declarations, tool
+results, and opaque provider continuation state. Gemini Interactions and the
+OpenAI-compatible adapter translate that contract to their native function-call
+formats. The same provider selected for `consumer: 'navigator'` handles every
+round; no cross-provider failover is introduced. A turn may execute at most six
+tool rounds and 16k cumulative tool-result characters, and the same caller
+`AbortSignal` covers every model and tool step.
+Tool output is treated as untrusted adventure data. None of this is exposed in
+the Ultrascripts operations dispatcher: `ai.status` and `ai.query` remain the
+only script-facing AI operations.
 
 ## 6. Deferred Work
 
 Recorded so the shell does not foreclose it.
 
-**Read tools** — `list_story_cards`, `get_story_card`, `search_story_cards`,
-`get_plot_components`, `get_recent_story`. Removes the pre-selection problem in
-§4 and validates the tool loop on operations that cannot damage an adventure.
+**Read tools — implemented.** `search_story_cards` and `get_story_card` let the
+model discover and inspect exact cards without spending baseline context on card
+entries. Plot Components and the expanded Recent Story window are supplied
+directly, so they do not need redundant model-facing tools.
 
 **Mutation tools** — the write paths already exist and are confirmed:
 
@@ -230,16 +257,33 @@ Recorded so the shell does not foreclose it.
 |---|---|
 | Plot Essentials, Author's Note, third person | `updateAdventurePlot(input: AdventurePlotInput)` |
 | AI Instructions, Story Summary | `updateAdventureState(input: { shortId, state })` |
-| Story cards | `createStoryCard` / `updateStoryCard` / `deleteStoryCard` |
+| Story cards | `updateStoryCard` upsert / `deleteStoryCard` |
 
 `services/ai-dungeon-service.js` already performs authenticated
 `updateStoryCard` via credential replay, so the pattern is established.
 Mutations must never go through DOM automation the way Plot Presets currently
 does; that path is too fragile for agent-driven edits.
 
-Requires before enabling: structured change-set preview, stable-ID plus
-read-version preconditions against stale overwrites, an audit log with
-before/after data, and undo.
+The verified payloads, merge behavior, concurrency evidence, and restoration recipes
+are frozen in
+[`navigator-mutation-contract.md`](./navigator-mutation-contract.md).
+`updateAdventureState` merges a partial state object; AI Instructions write as
+`{ type: "custom", custom: <string> }`. Plot fields are optional and omitted
+fields remain unchanged. Story Card updates are full-record writes because all
+`UpdateStoryCardInput` fields are non-null. The current UI creates cards by
+upserting a client-generated ID rather than calling a separate create mutation.
+
+Phase 7C implements safe-DOM previews, stable-ID and current-value
+preconditions, serialized writes, and mandatory server read-back. The model
+receives proposal tools only; Apply, Reject, and Delete are direct player
+actions that are never registered as model-callable functions. The synchronized
+Read-only mode removes proposal definitions and blocks pending Apply controls.
+
+The deliberately basic V2.1 contract does not include Undo or a durable audit
+log. Story Card deletion therefore carries explicit irreversible wording. Card
+creation uses a cryptographically generated nine-digit numeric ID, fresh-list
+collision checks, and a bounded retry loop; the format round-tripped through a
+live create, update, and delete probe.
 
 **OpenRouter** — Gemini is documented as unreliable for explicit content, and a
 large share of AI Dungeon adventures will trip provider filters on the *input*
@@ -257,14 +301,25 @@ just been established. Still the intended direction later.
 **Mobile** — separate repository. Navigator ships PC-first; the mobile port is
 its own later pass and is not a V2.1 gate.
 
-## 7. Verification Unknowns
+## 7. Verified Mutation Contract
 
-To resolve by live capture before the mutation stage:
+Phase 7A live capture resolved the write-path unknowns:
 
-- Whether `updateAdventureState` merges a partial `state` object or replaces it.
-- The exact mutation payload shape required to preserve and update the
-  UI-backed `AdventureState.instructions` value. Its read mapping is resolved;
-  the state value is authoritative and the flat string is a legacy fallback.
+- `updateAdventureState` merges partial state, and `changedFields` is not
+  required by the resolver.
+- `Adventure.state.instructions` is authoritative and round-trips as
+  `{ type: "custom", custom: <string> }`.
+- `updateAdventurePlot` preserves omitted fields; empty strings clear its string
+  fields.
+- `updateStoryCard` requires a complete card record and acts as both create and
+  update when given a client-generated ID.
+- `Adventure.editedAt` is adventure-wide and can change for unrelated card
+  writes. Preconditions therefore combine timestamps with normalized
+  target-slice hashes; cards also use `updatedAt`.
+
+Deleted-ID restoration remains unsupported. Story Card creation is enabled with
+the live-verified secure nine-digit strategy described above. See the mutation
+contract for the underlying resolver evidence and restoration recipes.
 
 ## 8. Build Order
 
@@ -274,7 +329,13 @@ To resolve by live capture before the mutation stage:
    composer.
 3. **Complete:** grounding primer, context assembly, budget accounting, and Plot
    Component reads.
-4. **Next:** read tools and the tool loop.
-5. Mutation tools with preview, preconditions, audit, and undo.
+4. **Complete:** mutation contract research with disposable-adventure read-back
+   and restoration probes.
+5. **Complete:** a compact Story Card directory, two typed card tools, and a
+   bounded provider-native tool loop, including live sequential, parallel,
+   abort, recovery, and formatting checks.
+6. **Complete:** five mutation proposal tools with inline player confirmation,
+   Read-only mode, preconditions, serialized GraphQL writes, and read-back
+   verification across Plot Components and Story Cards.
 
-Steps 1–5 are V2.1. OpenRouter and Automations are beyond it.
+Steps 1–6 are V2.1. OpenRouter and Automations are beyond it.

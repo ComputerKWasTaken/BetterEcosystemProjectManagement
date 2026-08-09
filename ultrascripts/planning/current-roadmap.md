@@ -10,8 +10,10 @@ Navigator's architecture and product contract are locked in the
 three phases: the first-party AI chat surface it depends on, the shell with
 grounded read-only chat, then tools and mutations.
 
-The first-party chat surface and grounded Navigator shell are complete and
-live-tested. Phase 7 tools and mutations are the next development stage.
+The first-party chat surface, grounded Navigator shell, typed Story Card tools,
+and Phase 7C's confirmed mutation proposals are complete and live-tested. The
+remaining V2.1 work is release documentation and the cross-browser regression
+pass.
 
 Navigator Automations are **removed from V2.1**. They are deferred, not
 cancelled.
@@ -251,8 +253,8 @@ Implemented foundation:
   fallback, launcher, transcript, composer, stop control, and per-adventure
   persisted sessions.
 - Versioned platform primer plus an explicitly budgeted snapshot covering
-  identity, all Plot Components, relevance-ranked Story Cards, recent actions,
-  omission counts, and truncation metadata.
+  identity, all Plot Components, a high-priority Recent Story window, a compact
+  Story Card ID/type/title directory, omission counts, and truncation metadata.
 - Plot reads prefer the UI-backed `Adventure.state.instructions` value and fall
   back to legacy flat `Adventure.instructions`, normalizing the returned JSON or
   string shape into text.
@@ -265,31 +267,51 @@ opening or closing it never disturbs play.
 
 ## Phase 7 — Navigator Tools and Mutations
 
-Status: **Next — design and implementation not started**
+Status: **Complete — read tools and confirmed mutations live-tested**
 
 Goal: let Navigator act, without ever being able to quietly damage an adventure.
 
-- Add typed read tools first — list, inspect, and search Story Cards, read Plot
-  Components, read recent story. These remove the context pre-selection problem
-  from Phase 6 and validate the tool loop on operations that cannot cause harm.
+- Add typed read tools first. The final surface is deliberately narrow:
+  `search_story_cards` discovers candidates in the complete per-turn card index,
+  and `get_story_card` reads one selected card by stable ID. Plot Components and
+  the expanded Recent Story window are supplied directly in every snapshot.
+- Implemented: provider-native function calls on the internal first-party chat
+  surface, with a six-round cap and one abort signal across model and tool work.
+  Plot and Story Card context refreshes use authenticated GraphQL; Recent Story
+  remains explicitly bounded to the live action cache. Card tool results are
+  capped at 16k cumulatively per turn. Tool definitions and results are not
+  exposed through the Ultrascripts operations dispatcher.
+- Phase 7A research is complete. The verified payloads, merge behavior,
+  concurrency rules, and restoration recipes are recorded in
+  [`navigator-mutation-contract.md`](../../navigator/navigator-mutation-contract.md).
 - Add mutation tools over the confirmed GraphQL write paths:
   `updateAdventurePlot` for Plot Essentials, Author's Note, and third person;
   `updateAdventureState` for AI Instructions and Story Summary; and
-  `createStoryCard`/`updateStoryCard`/`deleteStoryCard` for cards. Never DOM
+  `updateStoryCard` upsert/`deleteStoryCard` for cards. Never DOM
   automation — the current Plot Presets DOM path is too fragile for agent edits.
-- Resolve before writing: whether `updateAdventureState` merges or replaces a
-  partial `state`, and the exact write payload required for the UI-backed
-  `AdventureState.instructions` value. The read path is resolved: state wins,
-  with the flat `Adventure.instructions` string retained only as fallback.
+- Resolved: `updateAdventureState` merges partial state and AI Instructions
+  round-trip as `{ type: "custom", custom: <string> }`. Plot fields preserve
+  omitted values and accept empty strings as clears. Story Card updates require
+  a complete record. Card creation now uses a live-verified secure nine-digit ID
+  with a fresh-list collision check and bounded retries.
 - Preview a structured change set before application by default.
 - Use stable IDs plus read-version preconditions to prevent stale overwrites.
-- Store an audit log and reversible before/after data for every applied change.
-- Keep mutation access behind an off-by-default permission, and keep read-only
-  chat fully useful when it is off.
+- Implemented: mutation proposals are available by default, while synchronized
+  Read-only mode removes proposal definitions and blocks pending writes. Chat
+  and both Story Card read tools remain useful in that mode.
+- Phase 7C is recorded in
+  [`navigator-mutation-tools-plan.md`](../../navigator/navigator-mutation-tools-plan.md):
+  the model may create a structured proposal, but Apply, Reject, and Delete are
+  user-only actions that are never exposed as model-callable tools. Plot/state
+  changes and complete Story Card create/update/delete are implemented with
+  conflict checks and server read-back. Secure nine-digit card creation was
+  verified against the disposable mutation adventure.
+- V2.1 intentionally omits Navigator Undo and a durable mutation audit log.
+  Deletion is explicitly labeled irreversible before acceptance.
 
 Exit gate: Navigator performs representative maintenance tasks, explains its
-intended changes before applying them, detects conflicts, and reverses its own
-mutations.
+intended changes before applying them, never writes without a direct player
+click, detects stale conflicts, and verifies accepted writes from the server.
 
 ## Phase 8 — Documentation and V2.1 Release
 
@@ -299,7 +321,8 @@ Status: **Planned**
 - Update Enhanced/Required helpers for liveness semantics.
 - Document WebFetch migration and AI provider/safety behavior.
 - Document that `ai.query` is unchanged and that first-party chat is internal.
-- Add Navigator onboarding, permission, privacy, audit, and recovery docs.
+- Add Navigator onboarding, Read-only mode, confirmation, privacy, and deletion
+  recovery-limit documentation.
 - Verify Chromium and Firefox/Gecko parity for Navigator; Ultrascripts parity
   still includes Android WebView.
 - Publish V2.1 independently of Stateboy, Brainiac, and Chronos V2.
@@ -310,8 +333,8 @@ Status: **Planned**
 - The first-party chat surface precedes any Navigator UI, because multi-turn and
   streaming are not expressible through `ai.query`.
 - Read-only grounded chat precedes tools; read tools precede mutation tools.
-- Mutation safety — preview, preconditions, audit, undo — precedes any future
-  unattended execution.
+- Mutation safety — preview, player confirmation, preconditions, and read-back —
+  precedes any future unattended execution. Such execution remains out of V2.1.
 - Gemini is the sole V2.1 provider. Multi-provider support requires a future
   product decision and must never introduce silent cross-provider fallback.
 - Showcase scripts may inform tests, but cannot block phase progression.
@@ -330,7 +353,7 @@ Status: **Planned**
 
 ## Practical Next Action
 
-Begin Phase 7 with read tools and the tool loop. Define typed list, inspect, and
-search operations behind `NavigatorSession`, validate multi-step streaming tool
-turns without mutations, and preserve the completed read-only chat path as the
-safe fallback.
+Proceed to Phase 8 documentation and release verification. Run the complete
+Chromium and Firefox/Gecko Navigator regression matrix, then update user-facing
+guidance for proposals, Read-only mode, confirmation, and irreversible card
+deletion.
