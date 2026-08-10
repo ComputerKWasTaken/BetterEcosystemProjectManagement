@@ -68,8 +68,8 @@ Every changed or new module must answer:
 - The public Ultrascripts module contract stays provider-neutral.
 - Gemini satisfies the shared text/JSON contract through stateless Interactions
   requests, with model-family-specific capabilities represented honestly.
-- Gemini remains the only configured V2.1 provider; future providers must keep
-  separate credentials and explicit routing if they are introduced.
+- Gemini and the OpenAI-compatible adapter keep separate credentials and
+  explicit routing behind the shared provider-neutral executor.
 - Character Presets and every first-party AI consumer work through the shared
   executor and contain no Gemini-only setup or transport assumptions.
 - No automatic cross-provider failover sends scenario content to a service the

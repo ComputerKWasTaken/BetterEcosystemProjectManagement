@@ -44,11 +44,11 @@ Voyage Studio and Puppeteer) targets **scenario authors**. Navigator targets
 | Tool loop | Two bounded read tools plus five proposal-only mutation tools |
 | Mutations | Model proposes; an explicit user action applies; optional Read-only mode removes proposals |
 | Grounding | Hand-written paraphrase, ~1k tokens. No documentation injection |
-| Provider | Gemini, via an upgraded first-party chat surface |
-| OpenRouter | After the Navigator foundation lands |
+| Provider | Gemini plus a configurable OpenAI-compatible endpoint through the shared first-party chat surface |
+| Provider UX | OpenAI-compatible transport is implemented; popup setup and selection need polish |
 | Streaming | In scope for the first pass |
-| Mobile | PC extension first; mobile port is a separate later pass |
-| Automations | **Out of V2.1.** Deferred, not cancelled |
+| Mobile | Final major V2.1 addition; touch-first port in the separate mobile repository |
+| Automations | Cancelled; Navigator remains player-initiated |
 
 ## 3. Why the AI Layer Must Change First
 
@@ -70,10 +70,11 @@ Navigator is first-party and does not need to go through `ai.query` at all.
   instruction, streaming, and its own larger budget. Consumed only by
   BetterDungeon features.
 
-Both route through the **same provider registry and the same Gemini adapter**.
+Both route through the **same provider registry**. Gemini and the implemented
+OpenAI-compatible adapter translate the shared provider-neutral contract.
 `registerProvider` / `resolveProvider` / `setProviderForConsumer` already exist
 in `modules/ai/executor.js`, so Navigator registers as `consumer: 'navigator'`
-and OpenRouter later drops in with zero Navigator changes.
+and provider selection requires zero Navigator caller changes.
 
 This is why the backend upgrade is a prerequisite rather than a follow-up:
 multi-turn conversation and streaming are both required by the first pass, and
@@ -242,7 +243,7 @@ Tool output is treated as untrusted adventure data. None of this is exposed in
 the Ultrascripts operations dispatcher: `ai.status` and `ai.query` remain the
 only script-facing AI operations.
 
-## 6. Deferred Work
+## 6. Remaining Platform Work and Non-Goals
 
 Recorded so the shell does not foreclose it.
 
@@ -285,21 +286,21 @@ creation uses a cryptographically generated nine-digit numeric ID, fresh-list
 collision checks, and a bounded retry loop; the format round-tripped through a
 live create, update, and delete probe.
 
-**OpenRouter** — Gemini is documented as unreliable for explicit content, and a
-large share of AI Dungeon adventures will trip provider filters on the *input*
-context alone. Navigator will surface those blocks clearly rather than failing
-silently, and an alternative provider is the real fix. The provider registry
-makes this additive.
+**OpenAI-compatible provider UX — remaining V2.1 work.** The transport and
+provider adapter are implemented, giving Navigator an explicit alternative when
+Gemini cannot process an adventure. Popup setup, validation, status, and routing
+controls still need refinement. Provider changes must remain explicit; content
+must never silently fail over between providers.
 
-**Automations — out of V2.1.** Deterministic triggers (every N turns, action
-types) running the same validated tools, with dry-run, approval, cooldowns,
-request budgets, monotonic last-run markers, run history, and a global kill
-switch. Removed from the release: it is a substantial subsystem in its own
-right, and it would be built directly on top of mutation safety that has only
-just been established. Still the intended direction later.
+**Automations — cancelled.** Navigator will not gain scheduled, event-triggered,
+or unattended execution. It remains player-initiated, and every mutation
+requires a direct approval action.
 
-**Mobile** — separate repository. Navigator ships PC-first; the mobile port is
-its own later pass and is not a V2.1 gate.
+**Mobile — final major V2.1 addition.** Port Navigator to the separate mobile
+repository with a touch-first full-screen or sheet experience. Preserve the
+grounding, read-tool budgets, proposal-only mutations, confirmation,
+preconditions, verification, lifecycle cleanup, and Read-only contract rather
+than mechanically copying the desktop drawer.
 
 ## 7. Verified Mutation Contract
 
@@ -338,4 +339,5 @@ contract for the underlying resolver evidence and restoration recipes.
    Read-only mode, preconditions, serialized GraphQL writes, and read-back
    verification across Plot Components and Story Cards.
 
-Steps 1–6 are V2.1. OpenRouter and Automations are beyond it.
+Steps 1–6 are complete. OpenAI-compatible popup polish and the Navigator mobile
+port follow before final V2.1 documentation, regression, and release.

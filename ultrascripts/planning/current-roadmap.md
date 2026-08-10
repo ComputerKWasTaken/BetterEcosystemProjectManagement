@@ -11,12 +11,13 @@ three phases: the first-party AI chat surface it depends on, the shell with
 grounded read-only chat, then tools and mutations.
 
 The first-party chat surface, grounded Navigator shell, typed Story Card tools,
-and Phase 7C's confirmed mutation proposals are complete and live-tested. The
-remaining V2.1 work is release documentation and the cross-browser regression
-pass.
+and Phase 7C's confirmed mutation proposals are complete and live-tested. An
+OpenAI-compatible provider is also implemented; its popup setup and routing UX
+still need a polish pass. The final major V2.1 addition is the Navigator mobile
+port, followed by release documentation and the full regression pass.
 
-Navigator Automations are **removed from V2.1**. They are deferred, not
-cancelled.
+Navigator Automations are **cancelled**. They are no longer part of the planned
+Navigator product or a deferred release backlog.
 
 The old Stateboy → Brainiac → Chronos V2 release sequence is retired. Those
 scripts are independent consumers, not gates for BetterDungeon work.
@@ -133,9 +134,9 @@ behavior current, visible, and replaceable.
   providers, resolve a provider per consumer, snapshot routing for each request,
   and expose provider-neutral status/results. Ultrascripts and Character Presets
   use the shared executor without registering or refreshing Gemini directly.
-- Keep Gemini as the only configured V2.1 provider. Preserve the internal
-  provider registry and per-consumer routing boundary so another backend can be
-  added later without changing first-party features or the script contract.
+- Gemini and an OpenAI-compatible endpoint are configured through the shared
+  provider registry and per-consumer routing boundary. Callers remain
+  provider-neutral and the script contract does not change.
 - Keep provider and model selection out of the script-facing request contract.
   Scripts ask for supported capabilities such as text, structured JSON, and
   thinking; the selected provider adapter performs the translation.
@@ -159,8 +160,10 @@ behavior current, visible, and replaceable.
   contract. The local suite covers payloads, parsing, metadata, blocks, and
   rate-limit stepdown, and the live contract suite has passed on the completed
   PC and Mobile implementation.
-- Defer OpenRouter, local models, multi-provider credential UX, and provider
-  switching to a future release. Never add silent cross-provider failover.
+- **Implemented:** an OpenAI-compatible adapter supports configurable base URL,
+  API key, and model settings. Its remaining V2.1 work is clearer popup setup,
+  validation, status, and provider-selection UX. Local models remain outside
+  the release. Never add silent cross-provider failover.
 
 Exit gate: blocks are never silent, model fallback is observable, contracts stay
 stable, the Gemini Interactions path passes a live smoke test, and all first-party
@@ -313,7 +316,52 @@ Exit gate: Navigator performs representative maintenance tasks, explains its
 intended changes before applying them, never writes without a direct player
 click, detects stale conflicts, and verifies accepted writes from the server.
 
-## Phase 8 — Documentation and V2.1 Release
+## Phase 8 — OpenAI-Compatible Provider UX
+
+Status: **In progress — transport implemented; popup UX remains**
+
+- Preserve the implemented OpenAI-compatible transport, streaming, tool calls,
+  normalized errors, and provider-neutral Navigator integration.
+- Rework popup settings so endpoint URL, API key, and model setup are easy to
+  understand and validate.
+- Make the selected provider and per-consumer routing state visible without
+  exposing provider details to Ultrascripts callers.
+- Clearly distinguish missing configuration, authentication failure, endpoint
+  incompatibility, model failure, rate limiting, and content filtering.
+- Keep provider switching explicit. Never silently fail over between Gemini and
+  the OpenAI-compatible endpoint.
+- Regression-test Gemini and OpenAI-compatible paths for `ai.query`, Character
+  Presets, Navigator streaming, tool calls, abort, and structured failures.
+
+Exit gate: a player can configure, understand, select, and troubleshoot either
+provider from the popup without changing any first-party caller or script-facing
+AI contract.
+
+## Phase 9 — Navigator Mobile
+
+Status: **Planned — final major V2.1 addition**
+
+- Port Navigator to the separate BetterDungeon Mobile repository rather than
+  sharing browser-extension UI assumptions.
+- Preserve the same product contract: grounded multi-turn chat, bounded Story
+  Card reads, proposal-only mutation tools, explicit confirmation, conflict
+  checks, server read-back, and synchronized Read-only mode.
+- Design a touch-first full-screen or sheet surface suitable for the AI Dungeon
+  mobile layout; do not mechanically copy the desktop gutter drawer.
+- Adapt streaming cancellation, adventure navigation, lifecycle cleanup,
+  transcript persistence, context refresh, and extension/app invalidation to the
+  mobile runtime.
+- Keep credentials in the native/background boundary and preserve explicit
+  provider selection with no silent cross-provider failover.
+- Verify proposal controls, destructive-card warnings, keyboard behavior,
+  scrolling, safe-area insets, background/resume behavior, and interrupted
+  network requests on representative mobile devices.
+
+Exit gate: Navigator's grounded chat, read tools, and confirmed mutations work
+reliably in the mobile client with touch-appropriate UX and no writes occurring
+without an explicit player action.
+
+## Phase 10 — Documentation and V2.1 Release
 
 Status: **Planned**
 
@@ -323,8 +371,11 @@ Status: **Planned**
 - Document that `ai.query` is unchanged and that first-party chat is internal.
 - Add Navigator onboarding, Read-only mode, confirmation, privacy, and deletion
   recovery-limit documentation.
-- Verify Chromium and Firefox/Gecko parity for Navigator; Ultrascripts parity
-  still includes Android WebView.
+- Document OpenAI-compatible setup, explicit provider routing, and failure
+  behavior.
+- Verify Chromium, Firefox/Gecko, and Navigator Mobile parity at their respective
+  packaging and UI boundaries; Ultrascripts parity still includes Android
+  WebView.
 - Publish V2.1 independently of Stateboy, Brainiac, and Chronos V2.
 
 ## Sequencing Rules
@@ -335,25 +386,22 @@ Status: **Planned**
 - Read-only grounded chat precedes tools; read tools precede mutation tools.
 - Mutation safety — preview, player confirmation, preconditions, and read-back —
   precedes any future unattended execution. Such execution remains out of V2.1.
-- Gemini is the sole V2.1 provider. Multi-provider support requires a future
-  product decision and must never introduce silent cross-provider fallback.
+- Gemini and the OpenAI-compatible adapter share the provider-neutral boundary.
+  Provider selection is explicit and must never introduce silent cross-provider
+  fallback.
 - Showcase scripts may inform tests, but cannot block phase progression.
 
-## Deferred Beyond V2.1
+## Cancelled / Non-Goals
 
-- **Navigator Automations.** Deterministic triggers, monotonic last-run markers,
-  dry-run and approval modes, cooldowns, request budgets, failure backoff, run
-  history, and a global kill switch. Removed from V2.1 as too large to absorb on
-  top of newly established mutation safety.
-- **Navigator on mobile.** Separate repository; PC-first, ported later.
-- **OpenRouter and multi-provider UX.** The intended next provider step after
-  the Navigator foundation. Relevant because Gemini is documented as unreliable
-  for explicit content, which affects Navigator more than any other feature
-  since Navigator reads live adventure text as input.
+- **Navigator Automations.** Unattended, scheduled, and event-triggered agent
+  execution is intentionally scrapped. Navigator remains player-initiated, and
+  every mutation continues to require explicit confirmation.
+- **Silent provider failover.** Provider changes remain an explicit player
+  choice regardless of how many compatible endpoints are supported.
 
 ## Practical Next Action
 
-Proceed to Phase 8 documentation and release verification. Run the complete
-Chromium and Firefox/Gecko Navigator regression matrix, then update user-facing
-guidance for proposals, Read-only mode, confirmation, and irreversible card
-deletion.
+Proceed to Phase 8 and polish the OpenAI-compatible popup configuration and
+provider-selection experience. Then complete the Phase 9 mobile port as the
+last major feature before Phase 10 documentation, cross-platform regression,
+and release.
