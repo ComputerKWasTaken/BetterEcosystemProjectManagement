@@ -4,9 +4,11 @@
 > Navigator's shell and live chat, and records what is deliberately deferred.
 
 Implementation status: the first-party streaming chat surface, grounded
-Navigator, compact Story Card tools, and confirmed mutation proposals are
-complete and live-tested. Phase 7C's shipped contract is recorded in
-[`navigator-mutation-tools-plan.md`](./navigator-mutation-tools-plan.md).
+Navigator, compact Story Card tools, confirmed mutation proposals, and provider
+popup polish are complete and live-tested on PC. The Android port is implemented
+with a native transport and touch-first full-screen overlay; Phase 9 remains open
+until live-device acceptance is complete. Phase 7C's shipped contract is recorded
+in [`navigator-mutation-tools-plan.md`](./navigator-mutation-tools-plan.md).
 
 ## 1. Product Definition
 
@@ -39,15 +41,16 @@ Voyage Studio and Puppeteer) targets **scenario authors**. Navigator targets
 
 | Decision | Choice |
 |---|---|
-| Surface | Right-pinned overlay drawer; full-screen sheet when narrow |
+| PC surface | Right-pinned overlay drawer; full-screen sheet when narrow |
+| Mobile surface | Full-screen touch overlay using the visual viewport and Android lifecycle coordination |
 | First build | Shell + live grounded chat, read-only, streaming |
 | Tool loop | Two bounded read tools plus five proposal-only mutation tools |
 | Mutations | Model proposes; an explicit user action applies; optional Read-only mode removes proposals |
 | Grounding | Hand-written paraphrase, ~1k tokens. No documentation injection |
 | Provider | Gemini plus a configurable OpenAI-compatible endpoint through the shared first-party chat surface |
-| Provider UX | OpenAI-compatible transport is implemented; popup setup and selection need polish |
+| Provider UX | Complete: explicit Gemini or OpenAI-compatible selection; OpenRouter and Custom are the compatible service choices |
 | Streaming | In scope for the first pass |
-| Mobile | Final major V2.1 addition; touch-first port in the separate mobile repository |
+| Mobile | Implemented in the separate Android repository; live-device acceptance remains |
 | Automations | Cancelled; Navigator remains player-initiated |
 
 ## 3. Why the AI Layer Must Change First
@@ -82,12 +85,14 @@ neither is expressible through `ai.query`.
 
 ### Streaming transport
 
-The implemented chat path uses a versioned long-lived runtime port. The
-background worker reads the Gemini Interactions stream and forwards deltas to
-the content script, which appends them to the in-flight assistant message.
-Abort propagates from the drawer's stop button through the port to an
-`AbortController`. Completion, error, abort, disconnect, page exit, startup
-timeout, and extension-context invalidation all terminate the port.
+The implemented chat path uses a versioned long-lived runtime port. On PC, the
+background worker reads provider streams and forwards deltas to the content
+script. On Mobile, `chrome.runtime.connect()` is a compatible virtual port backed
+by a private Kotlin `HttpsURLConnection` session. Abort propagates from the UI
+through the port to the active provider request. Completion, error, abort,
+disconnect, navigation, page exit, startup timeout, extension-context
+invalidation, Android backgrounding, and activity destruction terminate the
+corresponding transport.
 
 ## 4. Grounding
 
@@ -176,7 +181,7 @@ No raw card entry is carried into later turns.
 | `services/graphql-service.js` | Authenticated current Plot Component and Story Card reads |
 | `styles.css` | `.bd-navigator-*` rules, tokens only |
 
-Registered in `core/feature-manager.js` as `navigator`, **default off**, with a
+Registered in `core/feature-manager.js` as `navigator`, **default on**, with a
 popup toggle. Follows the `NotesFeature` lifecycle pattern: URL plus
 `MutationObserver` adventure detection, `createUI` / `removeUI`, and per-adventure
 state reset.
@@ -286,21 +291,24 @@ creation uses a cryptographically generated nine-digit numeric ID, fresh-list
 collision checks, and a bounded retry loop; the format round-tripped through a
 live create, update, and delete probe.
 
-**OpenAI-compatible provider UX — remaining V2.1 work.** The transport and
-provider adapter are implemented, giving Navigator an explicit alternative when
-Gemini cannot process an adventure. Popup setup, validation, status, and routing
-controls still need refinement. Provider changes must remain explicit; content
-must never silently fail over between providers.
+**OpenAI-compatible provider UX — complete.** The popup exposes an explicit
+active-provider selector, inline validation, save/test/clear controls, detailed
+status, OpenRouter as the default compatible service, and Custom as the only
+other service choice. Provider changes remain explicit; content never silently
+fails over between providers.
 
 **Automations — cancelled.** Navigator will not gain scheduled, event-triggered,
 or unattended execution. It remains player-initiated, and every mutation
 requires a direct approval action.
 
-**Mobile — final major V2.1 addition.** Port Navigator to the separate mobile
-repository with a touch-first full-screen or sheet experience. Preserve the
-grounding, read-tool budgets, proposal-only mutations, confirmation,
-preconditions, verification, lifecycle cleanup, and Read-only contract rather
-than mechanically copying the desktop drawer.
+**Mobile — implemented, acceptance pending.** The separate Android repository
+now uses a touch-first full-screen overlay, native Gemini/OpenAI-compatible
+transport, virtual streaming ports, private provider settings, cross-WebView
+storage notifications, and Android Back/navigation/background/destruction
+cleanup. It preserves the PC grounding, read-tool budgets, proposal-only
+mutations, confirmation, preconditions, verification, transcript, and Read-only
+contracts. It intentionally excludes desktop dragging, drawer resizing, and
+hotkeys. Phase 9 closes only after emulator/device and live-adventure acceptance.
 
 ## 7. Verified Mutation Contract
 
@@ -338,6 +346,11 @@ contract for the underlying resolver evidence and restoration recipes.
 6. **Complete:** five mutation proposal tools with inline player confirmation,
    Read-only mode, preconditions, serialized GraphQL writes, and read-back
    verification across Plot Components and Story Cards.
+7. **Complete:** PC provider setup and selection polish for Gemini, OpenRouter,
+   and custom OpenAI-compatible endpoints.
+8. **Implemented; acceptance pending:** Android full-screen Navigator, native
+   provider transport, virtual streaming ports, settings migration, and lifecycle
+   integration.
 
-Steps 1–6 are complete. OpenAI-compatible popup polish and the Navigator mobile
-port follow before final V2.1 documentation, regression, and release.
+Steps 1–7 are complete. Step 8 awaits live-device acceptance before final V2.1
+documentation, cross-platform regression, and release.

@@ -11,10 +11,11 @@ three phases: the first-party AI chat surface it depends on, the shell with
 grounded read-only chat, then tools and mutations.
 
 The first-party chat surface, grounded Navigator shell, typed Story Card tools,
-and Phase 7C's confirmed mutation proposals are complete and live-tested. An
-OpenAI-compatible provider is also implemented; its popup setup and routing UX
-still need a polish pass. The final major V2.1 addition is the Navigator mobile
-port, followed by release documentation and the full regression pass.
+Phase 7C's confirmed mutation proposals, and provider popup polish are complete
+and live-tested on PC. The Android port is implemented with a native transport,
+virtual streaming ports, private provider settings, and a full-screen touch UI.
+Phase 9 remains open until live-device acceptance, followed by final release
+documentation and the full regression pass.
 
 Navigator Automations are **cancelled**. They are no longer part of the planned
 Navigator product or a deferred release backlog.
@@ -125,7 +126,7 @@ credential forwarding, redirect bypass, data leakage, and abuse limits remain te
 
 ## Phase 4 — AI Backend Modernization
 
-Status: **Complete — implemented and live-verified on PC and Mobile**
+Status: **Complete on PC; Mobile native V2.1 transport implemented, acceptance pending**
 
 Goal: keep the public `ai.status`/`ai.query` contract stable while making provider
 behavior current, visible, and replaceable.
@@ -160,10 +161,11 @@ behavior current, visible, and replaceable.
   contract. The local suite covers payloads, parsing, metadata, blocks, and
   rate-limit stepdown, and the live contract suite has passed on the completed
   PC and Mobile implementation.
-- **Implemented:** an OpenAI-compatible adapter supports configurable base URL,
-  API key, and model settings. Its remaining V2.1 work is clearer popup setup,
-  validation, status, and provider-selection UX. Local models remain outside
-  the release. Never add silent cross-provider failover.
+- **Implemented:** an OpenAI-compatible adapter supports configurable HTTPS base
+  URL, API key, and model settings. Popup setup, validation, status, explicit
+  provider selection, OpenRouter-first defaults, and the Custom endpoint path
+  are complete. Local HTTP models remain outside the release. Never add silent
+  cross-provider failover.
 
 Exit gate: blocks are never silent, model fallback is observable, contracts stay
 stable, the Gemini Interactions path passes a live smoke test, and all first-party
@@ -318,7 +320,7 @@ click, detects stale conflicts, and verifies accepted writes from the server.
 
 ## Phase 8 — OpenAI-Compatible Provider UX
 
-Status: **In progress — transport implemented; popup UX remains**
+Status: **Complete — provider setup and routing UX implemented on PC and ported to Mobile**
 
 - Preserve the implemented OpenAI-compatible transport, streaming, tool calls,
   normalized errors, and provider-neutral Navigator integration.
@@ -339,20 +341,23 @@ AI contract.
 
 ## Phase 9 — Navigator Mobile
 
-Status: **Planned — final major V2.1 addition**
+Status: **Implementation complete — live-device acceptance pending**
 
-- Port Navigator to the separate BetterDungeon Mobile repository rather than
+- Implemented in the separate BetterDungeon Mobile repository rather than
   sharing browser-extension UI assumptions.
 - Preserve the same product contract: grounded multi-turn chat, bounded Story
   Card reads, proposal-only mutation tools, explicit confirmation, conflict
   checks, server read-back, and synchronized Read-only mode.
-- Design a touch-first full-screen or sheet surface suitable for the AI Dungeon
-  mobile layout; do not mechanically copy the desktop gutter drawer.
-- Adapt streaming cancellation, adventure navigation, lifecycle cleanup,
-  transcript persistence, context refresh, and extension/app invalidation to the
-  mobile runtime.
-- Keep credentials in the native/background boundary and preserve explicit
-  provider selection with no silent cross-provider failover.
+- Implemented a touch-first full-screen overlay using `100dvh`,
+  `visualViewport`, Android safe areas, a compact composer, and touch-sized
+  proposal controls; desktop gutter, resize, dragging, and hotkey behavior are
+  excluded.
+- Implemented virtual V1 runtime ports backed by native Kotlin Gemini and
+  OpenAI-compatible streaming, with cancellation and teardown on stop, close,
+  adventure navigation, reload, backgrounding, and destruction.
+- Provider keys migrate into private native storage. The popup alone receives a
+  settings-write bridge; neither WebView can read keys back. Active provider and
+  Read-only changes propagate across WebViews through area-aware storage events.
 - Verify proposal controls, destructive-card warnings, keyboard behavior,
   scrolling, safe-area insets, background/resume behavior, and interrupted
   network requests on representative mobile devices.
@@ -401,7 +406,7 @@ Status: **Planned**
 
 ## Practical Next Action
 
-Proceed to Phase 8 and polish the OpenAI-compatible popup configuration and
-provider-selection experience. Then complete the Phase 9 mobile port as the
-last major feature before Phase 10 documentation, cross-platform regression,
-and release.
+Run Phase 9 live-device acceptance on API 27 and API 36, including real Gemini
+and OpenRouter streams, cancellation/lifecycle paths, confirmed mutations, and
+upgrade migration. Once accepted, mark Phase 9 complete and proceed to Phase 10
+documentation, cross-platform regression, packaging, and release.
