@@ -57,6 +57,7 @@ Ultrascripts consumers. They do not gate BetterDungeon releases.
 
 - [V2.1 implementation roadmap](./ultrascripts/planning/current-roadmap.md)
 - [Navigator architecture and product contract](./navigator/navigator-design.md)
+- [Navigator enhancement plan](./navigator/navigator-enhancement-plan.md)
 - [Ultrascripts internal docs](./ultrascripts/README.md)
 - [Ultrascripts verification reference](./ultrascripts/reference/verification.md)
 - [Documentation sync rules](./ultrascripts/planning/docs-sync.md)
