@@ -354,9 +354,9 @@ contract for the underlying resolver evidence and restoration recipes.
 All V2.1 delivery steps are complete. Future work should preserve the explicit
 provider-selection and player-confirmation boundaries.
 
-Proposed additive work — configurable thinking with a traced reasoning stream,
-a configurable context aggregation budget with full Story Card injection, a
-Navigator settings surface, and Auto/YOLO approval modes — is planned in
-[`navigator-enhancement-plan.md`](./navigator-enhancement-plan.md). Auto and
-YOLO modes would deliberately revise the per-change confirmation boundary
-recorded above; nothing in that plan is implemented.
+Proposed additive work — a player-selectable reasoning level, a configurable
+context aggregation budget with full Story Card injection, and a Navigator
+settings surface — is designed in
+[`navigator-enhancement-plan.md`](./navigator-enhancement-plan.md). That MVP
+preserves the explicit provider-selection and per-change confirmation
+boundaries, and nothing in it is implemented.
