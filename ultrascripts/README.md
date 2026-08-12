@@ -77,9 +77,10 @@ V2.1 module set.
 
 ## Documentation Rules
 
-- Treat the V2 contracts as shipped infrastructure and V2.1 changes as active work.
+- Treat the V2 and V2.1 contracts as shipped infrastructure.
 - Prefer live code, public guide components, and current templates over old phase notes.
 - Keep `reference/` stable unless an implementation contract changes.
-- Keep `planning/` focused on active work rather than completed milestones.
+- Keep `planning/` concise: completed roadmaps are implementation records, while
+  new files should describe genuinely active or future work.
 - Do not revive retired concepts such as Lite/full profiles, mutation-template priming, invisible-text transport, or action-id-keyed Widget history.
 - If a planning document starts explaining an old debate at length, summarize the decision or move the history into a deliberately named archive later.

@@ -12,8 +12,8 @@ Navigator work. Phase sequencing lives in [Current Roadmap](./current-roadmap.md
 | Heartbeat | Per-write beat and PC/Mobile identity | Stale cross-device availability | Ready — verified on PC and Mobile |
 | Audio | State-driven synthesized effects | Autoplay, lifecycle, noisy scripts | Complete on PC and Mobile; device-matrix smoke test at release |
 | WebFetch | Prompt-free safe public reads | SSRF and data leakage | Complete and accepted on PC and Mobile |
-| AI | Provider-neutral executor with Gemini Interactions | Silent blocks, model drift, and provider coupling | Complete on PC/Mobile; live suite verified |
-| Navigator | Typed, reversible adventure mutations | Stale overwrites and automation loops | Active next target |
+| AI | Provider-neutral executor with compatible Gemini/OpenRouter/Custom services | Silent blocks, model drift, and provider coupling | Complete on PC/Mobile; contract suites verified |
+| Navigator | Typed, confirmed adventure mutations | Stale overwrites and unauthorized writes | Complete on PC/Mobile |
 
 ## Standard Module Gates
 
@@ -63,13 +63,12 @@ Every changed or new module must answer:
   (`PROHIBITED_CONTENT`) outcomes are distinguished and covered by compatibility
   tests.
 - Prompt and output blocks surface stable errors with provider diagnostics.
-- Interactions text, JSON schema, thinking, timeout, usage, and fallback paths pass.
+- Compatible text, JSON schema, thinking, timeout, usage, and fallback paths pass.
 - Model-specific capabilities are detected or encoded; fallback does not assume parity.
 - The public Ultrascripts module contract stays provider-neutral.
-- Gemini satisfies the shared text/JSON contract through stateless Interactions
-  requests, with model-family-specific capabilities represented honestly.
-- Gemini and the OpenAI-compatible adapter keep separate credentials and
-  explicit routing behind the shared provider-neutral executor.
+- Gemini, OpenRouter, and remote Custom HTTPS services satisfy the shared
+  text/JSON contract through one OpenAI-compatible adapter, with service and
+  model capabilities represented honestly.
 - Character Presets and every first-party AI consumer work through the shared
   executor and contain no Gemini-only setup or transport assumptions.
 - No automatic cross-provider failover sends scenario content to a service the
@@ -79,10 +78,12 @@ Every changed or new module must answer:
 
 - Read, suggestion, and mutation privileges are separate.
 - Mutations target stable ids and enforce version/hash preconditions.
-- Every applied mutation records reason, before/after values, actor/run id, and undo data.
-- Delete and bulk operations receive heightened review and bounded batch size.
-- Automation evaluation is idempotent across reloads and multiple clients.
-- Cooldowns, budgets, pending-job suppression, failure backoff, and global pause work.
+- Every write remains inert until direct player approval.
+- Apply rechecks adventure identity, Read-only state, and current server values.
+- Successful writes are read back from the server before being reported applied.
+- Story Card deletion is clearly labeled irreversible before approval.
+- Navigator Undo, durable mutation audit logs, bulk mutation, and Automations are
+  outside the V2.1 contract.
 
 ## Review Result Format
 

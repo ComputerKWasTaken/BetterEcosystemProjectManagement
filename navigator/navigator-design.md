@@ -4,11 +4,10 @@
 > Navigator's shell and live chat, and records what is deliberately deferred.
 
 Implementation status: the first-party streaming chat surface, grounded
-Navigator, compact Story Card tools, confirmed mutation proposals, and provider
-popup polish are complete and live-tested on PC. The Android port is implemented
-with a native transport and touch-first full-screen overlay; Phase 9 remains open
-until live-device acceptance is complete. Phase 7C's shipped contract is recorded
-in [`navigator-mutation-tools-plan.md`](./navigator-mutation-tools-plan.md).
+Navigator, compact Story Card tools, confirmed mutation proposals, provider
+setup, and Android port are complete. Mobile uses a native transport and
+touch-first full-screen overlay. The shipped mutation contract is recorded in
+[`navigator-mutation-tools-plan.md`](./navigator-mutation-tools-plan.md).
 
 ## 1. Product Definition
 
@@ -50,7 +49,7 @@ Voyage Studio and Puppeteer) targets **scenario authors**. Navigator targets
 | Provider | Gemini plus a configurable OpenAI-compatible endpoint through the shared first-party chat surface |
 | Provider UX | Complete: explicit Gemini or OpenAI-compatible selection; OpenRouter and Custom are the compatible service choices |
 | Streaming | In scope for the first pass |
-| Mobile | Implemented in the separate Android repository; live-device acceptance remains |
+| Mobile | Complete in the separate Android repository with a touch-first full-screen UI |
 | Automations | Cancelled; Navigator remains player-initiated |
 
 ## 3. Why the AI Layer Must Change First
@@ -238,9 +237,9 @@ Phase 7B exposes two typed, read-only Story Card functions:
   at most 6k entry characters, reporting source length and truncation.
 
 The internal chat task can carry provider-neutral function declarations, tool
-results, and opaque provider continuation state. Gemini Interactions and the
-OpenAI-compatible adapter translate that contract to their native function-call
-formats. The same provider selected for `consumer: 'navigator'` handles every
+results, and opaque provider continuation state. The OpenAI-compatible adapter
+translates that contract to each selected service's function-call format. The
+same service selected for `consumer: 'navigator'` handles every
 round; no cross-provider failover is introduced. A turn may execute at most six
 tool rounds and 16k cumulative tool-result characters, and the same caller
 `AbortSignal` covers every model and tool step.
@@ -301,14 +300,14 @@ fails over between providers.
 or unattended execution. It remains player-initiated, and every mutation
 requires a direct approval action.
 
-**Mobile — implemented, acceptance pending.** The separate Android repository
+**Mobile — complete.** The separate Android repository
 now uses a touch-first full-screen overlay, native Gemini/OpenAI-compatible
 transport, virtual streaming ports, private provider settings, cross-WebView
 storage notifications, and Android Back/navigation/background/destruction
 cleanup. It preserves the PC grounding, read-tool budgets, proposal-only
 mutations, confirmation, preconditions, verification, transcript, and Read-only
 contracts. It intentionally excludes desktop dragging, drawer resizing, and
-hotkeys. Phase 9 closes only after emulator/device and live-adventure acceptance.
+hotkeys.
 
 ## 7. Verified Mutation Contract
 
@@ -348,9 +347,9 @@ contract for the underlying resolver evidence and restoration recipes.
    verification across Plot Components and Story Cards.
 7. **Complete:** PC provider setup and selection polish for Gemini, OpenRouter,
    and custom OpenAI-compatible endpoints.
-8. **Implemented; acceptance pending:** Android full-screen Navigator, native
+8. **Complete:** Android full-screen Navigator, native
    provider transport, virtual streaming ports, settings migration, and lifecycle
    integration.
 
-Steps 1–7 are complete. Step 8 awaits live-device acceptance before final V2.1
-documentation, cross-platform regression, and release.
+All V2.1 delivery steps are complete. Future work should preserve the explicit
+provider-selection and player-confirmation boundaries.

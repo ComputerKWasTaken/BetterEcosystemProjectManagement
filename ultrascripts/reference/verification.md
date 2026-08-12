@@ -29,7 +29,7 @@ the verification surfaces that currently exist and when to use each one.
 | `network` | `network-module` | `library.js`, `output-modifier.js`, `README.md` | `status`, online/quality/connection hints |
 | `weather` | `weather-module` | `library.js`, `output-modifier.js`, `README.md` | `current`, `forecast`, coordinates, place lookup, units, network/geocode failures |
 | `webfetch` | `webfetch-module` | `library.js`, `output-modifier.js`, `README.md` | HTTPS `fetch`, redirects, content types, header stripping, rate limits, private-target blocking, truncation |
-| `audio` (V2.1 development) | `audio-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md` | oscillator/noise effects, pitch sweeps, envelopes, replay prevention, validation, stop lifecycle |
+| `audio` | `audio-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md` | oscillator/noise effects, pitch sweeps, envelopes, replay prevention, validation, stop lifecycle |
 
 Every shipped first-party module has a dedicated suite.
 
@@ -71,7 +71,7 @@ Special attention:
 - missing-key text and JSON queries return terminal `not_configured` errors
 - schema-less JSON queries return terminal `invalid_args`
 - invalid thinking levels return terminal `invalid_args`
-- Interactions requests use `store: false`, parse `steps`, and return usage/model metadata
+- compatible Chat Completions requests return normalized usage/model metadata
 - `safety_blocked` and `prohibited_content` remain distinct terminal errors
 - automatic rate-limit stepdown begins with `gemini-3.5-flash-lite`
 - no provider alias, script-facing model setting, or provider-native payload is advertised
@@ -202,7 +202,7 @@ Verifies:
 | Public example/helper changes | Enhanced and Required templates plus relevant module guide |
 | Showcase script work | relevant module suites plus template contract check |
 
-For release prep, re-check all eight module suites or at least the suites touched
+For release prep, re-check all nine module suites or at least the suites touched
 since the last known-good pass.
 
 ## Known Historical Sign-Offs
@@ -216,8 +216,8 @@ Keep these as context, not as a substitute for rechecking changed surfaces.
 | Full two-way runtime | 2026-04-22 | Live suite passed, including reload-mid-pending |
 | WebFetch legacy contract | 2026-04-23 | Live suite passed before the V2.1 fetch-only transport revision |
 | WebFetch 1.0 | 2026-08-05 | PC and Mobile module copies passed the expanded Node suite; native Kotlin transport compiled independently; user smoke test accepted the revision for roadmap completion |
-| AI provider router foundation | 2026-08-06 | PC and Mobile executor routing and Gemini-adapter integration suites passed; provider-selection UX remains deliberately deferred |
-| Gemini Interactions modernization | 2026-08-06 | PC transport suite passed text, JSON schema, thinking, usage/model metadata, rate-limit stepdown, and distinct safety/prohibited blocks; Mobile parity markers and syntax passed; live API smoke remains |
+| AI provider router foundation | 2026-08-06 | PC and Mobile executor routing and adapter integration suites passed |
+| OpenAI-compatible backend | 2026-08-10 | PC and Mobile contract suites passed Gemini/OpenRouter/Custom profiles, text, JSON schema, thinking, streaming, cancellation, tool continuation, normalized errors, and rate-limit stepdown |
 | Clock | 2026-04-23 | Live suite passed |
 | Weather | 2026-04-23 | Live suite passed |
 | Network | 2026-04-24 | Live suite passed |

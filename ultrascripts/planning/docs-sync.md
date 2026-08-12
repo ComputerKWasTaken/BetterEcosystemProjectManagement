@@ -59,6 +59,7 @@ Current BetterRepository Ultrascripts guide pages:
 | Weather | `UltrascriptsWeatherGuide.vue` |
 | Network | `UltrascriptsNetworkGuide.vue` |
 | System | `UltrascriptsSystemGuide.vue` |
+| Audio | `UltrascriptsAudioGuide.vue` |
 
 The public guide set exists and covers the shipped first-party surface. Future
 work should keep it current, not restart it.
@@ -156,22 +157,23 @@ All public AI Dungeon snippets should:
 - use the canonical module id `ai`; do not teach provider aliases
 - use Story Card type `Ultrascripts` for Ultrascripts-owned cards
 
-## Active Sync Priority
+## Current Sync Priority
 
-BetterDungeon V2 and the V2.1 Ultrascripts improvement pass are complete. Keep
-the shipped heartbeat, Audio, WebFetch, and AI documentation synchronized while
-the active documentation priority moves to Navigator in roadmap order:
+BetterDungeon V2.1 documentation is synchronized around the shipped contract:
 
-1. A note that the script-facing `ai.query` contract is unchanged and that the
-   new multi-turn streaming chat surface is first-party only;
-2. Navigator product shape, grounding and context boundaries, privacy, and
-   onboarding documentation for the read-only shell;
-3. Navigator tools, preview, conflict, audit, undo, and recovery documentation
-   once mutations land;
-4. V2.1 PC/Mobile parity, onboarding, release, and rollback documentation.
+1. the script-facing `ai.query` surface remains single-shot, asynchronous, and
+   capped at 12,000 characters;
+2. Gemini, OpenRouter, and remote Custom HTTPS services use the unified
+   OpenAI-compatible backend without exposing provider selection to scripts;
+3. Navigator's multi-turn chat surface is first-party only;
+4. Navigator mutations are proposal-only, require direct player confirmation,
+   check for conflicts, and verify writes from the server;
+5. Navigator does not include Undo, a durable audit log, or Automations; and
+6. PC and Mobile share the product contract while retaining platform-specific UI
+   and transport implementations.
 
-Navigator Automation documentation is deferred with the feature and is out of
-V2.1.
+Future documentation work is ordinary maintenance: update the implementation
+reference first, then public author guides, examples, and template copies.
 
 Stateboy, Brainiac, and Chronos V2 documentation remains independently owned and
 must not be described as the active BetterDungeon release sequence.

@@ -337,10 +337,8 @@ Args:
 - `output.schema`: required when `output.type` is `json`.
 - `thinking`: optional string or object. Defaults to `"minimal"`. Supported
   levels are `"minimal"`, `"low"`, `"medium"`, and `"high"`.
-  Interactions uses `thinking_level` for Gemini 3 and 2.5 models; a requested
-  `minimal` maps to `low` for model families that do not support it. Gemma 4
-  exposes thinking as an on/off toggle, so any non-minimal level maps to
-  provider `thinking_level: "high"`.
+  BetterDungeon translates the level into controls supported by the active
+  service and model. A service may report that thinking was not applied.
 
 Success payloads:
 
@@ -348,9 +346,10 @@ Success payloads:
 {
   "text": "The player is not currently in combat.",
   "meta": {
-    "provider": "gemini",
-    "providerLabel": "Gemini",
-    "backend": "gemini",
+    "provider": "openai-compatible",
+    "providerLabel": "OpenAI-Compatible",
+    "backend": "openai-compatible",
+    "service": "gemini",
     "outputType": "text",
     "model": "gemini-3.5-flash-lite",
     "promptChars": 44,
@@ -374,9 +373,10 @@ Success payloads:
 {
   "json": { "inCombat": false },
   "meta": {
-    "provider": "gemini",
-    "providerLabel": "Gemini",
-    "backend": "gemini",
+    "provider": "openai-compatible",
+    "providerLabel": "OpenAI-Compatible",
+    "backend": "openai-compatible",
+    "service": "gemini",
     "outputType": "json",
     "model": "gemini-3.5-flash-lite",
     "promptChars": 44,
@@ -418,15 +418,12 @@ Rules:
   with `error.code: "not_configured"`.
 - JSON queries without a schema return `error.code: "invalid_args"`.
 - Invalid thinking levels return `error.code: "invalid_args"`.
-- Gemini Interactions requests are stateless (`store: false`). BetterDungeon
-  does not use or expose server-side conversation continuation as script state.
-- Adjustable Gemini filter blocks return `error.code: "safety_blocked"` with
-  `error.providerReason: "SAFETY"`.
-- Non-adjustable Gemini policy blocks return
-  `error.code: "prohibited_content"` with
-  `error.providerReason: "PROHIBITED_CONTENT"`.
-- Gemini 3's adjustable filters use provider defaults. Custom safety settings
-  are not sent because the Interactions API does not currently support them.
+- Gemini, OpenRouter, and remote Custom HTTPS services use the compatible
+  Chat Completions backend selected by the player.
+- Provider safety filters return `error.code: "safety_blocked"`; distinct
+  non-adjustable policy failures return `error.code: "prohibited_content"`
+  when the selected service exposes that distinction.
+- BetterDungeon never silently retries a request through another service.
 - Do not teach retired provider aliases, script-facing model settings,
   response-format settings, or provider-native payloads.
 

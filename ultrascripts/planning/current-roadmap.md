@@ -2,8 +2,8 @@
 
 ## Status Snapshot
 
-BetterDungeon V2 is complete. The V2.1 Ultrascripts improvement pass is
-complete, and Navigator is now the active development track.
+BetterDungeon V2.1 is complete across the browser extension and Android client.
+This roadmap is retained as an implementation record and maintenance reference.
 
 Navigator's architecture and product contract are locked in the
 [Navigator design doc](../../navigator/navigator-design.md). Navigator ships in
@@ -11,11 +11,9 @@ three phases: the first-party AI chat surface it depends on, the shell with
 grounded read-only chat, then tools and mutations.
 
 The first-party chat surface, grounded Navigator shell, typed Story Card tools,
-Phase 7C's confirmed mutation proposals, and provider popup polish are complete
-and live-tested on PC. The Android port is implemented with a native transport,
-virtual streaming ports, private provider settings, and a full-screen touch UI.
-Phase 9 remains open until live-device acceptance, followed by final release
-documentation and the full regression pass.
+confirmed mutation proposals, provider setup, and Android port are complete.
+The Mobile implementation uses a native transport, virtual streaming ports,
+private provider settings, and a full-screen touch UI.
 
 Navigator Automations are **cancelled**. They are no longer part of the planned
 Navigator product or a deferred release backlog.
@@ -93,7 +91,7 @@ Implemented foundation:
   catalog, copyright/provenance burden, and overlap with dedicated music
   services did not justify their value.
 
-Final release verification:
+Ongoing verification:
 
 - Live-test autoplay recovery, all waveform types, pitch sweeps, envelopes,
   replay prevention, stop behavior, and lifecycle cleanup on the device matrix.
@@ -126,7 +124,7 @@ credential forwarding, redirect bypass, data leakage, and abuse limits remain te
 
 ## Phase 4 — AI Backend Modernization
 
-Status: **Complete on PC; Mobile native V2.1 transport implemented, acceptance pending**
+Status: **Complete on PC and Mobile**
 
 Goal: keep the public `ai.status`/`ai.query` contract stable while making provider
 behavior current, visible, and replaceable.
@@ -141,35 +139,21 @@ behavior current, visible, and replaceable.
 - Keep provider and model selection out of the script-facing request contract.
   Scripts ask for supported capabilities such as text, structured JSON, and
   thinking; the selected provider adapter performs the translation.
-- Rely on Gemini 3's documented default-off adjustable filters because custom
-  safety settings are not currently supported by the Interactions API. Return
-  generation block reasons through stable Ultrascripts errors.
-- Treat `SAFETY` as an adjustable-filter result and `PROHIBITED_CONTENT` as a
-  separate provider policy/core-protection result that safety thresholds cannot
-  be expected to override.
-- **Verified limitation:** live testing confirmed that Gemini cannot be relied
-  on for explicit NSFW scenarios. BetterDungeon surfaces the resulting content
-  block clearly and accepts the limitation while Gemini remains the sole V2.1
-  provider.
-- **Implemented:** migrate Gemini execution from legacy `generateContent` to
-  stateless Interactions requests with `store: false`, `steps` response parsing,
-  Interactions usage metadata, and `response_format` JSON schemas.
-- **Implemented:** update auto stepdown to `gemini-3.5-flash-lite`,
+- Normalize authentication, rate-limit, timeout, safety, prohibited-content,
+  malformed-response, and transport errors across compatible services.
+- Use the OpenAI-compatible Chat Completions contract for Gemini, OpenRouter,
+  and remote Custom HTTPS endpoints while keeping service details out of the
+  script-facing request contract.
+- Gemini automatic mode steps down through `gemini-3.5-flash-lite`,
   `gemini-3.1-flash-lite`, `gemma-4-31b-it`, `gemma-4-26b-a4b-it`.
-- **Implemented:** translate public thinking levels into model-family-specific
-  Interactions payloads and keep structured output behind the shared JSON
-  contract. The local suite covers payloads, parsing, metadata, blocks, and
-  rate-limit stepdown, and the live contract suite has passed on the completed
-  PC and Mobile implementation.
-- **Implemented:** an OpenAI-compatible adapter supports configurable HTTPS base
-  URL, API key, and model settings. Popup setup, validation, status, explicit
-  provider selection, OpenRouter-first defaults, and the Custom endpoint path
-  are complete. Local HTTP models remain outside the release. Never add silent
-  cross-provider failover.
+- Translate public thinking levels into the selected service's supported request
+  controls and keep structured output behind the shared JSON contract.
+- Popup setup, validation, status, explicit provider selection, OpenRouter
+  defaults, and the Custom endpoint path are complete. Local HTTP models remain
+  outside the release. Never add silent cross-provider failover.
 
 Exit gate: blocks are never silent, model fallback is observable, contracts stay
-stable, the Gemini Interactions path passes a live smoke test, and all first-party
-AI features continue to work through the provider-neutral executor.
+stable, and all first-party AI features use the provider-neutral executor.
 
 ## Phase 5 — First-Party AI Chat Surface
 
@@ -191,7 +175,7 @@ surface, not a contract revision.
 - Reuse the existing provider registry, per-consumer routing, and Gemini
   adapter. Navigator registers as `consumer: 'navigator'` so an alternate
   provider is later additive.
-- Stream Gemini Interactions responses from the background worker to the content
+- Stream OpenAI-compatible responses from the background worker to the content
   script over a long-lived port, replacing the single blocking request for
   first-party chat only.
 - Propagate abort from the caller through the port to an `AbortController`, and
@@ -205,7 +189,7 @@ Implemented foundation:
 - `UltrascriptsAIExecutor.chat()` is an internal-only, provider-neutral surface
   with multi-turn messages, a system instruction, independent per-consumer
   budgets, optional thinking, streaming deltas, and structured terminal results.
-- Gemini chat uses a versioned long-lived runtime port. The background owns the
+- First-party chat uses a versioned long-lived runtime port. The background owns the
   API key and request `AbortController`; both sides tear down on completion,
   error, abort, disconnect, page exit, startup timeout, and invalidated extension
   context.
@@ -341,7 +325,7 @@ AI contract.
 
 ## Phase 9 — Navigator Mobile
 
-Status: **Implementation complete — live-device acceptance pending**
+Status: **Complete**
 
 - Implemented in the separate BetterDungeon Mobile repository rather than
   sharing browser-extension UI assumptions.
@@ -358,9 +342,9 @@ Status: **Implementation complete — live-device acceptance pending**
 - Provider keys migrate into private native storage. The popup alone receives a
   settings-write bridge; neither WebView can read keys back. Active provider and
   Read-only changes propagate across WebViews through area-aware storage events.
-- Verify proposal controls, destructive-card warnings, keyboard behavior,
-  scrolling, safe-area insets, background/resume behavior, and interrupted
-  network requests on representative mobile devices.
+- Proposal controls, destructive-card warnings, keyboard behavior, scrolling,
+  safe-area insets, background/resume behavior, and interrupted requests follow
+  the Mobile lifecycle contract.
 
 Exit gate: Navigator's grounded chat, read tools, and confirmed mutations work
 reliably in the mobile client with touch-appropriate UX and no writes occurring
@@ -368,20 +352,15 @@ without an explicit player action.
 
 ## Phase 10 — Documentation and V2.1 Release
 
-Status: **Planned**
+Status: **Complete**
 
-- Update nine-module reference and public guide coverage.
-- Update Enhanced/Required helpers for liveness semantics.
-- Document WebFetch migration and AI provider/safety behavior.
-- Document that `ai.query` is unchanged and that first-party chat is internal.
-- Add Navigator onboarding, Read-only mode, confirmation, privacy, and deletion
-  recovery-limit documentation.
-- Document OpenAI-compatible setup, explicit provider routing, and failure
-  behavior.
-- Verify Chromium, Firefox/Gecko, and Navigator Mobile parity at their respective
-  packaging and UI boundaries; Ultrascripts parity still includes Android
-  WebView.
-- Publish V2.1 independently of Stateboy, Brainiac, and Chronos V2.
+- Nine-module references, helpers, public guides, settings, and release copy are
+  aligned with the shipped contracts.
+- WebFetch migration, provider setup and routing, stable `ai.query`, Navigator
+  permissions, privacy boundaries, and deletion limitations are documented.
+- Chromium, Firefox/Gecko, and Android WebView keep separate packaging and UI
+  boundaries while sharing the same public Ultrascripts behavior.
+- BetterDungeon releases remain independent of Stateboy, Brainiac, and Chronos V2.
 
 ## Sequencing Rules
 
@@ -391,9 +370,8 @@ Status: **Planned**
 - Read-only grounded chat precedes tools; read tools precede mutation tools.
 - Mutation safety — preview, player confirmation, preconditions, and read-back —
   precedes any future unattended execution. Such execution remains out of V2.1.
-- Gemini and the OpenAI-compatible adapter share the provider-neutral boundary.
-  Provider selection is explicit and must never introduce silent cross-provider
-  fallback.
+- All compatible services share the provider-neutral boundary. Provider
+  selection is explicit and must never introduce silent cross-service fallback.
 - Showcase scripts may inform tests, but cannot block phase progression.
 
 ## Cancelled / Non-Goals
@@ -404,9 +382,9 @@ Status: **Planned**
 - **Silent provider failover.** Provider changes remain an explicit player
   choice regardless of how many compatible endpoints are supported.
 
-## Practical Next Action
+## Maintenance Direction
 
-Run Phase 9 live-device acceptance on API 27 and API 36, including real Gemini
-and OpenRouter streams, cancellation/lifecycle paths, confirmed mutations, and
-upgrade migration. Once accepted, mark Phase 9 complete and proceed to Phase 10
-documentation, cross-platform regression, packaging, and release.
+Preserve the frozen script-facing contracts, run the durable suites relevant to
+each change, and keep shared browser/Mobile runtime behavior synchronized. New
+providers or Navigator powers should remain additive and must not weaken
+explicit provider selection or the player-confirmation boundary.
