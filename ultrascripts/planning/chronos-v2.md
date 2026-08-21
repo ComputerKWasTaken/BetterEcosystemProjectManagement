@@ -60,7 +60,10 @@ preserving their reusable cached prefix.
   time to apply later.
 - Clock arithmetic uses absolute Gregorian minute indexes rather than repeated
   day-by-day loops. Large jumps, reverse movement, month/year rollover, century
-  leap-year exceptions, and the lower calendar boundary stay deterministic.
+  leap-year exceptions, and both supported calendar boundaries stay
+  deterministic.
+- Persisted state is normalized defensively so malformed or partial legacy
+  values recover to safe defaults instead of poisoning the clock lifecycle.
 
 ## Settings
 
@@ -86,7 +89,8 @@ slash commands untouched for other attached scripts:
 - `/date June 1, 2026`, `/date Jun 1, 2026`, or `/date 2026-06-01` sets it;
 - `/sleep` advances by a randomized six-to-nine hours plus minutes when that
   lands on the following morning. If invoked at an unusual daytime hour, it
-  safely falls forward to 6:00–9:59 AM on the next calendar day;
+  safely falls forward to 6:00–9:59 AM on the next calendar day. At the final
+  supported date, it leaves time unchanged and reports the calendar limit;
 - `/chronos` displays the compact command reference.
 
 Current AI Dungeon behavior treats `stop` from `onInput` as a script error.
@@ -105,9 +109,13 @@ string-backed, so values such as `8:00 AM` cannot be coerced to the number `8`.
 The publisher removes the retired `chronos-time` and `chronos-date` widgets,
 preserves unrelated manifest entries, and carries forward other scripts'
 current Widget values before writing its own snapshot.
+Chronos bounds its own Widget history and removes both current and retired
+Widget values when disabled, without deleting history owned by other scripts.
 
 Without a live Widget module, Chronos sets a unique timestamp in
-`state.message`. It never injects a recurring banner into story output.
+`state.message`. An invisible alternating marker keeps otherwise identical
+paused-time and command toasts eligible for display without adding visual
+noise. Chronos never injects a recurring banner into story output.
 
 ## Verification Gate
 
@@ -117,10 +125,12 @@ Before publication, keep automated coverage for:
 - unchanged prompt-prefix preservation;
 - ordinary advancement, Retry, and Undo;
 - exact snapshot restoration across commands and randomized sleep;
-- midnight, month, year, leap-day, century, large-jump, and lower-boundary math;
+- midnight, month, year, leap-day, century, large-jump, and calendar-boundary math;
 - settings migration and slash-command parsing;
+- malformed persisted-state recovery and abandoned-command cancellation;
 - six-to-nine-hour nighttime sleep and daytime next-morning fallback;
-- live Widget publication and preservation of unrelated widgets;
+- live Widget publication, bounded history, cleanup, and preservation of
+  unrelated widgets;
 - missing, disabled, and stale Ultrascripts fallback; and
 - production BetterRepository build integrity.
 
