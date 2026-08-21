@@ -56,8 +56,8 @@ preserving their reusable cached prefix.
 - Repeated Context execution at the same action count is a Retry and does not
   advance time twice.
 - Chronos stores bounded action-count snapshots. A lower action count restores
-  the exact earlier timestamp, including across randomized sleep and manual
-  clock changes, rather than estimating Undo from the current turn rate.
+  the exact earlier timestamp, including across manual advances and clock
+  changes, rather than estimating Undo from the current turn rate.
 - Paused or disabled turns update the action-count anchor without accumulating
   time to apply later.
 - Clock arithmetic uses absolute Gregorian minute indexes rather than repeated
@@ -75,18 +75,43 @@ Chronos creates one compact `Chronos Settings` Story Card. It controls:
 - paused state;
 - time tracking/display, enabled by default;
 - date tracking/display, enabled by default;
+- derived time-phase display, enabled by default;
 - minutes per turn, bounded from 0 to 1,440;
-- 12-hour or 24-hour display.
+- 12-hour or 24-hour display;
+- `Long`, `ISO`, `American`, or `European` player-facing date format.
 
-The card also contains read-only current time and date fields. Chronos refreshes
-it every turn, keeping it near the top of the Story Card list and making it the
-dependable vanilla display for both inherited and attached scripts. Disabled
-tracking fields show `Hidden`. Live time and date changes belong to commands.
+The card begins with read-only current time, time phase, and date fields before
+showing settings or command help. Chronos refreshes it every turn, keeping it
+near the top of the Story Card list and making the important information visible
+without opening the full card. Disabled tracking fields show `Hidden`. Live time
+and date changes belong to commands.
 
 The tracking toggles control what Chronos exposes through context, Widget,
 toast, and Story Card displays. Its internal clock and calendar continue moving
 together so rollover remains correct and either component can be safely
 re-enabled later.
+
+Date format affects the Story Card, Widget, toast, and command confirmations.
+Model context always uses the unambiguous long form, including weekday and full
+month name, regardless of the player's display preference.
+
+## Time Phases
+
+Chronos derives a phase directly from the current hour, so there is no separate
+simulation state to drift away from the clock:
+
+- After Midnight: 12:00–2:59 AM;
+- Predawn: 3:00–4:59 AM;
+- Dawn: 5:00–6:59 AM;
+- Morning: 7:00–9:59 AM;
+- Late Morning: 10:00–11:59 AM;
+- Midday: 12:00–1:59 PM;
+- Afternoon: 2:00–4:59 PM;
+- Evening: 5:00–7:59 PM;
+- Night: 8:00–11:59 PM.
+
+`Show Time Phase` controls phase presentation in model context, the live Story
+Card, Widget, toast, and command confirmations. Hiding time also hides its phase.
 
 ## Commands
 
@@ -97,10 +122,11 @@ slash commands untouched for other attached scripts:
 - `/time 8:30 AM`, `/time 8 PM`, or `/time 20:30` sets it;
 - `/date` displays the current date;
 - `/date June 1, 2026`, `/date Jun 1, 2026`, or `/date 2026-06-01` sets it;
-- `/sleep` advances by a randomized six-to-nine hours plus minutes when that
-  lands on the following morning. If invoked at an unusual daytime hour, it
-  safely falls forward to 6:00–9:59 AM on the next calendar day. At the final
-  supported date, it leaves time unchanged and reports the calendar limit;
+- `/advance N minutes`, `/advance N hours`, `/advance N days`, or
+  `/advance N weeks` moves forward by an exact duration. Positive whole numbers
+  and common unit abbreviations are accepted. `/adv`, `/addtime`, `/skiptime`,
+  and `/fastforward` are equivalent aliases. Requests beyond the final supported
+  date leave time unchanged and report the calendar limit;
 - `/chronos` displays the compact command reference.
 
 Current AI Dungeon behavior treats `stop` from `onInput` as a script error.
@@ -112,9 +138,10 @@ minutes-per-turn increment.
 ## Player-Facing Display
 
 When a live BetterDungeon heartbeat advertises Widget, Chronos publishes one
-centered custom-HTML clock strip. It presents amber tabular time, a quiet
-divider, and a shortened low-contrast date inside a small rounded surface. It
-has no labels, emoji, controls, or dashboard chrome. The HTML remains
+centered custom-HTML clock strip. It presents amber tabular time, an optional
+derived phase, and a shortened low-contrast date separated by quiet dividers
+inside a small rounded surface. It has no labels, emoji, controls, or dashboard
+chrome. The HTML remains
 string-backed, so values such as `8:00 AM` cannot be coerced to the number `8`.
 The publisher preserves unrelated manifest entries and carries forward other
 scripts' current Widget values before writing its own snapshot.
@@ -137,12 +164,12 @@ Before publication, keep automated coverage for:
 - the first-line cache-compatible annotation;
 - unchanged prompt-prefix preservation;
 - ordinary advancement, Retry, and Undo;
-- exact snapshot restoration across commands and randomized sleep;
+- exact snapshot restoration across commands and manual advances;
 - midnight, month, year, leap-day, century, large-jump, and calendar-boundary math;
-- settings and slash-command parsing;
+- settings, date-format and time-phase presentation, and slash-command parsing;
 - live Story Card refresh and independent time/date tracking combinations;
 - malformed persisted-state recovery and abandoned-command cancellation;
-- six-to-nine-hour nighttime sleep and daytime next-morning fallback;
+- exact minute, hour, day, and week advances plus invalid-duration handling;
 - live Widget publication, bounded history, cleanup, and preservation of
   unrelated widgets;
 - missing, disabled, and stale Ultrascripts behavior plus retained toast state; and
