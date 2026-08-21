@@ -1,6 +1,6 @@
 # Context Modifier (onModelContext Hook)
 
-> The onModelContext hook intercepts the assembled context before it's sent to the AI, enabling context injection, modification, or replacement.
+> The onModelContext hook intercepts the assembled context before it's sent to the AI. On Optimized Context models, cache-compatible hooks may only append to that text.
 
 ## Overview
 
@@ -29,7 +29,7 @@ The onModelContext hook has access to extended `info` properties:
 |----------|------|-------------|
 | `info.maxChars` | number | Estimated maximum characters that can fit in context |
 | `info.memoryLength` | number | Characters used by memory/Plot Essentials |
-| `info.contextTokens` | number | Total tokens in current context |
+| `info.useCacheEfficient` | boolean | Whether the active model is using Optimized Context |
 
 These values help scripts make informed decisions about content length.
 
@@ -46,6 +46,39 @@ return { text: modifiedContext };
 ```
 
 **Empty string behavior**: Returns context as if script didn't run (no error, uses original)
+
+## Optimized Context and `@cache-compatible`
+
+Optimized Context uses prompt-prefix caching. Check `info.useCacheEfficient` to
+detect it. A Context hook that needs to alter `text` must begin with the
+cache-compatible annotation:
+
+```javascript
+// @cache-compatible
+const modifier = (text) => ({
+  text: `${text}\nCurrent scene: ${state.currentScene}`
+});
+
+modifier(text);
+```
+
+The returned text must start with the complete incoming `text`, byte-for-byte
+unchanged. Only the appended suffix is accepted. Prepending, deleting,
+replacing, reordering, or truncating any part of the prompt causes the text
+change to be discarded. Without `// @cache-compatible`, all Context text
+changes are discarded on Optimized Context models to protect the cached prefix,
+and AI Dungeon notifies the player. Script side effects still run.
+
+`state.memory` has a separate restriction under Optimized Context:
+
+| Field | Writable with Optimized Context? |
+|-------|----------------------------------|
+| `state.memory.context` | No — Plot Essentials edits are unavailable |
+| `state.memory.authorsNote` | Yes |
+| `state.memory.frontMemory` | Yes |
+
+The annotation does not unlock `state.memory.context`. Non-optimized models
+retain the older unrestricted Context text behavior.
 
 ## Context Structure
 
@@ -81,12 +114,17 @@ Remove or redact portions of context:
 - Remove outdated information
 - Reduce context size for specific purposes
 
+This requires a non-optimized model; it is incompatible with the append-only
+cache-compatible contract.
+
 ### Context Replacement
 
 Replace the entire context with custom-built content:
 - Complete context overhaul
 - Alternative formatting systems
 - Specialized prompt engineering
+
+This requires a non-optimized model; Optimized Context rejects replacement.
 
 ### Context Analysis
 
@@ -105,7 +143,11 @@ This is rarely useful intentionally but may occur if a script determines generat
 
 ## State.memory Integration
 
-Note that `state.memory.context`, `state.memory.authorsNote`, and `state.memory.frontMemory` affect context assembly *before* onModelContext runs. Changes to these in onModelContext won't affect the current generation—they'll apply to the next turn.
+`state.memory.context`, `state.memory.authorsNote`, and
+`state.memory.frontMemory` affect context assembly *before* onModelContext runs.
+Changes made there won't affect the current generation; they'll apply to the
+next turn. On Optimized Context models, only `authorsNote` and `frontMemory` can
+be changed; `context` cannot.
 
 To modify context in the current turn, modify the `text` variable directly in onModelContext.
 

@@ -157,9 +157,18 @@ longer effective context without a subscription upgrade.
 - **Overflow tolerance**: allows the context to exceed the set length by
   up to ~4K tokens before trimming, so trimming doesn't shift the front of
   the story every turn and break the cache.
-- **Script impact**: prevents scripts from modifying the stable parts of
-  the context, which effectively disables some popular scripts on
-  supported models.
+- **Context-hook text**: a hook must include `// @cache-compatible`, preserve
+  the entire incoming prompt unchanged, and append only a suffix. Prepending,
+  deleting, replacing, reordering, or truncating text is rejected. Without the
+  annotation, Context text alterations are discarded to protect the cache and
+  the player is notified; other script side effects still run.
+- **`state.memory` writes**: `state.memory.context` (Plot Essentials) cannot be
+  edited while Optimized Context is active. `state.memory.authorsNote` and
+  `state.memory.frontMemory` remain writable and are the only two alterable
+  `state.memory` fields. The cache-compatible annotation does not bypass this
+  restriction.
+- **Detection**: Context hooks can read `info.useCacheEfficient` to determine
+  whether the active model is using Optimized Context.
 - **Supported models**: Equinox, Gemma 4 31B, DeepSeek V4 Flash,
   DeepSeek V4 Pro, GLM 5.1. Atlas and Raven always optimize context (the
   toggle isn't shown for them). On by default for the new Frontier models.

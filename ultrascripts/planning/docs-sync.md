@@ -39,6 +39,7 @@ that contract must be checked.
 | [planning/docs-sync.md](./docs-sync.md) | this sync plan |
 | [planning/module-quality-pass.md](./module-quality-pass.md) | V2.1 quality and security gates |
 | [planning/v2.1-design-notes.md](./v2.1-design-notes.md) | investigated options and open V2.1 decisions |
+| [planning/chronos-v2.md](./chronos-v2.md) | active Chronos V2 product and implementation contract |
 
 ## Public Guide Inventory
 
@@ -159,7 +160,9 @@ All public AI Dungeon snippets should:
 
 ## Current Sync Priority
 
-BetterDungeon V2.1 documentation is synchronized around the shipped contract:
+BetterDungeon V2.1 documentation is synchronized around the release-candidate
+contract. The implementation is essentially complete; final polish and the
+Chronos V2-paired release remain:
 
 1. the script-facing `ai.query` surface remains single-shot, asynchronous, and
    capped at 12,000 characters;
@@ -175,12 +178,12 @@ BetterDungeon V2.1 documentation is synchronized around the shipped contract:
 Future documentation work is ordinary maintenance: update the implementation
 reference first, then public author guides, examples, and template copies.
 
-Stateboy, Brainiac, and Chronos V2 documentation remains independently owned and
-must not be described as the active BetterDungeon release sequence.
+Chronos V2 is the active showcase priority and will release alongside
+BetterDungeon V2.1. Stateboy is paused, while Brainiac remains planned for later.
 
 ## Independent Script Documentation Path
 
-When Stateboy, Brainiac, or Chronos V2 is worked on independently:
+When Chronos V2, Stateboy, or Brainiac is worked on:
 
 1. Align its canonical source, BetterRepository raw script, and catalog entry.
 2. Add public guide links where the scripts demonstrate module patterns.
@@ -188,8 +191,9 @@ When Stateboy, Brainiac, or Chronos V2 is worked on independently:
 4. Update [Script Contract Reference](../reference/script-contract.md)
    if a showcase reveals a better canonical example.
 5. Publish and verify the script and its public download.
-6. Mark it as published only after publication succeeds. Its status does not
-   activate or block a BetterDungeon V2.1 phase.
+6. Mark it as published only after publication succeeds. Chronos V2 is paired
+   with the V2.1 release; later showcase work does not reopen completed V2.1
+   implementation phases.
 
 ## Verification Before Calling Docs Synced
 

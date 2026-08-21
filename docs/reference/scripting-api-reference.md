@@ -39,8 +39,8 @@
 ```javascript
 {
   memory: {
-    context: string,      // Plot Essentials override
-    authorsNote: string,  // Author's Note override
+    context: string,      // Plot Essentials value; writes through to UI
+    authorsNote: string,  // Author's Note value; writes through to UI
     frontMemory: string   // End-of-context injection
   },
   message: string,        // Player-visible message
@@ -64,7 +64,10 @@
 }
 ```
 
-**Priority**: `state.memory` overrides this
+**Synchronization**: Assigning `state.memory.context` overwrites the visible UI
+Plot Essentials value; it is not a separate higher-priority layer. This field
+cannot be edited while Optimized Context is active. The other two fields,
+`state.memory.authorsNote` and `state.memory.frontMemory`, remain writable.
 
 ---
 
@@ -80,7 +83,7 @@
 | characters | array | All | Player names |
 | maxChars | number | onModelContext | Max context chars |
 | memoryLength | number | onModelContext | Memory char count |
-| contextTokens | number | Varies | Context tokens |
+| useCacheEfficient | boolean | onModelContext | Whether Optimized Context is active |
 
 ---
 
@@ -200,9 +203,17 @@ Logs to console.
 
 **When**: After context assembly, before AI
 
-**Available**: All above + `info.maxChars`, `info.memoryLength`
+**Available**: All above + `info.maxChars`, `info.memoryLength`,
+`info.useCacheEfficient`
 
 **Return**: `{ text, stop? }`
+
+**Optimized Context**: To change Context text, begin the hook with
+`// @cache-compatible`, return the complete original text unchanged at the
+start, and append only a suffix. Without the annotation, changes are discarded
+and the player is notified. Invalid prepend, replacement, deletion, reorder, or
+truncation changes are also discarded. This annotation does not permit writes
+to `state.memory.context`.
 
 ---
 

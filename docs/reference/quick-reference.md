@@ -89,9 +89,14 @@ removeStoryCard(index)
 
 | Property | Effect |
 |----------|--------|
-| `context` | Plot Essentials override |
-| `authorsNote` | Author's Note override |
-| `frontMemory` | End-of-context injection |
+| `context` | Plot Essentials value; assignments overwrite the UI field; not writable with Optimized Context |
+| `authorsNote` | Author's Note value; assignments overwrite the UI field; writable with Optimized Context |
+| `frontMemory` | End-of-context injection; writable with Optimized Context |
+
+For Optimized Context text changes, put `// @cache-compatible` in
+`onModelContext`, preserve the complete incoming prompt, and append only a
+suffix. Without the annotation, text alterations are discarded and the player
+is notified. The annotation does not make `state.memory.context` writable.
 
 ## Memory System
 

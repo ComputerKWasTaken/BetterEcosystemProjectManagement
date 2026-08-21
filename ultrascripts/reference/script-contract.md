@@ -11,9 +11,9 @@ Use it when writing or reviewing:
 - `bd.us` helper examples
 - BetterDungeon example templates
 - BetterRepository raw-script template copies
-- Stateboy (implemented; active publication stage)
-- Brainiac (planned after Stateboy)
-- Chronos V2 (planned after Brainiac)
+- Chronos V2 (active modernization and publication stage)
+- Stateboy (implemented; paused until after the paired Chronos V2/V2.1 release)
+- Brainiac (planned for later)
 
 Implementation remains the source of truth. This file exists so examples do not
 quietly diverge from the live runtime.
@@ -172,12 +172,13 @@ itself. Use request ids/state if a script needs stricter freshness.
 
 ## Showcase Script Contracts
 
-Stateboy has an existing implementation but is not published. The remaining
-showcases are completed sequentially: Stateboy, then Brainiac, then Chronos V2.
+Chronos V2 is the current priority and will publish alongside BetterDungeon
+V2.1. Stateboy has an existing implementation but is paused until after that
+paired release; Brainiac remains planned for later.
 
 ### Brainiac
 
-Mode: Requires Ultrascripts. Planned after Stateboy.
+Mode: Requires Ultrascripts. Planned for later.
 
 Required capabilities:
 
@@ -222,25 +223,29 @@ Design contract:
 
 ### Chronos V2
 
-Mode: Enhanced with Ultrascripts. Planned after Brainiac.
+Mode: Enhanced with Ultrascripts. Active priority.
 
 Optional capabilities:
 
-- `clock.now`
-- `clock.tz`
-- `clock.format`
-- `weather.current`
-- `weather.forecast`
 - `widget`
-- `system.info` where layout/device hints matter
 
 Design contract:
 
-- base timekeeping works without BetterDungeon
-- Ultrascripts adds real time/weather sync and widgets
-- fixed-place weather should accept place names or coordinates
-- do not block the core scenario if weather ops fail
-- widgets should be additive, not required for vanilla play
+- Chronos owns only a deterministic in-game clock and Gregorian calendar
+- base timekeeping, calendar advancement, model context, settings, and toast
+  display work without BetterDungeon
+- the Context modifier begins with `// @cache-compatible`, preserves the entire
+  incoming prompt byte-for-byte, and appends only the current timestamp suffix
+- the Input hook observes Ultrascripts liveness; Context owns time advancement,
+  model injection, and player-facing presentation
+- retries do not advance twice, and lower action counts reverse automatic time
+  so Undo restores the earlier timestamp
+- Widget displays time and date when available; `state.message` provides the
+  vanilla and Widget-disabled fallback
+- lifecycle code stays in its matching hook; Library contains shared helpers
+  rather than a lifecycle router
+- weather, seasons, temperature, astronomy, output banners, real-world clock
+  synchronization, and unrelated simulation belong in independent scripts
 
 ## Module Contracts For Examples
 

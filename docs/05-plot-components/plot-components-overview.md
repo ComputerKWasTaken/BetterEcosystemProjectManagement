@@ -75,11 +75,14 @@ With Plot Components:
 ## Scripting Integration
 
 Scripts can modify Plot Components via `state.memory`:
-- `state.memory.context` → Plot Essentials
-- `state.memory.authorsNote` → Author's Note
-- `state.memory.frontMemory` → Hidden end injection
+- `state.memory.context` → Plot Essentials (unavailable with Optimized Context)
+- `state.memory.authorsNote` → Author's Note (writable with Optimized Context)
+- `state.memory.frontMemory` → Hidden end injection (writable with Optimized Context)
 
-This allows dynamic content that persists across turns.
+This allows dynamic content that persists across turns. The
+`// @cache-compatible` Context annotation does not unlock
+`state.memory.context`; it only opts a Context hook into append-only text
+changes.
 
 ## Deprecated: Banned Words
 

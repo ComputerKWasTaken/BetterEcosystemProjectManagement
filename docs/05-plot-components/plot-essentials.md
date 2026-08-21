@@ -110,7 +110,10 @@ Scripts can set Plot Essentials via:
 state.memory.context = "Updated plot essentials content here.";
 ```
 
-This takes priority over UI-configured Plot Essentials.
+This overwrites the adventure's Plot Essentials value and updates what is shown
+in the UI when Optimized Context is not active. While using an Optimized
+Context model, scripts cannot edit `state.memory.context`; adding
+`// @cache-compatible` to the Context hook does not unlock it.
 
 **Note**: The API uses "context" (legacy term) while the UI uses "Plot Essentials."
 

@@ -13,8 +13,8 @@ The state object also contains the special `state.memory` sub-object and `state.
 ```
 state = {
   memory: {
-    context: string,      // Plot Essentials override
-    authorsNote: string,  // Author's Note override
+    context: string,      // Plot Essentials value
+    authorsNote: string,  // Author's Note value
     frontMemory: string   // Hidden end-of-context injection
   },
   message: string,        // Player-visible message
@@ -28,22 +28,24 @@ The `state.memory` object contains three special properties that affect context 
 
 ### state.memory.context
 
-**Purpose**: Replaces or supplements Plot Essentials
+**Purpose**: Reads or writes Plot Essentials
 
 **Behavior**: Text set here appears where Plot Essentials would appear in context (beginning of context, after AI Instructions)
 
 **Notes**: 
-- Takes priority over UI-configured Plot Essentials if set
+- Assigning this field overwrites the adventure's visible Plot Essentials UI value
+- It cannot be edited by scripts while the active model uses Optimized Context
 - Changes take effect on the next generation (not current turn if set in onOutput)
 
 ### state.memory.authorsNote
 
-**Purpose**: Replaces or supplements Author's Note
+**Purpose**: Reads or writes Author's Note
 
 **Behavior**: Text set here appears where Author's Note would appear (near end of context, before last action)
 
 **Notes**:
-- Takes priority over UI-configured Author's Note if set
+- Assigning this field overwrites the adventure's visible Author's Note UI value
+- It remains writable while the active model uses Optimized Context
 - Commonly used for dynamic narrative guidance
 
 ### state.memory.frontMemory
@@ -54,6 +56,7 @@ The `state.memory` object contains three special properties that affect context 
 
 **Notes**:
 - Not visible in the UI—only accessible via scripts
+- It remains writable while the active model uses Optimized Context
 - Powerful position for immediate AI guidance
 - Use sparingly as it has strong influence on generation
 
@@ -117,13 +120,20 @@ Or use nullish coalescing:
 state.health = state.health ?? 100;
 ```
 
-## Priority: state.memory vs memory Object
+## Plot Component Synchronization
 
-Two objects can affect memory-related context:
-- `state.memory` (creator-defined, script-controlled)
-- `memory` (user-defined, UI-controlled)
+`state.memory.context` and `state.memory.authorsNote` are write-through scripting
+surfaces for the corresponding adventure Plot Components. Assigning either
+field overwrites the value shown in the UI; it is not a hidden temporary
+override layered above an unchanged user value.
 
-`state.memory` takes priority. If `state.memory.context` is set, it overrides the user's Plot Essentials.
+### Optimized Context restriction
+
+When `info.useCacheEfficient` is true, `state.memory.authorsNote` and
+`state.memory.frontMemory` are the only writable `state.memory` fields.
+`state.memory.context` cannot be edited. This restriction is independent of the
+`// @cache-compatible` annotation used for append-only `onModelContext` text
+changes; adding that annotation does not make Plot Essentials writable.
 
 ## Timing Considerations
 

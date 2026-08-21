@@ -7,18 +7,16 @@ Private reference and maintenance docs for Ultrascripts, the BetterDungeon runti
 - `reference/` contains stable runtime facts, module contracts, SDK details, script contracts, and verification guidance.
 - `planning/` contains focused maintenance notes and the current release roadmap.
 
-Ultrascripts shipped with BetterDungeon V2 and is the first active improvement
-track for V2.1. Keep these documents aligned with the implementation and public
-BetterRepository guides.
+Ultrascripts shipped with BetterDungeon V2 and its V2.1 implementation is
+essentially complete. Keep these documents aligned with the implementation and
+public BetterRepository guides while final polish proceeds.
 
 ## Current Release Context
 
-BetterDungeon V2 is released, and the V2.1 Ultrascripts improvement pass is
-complete. BetterDungeon now ships nine first-party modules across PC and Mobile,
-and Navigator is the active next track, starting with the first-party AI chat
-surface that Navigator depends on. Stateboy, Brainiac, and
-Chronos V2 are independent script projects and no longer gate BetterDungeon
-releases.
+BetterDungeon V2 is released. V2.1 is functionally complete across PC and
+Mobile, with final polish and release preparation remaining. Chronos V2 is the
+active script priority and will release alongside V2.1. Stateboy is paused, and
+Brainiac remains planned for later.
 
 ## Start Here
 
@@ -34,6 +32,7 @@ releases.
 | How do private docs and public docs stay aligned? | [Documentation sync plan](./planning/docs-sync.md) |
 | What module polish is still worth tracking? | [Module quality pass](./planning/module-quality-pass.md) |
 | Why are the V2.1 designs shaped this way? | [V2.1 design notes](./planning/v2.1-design-notes.md) |
+| What is the active Chronos V2 contract? | [Chronos V2 plan](./planning/chronos-v2.md) |
 
 ## Source-of-Truth Map
 

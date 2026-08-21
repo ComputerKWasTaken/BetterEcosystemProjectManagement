@@ -113,6 +113,10 @@ Scripts can set Author's Note via:
 state.memory.authorsNote = "Tense standoff. Dialogue-focused.";
 ```
 
+This overwrites the adventure's Author's Note value and updates what is shown
+in the UI. Unlike `state.memory.context`, `state.memory.authorsNote` remains
+writable while using an Optimized Context model.
+
 Changes take effect on the next generation (not the current turn if set in onOutput).
 
 ## Common Patterns

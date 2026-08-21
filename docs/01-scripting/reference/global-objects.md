@@ -50,8 +50,8 @@ AI Dungeon scripts execute in a sandboxed JavaScript environment with predefined
 ```
 {
   memory: {
-    context?: string,       // Plot Essentials override
-    authorsNote?: string,   // Author's Note override
+    context?: string,       // Plot Essentials value (writes through to UI)
+    authorsNote?: string,   // Author's Note value (writes through to UI)
     frontMemory?: string    // End-of-context injection
   },
   message?: string,         // Player-visible message
@@ -61,7 +61,11 @@ AI Dungeon scripts execute in a sandboxed JavaScript environment with predefined
 
 **Persistence**: All properties persist for the adventure's lifetime
 
-**Priority**: state.memory takes priority over the memory object
+**Synchronization**: Assigning `state.memory.context` or
+`state.memory.authorsNote` overwrites the corresponding visible Plot Component
+in the adventure UI. With Optimized Context active, however,
+`state.memory.context` cannot be edited; `state.memory.authorsNote` and
+`state.memory.frontMemory` remain writable.
 
 ---
 
@@ -69,7 +73,7 @@ AI Dungeon scripts execute in a sandboxed JavaScript environment with predefined
 
 **Type**: Object
 
-**Description**: User-defined memory (lower priority than state.memory)
+**Description**: Current UI-configured Plot Essentials
 
 **Structure**:
 ```
@@ -79,7 +83,10 @@ AI Dungeon scripts execute in a sandboxed JavaScript environment with predefined
 }
 ```
 
-**Notes**: Reflects UI-configured Plot Essentials. state.memory.context overrides this.
+**Notes**: Reflects UI-configured Plot Essentials. Assigning
+`state.memory.context` updates that Plot Essentials value rather than creating a
+separate hidden override. Scripts cannot make this assignment while Optimized
+Context is active.
 
 ---
 
@@ -96,7 +103,7 @@ AI Dungeon scripts execute in a sandboxed JavaScript environment with predefined
 | characters | array | All hooks | Player/character names |
 | maxChars | number | onModelContext | Max characters for context |
 | memoryLength | number | onModelContext | Characters used by memory |
-| contextTokens | number | Varies | Total context tokens |
+| useCacheEfficient | boolean | onModelContext | Whether Optimized Context is active |
 
 ---
 

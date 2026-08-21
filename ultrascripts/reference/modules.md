@@ -300,8 +300,9 @@ Use this checklist:
 
 ## Current Quality-Pass Guidance
 
-The active module work is not a redesign. It is limited maintenance supporting
-the Stateboy, Brainiac, and Chronos V2 release stages.
+The active module work is not a redesign. It is limited polish supporting the
+paired Chronos V2 and BetterDungeon V2.1 release. Stateboy and Brainiac follow
+later.
 
 Review questions:
 
@@ -312,7 +313,8 @@ Review questions:
 - Are response fields the fields authors actually need?
 - Does mobile/narrow UI behavior hold where relevant?
 - Is the regression script still representative?
-- Would the module be comfortable to show in Stateboy and future showcase scripts such as Brainiac and Chronos V2?
+- Is the module comfortable to show in Chronos V2 and later showcase scripts
+  such as Stateboy and Brainiac?
 
 Current order is tracked in [Module Quality Pass](../planning/module-quality-pass.md).
 

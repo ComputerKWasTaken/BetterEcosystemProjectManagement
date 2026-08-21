@@ -2,8 +2,10 @@
 
 ## Status Snapshot
 
-BetterDungeon V2.1 is complete across the browser extension and Android client.
-This roadmap is retained as an implementation record and maintenance reference.
+BetterDungeon V2.1 is functionally complete across the browser extension and
+Android client. Only final polish and release preparation remain. V2.1 will
+release alongside Chronos V2, the current BetterEcosystem priority. This roadmap
+is retained as an implementation record and release reference.
 
 Navigator's architecture and product contract are locked in the
 [Navigator design doc](../../navigator/navigator-design.md). Navigator ships in
@@ -18,8 +20,9 @@ private provider settings, and a full-screen touch UI.
 Navigator Automations are **cancelled**. They are no longer part of the planned
 Navigator product or a deferred release backlog.
 
-The old Stateboy → Brainiac → Chronos V2 release sequence is retired. Those
-scripts are independent consumers, not gates for BetterDungeon work.
+The old Stateboy → Brainiac → Chronos V2 release sequence is retired.
+Chronos V2 now comes first and is paired with the BetterDungeon V2.1 release;
+Stateboy is paused, and Brainiac remains planned for later.
 
 ## Phase 0 — Baseline and Contract Freeze
 
@@ -352,7 +355,7 @@ without an explicit player action.
 
 ## Phase 10 — Documentation and V2.1 Release
 
-Status: **Complete**
+Status: **Substantially complete — final polish and paired release remain**
 
 - Nine-module references, helpers, public guides, settings, and release copy are
   aligned with the shipped contracts.
@@ -360,7 +363,8 @@ Status: **Complete**
   permissions, privacy boundaries, and deletion limitations are documented.
 - Chromium, Firefox/Gecko, and Android WebView keep separate packaging and UI
   boundaries while sharing the same public Ultrascripts behavior.
-- BetterDungeon releases remain independent of Stateboy, Brainiac, and Chronos V2.
+- BetterDungeon V2.1 releases alongside Chronos V2 after their remaining polish
+  and release checks are complete.
 
 ## Sequencing Rules
 
