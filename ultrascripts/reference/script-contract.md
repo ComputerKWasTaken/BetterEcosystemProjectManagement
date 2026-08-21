@@ -242,9 +242,9 @@ Design contract:
   exact earlier timestamp even across `/time`, `/date`, and randomized `/sleep`
 - `/time`, `/date`, `/sleep`, and `/chronos` are the complete command surface;
   unrelated slash commands pass through for other scripts
-- Widget displays time and date as a centered amber/cyan badge pair when
-  available. Both values stay string-backed, preventing formatted time from
-  being numerically coerced; `state.message` provides the vanilla and
+- Widget displays time and a compact date in one centered custom-HTML strip
+  when available. The value stays string-backed, preventing formatted time
+  from being numerically coerced; `state.message` provides the vanilla and
   Widget-disabled fallback
 - lifecycle code stays in its matching hook; Library contains shared helpers
   rather than a lifecycle router

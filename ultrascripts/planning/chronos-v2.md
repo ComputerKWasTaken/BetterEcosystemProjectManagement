@@ -97,13 +97,14 @@ minutes-per-turn increment.
 
 ## Player-Facing Display
 
-When a live BetterDungeon heartbeat advertises Widget, Chronos publishes two
-stable string-backed badge widgets: a solid amber clock and an outlined cyan
-calendar. Their icons, color contrast, tooltips, and shared center alignment
-make the pair readable without turning it into a dashboard. Time must remain a
-string-backed type so values such as `8:00 AM` are not coerced to the number
-`8`. Its publisher preserves unrelated manifest entries and carries forward
-other scripts' current Widget values before writing its own snapshot.
+When a live BetterDungeon heartbeat advertises Widget, Chronos publishes one
+centered custom-HTML clock strip. It presents amber tabular time, a quiet
+divider, and a shortened low-contrast date inside a small rounded surface. It
+has no labels, emoji, controls, or dashboard chrome. The HTML remains
+string-backed, so values such as `8:00 AM` cannot be coerced to the number `8`.
+The publisher removes the retired `chronos-time` and `chronos-date` widgets,
+preserves unrelated manifest entries, and carries forward other scripts'
+current Widget values before writing its own snapshot.
 
 Without a live Widget module, Chronos sets a unique timestamp in
 `state.message`. It never injects a recurring banner into story output.
