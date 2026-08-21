@@ -6,8 +6,8 @@
 Implementation status: the first-party streaming chat surface, grounded
 Navigator, compact Story Card tools, confirmed mutation proposals, provider
 setup, and Android port are complete. Mobile uses a native transport and
-touch-first full-screen overlay. The shipped mutation contract is recorded in
-[`navigator-mutation-tools-plan.md`](./navigator-mutation-tools-plan.md).
+touch-first full-screen overlay. Verified mutation behavior is recorded in
+[`navigator-mutation-contract.md`](./navigator-mutation-contract.md).
 
 ## 1. Product Definition
 

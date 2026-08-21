@@ -59,6 +59,6 @@ release. Stateboy is paused, and Brainiac remains planned for later.
 
 - [V2.1 implementation roadmap](./ultrascripts/planning/current-roadmap.md)
 - [Navigator architecture and product contract](./navigator/navigator-design.md)
+- [Navigator verified mutation reference](./navigator/navigator-mutation-contract.md)
 - [Ultrascripts internal docs](./ultrascripts/README.md)
 - [Ultrascripts verification reference](./ultrascripts/reference/verification.md)
-- [Documentation sync rules](./ultrascripts/planning/docs-sync.md)

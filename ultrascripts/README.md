@@ -5,7 +5,7 @@ Private reference and maintenance docs for Ultrascripts, the BetterDungeon runti
 ## What These Docs Are For
 
 - `reference/` contains stable runtime facts, module contracts, SDK details, script contracts, and verification guidance.
-- `planning/` contains focused maintenance notes and the current release roadmap.
+- `planning/` contains the active V2.1 roadmap and the parked Stateboy direction.
 
 Ultrascripts shipped with BetterDungeon V2 and its V2.1 implementation is
 essentially complete. Keep these documents aligned with the implementation and
@@ -23,17 +23,14 @@ later.
 
 | Need | Open |
 |---|---|
-| What is true right now and what is next? | [Current roadmap](./planning/current-roadmap.md) |
+| What remains before V2.1 ships? | [Current release plan](./planning/current-roadmap.md) |
 | How does the runtime work? | [Runtime reference](./reference/runtime.md) |
 | Which modules ship and what contracts do they implement? | [Module system reference](./reference/modules.md) |
 | What should scripts and templates assume? | [Script contract reference](./reference/script-contract.md) |
 | What does `sdk` expose? | [BetterDungeon SDK reference](./reference/sdk.md) |
 | What does the Audio module accept? | [Audio module reference](./reference/audio.md) |
 | What should be tested or live-checked? | [Verification reference](./reference/verification.md) |
-| How do private docs and public docs stay aligned? | [Documentation sync plan](./planning/docs-sync.md) |
-| What module polish is still worth tracking? | [Module quality pass](./planning/module-quality-pass.md) |
-| Why are the V2.1 designs shaped this way? | [V2.1 design notes](./planning/v2.1-design-notes.md) |
-| What is the completed Chronos V2 contract? | [Chronos V2 plan](./planning/chronos-v2.md) |
+| What is parked for Stateboy? | [Stateboy direction](./planning/stateboy.md) |
 
 ## Source-of-Truth Map
 
@@ -78,9 +75,14 @@ V2.1 module set.
 ## Documentation Rules
 
 - Treat the V2 and V2.1 contracts as shipped infrastructure.
+- Keep active status and release work in `planning/current-roadmap.md`; do not
+  create parallel checklists for the same release.
+- Keep completed implementation history out of `planning/`. Durable behavior
+  belongs in `reference/`, while temporary research should be removed once its
+  decisions are reflected in the implementation or canonical reference.
 - Prefer live code, public guide components, and current templates over old phase notes.
 - Keep `reference/` stable unless an implementation contract changes.
-- Keep `planning/` concise: completed roadmaps are implementation records, while
-  new files should describe genuinely active or future work.
+- Keep `planning/` concise and limited to genuinely active or future work.
 - Do not revive retired concepts such as Lite/full profiles, mutation-template priming, invisible-text transport, or action-id-keyed Widget history.
-- If a planning document starts explaining an old debate at length, summarize the decision or move the history into a deliberately named archive later.
+- If a planning document starts explaining an old debate at length, keep the
+  settled decision and remove the superseded discussion.

@@ -316,7 +316,8 @@ Review questions:
 - Is the module comfortable to show in Chronos V2 and later showcase scripts
   such as Stateboy and Brainiac?
 
-Current order is tracked in [Module Quality Pass](../planning/module-quality-pass.md).
+Remaining release work is tracked in the
+[BetterDungeon V2.1 roadmap](../planning/current-roadmap.md).
 
 ## Do Not Build By Default
 
