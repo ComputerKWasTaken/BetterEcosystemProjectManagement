@@ -9,12 +9,14 @@ a paired release with BetterDungeon V2.1.
 ## Product Contract
 
 Chronos is a stable, lightweight in-game clock and Gregorian calendar. It has
-four responsibilities:
+five responsibilities:
 
 1. advance time predictably from AI Dungeon's action count;
-2. append the current time and date to model context;
+2. append the selected current time and/or date to model context;
 3. display the same timestamp through the Ultrascripts Widget module; and
-4. fall back to a `state.message` toast when Widget is unavailable.
+4. maintain a live player-facing readout in its Story Card; and
+5. use `state.message` as an additional toast surface when the platform honors
+   it.
 
 Chronos does not own weather, seasons, temperature, astronomy, real-world clock
 synchronization, output decoration, or broad world simulation. Those are better
@@ -62,8 +64,8 @@ preserving their reusable cached prefix.
   day-by-day loops. Large jumps, reverse movement, month/year rollover, century
   leap-year exceptions, and both supported calendar boundaries stay
   deterministic.
-- Persisted state is normalized defensively so malformed or partial legacy
-  values recover to safe defaults instead of poisoning the clock lifecycle.
+- Persisted state is normalized defensively so malformed current values recover
+  to safe defaults instead of poisoning the clock lifecycle.
 
 ## Settings
 
@@ -71,12 +73,20 @@ Chronos creates one compact `Chronos Settings` Story Card. It controls:
 
 - enabled state;
 - paused state;
+- time tracking/display, enabled by default;
+- date tracking/display, enabled by default;
 - minutes per turn, bounded from 0 to 1,440;
 - 12-hour or 24-hour display.
 
-The card is configuration, not a second player-facing clock. Chronos does not
-rewrite it every turn. Legacy manual clock fields are removed when encountered;
-live time and date changes belong to commands.
+The card also contains read-only current time and date fields. Chronos refreshes
+it every turn, keeping it near the top of the Story Card list and making it the
+dependable vanilla display for both inherited and attached scripts. Disabled
+tracking fields show `Hidden`. Live time and date changes belong to commands.
+
+The tracking toggles control what Chronos exposes through context, Widget,
+toast, and Story Card displays. Its internal clock and calendar continue moving
+together so rollover remains correct and either component can be safely
+re-enabled later.
 
 ## Commands
 
@@ -106,16 +116,19 @@ centered custom-HTML clock strip. It presents amber tabular time, a quiet
 divider, and a shortened low-contrast date inside a small rounded surface. It
 has no labels, emoji, controls, or dashboard chrome. The HTML remains
 string-backed, so values such as `8:00 AM` cannot be coerced to the number `8`.
-The publisher removes the retired `chronos-time` and `chronos-date` widgets,
-preserves unrelated manifest entries, and carries forward other scripts'
-current Widget values before writing its own snapshot.
+The publisher preserves unrelated manifest entries and carries forward other
+scripts' current Widget values before writing its own snapshot.
 Chronos bounds its own Widget history and removes both current and retired
 Widget values when disabled, without deleting history owned by other scripts.
 
 Without a live Widget module, Chronos sets a unique timestamp in
 `state.message`. An invisible alternating marker keeps otherwise identical
 paused-time and command toasts eligible for display without adding visual
-noise. Chronos never injects a recurring banner into story output.
+noise. Adventure Scripts currently have an Alpha platform bug which prevents
+these toasts from appearing, but retaining the normal API path is harmless and
+allows them to resume automatically when fixed. The live Story Card remains
+available regardless. Chronos never injects a recurring banner into story
+output.
 
 ## Verification Gate
 
@@ -126,12 +139,13 @@ Before publication, keep automated coverage for:
 - ordinary advancement, Retry, and Undo;
 - exact snapshot restoration across commands and randomized sleep;
 - midnight, month, year, leap-day, century, large-jump, and calendar-boundary math;
-- settings migration and slash-command parsing;
+- settings and slash-command parsing;
+- live Story Card refresh and independent time/date tracking combinations;
 - malformed persisted-state recovery and abandoned-command cancellation;
 - six-to-nine-hour nighttime sleep and daytime next-morning fallback;
 - live Widget publication, bounded history, cleanup, and preservation of
   unrelated widgets;
-- missing, disabled, and stale Ultrascripts fallback; and
+- missing, disabled, and stale Ultrascripts behavior plus retained toast state; and
 - production BetterRepository build integrity.
 
 Live-test the unpublished script on both vanilla AI Dungeon and BetterDungeon
