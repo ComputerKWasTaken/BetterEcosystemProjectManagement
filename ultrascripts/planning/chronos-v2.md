@@ -46,18 +46,21 @@ preserving their reusable cached prefix.
 
 ## Timekeeping Rules
 
-- Default start: 8:00 AM on January 1, 1000.
+- Default start: 8:00 AM on June 1, 2026.
 - Default pace: two in-game minutes per adventure action.
 - The first hook execution anchors the clock to the adventure's current action
   count, so attaching Chronos to a long-running adventure does not simulate its
   entire history.
 - Repeated Context execution at the same action count is a Retry and does not
   advance time twice.
-- A lower action count reverses the corresponding automatic time, so Undo
-  restores the earlier timestamp.
+- Chronos stores bounded action-count snapshots. A lower action count restores
+  the exact earlier timestamp, including across randomized sleep and manual
+  clock changes, rather than estimating Undo from the current turn rate.
 - Paused or disabled turns update the action-count anchor without accumulating
   time to apply later.
-- Gregorian month lengths and leap-year rules are deterministic.
+- Clock arithmetic uses absolute Gregorian minute indexes rather than repeated
+  day-by-day loops. Large jumps, reverse movement, month/year rollover, century
+  leap-year exceptions, and the lower calendar boundary stay deterministic.
 
 ## Settings
 
@@ -66,19 +69,41 @@ Chronos creates one compact `Chronos Settings` Story Card. It controls:
 - enabled state;
 - paused state;
 - minutes per turn, bounded from 0 to 1,440;
-- 12-hour or 24-hour display; and
-- explicit time/date changes through `New Time`, `New Date`, and
-  `Apply Changes`.
+- 12-hour or 24-hour display.
 
 The card is configuration, not a second player-facing clock. Chronos does not
-rewrite it every turn.
+rewrite it every turn. Legacy manual clock fields are removed when encountered;
+live time and date changes belong to commands.
+
+## Commands
+
+Chronos recognizes only its small clock-control surface and leaves unrelated
+slash commands untouched for other attached scripts:
+
+- `/time` displays the current time;
+- `/time 8:30 AM`, `/time 8 PM`, or `/time 20:30` sets it;
+- `/date` displays the current date;
+- `/date June 1, 2026`, `/date Jun 1, 2026`, or `/date 2026-06-01` sets it;
+- `/sleep` advances by a randomized six-to-nine hours plus minutes when that
+  lands on the following morning. If invoked at an unusual daytime hour, it
+  safely falls forward to 6:00–9:59 AM on the next calendar day;
+- `/chronos` displays the compact command reference.
+
+Current AI Dungeon behavior treats `stop` from `onInput` as a script error.
+Chronos therefore converts a handled command into a minimal narrative action,
+applies the state change exactly once in Context, and provides confirmation via
+Widget/toast presentation. Command turns do not receive the ordinary automatic
+minutes-per-turn increment.
 
 ## Player-Facing Display
 
 When a live BetterDungeon heartbeat advertises Widget, Chronos publishes two
-stable widgets: `chronos-time` and `chronos-date`. Its publisher preserves
-unrelated manifest entries and carries forward other scripts' current Widget
-values before writing its own snapshot.
+stable string-backed badge widgets: a solid amber clock and an outlined cyan
+calendar. Their icons, color contrast, tooltips, and shared center alignment
+make the pair readable without turning it into a dashboard. Time must remain a
+string-backed type so values such as `8:00 AM` are not coerced to the number
+`8`. Its publisher preserves unrelated manifest entries and carries forward
+other scripts' current Widget values before writing its own snapshot.
 
 Without a live Widget module, Chronos sets a unique timestamp in
 `state.message`. It never injects a recurring banner into story output.
@@ -90,8 +115,10 @@ Before publication, keep automated coverage for:
 - the first-line cache-compatible annotation;
 - unchanged prompt-prefix preservation;
 - ordinary advancement, Retry, and Undo;
-- midnight, month, year, and leap-day boundaries;
-- settings parsing and explicit clock changes;
+- exact snapshot restoration across commands and randomized sleep;
+- midnight, month, year, leap-day, century, large-jump, and lower-boundary math;
+- settings migration and slash-command parsing;
+- six-to-nine-hour nighttime sleep and daytime next-morning fallback;
 - live Widget publication and preservation of unrelated widgets;
 - missing, disabled, and stale Ultrascripts fallback; and
 - production BetterRepository build integrity.

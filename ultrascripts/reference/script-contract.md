@@ -238,10 +238,14 @@ Design contract:
   incoming prompt byte-for-byte, and appends only the current timestamp suffix
 - the Input hook observes Ultrascripts liveness; Context owns time advancement,
   model injection, and player-facing presentation
-- retries do not advance twice, and lower action counts reverse automatic time
-  so Undo restores the earlier timestamp
-- Widget displays time and date when available; `state.message` provides the
-  vanilla and Widget-disabled fallback
+- retries do not advance twice; bounded action snapshots make Undo restore the
+  exact earlier timestamp even across `/time`, `/date`, and randomized `/sleep`
+- `/time`, `/date`, `/sleep`, and `/chronos` are the complete command surface;
+  unrelated slash commands pass through for other scripts
+- Widget displays time and date as a centered amber/cyan badge pair when
+  available. Both values stay string-backed, preventing formatted time from
+  being numerically coerced; `state.message` provides the vanilla and
+  Widget-disabled fallback
 - lifecycle code stays in its matching hook; Library contains shared helpers
   rather than a lifecycle router
 - weather, seasons, temperature, astronomy, output banners, real-world clock
