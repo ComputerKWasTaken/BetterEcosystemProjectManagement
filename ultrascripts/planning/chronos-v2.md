@@ -2,9 +2,10 @@
 
 ## Status
 
-Chronos V2 is the active BetterEcosystem script priority. Its fresh foundation
-is implemented as an unpublished BetterRepository script and will iterate toward
-a paired release with BetterDungeon V2.1.
+Chronos V2 is complete and release-ready. Its fresh lightweight foundation,
+Ultrascripts integration, documentation, polish, and verification are finished.
+It remains unpublished only so it can release alongside BetterDungeon V2.1,
+which is now the active final-polish and cleanup priority.
 
 ## Product Contract
 
@@ -175,5 +176,5 @@ Before publication, keep automated coverage for:
 - missing, disabled, and stale Ultrascripts behavior plus retained toast state; and
 - production BetterRepository build integrity.
 
-Live-test the unpublished script on both vanilla AI Dungeon and BetterDungeon
-before marking it released.
+The unpublished script has completed its implementation and verification gate.
+Hold publication for its paired release with BetterDungeon V2.1.

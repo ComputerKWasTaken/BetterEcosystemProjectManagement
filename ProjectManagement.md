@@ -4,27 +4,28 @@
 
 ## Current Status
 
-BetterDungeon V2.1 is functionally complete across its runtime, nine first-party
-Ultrascripts modules, templates, regression coverage, and cross-platform
-support. Only final polish and release preparation remain. V2.1 will release
-alongside Chronos V2.
+BetterDungeon V2.1 is now the active BetterEcosystem priority. Its runtime, nine
+first-party Ultrascripts modules, templates, regression coverage, and
+cross-platform support are functionally complete; the remaining work is final
+polish, cleanup, and release preparation. V2.1 will release alongside the
+completed Chronos V2.
 
 The remaining BetterEcosystem work for this era is intentionally focused:
 
-1. Modernize, polish, verify, and publish Chronos V2.
-2. Finish BetterDungeon V2.1 polish and release it with Chronos V2.
+1. Finish BetterDungeon V2.1 polish, cleanup, and release preparation.
+2. Publish BetterDungeon V2.1 with the completed Chronos V2.
 3. Return to Stateboy and Brainiac after the paired release.
 4. Close the era with final documentation alignment and planning cleanup.
 
-Chronos V2 is the active priority. Stateboy is deliberately on the backburner,
-and Brainiac remains planned for later.
+Chronos V2 is complete and release-ready. Stateboy remains deliberately on the
+backburner, and Brainiac remains planned for later.
 
 ## Active Projects
 
-- **Chronos V2** — Active priority; modernization, Ultrascripts migration,
-  polish, verification, and publication target.
-- **[BetterDungeon](./BetterDungeon.md)** — V2.1 is essentially complete; final
-  polish and paired release work remain.
+- **[BetterDungeon](./BetterDungeon.md)** — Active priority; V2.1 final polish,
+  cleanup, release checks, and paired publication remain.
+- **Chronos V2** — Complete and release-ready; awaiting paired publication with
+  BetterDungeon V2.1.
 - **Stateboy** — Paused until after Chronos V2 and BetterDungeon V2.1 ship.
 - **Brainiac** — Planned for later.
 - **[BetterVoyage](./BetterVoyage.md)** — Future Voyage extension idea; parked.
@@ -40,16 +41,15 @@ and Brainiac remains planned for later.
 
 ## Final-Era Release Stages
 
-### 1. Chronos V2 — Active
+### 1. BetterDungeon V2.1 — Active
 
-Update the completed Chronos foundation for the current AI Dungeon scripting
-landscape, migrate it from BetterScripts to Ultrascripts, then complete polish,
-live verification, documentation, and publication.
+Complete final polish, cleanup, regression checks, documentation alignment, and
+release preparation.
 
-### 2. BetterDungeon V2.1 — Paired Release
+### 2. Chronos V2 — Complete, Awaiting Paired Release
 
-Finish the remaining polish and release preparation. Publish V2.1 alongside
-Chronos V2.
+Chronos V2's implementation, Ultrascripts integration, polish, and verification
+are complete. Publish it alongside BetterDungeon V2.1.
 
 ### 3. Stateboy and Brainiac
 

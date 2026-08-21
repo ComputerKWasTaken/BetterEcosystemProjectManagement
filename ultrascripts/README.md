@@ -13,10 +13,11 @@ public BetterRepository guides while final polish proceeds.
 
 ## Current Release Context
 
-BetterDungeon V2 is released. V2.1 is functionally complete across PC and
-Mobile, with final polish and release preparation remaining. Chronos V2 is the
-active script priority and will release alongside V2.1. Stateboy is paused, and
-Brainiac remains planned for later.
+BetterDungeon V2 is released. V2.1 is the active priority and is functionally
+complete across PC and Mobile, with final polish, cleanup, release checks, and
+preparation remaining. Chronos V2 is complete and release-ready for paired
+publication with V2.1. Stateboy is paused, and Brainiac remains planned for
+later.
 
 ## Start Here
 
@@ -32,7 +33,7 @@ Brainiac remains planned for later.
 | How do private docs and public docs stay aligned? | [Documentation sync plan](./planning/docs-sync.md) |
 | What module polish is still worth tracking? | [Module quality pass](./planning/module-quality-pass.md) |
 | Why are the V2.1 designs shaped this way? | [V2.1 design notes](./planning/v2.1-design-notes.md) |
-| What is the active Chronos V2 contract? | [Chronos V2 plan](./planning/chronos-v2.md) |
+| What is the completed Chronos V2 contract? | [Chronos V2 plan](./planning/chronos-v2.md) |
 
 ## Source-of-Truth Map
 

@@ -300,9 +300,9 @@ Use this checklist:
 
 ## Current Quality-Pass Guidance
 
-The active module work is not a redesign. It is limited polish supporting the
-paired Chronos V2 and BetterDungeon V2.1 release. Stateboy and Brainiac follow
-later.
+The active module work is not a redesign. It is limited final polish, cleanup,
+and release verification for BetterDungeon V2.1. Chronos V2 is complete and
+awaiting paired publication; Stateboy and Brainiac follow later.
 
 Review questions:
 

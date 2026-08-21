@@ -1,17 +1,18 @@
 # BetterDungeon Project Management
 
-> Release-candidate reference for BetterDungeon V2.1.
+> Active final-polish and release reference for BetterDungeon V2.1.
 
 ## Current Status
 
-BetterDungeon V2.1 is essentially complete across the browser extension and
-Android client. Only final polish and release preparation remain, and V2.1 will
-release alongside Chronos V2. The release combines the Ultrascripts platform
+BetterDungeon V2.1 is the active BetterEcosystem priority. It is functionally
+complete across the browser extension and Android client; final polish, cleanup,
+release checks, and preparation remain. V2.1 will release alongside the
+completed Chronos V2. The release combines the Ultrascripts platform
 pass with Navigator, its first-party AI chat surface, confirmed adventure
 mutations, and the unified OpenAI-compatible provider backend.
 
-Chronos V2 is the current BetterEcosystem priority and the showcase paired with
-the V2.1 release. Stateboy is paused, and Brainiac remains planned for later.
+Chronos V2 is complete and release-ready as the showcase paired with the V2.1
+release. Stateboy is paused, and Brainiac remains planned for later.
 
 ## V2.1 Release Scope
 

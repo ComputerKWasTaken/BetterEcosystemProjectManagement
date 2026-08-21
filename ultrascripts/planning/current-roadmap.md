@@ -2,10 +2,11 @@
 
 ## Status Snapshot
 
-BetterDungeon V2.1 is functionally complete across the browser extension and
-Android client. Only final polish and release preparation remain. V2.1 will
-release alongside Chronos V2, the current BetterEcosystem priority. This roadmap
-is retained as an implementation record and release reference.
+BetterDungeon V2.1 is the active BetterEcosystem priority. It is functionally
+complete across the browser extension and Android client; only final polish,
+cleanup, release checks, and preparation remain. V2.1 will release alongside
+the completed, release-ready Chronos V2. This roadmap is retained as an
+implementation record and active release reference.
 
 Navigator's architecture and product contract are locked in the
 [Navigator design doc](../../navigator/navigator-design.md). Navigator ships in
@@ -20,9 +21,9 @@ private provider settings, and a full-screen touch UI.
 Navigator Automations are **cancelled**. They are no longer part of the planned
 Navigator product or a deferred release backlog.
 
-The old Stateboy → Brainiac → Chronos V2 release sequence is retired.
-Chronos V2 now comes first and is paired with the BetterDungeon V2.1 release;
-Stateboy is paused, and Brainiac remains planned for later.
+The old Stateboy → Brainiac → Chronos V2 release sequence is retired. Chronos
+V2 is complete, BetterDungeon V2.1 final polish is active, and the two will
+publish together. Stateboy is paused, and Brainiac remains planned for later.
 
 ## Phase 0 — Baseline and Contract Freeze
 
@@ -355,7 +356,7 @@ without an explicit player action.
 
 ## Phase 10 — Documentation and V2.1 Release
 
-Status: **Substantially complete — final polish and paired release remain**
+Status: **Active — final polish, cleanup, release checks, and paired publication remain**
 
 - Nine-module references, helpers, public guides, settings, and release copy are
   aligned with the shipped contracts.
@@ -363,8 +364,8 @@ Status: **Substantially complete — final polish and paired release remain**
   permissions, privacy boundaries, and deletion limitations are documented.
 - Chromium, Firefox/Gecko, and Android WebView keep separate packaging and UI
   boundaries while sharing the same public Ultrascripts behavior.
-- BetterDungeon V2.1 releases alongside Chronos V2 after their remaining polish
-  and release checks are complete.
+- BetterDungeon V2.1 releases alongside the completed Chronos V2 after V2.1's
+  remaining polish, cleanup, and release checks are complete.
 
 ## Sequencing Rules
 
