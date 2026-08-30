@@ -1,6 +1,6 @@
 # Navigator — Architecture and Product Contract
 
-> V2.1 headline feature. This document locks the decisions needed to build
+> V3.0 headline feature. This document locks the decisions needed to build
 > Navigator's shell and live chat, and records what is deliberately deferred.
 
 Implementation status: the first-party streaming chat surface, grounded
@@ -8,6 +8,13 @@ Navigator, compact Story Card tools, confirmed mutation proposals, provider
 setup, and Android port are complete. Mobile uses a native transport and
 touch-first full-screen overlay. Verified mutation behavior is recorded in
 [`navigator-mutation-contract.md`](./navigator-mutation-contract.md).
+
+V3.0 changes the application model: **Auto mode is the default** — Navigator
+applies its changes automatically and keeps the player informed through
+concise applied-change cards, so the player course-corrects when necessary
+rather than approving presumptively. Review mode retains the explicit
+per-change approval flow. See
+[`navigator-auto-mode-plan.md`](./navigator-auto-mode-plan.md).
 
 ## 1. Product Definition
 
@@ -44,7 +51,7 @@ Voyage Studio and Puppeteer) targets **scenario authors**. Navigator targets
 | Mobile surface | Full-screen touch overlay using the visual viewport and Android lifecycle coordination |
 | First build | Shell + live grounded chat, read-only, streaming |
 | Tool loop | Two bounded read tools plus five proposal-only mutation tools |
-| Mutations | Model proposes; an explicit user action applies; optional Read-only mode removes proposals |
+| Mutations | Model proposes; **Auto mode (default)** applies automatically with visible change cards; Review mode requires explicit approval; Read-only mode removes proposals |
 | Grounding | Hand-written paraphrase, ~1k tokens. No documentation injection |
 | Provider | Gemini plus a configurable OpenAI-compatible endpoint through the shared first-party chat surface |
 | Provider UX | Complete: explicit Gemini or OpenAI-compatible selection; OpenRouter and Custom are the compatible service choices |
@@ -280,9 +287,12 @@ upserting a client-generated ID rather than calling a separate create mutation.
 
 Phase 7C implements safe-DOM previews, stable-ID and current-value
 preconditions, serialized writes, and mandatory server read-back. The model
-receives proposal tools only; Apply, Reject, and Delete are direct player
-actions that are never registered as model-callable functions. The synchronized
-Read-only mode removes proposal definitions and blocks pending Apply controls.
+receives proposal tools only; Apply, Reject, and Delete are never registered
+as model-callable functions. In V3.0's default Auto mode the runtime applies
+validated proposals automatically (the model still cannot call apply); in
+Review mode Apply, Reject, and Delete remain direct player actions. The
+synchronized Read-only mode removes proposal definitions and blocks pending
+Apply controls.
 
 The deliberately basic V2.1 contract does not include Undo or a durable audit
 log. Story Card deletion therefore carries explicit irreversible wording. Card
@@ -297,8 +307,8 @@ other service choice. Provider changes remain explicit; content never silently
 fails over between providers.
 
 **Automations — cancelled.** Navigator will not gain scheduled, event-triggered,
-or unattended execution. It remains player-initiated, and every mutation
-requires a direct approval action.
+or unattended execution. It remains player-initiated: Auto mode only applies
+changes produced by a player-initiated turn.
 
 **Mobile — complete.** The separate Android repository
 now uses a touch-first full-screen overlay, native Gemini/OpenAI-compatible
@@ -351,5 +361,11 @@ contract for the underlying resolver evidence and restoration recipes.
    provider transport, virtual streaming ports, settings migration, and lifecycle
    integration.
 
-All V2.1 delivery steps are complete. Future work should preserve the explicit
-provider-selection and player-confirmation boundaries.
+All former V2.1 delivery steps are complete. V3.0 adds:
+
+9. **Planned:** Auto mode as the default application model, the Review mode
+   opt-out, and the concise change-card redesign on PC and Mobile
+   ([plan](./navigator-auto-mode-plan.md)).
+
+Future work should preserve the explicit provider-selection boundary and the
+player's ability to see and course-correct every applied change.

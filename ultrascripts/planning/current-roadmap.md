@@ -1,12 +1,14 @@
-# BetterDungeon V2.1 Release Plan
+# BetterDungeon V3.0 Release Plan
 
 ## Status
 
-BetterDungeon V2.1 is functionally complete on the browser extension and
-Android client. It is the active BetterEcosystem priority while final polish,
-cleanup, release verification, and publication preparation are completed.
+The release formerly planned as V2.1 has been promoted to **V3.0** and is not
+yet released. The former V2.1 scope is functionally complete on the browser
+extension and Android client, and the release is reopened for the additional
+Navigator work below. V3.0 is the active BetterEcosystem priority.
 
-V2.1 will publish alongside the completed Chronos V2 script.
+Chronos V2 has already been released independently as a standalone script; it
+no longer gates this release.
 
 ## Completed Scope
 
@@ -30,11 +32,27 @@ and Ultrascripts [`reference/`](../reference/) documents.
 
 ## Remaining Release Work
 
+### New V3.0 scope
+
+- **Navigator Auto mode (default).** Navigator applies its changes
+  automatically without per-change approval, while keeping the player informed
+  through concise applied-change cards in the transcript. Preconditions,
+  serialized writes, and server read-back are unchanged. A Review mode keeps
+  the explicit approval flow, and Read-only mode still removes mutations
+  entirely. Plan:
+  [navigator-auto-mode-plan.md](../../navigator/navigator-auto-mode-plan.md).
+- **Concise change-card redesign.** Replace the current large proposal cards
+  with compact cards visually aligned with the tool usage indicators, on both
+  PC and Mobile.
+- **Hide the Artisan teaser.** Remove the Artisan teaser card and mentions from
+  the PC and Mobile popups (and the README teaser line) while Artisan's fate is
+  undecided. Hidden, not deleted: keep the work easy to restore.
+
 ### Cleanup and polish
 
 - Remove obsolete planning, test, and packaging artifacts.
 - Review user-facing labels, empty states, errors, diagnostics, and noisy logs.
-- Remove dead code and stale comments without expanding V2.1's scope.
+- Remove dead code and stale comments without expanding V3.0's scope.
 - Keep shared browser and Mobile behavior aligned for every touched runtime
   file.
 
@@ -42,8 +60,9 @@ and Ultrascripts [`reference/`](../reference/) documents.
 
 - Run the durable Node contract suites for AI compatibility, Apollo reads and
   caching, consumers, and verified write hydration.
-- Live-check Navigator chat, retrieval, proposal approval, Read-only mode,
-  request inspection, cancellation, and adventure navigation.
+- Live-check Navigator chat, retrieval, Auto mode application, Review mode
+  approval, Read-only mode, request inspection, cancellation, and adventure
+  navigation.
 - Live-check the nine Ultrascripts modules on representative browser and
   Mobile environments, focusing on permission, unavailable, and recovery
   paths.
@@ -55,22 +74,27 @@ and Ultrascripts [`reference/`](../reference/) documents.
 - Keep BetterDungeon, BetterRepository, and private reference claims aligned
   with the final implementation.
 - Finalize release notes and store copy outside the extension package.
-- Confirm version metadata and produce clean browser and Android artifacts.
-- Publish BetterDungeon V2.1 and Chronos V2 together.
+- Confirm V3.0 version metadata and produce clean browser and Android
+  artifacts.
+- Publish BetterDungeon V3.0.
 
 ## Release Gate
 
-V2.1 is ready when:
+V3.0 is ready when:
 
 - no release-blocking regression remains on browser or Mobile;
 - all applicable durable suites pass;
+- Auto mode is the shipped default with the revised change cards on both
+  platforms;
+- the Artisan teaser is hidden on both platforms;
 - the manual Navigator and module checks pass;
 - release packages contain no development or marketing artifacts that block
   publication; and
 - final public documentation matches the shipped behavior.
 
-## After V2.1
+## After V3.0
 
 Stateboy remains parked in [its direction document](./stateboy.md). Brainiac,
-new Navigator capabilities, local HTTP models, arbitrary scenario-supplied
-JavaScript, and broad architecture migrations are outside this release.
+Artisan (pending a ship/no-ship decision), further Navigator capabilities,
+local HTTP models, arbitrary scenario-supplied JavaScript, and broad
+architecture migrations are outside this release.

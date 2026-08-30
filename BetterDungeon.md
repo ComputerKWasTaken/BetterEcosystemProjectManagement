@@ -1,20 +1,25 @@
 # BetterDungeon Project Management
 
-> Active final-polish and release reference for BetterDungeon V2.1.
+> Active development and release reference for BetterDungeon V3.0.
 
 ## Current Status
 
-BetterDungeon V2.1 is the active BetterEcosystem priority. It is functionally
-complete across the browser extension and Android client; final polish, cleanup,
-release checks, and preparation remain. V2.1 will release alongside the
-completed Chronos V2. The release combines the Ultrascripts platform
-pass with Navigator, its first-party AI chat surface, confirmed adventure
-mutations, and the unified OpenAI-compatible provider backend.
+The in-progress release formerly planned as V2.1 has been promoted to **V3.0**
+and is **not yet released**. V3.0 is the active BetterEcosystem priority.
+The former V2.1 scope is functionally complete across the browser extension
+and Android client, but the release is reopened for additional Navigator work
+that justifies the major-version bump: Navigator **Auto mode** (automatic,
+player-visible change application as the default) and a concise redesigned
+change-card UI aligned with the tool usage indicators. The Artisan teaser is
+hidden until a decision is made on whether Artisan ships at all. The release
+combines the Ultrascripts platform pass with Navigator, its first-party AI
+chat surface, verified adventure mutations, and the unified OpenAI-compatible
+provider backend.
 
-Chronos V2 is complete and release-ready as the showcase paired with the V2.1
-release. Stateboy is paused, and Brainiac remains planned for later.
+Chronos, the lightweight time/date tracking script, has already been released
+independently. Stateboy is paused, and Brainiac remains planned for later.
 
-## V2.1 Release Scope
+## V3.0 Release Scope
 
 - Reliable heartbeat liveness with persistent `beat` advancement and explicit
   `PC`/`Mobile` platform reporting.
@@ -27,23 +32,33 @@ release. Stateboy is paused, and Brainiac remains planned for later.
   character single-shot prompt limit and later-turn response model.
 - Navigator multi-turn streaming chat, bounded adventure grounding, typed Story
   Card research tools, and per-adventure session persistence.
-- Proposal-only Navigator mutations with explicit player approval, read-version
-  conflict checks, server read-back, and synchronized Read-only mode.
+- Navigator **Auto mode (default)**: Navigator applies its proposed changes
+  automatically while keeping the player informed through concise change cards,
+  preserving read-version conflict checks, serialized writes, and server
+  read-back. A Review mode retains explicit per-change approval, and Read-only
+  mode still removes mutations entirely.
+- A revised, concise change-card UI that matches the tool usage indicators.
 - Desktop overlay and touch-first Android Navigator interfaces.
 - Chromium, Firefox/Gecko, and Android WebView support.
+- The Artisan teaser is hidden from the PC and Mobile popups pending a
+  decision on Artisan itself.
 
 ## Settled Product Boundaries
 
 - Navigator is player-initiated. Scheduled, event-triggered, and unattended
-  Automations are cancelled.
-- V2.1 does not provide Navigator Undo or a durable mutation audit log. Applied
-  changes are verified from the server; Story Card deletion is clearly labeled
-  irreversible before approval.
+  Automations are cancelled. Auto mode only applies changes produced by a
+  player-initiated turn; it never runs on its own.
+- The player course-corrects when necessary, not presumptively: changes apply
+  automatically by default, and every applied change stays visible in the
+  transcript so the player can react. Story Card deletion remains clearly
+  labeled irreversible.
+- V3.0 does not provide a durable mutation audit log. Applied changes are
+  verified from the server.
 - Provider selection is explicit. BetterDungeon never silently fails over
   between Gemini, OpenRouter, and Custom services.
 - Local HTTP model endpoints, arbitrary scenario-supplied JavaScript execution,
   a third-party module marketplace, and a broad TypeScript/bundler migration are
-  outside V2.1.
+  outside V3.0.
 
 ## Ongoing Maintenance
 
@@ -57,7 +72,8 @@ release. Stateboy is paused, and Brainiac remains planned for later.
 
 ## Canonical References
 
-- [V2.1 implementation roadmap](./ultrascripts/planning/current-roadmap.md)
+- [V3.0 implementation roadmap](./ultrascripts/planning/current-roadmap.md)
+- [Navigator Auto mode implementation plan](./navigator/navigator-auto-mode-plan.md)
 - [Navigator architecture and product contract](./navigator/navigator-design.md)
 - [Navigator verified mutation reference](./navigator/navigator-mutation-contract.md)
 - [Ultrascripts internal docs](./ultrascripts/README.md)
