@@ -15,9 +15,8 @@ public BetterRepository guides while final polish proceeds.
 
 BetterDungeon V2 is released. V2.1 is the active priority and is functionally
 complete across PC and Mobile, with final polish, cleanup, release checks, and
-preparation remaining. Chronos V2 is complete and release-ready for paired
-publication with V2.1. Stateboy is paused, and Brainiac remains planned for
-later.
+preparation remaining. Chronos V2 has already shipped independently. Stateboy
+is paused, and Brainiac remains planned for later.
 
 ## Start Here
 

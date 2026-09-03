@@ -2,10 +2,10 @@
 
 Status: **Verified on 2026-08-08 against a disposable AI Dungeon adventure.**
 
-This is the research contract for Navigator Phase 7A. It records AI Dungeon's
-native GraphQL write behavior and the safety rules derived from live probes. It
-does not authorize production writes and does not add a mutation API to
-BetterDungeon.
+This is the historical research contract that established Navigator's GraphQL
+write behavior and safety rules. The current production boundary is defined by
+[`navigator-design.md`](./navigator-design.md); this document preserves the
+live-probe evidence behind that implementation.
 
 Sanitized machine-readable request fixtures live in
 [`navigator-mutation-fixtures.json`](./navigator-mutation-fixtures.json). They
@@ -147,9 +147,10 @@ Verified semantics:
 - Story Summary is a plain string at `Adventure.state.storySummary`.
 - The mutation returns the updated state slice and a new `Adventure.editedAt`.
 
-Although merge behavior is verified, production restoration should submit the
-captured five-field mutable state snapshot. That makes undo explicit and avoids
-depending on future server changes to partial merge behavior.
+Although merge behavior is verified, controlled research restoration should
+submit the captured five-field mutable state snapshot. This avoids depending on
+future server changes to partial merge behavior. Navigator does not expose a
+user-facing Undo operation.
 
 ## Plot Writes
 
@@ -224,9 +225,9 @@ Deleting the temporary card returned its ID plus a non-null `deletedAt`, removed
 it from the visible list, and reduced the card count immediately. The API did
 not expose an undelete or restoration operation during this capture.
 
-The exact client-side new-ID generation algorithm was not researched. A future
-implementation must either reproduce a collision-resistant accepted ID format
-or find a server-generated creation path before enabling card creation.
+The initial capture did not establish the exact client-side new-ID generation
+algorithm. The production follow-up resolved this gate with the secure strategy
+recorded at the end of this document.
 
 ## Refresh and Timing Evidence
 
@@ -244,7 +245,7 @@ state textareas reflected the new values without a page reload, Story Card
 upserts appeared in the list immediately, and deletion removed the card
 immediately. Explicit post-mutation GraphQL reads nevertheless matched every
 probe and restoration. Navigator must still read back from the server before
-declaring a write or undo successful.
+declaring a write successful.
 
 ## Concurrency Contract
 
@@ -273,15 +274,18 @@ Required compare-before-write policy:
   any mismatch is a conflict.
 - Card creation: assert the chosen ID is absent immediately before the upsert.
 
-## Undo and Restoration Recipes
+## Controlled Research Restoration Recipes
+
+These recipes describe how the disposable research adventure was restored
+between probes. They are not a Navigator Undo feature or a durable audit system.
 
 - Plot/state update: capture the relevant complete before-slice, write the
-  change, read back, and store before/after hashes. Undo compares against the
-  stored after-hash, writes the before-values, then reads back again.
-- Card creation: retain the returned ID; undo calls `deleteStoryCard` with that
-  ID and verifies absence.
-- Card update: retain the entire prior card; undo performs a full-record
-  `updateStoryCard` and verifies all fields.
+  change, read back, compare against the stored after-hash, write the baseline
+  values, and read back again.
+- Card creation: retain the returned ID, call `deleteStoryCard` with that ID,
+  and verify absence.
+- Card update: retain the entire prior card, perform a full-record
+  `updateStoryCard`, and verify all fields.
 - Card deletion: retain the complete prior card for possible recreation. No
   undelete contract was observed, so recreation may receive or require a new ID
   and references to the old ID cannot be promised.
@@ -295,8 +299,8 @@ Required compare-before-write policy:
   must serialize its own requests and must not rely on UI debounce behavior.
 - Deleted-ID reuse remains unresolved; recreation cannot promise the original
   card identity.
-- No production mutation method, Navigator tool loop, permission, or write UI was
-  added during the Phase 7A research milestone.
+- The Phase 7A capture itself added no production mutation method, Navigator
+  tool loop, permission, or write UI; those arrived in later implementation.
 
 ## Phase 7C Follow-up
 

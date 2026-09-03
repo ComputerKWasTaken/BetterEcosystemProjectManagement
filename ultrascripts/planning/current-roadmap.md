@@ -1,14 +1,15 @@
-# BetterDungeon V3.0 Release Plan
+# BetterDungeon v2.1 Release Plan
 
 ## Status
 
-The release formerly planned as V2.1 has been promoted to **V3.0** and is not
-yet released. The former V2.1 scope is functionally complete on the browser
-extension and Android client, and the release is reopened for the additional
-Navigator work below. V3.0 is the active BetterEcosystem priority.
+BetterDungeon v2.1 is functionally complete on the browser extension and
+Android client. The completed Navigator simplification and Inspector redesign
+are part of this release.
 
-Chronos V2 has already been released independently as a standalone script; it
-no longer gates this release.
+Feature scope is closed. Remaining work is release polish, documentation and
+promotional alignment, confirmed bug fixes, compatibility checks, packaging,
+and publication. Chronos V2 has already shipped independently and does not gate
+this release.
 
 ## Completed Scope
 
@@ -17,84 +18,73 @@ no longer gates this release.
 - Persistent heartbeat liveness with explicit `PC` and `Mobile` reporting.
 - One OpenAI-compatible backend for Gemini, OpenRouter, and remote Custom HTTPS
   services, with explicit provider selection and no silent failover.
-- Navigator streaming chat, bounded adventure grounding, Story Card, Memory
-  Bank, and story-history retrieval, request inspection, and per-adventure
-  settings.
-- Navigator proposal-only writes with direct approval, conflict checks,
-  serialized mutations, server read-back, and synchronized Read-only mode.
-- Desktop and touch-first Android Navigator interfaces.
-- Chronos V2 implementation, documentation, and verification.
+- Navigator streaming chat, always-attempted bounded adventure grounding,
+  Story Card, story-history, and Memory Bank retrieval, per-adventure
+  conversation persistence, and latest-request inspection.
+- Navigator's three change modes: Automatic, Proposed changes, and No changes.
+  Automatic is the recommended default; permanent Story Card and Memory Bank
+  deletions always require explicit approval.
+- Compact change cards, conflict-safe serialized writes, server read-back, and
+  fail-closed storage checks.
+- Dedicated Inspector views and Gameplay-settings integration on PC and Mobile.
+- Removed Context selectors, Read Plot Components, message action rows, user
+  Edit, assistant Retry, and Navigator clipboard export.
+- Deliberate platform polish: PC retains settings-tab overflow arrows; Mobile
+  uses native swipe navigation, IBM Plex, IME-safe sizing, and touch targets.
+- The Artisan teaser is hidden while its future remains undecided.
 
-Durable product and implementation details live in the
+Durable behavior belongs in the
 [Navigator contract](../../navigator/navigator-design.md),
 [verified mutation reference](../../navigator/navigator-mutation-contract.md),
 and Ultrascripts [`reference/`](../reference/) documents.
 
 ## Remaining Release Work
 
-### New V3.0 scope
+### Documentation and promotion
 
-- **Navigator Auto mode (default).** Navigator applies its changes
-  automatically without per-change approval, while keeping the player informed
-  through concise applied-change cards in the transcript. Preconditions,
-  serialized writes, and server read-back are unchanged. A Review mode keeps
-  the explicit approval flow, and Read-only mode still removes mutations
-  entirely. Plan:
-  [navigator-auto-mode-plan.md](../../navigator/navigator-auto-mode-plan.md).
-- **Concise change-card redesign.** Replace the current large proposal cards
-  with compact cards visually aligned with the tool usage indicators, on both
-  PC and Mobile.
-- **Hide the Artisan teaser.** Remove the Artisan teaser card and mentions from
-  the PC and Mobile popups (and the README teaser line) while Artisan's fate is
-  undecided. Hidden, not deleted: keep the work easy to restore.
-
-### Cleanup and polish
-
-- Remove obsolete planning, test, and packaging artifacts.
-- Review user-facing labels, empty states, errors, diagnostics, and noisy logs.
-- Remove dead code and stale comments without expanding V3.0's scope.
-- Keep shared browser and Mobile behavior aligned for every touched runtime
-  file.
-
-### Verification
-
-- Run the durable Node contract suites for AI compatibility, Apollo reads and
-  caching, consumers, and verified write hydration.
-- Live-check Navigator chat, retrieval, Auto mode application, Review mode
-  approval, Read-only mode, request inspection, cancellation, and adventure
-  navigation.
-- Live-check the nine Ultrascripts modules on representative browser and
-  Mobile environments, focusing on permission, unavailable, and recovery
-  paths.
-- Confirm Chromium, Firefox/Gecko, and Android packaging contains only intended
-  release files and that each manifest/build is accepted by its target.
-
-### Documentation and publication
-
-- Keep BetterDungeon, BetterRepository, and private reference claims aligned
+- Finish PC and Mobile README cleanup and keep release claims synchronized.
+- Align popup/tutorial copy, BetterRepository entries, and public author guides
   with the final implementation.
-- Finalize release notes and store copy outside the extension package.
-- Confirm V3.0 version metadata and produce clean browser and Android
-  artifacts.
-- Publish BetterDungeon V3.0.
+- Prepare final release notes, store descriptions, screenshots, and promotional
+  images outside the browser-extension and APK payloads.
+- Remove superseded planning documents once their durable decisions are
+  represented in canonical references.
+
+### Polish and bug fixes
+
+- Review user-facing labels, empty states, errors, diagnostics, focus behavior,
+  narrow layouts, reduced motion, and noisy logs.
+- Fix confirmed defects without reopening settled feature design.
+- Keep shared browser and Mobile runtime behavior aligned while preserving
+  intentional platform differences.
+
+### Verification and packaging
+
+- Run all durable Node contract suites for both repositories.
+- Run Android unit checks and `assembleDebug`, then produce the release build.
+- Manually check Navigator chat, all three change modes, approval-gated
+  deletions, retrieval, Inspector, cancellation, navigation, and hydration on
+  representative browser and Android environments.
+- Live-check the nine Ultrascripts modules, emphasizing permission,
+  unavailable, and recovery paths.
+- Validate Chromium, Firefox/Gecko, and Android packages contain only intended
+  release files and are accepted by their targets.
+- Confirm v2.1 version metadata before publication.
 
 ## Release Gate
 
-V3.0 is ready when:
+v2.1 is ready when:
 
-- no release-blocking regression remains on browser or Mobile;
-- all applicable durable suites pass;
-- Auto mode is the shipped default with the revised change cards on both
-  platforms;
-- the Artisan teaser is hidden on both platforms;
-- the manual Navigator and module checks pass;
-- release packages contain no development or marketing artifacts that block
-  publication; and
-- final public documentation matches the shipped behavior.
+- no release-blocking regression remains on PC or Mobile;
+- all applicable automated suites and manual checks pass;
+- final documentation, store copy, and promotional material match the shipped
+  behavior;
+- release packages contain no development or marketing artifacts; and
+- clean browser and Android artifacts are ready to publish.
 
-## After V3.0
+## After v2.1
 
 Stateboy remains parked in [its direction document](./stateboy.md). Brainiac,
-Artisan (pending a ship/no-ship decision), further Navigator capabilities,
+Artisan (pending a ship/no-ship decision), additional Navigator capabilities,
 local HTTP models, arbitrary scenario-supplied JavaScript, and broad
-architecture migrations are outside this release.
+architecture migrations remain outside this release.

@@ -18,6 +18,6 @@ Early Access and its product surface is stable enough to justify extension work.
 ## Current Priority
 
 None. BetterVoyage remains parked while BetterDungeon V2.1 receives its final
-polish and cleanup, through its paired release with the completed Chronos V2,
-and through the later Stateboy and Brainiac work. Reconsider it only after the
-current project era is formally closed.
+polish, cleanup, and publication, and through the later Stateboy and Brainiac
+work. Chronos V2 has already shipped independently. Reconsider BetterVoyage
+only after the current project era is formally closed.

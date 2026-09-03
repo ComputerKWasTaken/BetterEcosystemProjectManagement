@@ -191,7 +191,7 @@ Do not reintroduce template caching, fallback query guessing, or any write path 
 
 - [API Entities](api-entities.md)
 - [Card Import/Export](../04-story-cards/card-import-export.md)
-- [Ultrascripts Architecture](../../ultrascripts/01-architecture.md)
+- [Ultrascripts Runtime Architecture](../../ultrascripts/reference/runtime.md)
 
 ## Source References
 

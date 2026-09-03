@@ -11,8 +11,8 @@ Use it when writing or reviewing:
 - `bd.us` helper examples
 - BetterDungeon example templates
 - BetterRepository raw-script template copies
-- Chronos V2 (complete; awaiting paired publication with BetterDungeon V2.1)
-- Stateboy (implemented; paused until after the paired Chronos V2/V2.1 release)
+- Chronos V2 (released independently)
+- Stateboy (implemented; paused until after BetterDungeon v2.1 releases)
 - Brainiac (planned for later)
 
 Implementation remains the source of truth. This file exists so examples do not
@@ -172,10 +172,9 @@ itself. Use request ids/state if a script needs stricter freshness.
 
 ## Showcase Script Contracts
 
-Chronos V2 is complete and will publish alongside BetterDungeon V2.1, whose
-final polish and cleanup are now the active priority. Stateboy has an existing
-implementation but is paused until after that paired release; Brainiac remains
-planned for later.
+Chronos V2 has shipped independently. BetterDungeon v2.1 final polish and
+cleanup are now the active priority. Stateboy has an existing implementation
+but is paused until after that release; Brainiac remains planned for later.
 
 ### Brainiac
 
@@ -224,7 +223,7 @@ Design contract:
 
 ### Chronos V2
 
-Mode: Enhanced with Ultrascripts. Complete; awaiting paired publication.
+Mode: Enhanced with Ultrascripts. Released independently.
 
 Optional capabilities:
 

@@ -1,371 +1,286 @@
 # Navigator — Architecture and Product Contract
 
-> V3.0 headline feature. This document locks the decisions needed to build
-> Navigator's shell and live chat, and records what is deliberately deferred.
+> Durable contract for the Navigator implementation shipping with
+> BetterDungeon v2.1 on PC and Android.
 
-Implementation status: the first-party streaming chat surface, grounded
-Navigator, compact Story Card tools, confirmed mutation proposals, provider
-setup, and Android port are complete. Mobile uses a native transport and
-touch-first full-screen overlay. Verified mutation behavior is recorded in
+Implementation status: **functionally complete; release polish remains.**
+Verified GraphQL behavior and mutation safety evidence live in
 [`navigator-mutation-contract.md`](./navigator-mutation-contract.md).
-
-V3.0 changes the application model: **Auto mode is the default** — Navigator
-applies its changes automatically and keeps the player informed through
-concise applied-change cards, so the player course-corrects when necessary
-rather than approving presumptively. Review mode retains the explicit
-per-change approval flow. See
-[`navigator-auto-mode-plan.md`](./navigator-auto-mode-plan.md).
 
 ## 1. Product Definition
 
-Navigator is an adventure copilot: a chat surface attached to the AI Dungeon
-adventure page that is grounded in how AI Dungeon actually works and in the
-player's current adventure.
+Navigator is an adventure copilot embedded in AI Dungeon's Gameplay settings.
+It combines a multi-turn chat with bounded knowledge of the current adventure
+and verified tools for researching or changing the surrounding adventure data.
 
-It exists to solve two problems that no existing AI Dungeon tool addresses:
+Navigator primarily addresses:
 
-- **Rot** — plot components and story cards drift out of alignment with the
-  story as it progresses, because the story changes and they do not.
-- **Modification** — adapting someone else's scenario to your own taste is
-  common, tedious, and immersion-breaking.
+- **Rot** — Plot Components, Memory Bank entries, and Story Cards drift away
+  from the story as an adventure develops.
+- **Modification** — adapting an adventure or scenario to the player's taste is
+  useful but tedious through individual editors.
 
-Every existing AI agent tool in the AI Dungeon space (Multiple Choice
-Assistant, Flyer's tooling, and the equivalents in other platforms such as
-Voyage Studio and Puppeteer) targets **scenario authors**. Navigator targets
-**players in live adventures**. That is the untapped position.
+Navigator targets players in live adventures. It is not a story-playing model,
+a replacement for AI Dungeon's generation model, a general chatbot, or an
+unattended automation system.
 
-### Non-goals
+## 2. Shipped Product Decisions
 
-- Navigator is not a scenario builder. Scenario-creation assistance may fall
-  out of it, but is never a design driver.
-- Navigator does not write or play the story. It maintains the machinery
-  around the story.
-- Navigator is not a general chatbot bolted onto the page. Grounding in the
-  live adventure is the entire value proposition.
-
-## 2. Locked Decisions
-
-| Decision | Choice |
+| Area | v2.1 contract |
 |---|---|
-| PC surface | Right-pinned overlay drawer; full-screen sheet when narrow |
-| Mobile surface | Full-screen touch overlay using the visual viewport and Android lifecycle coordination |
-| First build | Shell + live grounded chat, read-only, streaming |
-| Tool loop | Two bounded read tools plus five proposal-only mutation tools |
-| Mutations | Model proposes; **Auto mode (default)** applies automatically with visible change cards; Review mode requires explicit approval; Read-only mode removes proposals |
-| Grounding | Hand-written paraphrase, ~1k tokens. No documentation injection |
-| Provider | Gemini plus a configurable OpenAI-compatible endpoint through the shared first-party chat surface |
-| Provider UX | Complete: explicit Gemini or OpenAI-compatible selection; OpenRouter and Custom are the compatible service choices |
-| Streaming | In scope for the first pass |
-| Mobile | Complete in the separate Android repository with a touch-first full-screen UI |
-| Automations | Cancelled; Navigator remains player-initiated |
+| Surface | A Navigator subtab inside AI Dungeon's Gameplay settings on PC and Mobile |
+| Conversation | Per-adventure, multi-turn, streaming, and cancellable |
+| Context | Always attempts Plot Components, recent story, Memory Bank, and Story Card directory within a fixed budget |
+| Read tools | Bounded Story Card, story-history, and Memory Bank retrieval; no Plot Components retrieval tool |
+| Changes | Automatic by default, Proposed changes, or No changes |
+| Automatic exception | Permanent Story Card and Memory Bank deletions always require explicit Delete approval |
+| Write safety | Fresh preconditions, target hashes, serialized writes, and mandatory server read-back |
+| Inspector | Dedicated, live, latest-request-only transparency view with no clipboard export |
+| Message controls | No user Edit, assistant Retry, action row, or message copy controls |
+| Providers | Gemini or an explicitly selected OpenAI-compatible service through the shared first-party chat layer |
+| Automations | Not supported; every Navigator turn is player-initiated |
 
-## 3. Why the AI Layer Must Change First
+## 3. AI and Transport Architecture
 
-Navigator cannot be built on the existing script-facing AI contract.
+The script-facing `UltrascriptsAIExecutor.query()` contract remains frozen:
+single-shot input, a 12,000-character prompt cap, non-streaming completion, and
+no conversation state. Third-party Ultrascripts continue to depend on it.
 
-`UltrascriptsAIExecutor.query()` accepts a single `prompt` string, caps it at
-`PROMPT_MAX_CHARS = 12000`, returns one non-streaming text or JSON result, and
-holds no conversation state. Those constraints are correct for `ai.query` —
-third-party Ultrascripts depend on that contract and V2.1 has migration rules
-protecting it.
+Navigator instead uses the additive first-party chat surface:
 
-Navigator is first-party and does not need to go through `ai.query` at all.
+- multi-turn `messages[]` plus a canonical system instruction;
+- provider-native streaming and function calls;
+- a configurable input limit, with 128k tokens as the default cap;
+- one selected provider for every round in a turn; and
+- one `AbortSignal` spanning model requests and tool execution.
 
-### The split
+On PC, the background worker reads the provider stream and forwards deltas over
+a versioned runtime port. On Mobile, the compatible virtual port is backed by a
+private Kotlin HTTPS session. Completion, error, cancellation, disconnect,
+navigation, extension invalidation, Android backgrounding, and activity
+destruction terminate the associated transport.
 
-- **`ai.query`** — frozen. Single-shot, 12k cap, non-streaming. Scripts keep
-  working. No migration note, no contract version bump.
-- **First-party chat surface** — additive. Multi-turn `messages[]`, a system
-  instruction, streaming, and its own larger budget. Consumed only by
-  BetterDungeon features.
+Navigator never silently fails over between Gemini, OpenRouter, and Custom
+services. Provider credentials, headers, keys, cookies, and transport
+authentication data are never copied into the transcript or Inspector.
 
-Both route through the **same provider registry**. Gemini and the implemented
-OpenAI-compatible adapter translate the shared provider-neutral contract.
-`registerProvider` / `resolveProvider` / `setProviderForConsumer` already exist
-in `modules/ai/executor.js`, so Navigator registers as `consumer: 'navigator'`
-and provider selection requires zero Navigator caller changes.
+## 4. Context Assembly
 
-This is why the backend upgrade is a prerequisite rather than a follow-up:
-multi-turn conversation and streaming are both required by the first pass, and
-neither is expressible through `ai.query`.
+### Always-attempted snapshot
 
-### Streaming transport
+Players no longer select Context sections. Every request attempts the complete
+canonical snapshot:
 
-The implemented chat path uses a versioned long-lived runtime port. On PC, the
-background worker reads provider streams and forwards deltas to the content
-script. On Mobile, `chrome.runtime.connect()` is a compatible virtual port backed
-by a private Kotlin `HttpsURLConnection` session. Abort propagates from the UI
-through the port to the active provider request. Completion, error, abort,
-disconnect, navigation, page exit, startup timeout, extension-context
-invalidation, Android backgrounding, and activity destruction terminate the
-corresponding transport.
+1. adventure identity;
+2. Plot Components;
+3. recent story;
+4. Memory Bank; and
+5. Story Card directory.
 
-## 4. Grounding
+The bounded text rendered for those sections is inserted into the final system
+instruction. Context rendering also returns matching `inspectionSections`; each
+Inspector section must be exactly the text sent for that section, including
+truncation, degraded, unavailable, or dropped-state wording.
 
-### The primer
+Persisted legacy `contextSections` values are ignored rather than destructively
+rewritten. Plot Components are always supplied directly when available, so the
+former `get_plot_components` / Read Plot Components tool is intentionally
+absent.
 
-A single hand-written system primer, budgeted at roughly **1k tokens**. It
-paraphrases only what Navigator needs to reason correctly:
+### Snapshot budgets
 
-- What AI Dungeon is, and the adventure/scenario/action model.
-- What each plot component is *for* and how the model consumes it:
-  **AI Instructions** (standing behavioral direction), **Plot Essentials**
-  (persistent world/plot facts, the `memory` field in the API),
-  **Author's Note** (short-range tonal and stylistic steering),
-  **Story Summary** (auto-maintained compression of earlier story).
-- What story cards are: title, type, triggers/keys, value, and the fact that
-  they are injected only when a trigger matches recent context.
-- The failure modes Navigator is meant to catch: stale facts, contradictions
-  with the current story, bloated values, broken or overly generic triggers.
+Current character ceilings are:
 
-Deliberately excluded: the internal documentation corpus in
-`Project Management/docs/`. It is ~460k characters written for our own
-engineering, is heavily redundant for this purpose, and injecting it would cost
-more tokens, add latency, and widen the content-filter surface for no gain.
-The docs remain the *source* the primer is written from, not a payload.
+| Segment | Ceiling or rule |
+|---|---:|
+| Complete system instruction | 46,000 |
+| Adventure identity | 1,200 |
+| Plot Components | 24,000 |
+| Recent story | 20,000; 3,000 per action |
+| Memory Bank | 12,000 |
+| Story Card directory | 16,000 |
+| Conversation history | 16,000; oldest messages omitted first |
 
-### Adventure context
+Plot Components are treated honestly: oversized fields may be truncated and
+reported as such. Other sections yield space within the aggregate budget, and
+coverage metadata records included items, source counts, source characters,
+truncation, and incomplete retrieval.
 
-Everything needed for reads is already in memory and requires no new transport:
+### Read tools
 
-| Data | Source |
-|---|---|
-| Adventure identity, `shortId`, action count | `Ultrascripts.ws.getAdventureShortId()` / `getAdventureId()` |
-| Story cards (id, type, title, keys, value) | Authoritative GraphQL read per Navigator turn; live cache fallback |
-| Recent actions with text | `Ultrascripts.ws.getActions()` |
-| GraphQL credentials for replay | `Ultrascripts.ws.getBaseCredentials()` |
+The model can receive six bounded, read-only tools:
 
-Plot components need one new read query. `Adventure` exposes them directly:
+- `search_story_cards` and `get_story_card`;
+- `search_story_history` and `get_story_actions`; and
+- `search_memory_bank` and `get_memory`.
 
-```graphql
-adventure(shortId: $shortId) {
-  id shortId actionCount thirdPerson
-  memory        # Plot Essentials
-  authorsNote
-  instructions  # Legacy AI Instructions fallback
-  state {
-    instructions # UI-backed AI Instructions JSON value
-    storySummary
-  }
-}
+Searches return at most ten results. A Story Card entry is capped at 6,000
+characters, an action window at 20 actions and about 8,000 characters, and a
+Memory Bank entry at 4,000 characters. Tool results report truncation instead
+of implying completeness.
+
+A turn may execute at most six model/tool rounds and retain at most 16,000 tool
+result characters. If the provider input budget is exhausted, the runtime may
+reduce history, tools, or raw results and records a plain-language Inspector
+warning.
+
+## 5. Changes and Mutation Safety
+
+### Canonical modes
+
+The runtime setting is:
+
+```text
+changeMode: 'automatic' | 'proposed' | 'none'
 ```
 
-Live verification resolved the read ambiguity: the current AI Instructions UI
-maps to `Adventure.state.instructions`. Navigator normalizes that JSON/string
-value to text and prefers it over the flat `Adventure.instructions` fallback.
+- **Automatic** — recommended default. Validated non-deletion changes queue and
+  apply immediately, then appear as verified applied-change cards.
+- **Proposed changes** — every mutation remains pending until the player
+  approves or rejects it.
+- **No changes** — mutation tools are not exposed, existing pending controls are
+  disabled, and all write attempts fail closed.
 
-### Context budget
+Permanent Story Card and Memory Bank deletions are never automatic. They remain
+pending with irreversible wording and require an explicit player Delete action
+in both Automatic and Proposed changes modes.
 
-| Segment | Target |
+Legacy settings remain read-only migration inputs for out-of-sync clients. An
+effective legacy Read-only setting maps to `none`; Review maps to `proposed`;
+other valid legacy states map to `automatic`. New code reads and writes only
+`changeMode`.
+
+### Model and runtime boundary
+
+The model can stage seven proposal types:
+
+- Plot Component text change;
+- Third Person change;
+- Story Card create, update, or delete; and
+- Memory Bank update or delete.
+
+The model cannot call Apply or Delete. The interface/runtime owns mutation
+application according to the active mode. Each application performs an
+independent storage check immediately before writing; unreadable or unavailable
+settings behave as No changes.
+
+Writes compare stable identity, current target values, relevant timestamps, and
+normalized hashes. They are serialized, sent through authenticated GraphQL,
+and verified by a fresh authoritative read before being reported as applied.
+Conflicts and errors remain visible and are never retried as blind overwrites.
+
+Navigator has no mutation Undo command and no durable audit log. A later chat
+request may propose a compensating edit using visible prior values, but that is
+a normal new mutation. Deleted Story Cards and Memory Bank entries are treated
+as permanently destructive.
+
+## 6. Interface Contract
+
+### Shared PC and Mobile structure
+
+Navigator mounts as a full content view within an injected Gameplay settings
+subtab. Its main header remains visible for Chat, Inspector, Settings, and Clear
+conversation actions.
+
+The chat view contains:
+
+- a transcript of user, assistant, tool, error, and compact change cards;
+- suggested prompts for an empty conversation;
+- a bounded Markdown renderer that treats raw HTML as text;
+- an autosizing composer with Send and Stop states; and
+- a settings view with Thinking level and one three-way icon toggle for Changes.
+
+The header does not repeat the selected change mode in a pill, and the Changes
+control does not need explanatory body copy. Accessible labels retain the full
+mode names and behavior.
+
+Message action rows, user-message editing, edit confirmation, assistant Retry,
+and all Navigator message clipboard controls are absent. Clear conversation and
+request cancellation remain.
+
+### Inspector
+
+Inspector replaces the transcript and composer while preserving Navigator's
+main header. A visible **Back to chat** action returns to chat. Escape returns
+to chat before it closes Navigator. Opening Settings also exits Inspector and
+opens Settings over the chat view.
+
+Inspector remains live while a request runs. Its player-readable view includes:
+
+- status: Running, Complete, Attention, or Error;
+- Model, Thinking, Input usage, Context health, and Tool activity summaries;
+- warnings for reduced context, omitted history, dropped tools/results,
+  provider limits, and request errors;
+- expanded-by-default Context sent coverage and exact rendered sections;
+- collapsed Conversation sent with exact role-labelled messages and omitted
+  history count;
+- Tool activity with rounds, friendly names, and success/error states, opened
+  automatically when tools were used or failed; and
+- collapsed Technical details with selectable rounds, exact request payloads,
+  system instruction, messages, tool schemas/results, continuation state,
+  budgets, response metadata, and bounded raw metadata.
+
+Inspector content may contain adventure and conversation text. It is ephemeral,
+replaced by the next request or page reload, and cannot be copied through a
+Navigator-provided control. Clearing the conversation also clears inspection
+data.
+
+### Platform differences
+
+- **PC** retains custom settings-tab overflow arrows because otherwise later
+  Gameplay subtabs can become inaccessible. Mouse, keyboard, narrow-window,
+  focus, and reduced-motion behavior must remain usable.
+- **Mobile** uses AI Dungeon's native drag/swipe tab navigation and therefore
+  does not inject custom arrows. Navigator uses IBM Plex, touch-sized controls,
+  IME-aware composer sizing, and Inspector-first Android Back handling.
+
+## 7. Persistence and Inspection Capture
+
+`NavigatorSession` owns the per-adventure transcript, settings resolution,
+send/cancel lifecycle, proposal state, and latest inspection record. Persisted
+transcripts are bounded and exclude raw provider payloads, continuation state,
+and raw tool results.
+
+The in-memory inspection contract contains:
+
+- `snapshot` — coverage, metrics, warnings, and exact rendered sections;
+- `conversation` — sent messages, included characters, truncation, and omitted
+  message count;
+- `rounds` — exact request payloads, provider tool calls, execution results,
+  response metadata, and friendly bounded summaries; and
+- aggregate `meta`, `status`, and `error` fields.
+
+Only the latest Navigator request is retained, with an approximately 4 MiB
+inspection ceiling. When reducing retained diagnostics, preserve the structured
+overview, context sections, and bounded summaries first; omit intermediate raw
+round bodies before truncating the first or latest raw payload.
+
+## 8. Implementation Map
+
+| Path | Responsibility |
 |---|---|
-| Primer + complete system snapshot | 46k chars maximum |
-| Adventure identity | 1.2k chars |
-| Plot components (verbatim) | 7k chars |
-| Recent story actions | 20k chars; 3k per action |
-| Story Card directory | Remaining snapshot space; `id \| type \| title` only |
-| Rolling conversation history | 16k chars, truncated oldest-first |
+| `features/navigator_feature.js` | Gameplay-subtab integration, views, rendering, focus, and lifecycle |
+| `services/navigator/session.js` | Transcript, settings, send/cancel, tool loop, changes, and inspection capture |
+| `services/navigator/context.js` | Always-attempted snapshot, budgets, coverage, and exact inspection sections |
+| `services/navigator/tools.js` | Six bounded read tools |
+| `services/navigator/mutations.js` | Seven proposal definitions, validation, conflict checks, writes, and verification |
+| `services/navigator/primer.js` | Versioned system guidance and mode-aware behavior |
+| `services/graphql-service.js` | Authenticated Plot, Story Card, Memory Bank, and write operations |
+| `styles.css` | Shared Navigator styling plus platform-specific overrides |
 
-**Implemented Story Card directory.** Every turn refreshes the complete current
-card collection through GraphQL and retains it in a non-persisted, content-side
-index. The baseline injects only stable IDs, types, and titles, sorted by type,
-title, and ID. Recent Story keeps its full allocation before the directory is
-filled. The snapshot reports directory coverage, and search can still inspect
-cards omitted from the injected directory because it uses the complete index.
-No raw card entry is carried into later turns.
+Mobile mirrors the shared JavaScript and CSS under
+`app/src/main/assets/betterdungeon/` and adds native transport/lifecycle support
+in the Android project.
 
-## 5. Shell Architecture
+## 9. Release and Maintenance Boundary
 
-### Files
+Navigator's v2.1 feature design is closed. Before release, limit work to:
 
-| Path | Role |
-|---|---|
-| `features/navigator_feature.js` | Lifecycle, adventure detection, launcher, drawer mount |
-| `services/navigator/session.js` | Transcript, send/abort, per-adventure persistence |
-| `services/navigator/context.js` | Grounding assembly and budget accounting |
-| `services/navigator/tools.js` | Typed, bounded read-tool registry and execution |
-| `services/navigator/primer.js` | The versioned system primer |
-| `services/graphql-service.js` | Authenticated current Plot Component and Story Card reads |
-| `styles.css` | `.bd-navigator-*` rules, tokens only |
+- confirmed defects and visual inconsistencies;
+- documentation, tutorial, release-note, and promotional alignment;
+- accessibility, focus, narrow-layout, reduced-motion, and IME polish;
+- cross-platform parity where behavior is meant to be shared; and
+- automated, manual, browser-package, and Android-package verification.
 
-Registered in `core/feature-manager.js` as `navigator`, **default on**, with a
-popup toggle. Follows the `NotesFeature` lifecycle pattern: URL plus
-`MutationObserver` adventure detection, `createUI` / `removeUI`, and per-adventure
-state reset.
-
-### Surface
-
-The play page is Tamagui with an absolutely-positioned layer stack and a fixed
-1067px content container. A layout-reflowing sidebar is not safely achievable.
-Navigator therefore uses a fixed-position overlay drawer pinned to the right
-gutter, reusing the available-space measurement approach already proven in
-`story_card_modal_dock_feature.js` (`getAvailableDockWidth`). Below a width
-threshold it becomes a full-screen sheet.
-
-No backdrop — the story stays readable and interactive while Navigator is open.
-Width is user-draggable and persisted via a `--bd-navigator-width` custom
-property.
-
-### Anatomy
-
-- **Header** — Navigator mark, adventure title and context-coverage subtitle,
-  clear-conversation action, and close.
-- **Transcript** — user and assistant messages, plus error and status cards.
-  Assistant messages use a bounded DOM-only Markdown renderer supporting
-  headings, emphasis, nested lists, blockquotes, safe links, inline and fenced
-  code, rules, and tables. Streaming may re-render an incomplete construct, but
-  raw HTML is always text and model output is never assigned via `innerHTML`.
-  Scoped display rules isolate Markdown layout from AI Dungeon's global styles.
-- **Composer** — autosizing textarea, send, and stop-while-streaming. Confirmed
-  mutation proposals render beneath assistant responses without widening the
-  composer or holding a provider stream open.
-
-### Launcher
-
-A fixed Navigator button mounts independently of AI Dungeon's changing toolbar
-DOM. `Alt+N` toggles the drawer directly, and Escape closes it while focus is
-inside Navigator.
-
-### Session
-
-`NavigatorSession` owns `messages[]`, per-adventure persisted transcript,
-`send()`, and `abort()`. The drawer talks only to the session; the session talks
-only to the first-party chat surface. Read tools stay behind that session
-boundary, so the drawer and persisted transcript do not carry provider
-continuation state or raw tool results.
-
-### Read tool loop
-
-Phase 7B exposes two typed, read-only Story Card functions:
-
-- `search_story_cards` searches title, type, triggers, description, and entry in
-  the per-turn card index. It returns at most ten bounded candidates with a
-  240-character entry preview and a 4k result cap.
-- `get_story_card` reads one card by stable ID with complete bounded metadata and
-  at most 6k entry characters, reporting source length and truncation.
-
-The internal chat task can carry provider-neutral function declarations, tool
-results, and opaque provider continuation state. The OpenAI-compatible adapter
-translates that contract to each selected service's function-call format. The
-same service selected for `consumer: 'navigator'` handles every
-round; no cross-provider failover is introduced. A turn may execute at most six
-tool rounds and 16k cumulative tool-result characters, and the same caller
-`AbortSignal` covers every model and tool step.
-Tool output is treated as untrusted adventure data. None of this is exposed in
-the Ultrascripts operations dispatcher: `ai.status` and `ai.query` remain the
-only script-facing AI operations.
-
-## 6. Remaining Platform Work and Non-Goals
-
-Recorded so the shell does not foreclose it.
-
-**Read tools — implemented.** `search_story_cards` and `get_story_card` let the
-model discover and inspect exact cards without spending baseline context on card
-entries. Plot Components and the expanded Recent Story window are supplied
-directly, so they do not need redundant model-facing tools.
-
-**Mutation tools** — the write paths already exist and are confirmed:
-
-| Target | Mutation |
-|---|---|
-| Plot Essentials, Author's Note, third person | `updateAdventurePlot(input: AdventurePlotInput)` |
-| AI Instructions, Story Summary | `updateAdventureState(input: { shortId, state })` |
-| Story cards | `updateStoryCard` upsert / `deleteStoryCard` |
-
-`services/ai-dungeon-service.js` already performs authenticated
-`updateStoryCard` via credential replay, so the pattern is established.
-Mutations must never go through DOM automation the way Plot Presets currently
-does; that path is too fragile for agent-driven edits.
-
-The verified payloads, merge behavior, concurrency evidence, and restoration recipes
-are frozen in
-[`navigator-mutation-contract.md`](./navigator-mutation-contract.md).
-`updateAdventureState` merges a partial state object; AI Instructions write as
-`{ type: "custom", custom: <string> }`. Plot fields are optional and omitted
-fields remain unchanged. Story Card updates are full-record writes because all
-`UpdateStoryCardInput` fields are non-null. The current UI creates cards by
-upserting a client-generated ID rather than calling a separate create mutation.
-
-Phase 7C implements safe-DOM previews, stable-ID and current-value
-preconditions, serialized writes, and mandatory server read-back. The model
-receives proposal tools only; Apply, Reject, and Delete are never registered
-as model-callable functions. In V3.0's default Auto mode the runtime applies
-validated proposals automatically (the model still cannot call apply); in
-Review mode Apply, Reject, and Delete remain direct player actions. The
-synchronized Read-only mode removes proposal definitions and blocks pending
-Apply controls.
-
-The deliberately basic V2.1 contract does not include Undo or a durable audit
-log. Story Card deletion therefore carries explicit irreversible wording. Card
-creation uses a cryptographically generated nine-digit numeric ID, fresh-list
-collision checks, and a bounded retry loop; the format round-tripped through a
-live create, update, and delete probe.
-
-**OpenAI-compatible provider UX — complete.** The popup exposes an explicit
-active-provider selector, inline validation, save/test/clear controls, detailed
-status, OpenRouter as the default compatible service, and Custom as the only
-other service choice. Provider changes remain explicit; content never silently
-fails over between providers.
-
-**Automations — cancelled.** Navigator will not gain scheduled, event-triggered,
-or unattended execution. It remains player-initiated: Auto mode only applies
-changes produced by a player-initiated turn.
-
-**Mobile — complete.** The separate Android repository
-now uses a touch-first full-screen overlay, native Gemini/OpenAI-compatible
-transport, virtual streaming ports, private provider settings, cross-WebView
-storage notifications, and Android Back/navigation/background/destruction
-cleanup. It preserves the PC grounding, read-tool budgets, proposal-only
-mutations, confirmation, preconditions, verification, transcript, and Read-only
-contracts. It intentionally excludes desktop dragging, drawer resizing, and
-hotkeys.
-
-## 7. Verified Mutation Contract
-
-Phase 7A live capture resolved the write-path unknowns:
-
-- `updateAdventureState` merges partial state, and `changedFields` is not
-  required by the resolver.
-- `Adventure.state.instructions` is authoritative and round-trips as
-  `{ type: "custom", custom: <string> }`.
-- `updateAdventurePlot` preserves omitted fields; empty strings clear its string
-  fields.
-- `updateStoryCard` requires a complete card record and acts as both create and
-  update when given a client-generated ID.
-- `Adventure.editedAt` is adventure-wide and can change for unrelated card
-  writes. Preconditions therefore combine timestamps with normalized
-  target-slice hashes; cards also use `updatedAt`.
-
-Deleted-ID restoration remains unsupported. Story Card creation is enabled with
-the live-verified secure nine-digit strategy described above. See the mutation
-contract for the underlying resolver evidence and restoration recipes.
-
-## 8. Build Order
-
-1. **Complete:** first-party chat surface with `messages[]`, system instruction,
-   streaming port, and per-consumer budget. `ai.query` remains untouched.
-2. **Complete:** Navigator shell with drawer, launcher, session, transcript, and
-   composer.
-3. **Complete:** grounding primer, context assembly, budget accounting, and Plot
-   Component reads.
-4. **Complete:** mutation contract research with disposable-adventure read-back
-   and restoration probes.
-5. **Complete:** a compact Story Card directory, two typed card tools, and a
-   bounded provider-native tool loop, including live sequential, parallel,
-   abort, recovery, and formatting checks.
-6. **Complete:** five mutation proposal tools with inline player confirmation,
-   Read-only mode, preconditions, serialized GraphQL writes, and read-back
-   verification across Plot Components and Story Cards.
-7. **Complete:** PC provider setup and selection polish for Gemini, OpenRouter,
-   and custom OpenAI-compatible endpoints.
-8. **Complete:** Android full-screen Navigator, native
-   provider transport, virtual streaming ports, settings migration, and lifecycle
-   integration.
-
-All former V2.1 delivery steps are complete. V3.0 adds:
-
-9. **Planned:** Auto mode as the default application model, the Review mode
-   opt-out, and the concise change-card redesign on PC and Mobile
-   ([plan](./navigator-auto-mode-plan.md)).
-
-Future work should preserve the explicit provider-selection boundary and the
-player's ability to see and course-correct every applied change.
+Additional tools, automations, providers, durable audit/Undo systems, or broad
+architecture changes belong after v2.1 and require a new scoped decision.
