@@ -1,6 +1,6 @@
 # BetterEcosystem — Unified Design System
 
-> Single source of truth for every visual property shared across **BetterDungeon** (PC), **BetterDungeon-Mobile**, **BetterRepository**, and all future ecosystem projects.
+> Single source of truth for every visual property shared across the **BetterDungeon** browser and Android surfaces, **BetterRepository**, and future ecosystem projects.
 
 ---
 
@@ -8,8 +8,8 @@
 
 | Project | How to consume |
 |---------|---------------|
-| **BetterDungeon** (extension) | Inline copy `theme-variables.css` into `core/theme-variables.css` (CSP-safe — no `@import`) |
-| **BetterDungeon-Mobile** (Android) | Same as BetterDungeon — inline copy into `assets/betterdungeon/core/theme-variables.css` |
+| **BetterDungeon** (browser) | Sync `theme-variables.css` to `core/theme-variables.css` (CSP-safe — no `@import`) |
+| **BetterDungeon** (Android) | Keep shared tokens at the root; put an intentional variant in `android/overrides/core/theme-variables.css` and declare it in `android/betterdungeon-runtime.json` |
 | **BetterRepository** (Vue / Tailwind) | `@import '../../design/theme-variables.css'` in `src/styles/main.css` + mirror values in `tailwind.config.js` |
 
 All variables use the **`--bd-`** prefix to avoid collisions with host-page styles (critical for extension contexts).
@@ -465,9 +465,10 @@ Standard icon sizes:
 ## 16. Updating This System
 
 1. Edit `design/theme-variables.css` in this repo — this is the **canonical** file.
-2. Copy / sync changes to each project's local copy:
+2. Sync changes to each consuming source file:
    - `BetterDungeon/core/theme-variables.css`
-   - `BetterDungeon-Mobile/app/src/main/assets/betterdungeon/core/theme-variables.css`
+   - `BetterDungeon/android/overrides/core/theme-variables.css` only when Android
+     intentionally differs; never edit Gradle-generated assets
    - `BetterRepository/design/theme-variables.css`
 3. If adding Tailwind-mapped tokens, update `BetterRepository/tailwind.config.js`.
 4. Update this README if new token categories or conventions are introduced.

@@ -32,6 +32,12 @@ this release.
 - Deliberate platform polish: PC retains settings-tab overflow arrows; Mobile
   uses native swipe navigation, IBM Plex, IME-safe sizing, and touch targets.
 - The Artisan teaser is hidden while its future remains undecided.
+- Browser and Android sources consolidated into one BetterDungeon monorepo,
+  with shared root files and explicit Android-only files and overrides.
+- `dev` established as the normal workspace and protected `stable` established
+  as the promotion-only release branch.
+- Deterministic Node contracts, extension packaging checks, Android unit tests,
+  and debug APK assembly run together in the GitHub Actions quality gate.
 
 Durable behavior belongs in the
 [Navigator contract](../../navigator/navigator-design.md),
@@ -42,7 +48,7 @@ and Ultrascripts [`reference/`](../reference/) documents.
 
 ### Documentation and promotion
 
-- Finish PC and Mobile README cleanup and keep release claims synchronized.
+- Finish browser and Android README cleanup and keep release claims synchronized.
 - Align popup/tutorial copy, BetterRepository entries, and public author guides
   with the final implementation.
 - Prepare final release notes, store descriptions, screenshots, and promotional
@@ -55,13 +61,16 @@ and Ultrascripts [`reference/`](../reference/) documents.
 - Review user-facing labels, empty states, errors, diagnostics, focus behavior,
   narrow layouts, reduced motion, and noisy logs.
 - Fix confirmed defects without reopening settled feature design.
-- Keep shared browser and Mobile runtime behavior aligned while preserving
+- Keep shared browser and Android runtime behavior aligned while preserving
   intentional platform differences.
 
 ### Verification and packaging
 
-- Run all durable Node contract suites for both repositories.
-- Run Android unit checks and `assembleDebug`, then produce the release build.
+- Keep the complete monorepo quality gate green: deterministic Node contracts,
+  extension-package policy, Android unit checks, asset composition, and
+  `assembleDebug`.
+- Use `build.ps1 all` to reproduce the quality gate and both review artifacts
+  locally before release packaging.
 - Manually check Navigator chat, all three change modes, approval-gated
   deletions, retrieval, Inspector, cancellation, navigation, and hydration on
   representative browser and Android environments.

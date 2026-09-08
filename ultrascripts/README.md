@@ -14,9 +14,10 @@ public BetterRepository guides while final polish proceeds.
 ## Current Release Context
 
 BetterDungeon V2 is released. V2.1 is the active priority and is functionally
-complete across PC and Mobile, with final polish, cleanup, release checks, and
-preparation remaining. Chronos V2 has already shipped independently. Stateboy
-is paused, and Brainiac remains planned for later.
+complete across browser and Android, with final polish, cleanup, release checks,
+and preparation remaining. Both surfaces now share one monorepo and automated
+quality gate. Chronos V2 has already shipped independently. Stateboy is paused,
+and Brainiac remains planned for later.
 
 ## Start Here
 
@@ -48,7 +49,9 @@ Public documentation:
 
 Regression and author examples:
 
-- Module suites: `../../BetterDungeon/tests/aid-scripts/`
+- Automated contracts and harnesses: `../../BetterDungeon/tests/contracts/`,
+  `../../BetterDungeon/tests/unit/`, and `../../BetterDungeon/tests/platform/android/`
+- Manual AI Dungeon module scripts: `../../BetterDungeon/tests/aid-scripts/`
 - Starter templates: `../../BetterDungeon/examples/aid-scripts/`
 
 ## Shipped Module Set

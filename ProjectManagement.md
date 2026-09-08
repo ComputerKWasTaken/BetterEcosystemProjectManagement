@@ -10,6 +10,12 @@ cross-platform support are functionally complete; the remaining work is final
 polish, cleanup, and release preparation. Chronos V2 has already shipped
 independently and no longer gates BetterDungeon.
 
+BetterDungeon's browser extension and Android app now live in one repository.
+Daily work happens on `dev`; tested release candidates move to protected
+`stable` through the manual promotion workflow. Every push validates the Node
+contracts, extension package, and Android debug build and retains both build
+artifacts for review.
+
 The remaining BetterEcosystem work for this era is intentionally focused:
 
 1. Finish BetterDungeon V2.1 polish, cleanup, and release preparation.
@@ -23,7 +29,8 @@ Brainiac remains planned for later.
 ## Active Projects
 
 - **[BetterDungeon](./BetterDungeon.md)** — Active priority; V2.1 final polish,
-  cleanup, release checks, and publication remain.
+  cleanup, release checks, and publication remain. The monorepo and CI/CD
+  migration are complete.
 - **Chronos V2** — Released independently.
 - **Stateboy** — Paused until after BetterDungeon V2.1 ships.
 - **Brainiac** — Planned for later.

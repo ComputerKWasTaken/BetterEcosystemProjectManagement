@@ -268,9 +268,10 @@ round bodies before truncating the first or latest raw payload.
 | `services/graphql-service.js` | Authenticated Plot, Story Card, Memory Bank, and write operations |
 | `styles.css` | Shared Navigator styling plus platform-specific overrides |
 
-Mobile mirrors the shared JavaScript and CSS under
-`app/src/main/assets/betterdungeon/` and adds native transport/lifecycle support
-in the Android project.
+The Android project lives at `android/` in the same repository. Gradle composes
+shared JavaScript and CSS from the root with the declared files in
+`android/web/` and `android/overrides/`; native transport and lifecycle code
+remain under `android/app/`. Generated assets are build output, not source.
 
 ## 9. Release and Maintenance Boundary
 

@@ -2,7 +2,7 @@
    BetterEcosystem — Unified Design Tokens
    ================================================================
    Single source of truth for every visual property shared across
-   BetterDungeon (PC), BetterDungeon-Mobile, BetterRepository,
+   BetterDungeon browser and Android surfaces, BetterRepository,
    and all future ecosystem projects.
 
    Prefix  : --bd-  (BetterDesign)
@@ -10,7 +10,7 @@
    Palette : Dark-first, orange brand accent
 
    Consumption:
-     BetterDungeon / Mobile  — inline copy (CSP-safe)
+     BetterDungeon           — root source plus declared Android override
      BetterRepository        — @import in main.css + mirror in
                                 tailwind.config.js
    ================================================================ */
@@ -292,7 +292,7 @@
   /* =============================================================
      21. EXTENSION — POPUP SHORT ALIASES
      Maps --bd- tokens to the short names used in popup.css
-     across BetterDungeon (PC) and BetterDungeon-Mobile.
+     across BetterDungeon's browser and Android surfaces.
      ============================================================= */
   --bg-base:           var(--bd-bg-primary);
   --bg-surface:        var(--bd-bg-secondary);

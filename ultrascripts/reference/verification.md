@@ -2,22 +2,32 @@
 
 ## Purpose
 
-Ultrascripts relies on live AI Dungeon behavior, browser extension behavior, and
-Story Card round-tripping. Local reasoning is not enough. This document maps
-the verification surfaces that currently exist and when to use each one.
+Ultrascripts is protected first by deterministic, offline contracts in the
+BetterDungeon monorepo. Live AI Dungeon behavior and Story Card round-tripping
+still matter, but those checks are targeted manual release validation rather
+than part of normal CI. This document maps both layers and when to use them.
 
 ## Verification Surfaces
 
 | Surface | Location | Use |
 |---|---|---|
-| Module regression suites | `../../../BetterDungeon/tests/aid-scripts/` | Live AI Dungeon scripts for each shipped module |
+| Shared contracts | `../../../BetterDungeon/tests/contracts/` | Public behavior, GraphQL/Apollo, Navigator, provider, and compatibility contracts |
+| Focused and policy tests | `../../../BetterDungeon/tests/unit/` | Ultrascripts harness, repository policy, packaging, versions, and reusable test utilities |
+| Android contracts | `../../../BetterDungeon/tests/platform/android/` | WebView, bridge, native transport, composition, and declared override behavior |
+| Runtime simulators | `../../../BetterDungeon/tests/harness/` | Deterministic Chrome, AI Dungeon, Android, and Ultrascripts test environments |
+| Manual module scripts | `../../../BetterDungeon/tests/aid-scripts/` | Targeted live AI Dungeon checks for each shipped module |
 | Enhanced template | `../../../BetterDungeon/examples/aid-scripts/ultrascripts-starter-template/` | Smoke check for optional/fallback Ultrascripts usage |
 | Required template | `../../../BetterDungeon/examples/aid-scripts/ultrascripts-required-template/` | Smoke check for hard runtime/capability gating |
 | Public template copies | `../../../BetterRepository/src/data/raw-scripts/` | Ensure BetterRepository ships the same helper contract |
 | Public guide pages | `../../../BetterRepository/src/components/guides/Ultrascripts*.vue` | Ensure author-facing claims match the runtime |
 | Popup/background settings | `../../../BetterDungeon/popup.js`, `../../../BetterDungeon/background.js` | Verify player configuration, privileged fetch transport, SDK, and AI setup |
 
-## Module Suite Inventory
+Run all deterministic checks with `build.ps1 test`, or reproduce the complete
+local quality gate and both review artifacts with `build.ps1 all`. GitHub
+Actions runs the same Node, extension-package, and Android checks on every push.
+It does not receive provider secrets or contact AI Dungeon.
+
+## Manual Module Script Inventory
 
 | Module | Suite | Files | Main coverage |
 |---|---|---|---|
@@ -31,7 +41,11 @@ the verification surfaces that currently exist and when to use each one.
 | `webfetch` | `webfetch-module` | `library.js`, `output-modifier.js`, `README.md` | HTTPS `fetch`, redirects, content types, header stripping, rate limits, private-target blocking, truncation |
 | `audio` | `audio-module` | `library.js`, `input-modifier.js`, `output-modifier.js`, `README.md` | oscillator/noise effects, pitch sweeps, envelopes, replay prevention, validation, stop lifecycle |
 
-Every shipped first-party module has a dedicated suite.
+Every shipped first-party module retains a dedicated manual script set. These
+are development and release aids; the automated Ultrascripts harness exercises
+capability discovery, operations, permission outcomes, malformed and timed-out
+responses, cancellation, reloads, serialization, redaction, and unavailable
+runtime/module behavior without authenticated services.
 
 ## What Each Suite Is For
 
@@ -190,20 +204,26 @@ Verifies:
 
 ## When To Run What
 
+The deterministic monorepo quality gate is the baseline for every change. Add
+the targeted manual check listed below when a change depends on current browser,
+device, or AI Dungeon behavior that the offline contracts cannot observe.
+
 | Change | Minimum verification |
 |---|---|
-| Module implementation | that module suite |
-| Widget renderer/layout | Widget suite plus mobile/narrow visual check |
-| Core state dispatch/live count | Widget suite plus at least one ops suite |
-| Ops dispatcher/envelope | AI contract suite plus one safe ops suite such as Clock or SDK |
-| Write queue/GraphQL write path | heartbeat smoke, SDK suite, one module response suite |
-| Heartbeat payload/liveness | action and Retry refresh smoke, stale/recovery template checks, SDK suite, public Quick Start claims |
-| SDK config | SDK suite, AI guide/template config branches |
-| Public example/helper changes | Enhanced and Required templates plus relevant module guide |
-| Showcase script work | relevant module suites plus template contract check |
+| Module implementation | quality gate, then that module's manual script when live behavior changed |
+| Widget renderer/layout | quality gate plus browser and Android narrow-layout visual check |
+| Core state dispatch/live count | quality gate; add Widget and one ops script for release sign-off |
+| Ops dispatcher/envelope | quality gate; add one safe ops script such as Clock or SDK for release sign-off |
+| Write queue/GraphQL write path | quality gate plus targeted heartbeat, SDK, and response round-trip smoke |
+| Heartbeat payload/liveness | quality gate plus action/Retry refresh and stale/recovery template checks |
+| SDK config | quality gate plus SDK and relevant guide/template branches |
+| Public example/helper changes | quality gate plus Enhanced and Required template checks |
+| Showcase script work | quality gate plus relevant module scripts and template contract check |
 
-For release prep, re-check all nine module suites or at least the suites touched
-since the last known-good pass.
+For release prep, require a green `build.ps1 all` result and green GitHub Actions
+quality gate, then re-check the manual module scripts affected since the last
+known-good live pass. A full nine-module live pass remains optional unless a
+shared runtime or protocol change makes it necessary.
 
 ## Known Historical Sign-Offs
 
@@ -215,7 +235,7 @@ Keep these as context, not as a substitute for rechecking changed surfaces.
 | Widget | 2026-04-22 | Live suite passed 10/10 |
 | Full two-way runtime | 2026-04-22 | Live suite passed, including reload-mid-pending |
 | WebFetch legacy contract | 2026-04-23 | Live suite passed before the V2.1 fetch-only transport revision |
-| WebFetch 1.0 | 2026-08-05 | PC and Mobile module copies passed the expanded Node suite; native Kotlin transport compiled independently; user smoke test accepted the revision for roadmap completion |
+| WebFetch 1.0 | 2026-08-05 | Browser and Android contracts passed the expanded Node suite; native Kotlin transport compiled independently; user smoke test accepted the revision for roadmap completion |
 | AI provider router foundation | 2026-08-06 | PC and Mobile executor routing and adapter integration suites passed |
 | OpenAI-compatible backend | 2026-08-10 | PC and Mobile contract suites passed Gemini/OpenRouter/Custom profiles, text, JSON schema, thinking, streaming, cancellation, tool continuation, normalized errors, and rate-limit stepdown |
 | Clock | 2026-04-23 | Live suite passed |

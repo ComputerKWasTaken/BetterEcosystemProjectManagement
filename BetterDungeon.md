@@ -9,6 +9,11 @@ and Android client. Navigator and the wider Ultrascripts platform pass are in
 release polish: documentation, promotional material, targeted bug fixes,
 manual compatibility checks, packaging, and publication remain.
 
+Browser and Android development now share one BetterDungeon monorepo. `dev` is
+the normal workspace, `stable` is the protected release-ready branch, and the
+complete Node, extension-package, and Android quality gate runs on every push.
+Successful runs retain a browser ZIP and debug APK for review.
+
 The completed Navigator work remains part of v2.1, and the release should not
 be reopened for broad feature changes. Chronos V2 has already shipped
 independently and no longer gates BetterDungeon. Stateboy is paused, and
@@ -59,7 +64,7 @@ Brainiac remains planned for later.
 
 ## Remaining Release Work
 
-- Tighten PC and Mobile README, release-note, store, and promotional copy.
+- Tighten browser and Android README, release-note, store, and promotional copy.
 - Prepare current screenshots and other promotional images outside release
   packages.
 - Fix confirmed defects and visual inconsistencies without redesigning settled
@@ -70,17 +75,20 @@ Brainiac remains planned for later.
 
 ## Ongoing Maintenance
 
-- Keep shared PC and Mobile runtime behavior aligned while preserving deliberate
-  platform differences: PC keeps overflow arrows for settings-tab access;
-  Mobile uses native drag/swipe navigation without custom arrows.
+- Keep the shared web runtime aligned across browser and Android while
+  preserving deliberate platform differences: the browser keeps overflow
+  arrows for settings-tab access; Android uses native drag/swipe navigation
+  without custom arrows.
 - Preserve the public `ai.query` and Ultrascripts Story Card contracts.
-- Run the relevant durable contract and live module suites for changed areas.
+- Run the deterministic monorepo quality gate for every change. Use the retained
+  live module scripts only for targeted compatibility or release checks.
 - Prefer implementation and durable contracts over completed planning notes.
 - Treat additional provider services and Navigator capabilities as post-v2.1
   work requiring explicit security and migration review.
 
 ## Canonical References
 
+- [Monorepo, build, branch, and CI/CD guide](../BetterDungeon/docs/MONOREPO.md)
 - [v2.1 release roadmap](./ultrascripts/planning/current-roadmap.md)
 - [Navigator architecture and product contract](./navigator/navigator-design.md)
 - [Navigator verified mutation reference](./navigator/navigator-mutation-contract.md)
