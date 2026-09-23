@@ -247,7 +247,12 @@ Design contract:
   at most one automatic time step because AI Dungeon may record several actions
   per visible turn. Undo uses the latest snapshot at or before its action count
 - `/time`, `/date`, `/advance`, and `/chronos` are the complete command surface;
-  unrelated slash commands pass through for other scripts
+  unrelated slash commands pass through for other scripts. `/date` accepts a
+  complete date or a year alone; a year alone preserves the current month, day,
+  and time and rejects a February 29 that would be invalid in the target year
+- the Settings card separates read-only values, command examples, and editable
+  settings. Paused and Show Time Phase are retired; time phases display whenever
+  time tracking is on
 - `Track Weather` defaults to On. Off hides weather and stops transitions;
   re-enabling draws fresh weather from the current season
 - each update that changes the clock makes one Markov step regardless of the
@@ -266,8 +271,8 @@ Design contract:
   | Autumn | 25% | 35% | 40% | 0% |
   | Winter | 10% | 25% | 20% | 45% |
 
-- Widget displays the enabled time, date, season, and weather values in one
-  centered, wrapping custom-HTML strip when available. The value stays
+- Widget displays enabled clock/date and season/weather in separate, wrapping
+  groups when available. The value stays
   string-backed, preventing formatted time from being numerically coerced;
   `state.message` provides the vanilla and Widget-disabled fallback, and
   Chronos only clears its own toast messages
