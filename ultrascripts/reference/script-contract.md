@@ -246,22 +246,36 @@ Design contract:
 - `actionCount` detects new updates and Undo, but each new Context update adds
   at most one automatic time step because AI Dungeon may record several actions
   per visible turn. Undo uses the latest snapshot at or before its action count
-- `/time`, `/date`, `/advance`, and `/chronos` are the complete command surface;
-  unrelated slash commands pass through for other scripts. `/date` accepts a
-  complete date or a year alone; a year alone preserves the current month, day,
-  and time and rejects a February 29 that would be invalid in the target year
+- `/time`, `/date`, `/weather`, `/advance`, and `/chronos` are the complete
+  command surface. Unrelated slash commands pass through for other scripts.
+  `/date` accepts a complete date, a year alone, a month and
+  day, or a numeric month/day pair. A year alone preserves the current month,
+  day, and time and rejects a February 29 that would be invalid in the target
+  year. Month/day forms preserve the current year and time; numeric pairs use
+  day/month order in European format and month/day otherwise
 - the Settings card separates read-only values, command examples, and editable
   settings. Paused and Show Time Phase are retired; time phases display whenever
   time tracking is on
 - `Track Weather` defaults to On. Off hides weather and stops transitions;
   re-enabling draws fresh weather from the current season
+- `/weather` accepts a weather condition or season. The change takes effect
+  immediately in model context, the Settings card, and Widget/toast output.
+  A manual season leaves the Gregorian date unchanged. The command does not
+  advance the clock; the next clock change draws fresh weather from the date's
+  normal season and clears the manual season.
+  Retry preserves the override and Undo restores the recorded state. The
+  command leaves tracking-off adventures unchanged
+- `Minutes Per Turn: 0` stops automatic clock advancement; the Settings card
+  explains this beside the other format and weather guidance
 - each update that changes the clock makes one Markov step regardless of the
   duration advanced: a 97% direct chance to retain valid weather, otherwise
-  a season-weighted draw that may pick the same condition.
+  a season-weighted draw that may pick the same condition. The first step after
+  a manual `/weather` change draws from the calendar season to end the override.
   Retry makes no step and Undo restores the recorded weather
 - seasons use fixed Northern Hemisphere dates: spring Mar 20, summer Jun 21,
   autumn Sep 22, and winter Dec 21. Weather states are Sunny, Cloudy, Rain,
-  and Snow; Snow occurs only in winter
+  and Snow; automatic transitions can draw Snow only in winter. A manual
+  `/weather Snow` override can briefly place Snow in another season
 - the seasonal draw weights are:
 
   | Season | Sunny | Cloudy | Rain | Snow |

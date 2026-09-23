@@ -9,7 +9,7 @@
 | **BetterDungeon** | Maintenance; v2.1 shipped on browser and Android | Fix confirmed defects and maintain current contracts. See [project reference](./BetterDungeon.md). |
 | **Stateboy** | Active release project; unpublished | Finish the bounded core release and publish it through BetterRepository. See the [release plan](./ultrascripts/planning/stateboy.md). |
 | **Brainiac** | Next to reassess; private prototype exists | Decide its audience, product scope, and release case after Stateboy. |
-| **Chronos V2** | Shipped independently; [latest update](./ultrascripts/releases/chronos-year-only-date.md) published | Maintain the released script and its contract. |
+| **Chronos V2** | Complete; [latest update](./ultrascripts/releases/chronos-final-commands.md) published | Maintain the released script and its contract. |
 
 The [project roadmap](./ultrascripts/planning/README.md) is the source of truth
 for work sequence and current priorities. The Stateboy [product and technical

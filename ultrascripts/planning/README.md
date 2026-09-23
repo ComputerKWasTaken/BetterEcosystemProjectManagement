@@ -68,3 +68,4 @@ feedback. No other feature project is currently committed.
 - [BetterDungeon v2.1 release record](../releases/betterdungeon-v2.1.md)
 - [Chronos V2 seasonal weather update](../releases/chronos-weather.md)
 - [Chronos V2 year-only date and display update](../releases/chronos-year-only-date.md)
+- [Chronos V2 final command update](../releases/chronos-final-commands.md)

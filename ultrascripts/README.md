@@ -31,6 +31,7 @@ project; the Brainiac prototype is next to reassess after Stateboy.
 | What shipped in BetterDungeon v2.1? | [Release record](./releases/betterdungeon-v2.1.md) |
 | What shipped in the Chronos weather update? | [Release record](./releases/chronos-weather.md) |
 | What changed in Chronos v7? | [Year-only date and display update](./releases/chronos-year-only-date.md) |
+| What shipped in the final Chronos update? | [Command update](./releases/chronos-final-commands.md) |
 | How does the runtime work? | [Runtime reference](./reference/runtime.md) |
 | Which modules ship and what contracts do they implement? | [Module system reference](./reference/modules.md) |
 | What should scripts and templates assume? | [Script contract reference](./reference/script-contract.md) |
