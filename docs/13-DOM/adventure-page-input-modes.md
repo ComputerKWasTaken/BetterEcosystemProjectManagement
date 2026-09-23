@@ -1,4 +1,8 @@
-# Adventure Page — Input Modes (Do / Say / Story / See + Try / Command)
+# Adventure Page — Input Modes
+
+> **September 2026 Alpha update:** The current UI has Do / Say / Story / Guide text modes and separate Image / Video actions. At widths <=700px it uses a portalled Radix dropdown with `menuitemradio` entries, not the desktop strip. See the maintained [v2.1 input-menu contract](../../../BetterDungeon/docs/INPUT-MENU.md) for selectors, service methods, injection rules, compact controls, colors and hotkeys. The older capture below is historical; numeric IDs and See end-cap assumptions must not be used for current integration.
+
+## Historical capture (pre-reworked Alpha selector)
 
 > Detailed DOM reference for the input mode selection system — the floating toolbar that lets players switch between Do, Say, Story, and See action types. Also documents BetterDungeon's injected Try and Command modes.
 

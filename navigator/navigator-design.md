@@ -3,7 +3,7 @@
 > Durable contract for the Navigator implementation shipping with
 > BetterDungeon v2.1 on PC and Android.
 
-Implementation status: **functionally complete; release polish remains.**
+Implementation status: **shipped in BetterDungeon v2.1; maintenance only.**
 Verified GraphQL behavior and mutation safety evidence live in
 [`navigator-mutation-contract.md`](./navigator-mutation-contract.md).
 
@@ -269,19 +269,19 @@ round bodies before truncating the first or latest raw payload.
 | `styles.css` | Shared Navigator styling plus platform-specific overrides |
 
 The Android project lives at `android/` in the same repository. Gradle composes
-shared JavaScript and CSS from the root with the declared files in
-`android/web/` and `android/overrides/`; native transport and lifecycle code
-remain under `android/app/`. Generated assets are build output, not source.
+shared JavaScript and CSS from the root with the declared unique adapters in
+`android/web/`; native transport and lifecycle code remain under `android/app/`.
+Platform differences stay capability-gated in shared files. Generated assets
+are build output, not source.
 
-## 9. Release and Maintenance Boundary
+## 9. Shipped Product and Maintenance Boundary
 
-Navigator's v2.1 feature design is closed. Before release, limit work to:
+Navigator's v2.1 feature design is closed. Handle maintenance through:
 
-- confirmed defects and visual inconsistencies;
-- documentation, tutorial, release-note, and promotional alignment;
-- accessibility, focus, narrow-layout, reduced-motion, and IME polish;
-- cross-platform parity where behavior is meant to be shared; and
-- automated, manual, browser-package, and Android-package verification.
+- confirmed defects and contract updates;
+- accessibility, focus, narrow-layout, reduced-motion, and IME fixes; and
+- cross-platform parity where behavior is meant to be shared, with focused
+  verification.
 
 Additional tools, automations, providers, durable audit/Undo systems, or broad
-architecture changes belong after v2.1 and require a new scoped decision.
+architecture changes require a new scoped decision.

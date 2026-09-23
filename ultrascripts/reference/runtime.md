@@ -43,13 +43,9 @@ two-way runtime. A script can use only state publishing, only ops, or both.
 |   `-- ultrascripts_feature.js
 |-- android/
 |   |-- web/                         Android-only WebView sources
-|   |-- overrides/                   Declared same-path variants
 |   `-- betterdungeon-runtime.json   Android composition order
 |-- tests/
-|   |-- contracts/                   Shared behavior
-|   |-- platform/android/            Android contracts
-|   |-- unit/                        Focused and policy checks
-|   `-- harness/                     Deterministic runtime simulators
+|   `-- smoke/                       Minimal repository-boundary checks
 |-- background.js
 |-- main.js
 |-- manifest.json
@@ -373,7 +369,9 @@ Current supported surfaces:
 
 All three are developed from the same BetterDungeon repository. Android's
 Gradle build composes root web sources with explicitly declared mobile files
-and overrides; generated WebView assets are never maintained as a second copy.
+and unique WebView adapters. Capability-gated shared code handles ordinary
+platform differences, and generated WebView assets are never maintained as a
+second copy.
 
 iOS remains out of scope because there is no suitable extension/WebView surface
 for this runtime.

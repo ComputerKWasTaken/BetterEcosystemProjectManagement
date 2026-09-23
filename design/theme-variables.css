@@ -10,7 +10,7 @@
    Palette : Dark-first, orange brand accent
 
    Consumption:
-     BetterDungeon           — root source plus declared Android override
+     BetterDungeon           — shared root source on browser and Android
      BetterRepository        — @import in main.css + mirror in
                                 tailwind.config.js
    ================================================================ */

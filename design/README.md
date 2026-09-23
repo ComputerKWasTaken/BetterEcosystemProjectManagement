@@ -9,7 +9,7 @@
 | Project | How to consume |
 |---------|---------------|
 | **BetterDungeon** (browser) | Sync `theme-variables.css` to `core/theme-variables.css` (CSP-safe — no `@import`) |
-| **BetterDungeon** (Android) | Keep shared tokens at the root; put an intentional variant in `android/overrides/core/theme-variables.css` and declare it in `android/betterdungeon-runtime.json` |
+| **BetterDungeon** (Android) | Use the same root tokens. Scope any Android presentation difference with shared platform selectors; reserve `android/web/` for unique native adapters. |
 | **BetterRepository** (Vue / Tailwind) | `@import '../../design/theme-variables.css'` in `src/styles/main.css` + mirror values in `tailwind.config.js` |
 
 All variables use the **`--bd-`** prefix to avoid collisions with host-page styles (critical for extension contexts).
@@ -467,8 +467,8 @@ Standard icon sizes:
 1. Edit `design/theme-variables.css` in this repo — this is the **canonical** file.
 2. Sync changes to each consuming source file:
    - `BetterDungeon/core/theme-variables.css`
-   - `BetterDungeon/android/overrides/core/theme-variables.css` only when Android
-     intentionally differs; never edit Gradle-generated assets
    - `BetterRepository/design/theme-variables.css`
+   - For BetterDungeon Android differences, use capability-gated shared styles;
+     never edit Gradle-generated assets or create copied Android variants
 3. If adding Tailwind-mapped tokens, update `BetterRepository/tailwind.config.js`.
 4. Update this README if new token categories or conventions are introduced.

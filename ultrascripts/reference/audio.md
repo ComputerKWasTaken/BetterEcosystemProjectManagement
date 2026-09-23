@@ -2,8 +2,9 @@
 
 ## Status
 
-Audio is a V2.1 module implemented consistently in the PC extension and Android
-app. It remains outside the shipped V2 inventory until the V2.1 release.
+Audio shipped as part of BetterDungeon v2.1 and is implemented consistently in
+the PC extension and Android app. It is the ninth Ultrascripts module; the
+earlier V2 inventory remains unchanged.
 
 ## Scope
 
@@ -70,5 +71,6 @@ Browsers may suspend Web Audio until a pointer, touch, or keyboard gesture.
 BetterDungeon retains a pending effect while suspended, resumes the context
 after a user gesture, and then plays it once.
 
-The Audio module toggle is the initial master stop control. Dedicated volume and
-mute settings remain optional later V2.1 work.
+The Audio module toggle is the master stop control. Dedicated volume and mute
+settings are outside the shipped contract and would require a separately scoped
+change.

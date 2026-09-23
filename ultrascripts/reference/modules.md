@@ -23,28 +23,20 @@ heartbeat advertise?
 
 ## Shipped Module Inventory
 
-| Module | Kind | State or ops | Main files | Public guide | Regression suite |
+| Module | Kind | State or ops | Main files | Public guide | Current verification |
 |---|---|---|---|---|---|
-| `widget` | state | `ultrascripts:state:widget` | `../../../BetterDungeon/modules/widget/` | `UltrascriptsWidgetGuide.vue` | `widget-module` |
-| `webfetch` | ops | `fetch` | `../../../BetterDungeon/modules/webfetch/` | `UltrascriptsWebFetchGuide.vue` | `webfetch-module` |
-| `clock` | ops | `now`, `tz`, `format` | `../../../BetterDungeon/modules/clock/` | `UltrascriptsClockGuide.vue` | `clock-module` |
-| `sdk` | ops | `version`, `config` | `../../../BetterDungeon/modules/sdk/` | `UltrascriptsSdkGuide.vue` | `sdk-module` |
-| `weather` | ops | `current`, `forecast` | `../../../BetterDungeon/modules/weather/` | `UltrascriptsWeatherGuide.vue` | `weather-module` |
-| `network` | ops | `status` | `../../../BetterDungeon/modules/network/` | `UltrascriptsNetworkGuide.vue` | `network-module` |
-| `system` | ops | `info`, `power` | `../../../BetterDungeon/modules/system/` | `UltrascriptsSystemGuide.vue` | `system-module` |
-| `ai` | ops | `status`, `query` | `../../../BetterDungeon/modules/ai/` | `UltrascriptsAiGuide.vue` | `ai-module` |
+| `widget` | state | `ultrascripts:state:widget` | `../../../BetterDungeon/modules/widget/` | `UltrascriptsWidgetGuide.vue` | Product-specific manual review |
+| `webfetch` | ops | `fetch` | `../../../BetterDungeon/modules/webfetch/` | `UltrascriptsWebFetchGuide.vue` | Product-specific manual review |
+| `clock` | ops | `now`, `tz`, `format` | `../../../BetterDungeon/modules/clock/` | `UltrascriptsClockGuide.vue` | Product-specific manual review |
+| `sdk` | ops | `version`, `config` | `../../../BetterDungeon/modules/sdk/` | `UltrascriptsSdkGuide.vue` | Product-specific manual review |
+| `weather` | ops | `current`, `forecast` | `../../../BetterDungeon/modules/weather/` | `UltrascriptsWeatherGuide.vue` | Product-specific manual review |
+| `network` | ops | `status` | `../../../BetterDungeon/modules/network/` | `UltrascriptsNetworkGuide.vue` | Product-specific manual review |
+| `system` | ops | `info`, `power` | `../../../BetterDungeon/modules/system/` | `UltrascriptsSystemGuide.vue` | Product-specific manual review |
+| `ai` | ops | `status`, `query` | `../../../BetterDungeon/modules/ai/` | `UltrascriptsAiGuide.vue` | Product-specific manual review |
+| `audio` | state | `ultrascripts:state:audio` | `../../../BetterDungeon/modules/audio/` | [Audio reference](./audio.md), `UltrascriptsAudioGuide.vue` | Targeted device review when behavior changes |
 
 The `ai` module has a stable asynchronous `status`/`query` contract. It has no
 compatibility alias.
-
-## V2.1 Module In Development
-
-| Module | Kind | State or ops | Main files | Contract | Regression suite |
-|---|---|---|---|---|---|
-| `audio` | state | `ultrascripts:state:audio` | `../../../BetterDungeon/modules/audio/` | [Audio reference](./audio.md), `UltrascriptsAudioGuide.vue` | `audio-module` |
-
-Audio is wired into both PC and Mobile but remains outside the shipped inventory
-until the V2.1 release and its final device-matrix regression pass.
 
 ## Current Responsibilities
 
@@ -58,6 +50,7 @@ until the V2.1 release and its final device-matrix regression pass.
 | `network` | Browser online status and quality hints |
 | `system` | Device, browser, screen, locale, hardware, preference, and power hints |
 | `ai` | Reports readiness and accepts bounded async text/schema-backed JSON query jobs with optional thinking levels and query metadata; returns `not_configured` until the player saves an API key |
+| `audio` | Plays bounded, locally synthesized one-shot effects from script-published state |
 
 Keep modules narrow. If a module starts becoming a mini-application, split the
 author-facing helper/script from the BetterDungeon-side capability.
@@ -291,8 +284,8 @@ Use this checklist:
 4. Add the module under `../../../BetterDungeon/modules/<module-id>/`.
 5. Register the module with the registry.
 6. Load the module in the extension path.
-7. Add or update the module regression suite under
-   `../../../BetterDungeon/tests/aid-scripts/`.
+7. Define targeted verification only after the behavior and live-test strategy
+   are stable.
 8. Update BetterRepository public docs if the author-facing contract changed.
 9. Update [script-contract.md](./script-contract.md)
    if examples/templates need new canonical patterns.
@@ -300,9 +293,10 @@ Use this checklist:
 
 ## Current Quality-Pass Guidance
 
-The active module work is not a redesign. It is limited final polish, cleanup,
-and release verification for BetterDungeon v2.1. Chronos V2 has shipped
-independently; Stateboy and Brainiac follow later.
+BetterDungeon v2.1 shipped the current nine-module set. Module changes after
+release should be tied to a confirmed defect, contract update, or separately
+scoped feature. Chronos V2 shipped independently; Stateboy is the active
+follow-on showcase and Brainiac remains later.
 
 Review questions:
 
@@ -312,12 +306,13 @@ Review questions:
 - Are errors stable enough for script branching?
 - Are response fields the fields authors actually need?
 - Does mobile/narrow UI behavior hold where relevant?
-- Is the regression script still representative?
+- Is the verification approach proportionate to the stability and risk of the
+  contract?
 - Is the module comfortable to show in Chronos V2 and later showcase scripts
   such as Stateboy and Brainiac?
 
-Remaining release work is tracked in the
-[BetterDungeon V2.1 roadmap](../planning/current-roadmap.md).
+The shipped module set is summarized in the
+[BetterDungeon v2.1 release record](../releases/betterdungeon-v2.1.md).
 
 ## Do Not Build By Default
 

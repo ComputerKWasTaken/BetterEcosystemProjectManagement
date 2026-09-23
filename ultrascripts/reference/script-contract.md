@@ -12,8 +12,8 @@ Use it when writing or reviewing:
 - BetterDungeon example templates
 - BetterRepository raw-script template copies
 - Chronos V2 (released independently)
-- Stateboy (implemented; paused until after BetterDungeon v2.1 releases)
-- Brainiac (planned for later)
+- Stateboy (existing unpublished implementation; active release project)
+- Brainiac (private prototype; scope after Stateboy)
 
 Implementation remains the source of truth. This file exists so examples do not
 quietly diverge from the live runtime.
@@ -172,13 +172,14 @@ itself. Use request ids/state if a script needs stricter freshness.
 
 ## Showcase Script Contracts
 
-Chronos V2 has shipped independently. BetterDungeon v2.1 final polish and
-cleanup are now the active priority. Stateboy has an existing implementation
-but is paused until after that release; Brainiac remains planned for later.
+Chronos V2 shipped independently, and BetterDungeon v2.1 is complete and
+published. Stateboy has an existing unpublished implementation and is the
+active release project; its release plan tracks the remaining work. Brainiac
+has a private prototype and will be scoped after Stateboy.
 
 ### Brainiac
 
-Mode: Requires Ultrascripts. Planned for later.
+Mode: Requires Ultrascripts. Private prototype; scope after Stateboy.
 
 Required capabilities:
 
@@ -231,25 +232,51 @@ Optional capabilities:
 
 Design contract:
 
-- Chronos owns only a deterministic in-game clock and Gregorian calendar
-- base timekeeping, calendar advancement, model context, settings, and toast
-  display work without BetterDungeon
+- Chronos owns a deterministic in-game clock, Gregorian calendar, and simple
+  seasonal weather driven by that calendar
+- base timekeeping, calendar advancement, seasonal weather, model context,
+  settings, and toast display work without BetterDungeon
 - the Context modifier begins with `// @cache-compatible`, preserves the entire
-  incoming prompt byte-for-byte, and appends only the current timestamp suffix
+  incoming prompt byte-for-byte, and appends the visible time, date, and weather
 - the Input hook observes Ultrascripts liveness; Context owns time advancement,
-  model injection, and player-facing presentation
+  weather transitions, model injection, and player-facing presentation
 - retries do not advance twice; bounded action snapshots make Undo restore the
-  exact earlier timestamp even across `/time`, `/date`, and randomized `/sleep`
-- `/time`, `/date`, `/sleep`, and `/chronos` are the complete command surface;
+  exact earlier timestamp, weather, and random state across clock commands;
+  new snapshots store the clock once, while older full snapshots remain readable
+- `actionCount` detects new updates and Undo, but each new Context update adds
+  at most one automatic time step because AI Dungeon may record several actions
+  per visible turn. Undo uses the latest snapshot at or before its action count
+- `/time`, `/date`, `/advance`, and `/chronos` are the complete command surface;
   unrelated slash commands pass through for other scripts
-- Widget displays time and a compact date in one centered custom-HTML strip
-  when available. The value stays string-backed, preventing formatted time
-  from being numerically coerced; `state.message` provides the vanilla and
-  Widget-disabled fallback
+- `Track Weather` defaults to On. Off hides weather and stops transitions;
+  re-enabling draws fresh weather from the current season
+- each update that changes the clock makes one Markov step regardless of the
+  duration advanced: a 97% direct chance to retain valid weather, otherwise
+  a season-weighted draw that may pick the same condition.
+  Retry makes no step and Undo restores the recorded weather
+- seasons use fixed Northern Hemisphere dates: spring Mar 20, summer Jun 21,
+  autumn Sep 22, and winter Dec 21. Weather states are Sunny, Cloudy, Rain,
+  and Snow; Snow occurs only in winter
+- the seasonal draw weights are:
+
+  | Season | Sunny | Cloudy | Rain | Snow |
+  | --- | ---: | ---: | ---: | ---: |
+  | Spring | 30% | 35% | 35% | 0% |
+  | Summer | 60% | 25% | 15% | 0% |
+  | Autumn | 25% | 35% | 40% | 0% |
+  | Winter | 10% | 25% | 20% | 45% |
+
+- Widget displays the enabled time, date, season, and weather values in one
+  centered, wrapping custom-HTML strip when available. The value stays
+  string-backed, preventing formatted time from being numerically coerced;
+  `state.message` provides the vanilla and Widget-disabled fallback, and
+  Chronos only clears its own toast messages
+- V2 adventure state migrates without resetting the clock, settings, or
+  retained Undo history; pre-weather snapshots receive generated weather
 - lifecycle code stays in its matching hook; Library contains shared helpers
   rather than a lifecycle router
-- weather, seasons, temperature, astronomy, output banners, real-world clock
-  synchronization, and unrelated simulation belong in independent scripts
+- geographic climates, temperature, astronomy, real-world weather, forecasts,
+  and unrelated simulation remain outside Chronos
 
 ## Module Contracts For Examples
 

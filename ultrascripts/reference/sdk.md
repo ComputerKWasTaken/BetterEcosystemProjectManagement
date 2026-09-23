@@ -11,7 +11,6 @@ Implementation source:
 
 - `../../../BetterDungeon/modules/sdk/module.js`
 - `../../../BetterDungeon/background.js`
-- `../../../BetterDungeon/tests/aid-scripts/sdk-module/`
 
 Public docs:
 
@@ -288,21 +287,12 @@ The SDK must not expose:
 If a future config field is useful but sensitive, expose a boolean/count/category
 summary instead of the raw value.
 
-## Regression Coverage
+## Verification Direction
 
-Suite:
-
-- `../../../BetterDungeon/tests/aid-scripts/sdk-module/`
-
-Coverage expectations:
-
-- heartbeat discovery of `sdk`
-- `version` response shape
-- `config` response shape
-- background-authoritative config path
-- sanitized feature/config payloads
-- no duplicate heartbeat regression
-- response acknowledgements and cleanup
+The current repository baseline does not keep a dedicated SDK test suite.
+Use focused manual browser and AI Dungeon checks for SDK behavior. Add a small
+deterministic check only when a stable contract warrants the maintenance cost;
+a comprehensive live-browser framework is not planned.
 
 Also check:
 

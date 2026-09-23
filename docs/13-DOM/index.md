@@ -1,6 +1,6 @@
 # AI Dungeon DOM Reference
 
-> Accurate, interference-free documentation of the AI Dungeon DOM structure, captured with no extensions active.
+> Baseline DOM documentation from earlier captures with no extensions active. The September 2026 Alpha input-menu update is documented separately from supplied and live captures with BetterDungeon enabled; see the current input-menu contract linked below.
 
 ## Purpose
 
@@ -30,7 +30,7 @@ The primary page where players interact with scenarios. This is the most importa
 - [Story Output](adventure-page-story.md) — The `#gameplay-output` area: story sections, action blocks, streaming
 - [Command Bar](adventure-page-commands.md) — Bottom command buttons: Take a Turn, Continue, Retry, Erase
 - [Text Input Area](adventure-page-input.md) — The `#game-text-input` textarea and submit button
-- [Input Modes](adventure-page-input-modes.md) — Do / Say / Story / See mode selection menu
+- [Input Modes](adventure-page-input-modes.md) — Current Alpha contract and historical selector capture; Do / Say / Story / Guide, separate Image / Video, and compact dropdown
 - [Model Switcher](adventure-page-model-switcher.md) — AI model selection dialog (Better Dynamic target)
 - [Settings Panel](adventure-page-settings.md) — Right sidebar: Adventure/Gameplay tabs, Plot, Story Cards, Themes, Text Style
 - [Custom Themes & Sprites](adventure-page-themes.md) — Sprite-based theme system, 9-slice rendering, text styles
